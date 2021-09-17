@@ -7,6 +7,7 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeSpeed;
 	scroll-behavior: smooth;
+	min-height: 100vh;
 }
 
 a {
@@ -23,7 +24,7 @@ a {
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url('../public/fonts/Agrandir-Regular.otf') format('otf');
+	src: url('../public/fonts/Agrandir-Regular.otf') format('opentype');
 }
 
 @font-face {
@@ -31,5 +32,5 @@ a {
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url('../public/fonts/Sometimes-Regular.ttf') format('ttf');
+	src: url('../public/fonts/Sometimes-Times-Regular.otf') format('opentype');
 }

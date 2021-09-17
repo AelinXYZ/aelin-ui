@@ -11,6 +11,8 @@ const colors = {
 	headerGreen: '#3F7923',
 	background: '#DBDBDB',
 	cell: '#E2E2E2',
+
+	gradientForest: 'linear-gradient(180deg, #48802D 0%, #407229 100%)',
 };
 
 export default colors;
