@@ -12,23 +12,34 @@ const Home: FC<NextPage> = () => {
 			<Head>
 				<title>Aelin</title>
 			</Head>
-			<Content>
-				<Image src={AelinLogo} alt="Aelin Logo" />
-				<ButtonRow>
-					<Button>Join Pool</Button>
-					<Button>Create Pool</Button>
-					<Button>Learn More</Button>
-				</ButtonRow>
-				<Emoji>🧝‍♀️</Emoji>
-				<Heading>Looking for your pools?</Heading>
-				<ButtonWallet>Connect your wallet</ButtonWallet>
-			</Content>
+			<Background>
+				<Content>
+					<Image src={AelinLogo} alt="Aelin Logo" />
+					<ButtonRow>
+						<Button>Join Pool</Button>
+						<Button>Create Pool</Button>
+						<Button>Learn More</Button>
+					</ButtonRow>
+					<Emoji>🧝‍♀️</Emoji>
+					<Heading>Looking for your pools?</Heading>
+					<ButtonWallet>Connect your wallet</ButtonWallet>
+				</Content>
+			</Background>
 		</Container>
 	);
 };
 
 const Container = styled.div`
 	height: 100vh;
+`;
+
+const Background = styled.div`
+	width: 100%;
+	height: 100vh;
+	background-image: url('/svg/background-ellipse.png');
+	background-position: bottom;
+	background-repeat: no-repeat;
+	background-size: contain;
 `;
 
 const Content = styled.div`
