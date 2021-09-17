@@ -1,16 +1,35 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	padding: 0;
+	margin: 0;
+	font-family: 'Agrandir-Regular', -apple-system, BlinkMacSystemFont, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeSpeed;
+	scroll-behavior: smooth;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+	color: inherit;
+	text-decoration: none;
 }
 
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+@font-face {
+	font-family: 'Agrandir-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/Agrandir-Regular.otf') format('otf');
+}
+
+@font-face {
+	font-family: 'Sometimes-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/Sometimes-Regular.ttf') format('ttf');
 }
