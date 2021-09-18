@@ -3,10 +3,13 @@ import { NextPage } from 'next';
 import styled from 'styled-components';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import AelinLogo from 'assets/svg/aelin-logo.svg';
+import ROUTES from 'constants/routes';
 
 const Home: FC<NextPage> = () => {
+	const router = useRouter();
 	return (
 		<Container>
 			<Head>
@@ -16,7 +19,7 @@ const Home: FC<NextPage> = () => {
 				<Content>
 					<Image src={AelinLogo} alt="Aelin Logo" />
 					<ButtonRow>
-						<Button>Join Pool</Button>
+						<Button onClick={() => router.push(ROUTES.Pools)}>Join Pool</Button>
 						<Button>Create Pool</Button>
 						<Button>Learn More</Button>
 					</ButtonRow>
