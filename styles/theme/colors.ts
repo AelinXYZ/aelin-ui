@@ -12,6 +12,11 @@ const colors = {
 	background: '#DBDBDB',
 	cell: '#E2E2E2',
 
+	statusBlue: '#4EB6F0',
+	statusGreen: '#7DD38C',
+	statusYellow: '#FFCE6F',
+	statusRed: '#FF7777',
+
 	gradientForest: 'linear-gradient(180deg, #48802D 0%, #407229 100%)',
 };
 

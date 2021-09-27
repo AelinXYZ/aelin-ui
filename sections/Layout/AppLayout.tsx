@@ -21,7 +21,7 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-	max-width: 1354px;
+	max-width: 1440px;
 	min-height: 100vh;
 	margin: 0 auto;
 `;

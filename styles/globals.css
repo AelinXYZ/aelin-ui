@@ -34,3 +34,11 @@ a {
 	font-display: swap;
 	src: url('../public/fonts/Sometimes-Times-Regular.otf') format('opentype');
 }
+
+@font-face {
+	font-family: 'ASM-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/ASM-Regular.otf') format('opentype');
+}
