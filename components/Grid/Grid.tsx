@@ -4,24 +4,28 @@ import styled from 'styled-components';
 export type GridItem = {
 	header: string;
 	text: string;
-	// input?: {
-	// 	type: string;
-	// 	placeholder: string;
-	// };
+	input?: {
+		type: string;
+		placeholder: string;
+	};
 	// icon?: string; // TODO fix
 };
 
 interface GridProps {
 	gridItems: GridItem[];
+	hasInputFields: boolean;
 }
 
-const Grid: FC<GridProps> = ({ gridItems }) => {
+const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
 	return (
 		<Container>
-			{gridItems.map(({ header, text }: GridItem) => (
-				<GridItem key={header}>
+			{gridItems.map(({ header, text, input }: GridItem) => (
+				<GridItem hasInputFields={hasInputFields} key={header}>
 					<GridItemHeader>{header}</GridItemHeader>
 					<GridItemText>{text}</GridItemText>
+					{hasInputFields && input ? (
+						<GridItemInput type={input.type} placeholder={input.placeholder} />
+					) : null}
 				</GridItem>
 			))}
 		</Container>
@@ -33,12 +37,12 @@ const Container = styled.div`
 	grid-template-columns: auto auto auto;
 `;
 
-const GridItem = styled.div`
+const GridItem = styled.div<{ hasInputFields: boolean }>`
 	background-color: ${(props) => props.theme.colors.cell};
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	padding: 20px 0 0 20px;
-	height: 78px;
+	padding: 15px 0 0 15px;
+	height: ${(props) => (props.hasInputFields ? '125px' : '78px')};
 	display: flex;
 	flex-direction: column;
 	&:nth-child(3n) {
@@ -71,6 +75,23 @@ const GridItemHeader = styled.div`
 const GridItemText = styled.div`
 	color: ${(props) => props.theme.colors.textGrey};
 	font-size: 14px;
+`;
+
+const GridItemInput = styled.input`
+	outline: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 152px;
+	background-color: ${(props) => props.theme.colors.background};
+	border-radius: 10px;
+	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	height: 30px;
+	padding: 6px 12px;
+	&::placeholder {
+		font-display: ${(props) => props.theme.fonts.agrandir};
+		font-size: 12px;
+	}
 `;
 
 export default Grid;

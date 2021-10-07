@@ -53,7 +53,7 @@ const Pool: FC = () => {
 			title={`Pool ${address}`}
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
-			<Grid gridItems={gridItems} />
+			<Grid hasInputFields={false} gridItems={gridItems} />
 		</PageLayout>
 	);
 };
