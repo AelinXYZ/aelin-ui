@@ -1,11 +1,11 @@
-import { FC, ReactChildren } from 'react';
+import { FC, ReactChild } from 'react';
 import styled from 'styled-components';
 
 import Header from '../Header';
 import SearchInput from 'components/SearchInput';
 
 type PageLayoutProps = {
-	children: ReactChildren;
+	children: ReactChild;
 	title: string;
 	subtitle: string;
 };
