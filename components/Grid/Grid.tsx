@@ -35,6 +35,7 @@ const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
 const Container = styled.div`
 	display: grid;
 	grid-template-columns: auto auto auto;
+	margin-right: 20px;
 `;
 
 const GridItem = styled.div<{ hasInputFields: boolean }>`
@@ -43,6 +44,7 @@ const GridItem = styled.div<{ hasInputFields: boolean }>`
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	padding: 15px 0 0 15px;
 	height: ${(props) => (props.hasInputFields ? '125px' : '78px')};
+	width: 207px;
 	display: flex;
 	flex-direction: column;
 	&:nth-child(3n) {
@@ -73,7 +75,7 @@ const GridItemHeader = styled.div`
 `;
 
 const GridItemText = styled.div`
-	color: ${(props) => props.theme.colors.textGrey};
+	color: ${(props) => props.theme.colors.black};
 	font-size: 14px;
 `;
 

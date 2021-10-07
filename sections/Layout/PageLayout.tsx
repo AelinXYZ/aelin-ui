@@ -1,11 +1,11 @@
-import { FC, ReactChild } from 'react';
+import { FC, ReactChildren, ReactChild } from 'react';
 import styled from 'styled-components';
 
 import Header from '../Header';
 import SearchInput from 'components/SearchInput';
 
 type PageLayoutProps = {
-	children: ReactChild;
+	children: ReactChildren | ReactChild | JSX.Element[];
 	title: string;
 	subtitle: string;
 };
@@ -59,7 +59,9 @@ const ContentSubtitle = styled.p`
 	font-size: 15px;
 `;
 
-const ContentBody = styled.div``;
+const ContentBody = styled.div`
+	display: flex;
+`;
 
 const ColSide = styled.div`
 	flex: 1;

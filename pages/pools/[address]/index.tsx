@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 
 import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
+import ActionBox from 'components/ActionBox';
 
 const Pool: FC = () => {
 	const router = useRouter();
@@ -54,6 +55,12 @@ const Pool: FC = () => {
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
 			<Grid hasInputFields={false} gridItems={gridItems} />
+			<ActionBox
+				onClick={() => console.log('clicked me')}
+				header="Purchase"
+				input={{ type: 'number', placeholder: '0', label: 'Balance: 2000 USDC' }}
+				actionText="Purchase"
+			/>
 		</PageLayout>
 	);
 };
