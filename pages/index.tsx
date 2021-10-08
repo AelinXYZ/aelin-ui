@@ -20,7 +20,7 @@ const Home: FC<NextPage> = () => {
 					<Image src={AelinLogo} alt="Aelin Logo" />
 					<ButtonRow>
 						<Button onClick={() => router.push(ROUTES.Pools.Home)}>Join Pool</Button>
-						<Button>Create Pool</Button>
+						<Button onClick={() => router.push(ROUTES.Pools.Create)}>Create Pool</Button>
 						<Button>Learn More</Button>
 					</ButtonRow>
 					<Emoji>🧝‍♀️</Emoji>

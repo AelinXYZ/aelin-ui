@@ -36,13 +36,15 @@ const Container = styled.div`
 	display: grid;
 	grid-template-columns: auto auto auto;
 	margin-right: 20px;
+	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border-radius: 8px;
 `;
 
 const GridItem = styled.div<{ hasInputFields: boolean }>`
 	background-color: ${(props) => props.theme.colors.cell};
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	padding: 15px 0 0 15px;
+	padding: 20px;
 	height: ${(props) => (props.hasInputFields ? '125px' : '78px')};
 	width: 207px;
 	display: flex;
@@ -76,7 +78,7 @@ const GridItemHeader = styled.div`
 
 const GridItemText = styled.div`
 	color: ${(props) => props.theme.colors.black};
-	font-size: 14px;
+	font-size: 12px;
 `;
 
 const GridItemInput = styled.input`
@@ -84,12 +86,13 @@ const GridItemInput = styled.input`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	width: 152px;
+	width: 100%;
 	background-color: ${(props) => props.theme.colors.background};
-	border-radius: 10px;
+	border-radius: 4px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	height: 30px;
 	padding: 6px 12px;
+	margin-top: 18px;
 	&::placeholder {
 		font-display: ${(props) => props.theme.fonts.agrandir};
 		font-size: 12px;

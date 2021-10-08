@@ -1,20 +1,92 @@
 import { FC, useMemo } from 'react';
-import { CellProps } from 'react-table';
 
 import { PageLayout } from 'sections/Layout';
-import Table from 'components/Table';
-import { Status } from 'components/DealStatus';
-import Currency from 'components/Currency';
-import DealStatus from 'components/DealStatus';
-import { formatNumber } from 'utils/numbers';
+import Grid from 'components/Grid';
 
 const Create: FC = () => {
+	const gridItems = useMemo(
+		() => [
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+			{
+				header: 'some header',
+				text: 'some text',
+				input: {
+					type: 'text',
+					placeholder: 'Input',
+				},
+			},
+		],
+		[]
+	);
 	return (
 		<PageLayout
 			title="Create Pool"
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
-			test
+			<Grid hasInputFields={true} gridItems={gridItems} />
 		</PageLayout>
 	);
 };
