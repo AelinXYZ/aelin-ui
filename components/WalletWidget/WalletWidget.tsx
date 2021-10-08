@@ -1,11 +1,12 @@
 import { FC } from 'react';
 import styled from 'styled-components';
+import { truncateAddress } from 'utils/crypto';
 
 const WalletWidget: FC = () => {
 	return (
 		<Container>
 			<Dot />
-			<Address>0x2D0a...1Df9</Address>
+			<Address>{truncateAddress('0x4069e799Da927C06b430e247b2ee16C03e8B837d')}</Address>
 		</Container>
 	);
 };

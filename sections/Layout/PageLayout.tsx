@@ -5,8 +5,8 @@ import Header from '../Header';
 import SearchInput from 'components/SearchInput';
 
 type PageLayoutProps = {
-	children: ReactChildren | ReactChild | JSX.Element[];
-	title: string;
+	children: ReactChildren | ReactChild | (JSX.Element | null)[];
+	title: JSX.Element;
 	subtitle: string;
 };
 
@@ -40,14 +40,14 @@ const Content = styled.div`
 	display: flex;
 `;
 
-const ContentHeader = styled.div`
+export const ContentHeader = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 	margin-bottom: 34px;
 `;
 
-const ContentTitle = styled.h1`
+export const ContentTitle = styled.h1`
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 20px;
 	margin: 0;
@@ -59,9 +59,7 @@ const ContentSubtitle = styled.p`
 	font-size: 15px;
 `;
 
-const ContentBody = styled.div`
-	display: flex;
-`;
+const ContentBody = styled.div``;
 
 const ColSide = styled.div`
 	flex: 1;

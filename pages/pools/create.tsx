@@ -83,7 +83,7 @@ const Create: FC = () => {
 	);
 	return (
 		<PageLayout
-			title="Create Pool"
+			title={<>Create Pool</>}
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
 			<Grid hasInputFields={true} gridItems={gridItems} />
