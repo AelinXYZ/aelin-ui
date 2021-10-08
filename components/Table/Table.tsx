@@ -86,7 +86,7 @@ const TR = styled.tr<{ isEven: boolean }>`
 			background-color: ${(props) => props.theme.colors.grey};
 		`}
 	&:hover {
-		background-color: ${(props) => props.theme.colors.textGrey};
+		background-color: ${(props) => props.theme.colors.forestGreen};
 	}
 `;
 

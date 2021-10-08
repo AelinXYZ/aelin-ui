@@ -5,26 +5,38 @@ import CopyIcon from 'assets/svg/copy.svg';
 import CheckIcon from 'assets/svg/check.svg';
 import Image from 'next/image';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
-import { FlexDivCenterAligned } from 'components/common';
+import { FlexDivCenterAligned, FlexDiv } from 'components/common';
 import ActionBox from 'components/ActionBox';
 import { truncateAddress } from 'utils/crypto';
 
 const Pool: FC = () => {
-	const [copiedAddress, setCopiedAddress] = useState(false);
+	const [copiedPoolAddress, setCopiedPoolAddress] = useState(false);
+	const [copiedDealAddress, setCopiedDealAddress] = useState(false);
 	const router = useRouter();
 	const { address } = router.query;
-	const walletAddress = (address ?? '') as string;
+	const poolAddress = (address ?? '') as string;
 
 	useEffect(() => {
-		if (copiedAddress) {
-			setInterval(() => {
-				setCopiedAddress(false);
+		if (copiedPoolAddress) {
+			const timer1 = setInterval(() => {
+				setCopiedPoolAddress(false);
 			}, 3000); // 3s
+			return () => clearInterval(timer1);
 		}
-	}, [copiedAddress]);
+	}, [copiedPoolAddress]);
+
+	useEffect(() => {
+		if (copiedDealAddress) {
+			const timer1 = setInterval(() => {
+				setCopiedDealAddress(false);
+			}, 3000); // 3s
+			return () => clearInterval(timer1);
+		}
+	}, [copiedDealAddress]);
 
 	const gridItems = useMemo(
 		() => [
@@ -67,33 +79,71 @@ const Pool: FC = () => {
 		],
 		[]
 	);
-	const title = (
-		<FlexDivCenterAligned>
-			Aelin Pool
-			<AddressWidget>{truncateAddress(walletAddress)}</AddressWidget>
-			<CopyWrapper onClick={() => console.log('copy address')}>
-				<CopyToClipboard text={walletAddress} onCopy={() => setCopiedAddress(true)}>
-					{copiedAddress ? (
-						<Image src={CheckIcon} alt="copied" />
-					) : (
-						<Image src={CopyIcon} alt={walletAddress} />
-					)}
-				</CopyToClipboard>
-			</CopyWrapper>
-		</FlexDivCenterAligned>
-	);
+
+	const hasDeal = true;
+	const dealAddress = '0x123456781234567812345678';
+
 	return (
-		<PageLayout title={title} subtitle="">
-			<Grid hasInputFields={false} gridItems={gridItems} />
-			<ActionBox
-				onClick={() => console.log('clicked me')}
-				header="Purchase"
-				input={{ type: 'number', placeholder: '0', label: 'Balance: 2000 USDC' }}
-				actionText="Purchase"
-			/>
+		<PageLayout
+			title={
+				<FlexDivCenterAligned>
+					Aelin Pool
+					<AddressWidget>{truncateAddress(poolAddress)}</AddressWidget>
+					<CopyToClipboard text={poolAddress} onCopy={() => setCopiedPoolAddress(true)}>
+						{copiedPoolAddress ? (
+							<Image src={CheckIcon} alt="copied" />
+						) : (
+							<Image src={CopyIcon} alt={poolAddress} />
+						)}
+					</CopyToClipboard>
+				</FlexDivCenterAligned>
+			}
+			subtitle=""
+		>
+			<FlexDiv>
+				<Grid hasInputFields={false} gridItems={gridItems} />
+				<ActionBox
+					onClick={() => console.log('clicked me')}
+					header="Purchase"
+					input={{ type: 'number', placeholder: '0', label: 'Balance: 2000 USDC' }}
+					actionText="Purchase"
+				/>
+			</FlexDiv>
+			{hasDeal ? (
+				<DealWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<FlexDivCenterAligned>
+								Aelin Deal
+								<AddressWidget>{truncateAddress(dealAddress)}</AddressWidget>
+								<CopyToClipboard text={dealAddress} onCopy={() => setCopiedDealAddress(true)}>
+									{copiedDealAddress ? (
+										<Image src={CheckIcon} alt="copied" />
+									) : (
+										<Image src={CopyIcon} alt={dealAddress} />
+									)}
+								</CopyToClipboard>
+							</FlexDivCenterAligned>
+						</ContentTitle>
+					</ContentHeader>
+					<FlexDiv>
+						<Grid hasInputFields={false} gridItems={gridItems} />
+						<ActionBox
+							onClick={() => console.log('clicked me')}
+							header="Purchase"
+							input={{ type: 'number', placeholder: '0', label: 'Balance: 2000 USDC' }}
+							actionText="Purchase"
+						/>
+					</FlexDiv>
+				</DealWrapper>
+			) : null}
 		</PageLayout>
 	);
 };
+
+const DealWrapper = styled.div`
+	margin-top: 35px;
+`;
 
 const CopyWrapper = styled(FlexDivCenterAligned)`
 	cursor: pointer;
