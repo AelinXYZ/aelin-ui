@@ -6,7 +6,7 @@ import SearchInput from 'components/SearchInput';
 
 type PageLayoutProps = {
 	children: ReactChildren | ReactChild | JSX.Element[];
-	title: string;
+	title: JSX.Element;
 	subtitle: string;
 };
 

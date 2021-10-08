@@ -1,6 +1,8 @@
 import { FC } from 'react';
+import Link from 'next/link';
 import { useTable, Column, Row } from 'react-table';
 import styled, { css } from 'styled-components';
+import ROUTES from 'constants/routes';
 
 type ColumnWithSorting<D extends object = {}> = Column<D> & {
 	sortType?: string | ((rowA: Row<any>, rowB: Row<any>) => -1 | 1);
@@ -10,9 +12,10 @@ type ColumnWithSorting<D extends object = {}> = Column<D> & {
 type TableProps = {
 	data: object[];
 	columns: ColumnWithSorting<object>[];
+	hasLinksToPool: boolean;
 };
 
-const Table: FC<TableProps> = ({ data, columns }) => {
+const Table: FC<TableProps> = ({ data, columns, hasLinksToPool }) => {
 	const { getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
 		columns,
 		data,
@@ -33,16 +36,27 @@ const Table: FC<TableProps> = ({ data, columns }) => {
 			<tbody {...getTableBodyProps()}>
 				{rows.map((row, i) => {
 					prepareRow(row);
-					return (
-						<tr key={`tableRowBody-${i}`} {...row.getRowProps()}>
+					const tableRow = (
+						<TR key={`tableRowBody-${i}`} isEven={i % 2 === 0} {...row.getRowProps()}>
 							{row.cells.map((cell, j) => {
 								return (
-									<TD key={`tableData-${j}`} isEven={i % 2 === 0} {...cell.getCellProps()}>
+									<TD key={`tableData-${j}`} {...cell.getCellProps()}>
 										{cell.render('Cell')}
 									</TD>
 								);
 							})}
-						</tr>
+						</TR>
+					);
+					return hasLinksToPool ? (
+						<Link
+							key={`tableRowLink-${i}`}
+							// @ts-ignore
+							href={ROUTES.Pools.PoolView(row?.original?.address ?? '')}
+						>
+							{tableRow}
+						</Link>
+					) : (
+						tableRow
 					);
 				})}
 			</tbody>
@@ -64,6 +78,18 @@ const StyledTable = styled.table`
 	}
 `;
 
+const TR = styled.tr<{ isEven: boolean }>`
+	cursor: pointer;
+	${(props) =>
+		props.isEven &&
+		css`
+			background-color: ${(props) => props.theme.colors.grey};
+		`}
+	&:hover {
+		background-color: ${(props) => props.theme.colors.textGrey};
+	}
+`;
+
 const TH = styled.th`
 	color: ${(props) => props.theme.colors.headerGrey};
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
@@ -73,7 +99,7 @@ const TH = styled.th`
 	height: 34px;
 `;
 
-const TD = styled.td<{ isEven: boolean }>`
+const TD = styled.td`
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
 	color: ${(props) => props.theme.colors.black};
@@ -81,11 +107,6 @@ const TD = styled.td<{ isEven: boolean }>`
 	padding: 0;
 	height: 46px;
 	text-align: center;
-	${(props) =>
-		props.isEven &&
-		css`
-			background-color: ${(props) => props.theme.colors.grey};
-		`}
 `;
 
 export default Table;

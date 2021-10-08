@@ -4,7 +4,6 @@ import styled from 'styled-components';
 interface ActionBoxProps {
 	onClick: MouseEventHandler<HTMLButtonElement>;
 	header: string;
-	inputLable: string;
 	actionText: string;
 	input: {
 		type: string;
@@ -24,7 +23,10 @@ const ActionBox: FC<ActionBoxProps> = ({
 			<ActionBoxHeader>{header}</ActionBoxHeader>
 			<InputContainer>
 				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
-				<ActionBoxInput type={type} placeholder={placeholder} />
+				<InnerInputContainer>
+					<ActionBoxInput type={type} placeholder={placeholder} />
+					<ActionBoxMax onClick={() => console.log('max balance')}>Max</ActionBoxMax>
+				</InnerInputContainer>
 			</InputContainer>
 			<PurchaseButton onClick={onClick}>{actionText}</PurchaseButton>
 		</Container>
@@ -44,6 +46,10 @@ const ActionBoxHeader = styled.div`
 	padding: 15px 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 12px;
+`;
+
+const InnerInputContainer = styled.div`
+	position: relative;
 `;
 
 const InputContainer = styled.div`
@@ -70,6 +76,24 @@ const ActionBoxInput = styled.input`
 	&::placeholder {
 		font-display: ${(props) => props.theme.fonts.agrandir};
 		font-size: 12px;
+	}
+`;
+
+const ActionBoxMax = styled.div`
+	position: absolute;
+	width: 33px;
+	height: 21px;
+	left: 215px;
+	text-align: center;
+	padding-top: 4px;
+	padding-left: 2px;
+	top: 7px;
+	color: ${(props) => props.theme.colors.textGrey};
+	font-size: 11px;
+	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border-radius: 100px;
+	&:hover {
+		cursor: pointer;
 	}
 `;
 

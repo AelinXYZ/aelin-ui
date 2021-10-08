@@ -14,6 +14,7 @@ const Pools: FC = () => {
 			{
 				sponsor: 'Synthetix',
 				name: 'Kwenta token',
+				address: '0x4069e799Da927C06b430e247b2ee16C03e8B837d',
 				currency: 'sUSD',
 				contributions: 1000000,
 				cap: 10000000,
@@ -24,6 +25,7 @@ const Pools: FC = () => {
 			{
 				sponsor: 'Synthetix',
 				name: 'Kwenta token',
+				address: '0x4069e799Da927C06b430e247b2ee16C03e8B837d',
 				currency: 'USDT',
 				contributions: 1000000,
 				cap: 10000000,
@@ -34,6 +36,7 @@ const Pools: FC = () => {
 			{
 				sponsor: 'Synthetix',
 				name: 'Kwenta token',
+				address: '0x1234',
 				currency: 'sUSD',
 				contributions: 1000000,
 				cap: 10000000,
@@ -115,10 +118,10 @@ const Pools: FC = () => {
 	);
 	return (
 		<PageLayout
-			title="All pools"
+			title={<>All pools</>}
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
-			<Table data={data} columns={columns} />
+			<Table data={data} columns={columns} hasLinksToPool={true} />
 		</PageLayout>
 	);
 };

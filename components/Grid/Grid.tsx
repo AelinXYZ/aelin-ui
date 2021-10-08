@@ -19,8 +19,8 @@ interface GridProps {
 const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
 	return (
 		<Container>
-			{gridItems.map(({ header, text, input }: GridItem) => (
-				<GridItem hasInputFields={hasInputFields} key={header}>
+			{gridItems.map(({ header, text, input }: GridItem, idx: number) => (
+				<GridItem hasInputFields={hasInputFields} key={`${header}-${idx}`}>
 					<GridItemHeader>{header}</GridItemHeader>
 					<GridItemText>{text}</GridItemText>
 					{hasInputFields && input ? (
