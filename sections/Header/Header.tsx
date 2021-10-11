@@ -2,6 +2,7 @@ import { FC } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
@@ -17,9 +18,16 @@ const LINKS = [
 ];
 
 const Header: FC = () => {
+	const router = useRouter();
 	return (
 		<Container>
-			<Image src={AelinLogo} alt="aelin logo" width={98} height={22} />
+			<StyledImage
+				onClick={() => router.push(ROUTES.Home)}
+				src={AelinLogo}
+				alt="aelin logo"
+				width={98}
+				height={22}
+			/>
 			<Links>
 				{LINKS.map(({ label, url }) => (
 					<StyledLink href={url} key={`link-${label}`}>
@@ -40,6 +48,10 @@ const Container = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+`;
+
+const StyledImage = styled(Image)`
+	cursor: pointer;
 `;
 
 const Links = styled.div`
