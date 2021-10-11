@@ -7,8 +7,7 @@ const ROUTES = {
 		Active: '/pools/active',
 		PoolView: (address: string) => `/pools/${address}`,
 	},
-	Sponsors: '/sponsors',
-	Deals: '/deals',
+	Sponsor: '/sponsor',
 };
 
 export default ROUTES;
