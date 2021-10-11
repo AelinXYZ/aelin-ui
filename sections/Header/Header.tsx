@@ -10,11 +10,10 @@ import NotificationCenter from 'components/NotificationCenter';
 import WalletWidget from 'components/WalletWidget';
 
 const LINKS = [
-	{ label: 'Pools', url: ROUTES.Pools.Home },
-	{ label: 'My Pools', url: ROUTES.Pools.MyPools },
-	{ label: 'Sponsors', url: ROUTES.Sponsors },
-	{ label: 'Deals', url: ROUTES.Deals },
-	{ label: 'Active', url: ROUTES.Pools.Active },
+	{ label: 'All Pools', pathname: ROUTES.Pools.Home, query: { active: false } },
+	{ label: 'Active Pools', pathname: ROUTES.Pools.Home, query: { active: true } },
+	{ label: 'My Pools', pathname: ROUTES.Pools.MyPools },
+	{ label: 'My Sponsorships', pathname: ROUTES.Sponsor },
 ];
 
 const Header: FC = () => {
@@ -29,8 +28,11 @@ const Header: FC = () => {
 				height={22}
 			/>
 			<Links>
-				{LINKS.map(({ label, url }) => (
-					<StyledLink href={url} key={`link-${label}`}>
+				{LINKS.map(({ label, pathname, query }) => (
+					<StyledLink
+						href={query != null ? { pathname, query } : { pathname }}
+						key={`link-${label}`}
+					>
 						{label}
 					</StyledLink>
 				))}

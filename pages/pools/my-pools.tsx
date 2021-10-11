@@ -1,6 +1,5 @@
 import { FC, useMemo } from 'react';
 import { CellProps } from 'react-table';
-import { useRouter } from 'next/router';
 
 import { PageLayout } from 'sections/Layout';
 import Table from 'components/Table';
@@ -10,9 +9,8 @@ import DealStatus from 'components/DealStatus';
 import { formatNumber } from 'utils/numbers';
 
 const Pools: FC = () => {
-	const router = useRouter();
-	const data = useMemo(() => {
-		const list = [
+	const data = useMemo(
+		() => [
 			{
 				sponsor: 'Synthetix',
 				name: 'Kwenta token',
@@ -35,44 +33,9 @@ const Pools: FC = () => {
 				fee: 0.001,
 				status: Status.DEAL,
 			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				address: '0x1234',
-				currency: 'sUSD',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '2 months',
-				fee: 0.001,
-				status: Status.EXPIRED,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				currency: 'USDC',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '5 weeks',
-				fee: 0.001,
-				status: Status.REJECTED,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				currency: 'USDC',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '20 weeks',
-				fee: 0.001,
-				status: Status.OPEN,
-			},
-		];
-		console.log('note this will change with pagination');
-		if (router.query.active === 'true') {
-			return list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
-		}
-		return list;
-	}, [router.query.active]);
+		],
+		[]
+	);
 
 	const columns = useMemo(
 		() => [
@@ -124,7 +87,7 @@ const Pools: FC = () => {
 	);
 	return (
 		<PageLayout
-			title={<>All pools</>}
+			title={<>My pools</>}
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
 			<Table data={data} columns={columns} hasLinksToPool={true} />
