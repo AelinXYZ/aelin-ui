@@ -84,9 +84,11 @@ const TR = styled.tr<{ isEven: boolean }>`
 		props.isEven &&
 		css`
 			background-color: ${(props) => props.theme.colors.grey};
+			color: ${(props) => props.theme.colors.black};
 		`}
 	&:hover {
 		background-color: ${(props) => props.theme.colors.forestGreen};
+		color: ${(props) => props.theme.colors.white};
 	}
 `;
 
@@ -102,7 +104,6 @@ const TH = styled.th`
 const TD = styled.td`
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	color: ${(props) => props.theme.colors.black};
 	font-size: 12px;
 	padding: 0;
 	height: 46px;
