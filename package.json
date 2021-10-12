@@ -11,16 +11,22 @@
 		"lint:fix": "eslint . --ext ts,.tsx --fix"
 	},
 	"dependencies": {
+		"@metamask/detect-provider": "^1.2.0",
+		"@synthetixio/contracts-interface": "^2.50.4-ovm-alpha",
+		"@synthetixio/transaction-notifier": "^2.50.4-ovm-alpha",
 		"@types/react-table": "7.7.5",
+		"bnc-onboard": "^1.35.1",
 		"date-fns": "2.24.0",
 		"ethers": "5.4.6",
+		"lodash": "^4.17.21",
 		"next": "11.1.2",
 		"react": "17.0.2",
 		"react-copy-to-clipboard": "5.0.4",
 		"react-dom": "17.0.2",
 		"react-query": "3.23.2",
 		"react-table": "7.7.0",
-		"styled-components": "5.3.1"
+		"styled-components": "5.3.1",
+		"unstated-next": "^1.1.0"
 	},
 	"devDependencies": {
 		"@types/react": "17.0.21",
