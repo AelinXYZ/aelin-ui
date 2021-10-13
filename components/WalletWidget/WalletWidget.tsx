@@ -1,10 +1,13 @@
 import { FC, useState } from 'react';
 import styled, { css } from 'styled-components';
+import OutsideClickHandler from 'react-outside-click-handler';
+
 import { truncateAddress } from 'utils/crypto';
 import Connector from 'containers/Connector';
-import OutsideClickHandler from 'react-outside-click-handler';
 import { FlexDivCentered, FlexDiv } from 'components/common';
 import { zIndex } from 'constants/ui';
+
+import { DesktopWalletModal } from './DesktopWalletModal';
 
 const WalletWidget: FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -16,16 +19,22 @@ const WalletWidget: FC = () => {
 					<DropdownContainer>
 						<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
 							{walletAddress == null ? (
-								<>
+								<FlexDivCentered>
 									<Dot isActive={false} />
 									<div>Connect</div>
-								</>
+								</FlexDivCentered>
 							) : (
 								<>
-									<Dot isActive={true} />
-									<Address>{truncateAddress(walletAddress)}</Address>
+									<FlexDivCentered>
+										<Dot isActive={true} />
+										<Address>{truncateAddress(walletAddress)}</Address>
+									</FlexDivCentered>
+									<NetworkTag className="network-tag" data-testid="network-tag">
+										{network.name}
+									</NetworkTag>
 								</>
 							)}
+							{isModalOpen && <DesktopWalletModal onDismiss={() => setIsModalOpen(false)} />}
 						</OutsideClickHandler>
 					</DropdownContainer>
 				</FlexDiv>
