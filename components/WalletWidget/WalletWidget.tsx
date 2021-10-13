@@ -1,12 +1,35 @@
-import { FC } from 'react';
-import styled from 'styled-components';
+import { FC, useState } from 'react';
+import styled, { css } from 'styled-components';
 import { truncateAddress } from 'utils/crypto';
+import Connector from 'containers/Connector';
+import OutsideClickHandler from 'react-outside-click-handler';
+import { FlexDivCentered, FlexDiv } from 'components/common';
+import { zIndex } from 'constants/ui';
 
 const WalletWidget: FC = () => {
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const { network, walletAddress } = Connector.useContainer();
 	return (
 		<Container>
-			<Dot />
-			<Address>{truncateAddress('0x4069e799Da927C06b430e247b2ee16C03e8B837d')}</Address>
+			<FlexDivCentered>
+				<FlexDiv>
+					<DropdownContainer>
+						<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
+							{walletAddress == null ? (
+								<>
+									<Dot isActive={false} />
+									<div>Connect</div>
+								</>
+							) : (
+								<>
+									<Dot isActive={true} />
+									<Address>{truncateAddress(walletAddress)}</Address>
+								</>
+							)}
+						</OutsideClickHandler>
+					</DropdownContainer>
+				</FlexDiv>
+			</FlexDivCentered>
 		</Container>
 	);
 };
@@ -21,13 +44,66 @@ const Container = styled.div`
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	height: 35px;
 	padding: 12px 30px;
+	position: ;
 `;
 
-const Dot = styled.div`
+const DropdownContainer = styled.div`
+	width: 185px;
+	height: 32px;
+	position: relative;
+
+	> div {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		z-index: ${zIndex.DROPDOWN};
+		width: inherit;
+	}
+`;
+
+const Dot = styled.div<{ isActive: boolean }>`
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background-color: ${(props) => props.theme.colors.success};
+	background-color: ${(props) =>
+		props.isActive ? props.theme.colors.success : props.theme.colors.statusRed};
+`;
+
+const NetworkTag = styled(FlexDivCentered)`
+	background: ${(props) => props.theme.colors.grey};
+	font-size: 10px;
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
+	padding: 2px 5px;
+	border-radius: 100px;
+	height: 18px;
+	text-align: center;
+	justify-content: center;
+	text-transform: uppercase;
+`;
+
+const WalletButton = styled.button<{ isActive: boolean }>`
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	border: 1px solid ${(props) => props.theme.colors.mediumBlue};
+
+	svg {
+		margin-left: 5px;
+		width: 10px;
+		height: 10px;
+		color: ${(props) => props.theme.colors.gray};
+		${(props) =>
+			props.isActive &&
+			css`
+				color: ${(props) => props.theme.colors.white};
+			`}
+	}
+	&:hover {
+		${NetworkTag} {
+			background: ${(props) => props.theme.colors.navy};
+		}
+	}
 `;
 
 const Address = styled.div`
