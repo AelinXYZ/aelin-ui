@@ -81,6 +81,7 @@ const useConnector = () => {
 	useEffect(() => {
 		if (isAppReady) {
 			const onboard = initOnboard(network, {
+				// @ts-ignore
 				address: setWalletAddress,
 				network: (networkId: number) => {
 					// @ts-ignore
@@ -190,6 +191,8 @@ const useConnector = () => {
 	};
 
 	return {
+		network,
+		walletAddress,
 		isAppReady,
 		provider,
 		signer,

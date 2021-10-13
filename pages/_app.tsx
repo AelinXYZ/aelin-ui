@@ -7,6 +7,9 @@ import '../styles/globals.css';
 import theme from 'styles/theme';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import { GlobalLayout, AppLayout } from 'sections/Layout';
+import Connector from 'containers/Connector';
+import BlockExplorer from 'containers/BlockExplorer';
+import TransactionNotifier from 'containers/TransactionNotifier';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -30,7 +33,13 @@ const App = (props: AppProps) => {
 	return (
 		<ThemeProvider theme={theme}>
 			<QueryClientProvider client={queryClient} contextSharing={true}>
-				<InnerApp {...props} />
+				<Connector.Provider>
+					<BlockExplorer.Provider>
+						<TransactionNotifier.Provider>
+							<InnerApp {...props} />
+						</TransactionNotifier.Provider>
+					</BlockExplorer.Provider>
+				</Connector.Provider>
 			</QueryClientProvider>
 		</ThemeProvider>
 	);

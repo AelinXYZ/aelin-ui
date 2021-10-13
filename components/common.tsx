@@ -13,3 +13,11 @@ export const FlexDivCenterAligned = styled.div`
 	display: flex;
 	align-items: center;
 `;
+
+export const FlexDivCentered = styled(FlexDiv)`
+	align-items: center;
+`;
+
+export const FlexDivRowCentered = styled(FlexDivRow)`
+	align-items: center;
+`;
