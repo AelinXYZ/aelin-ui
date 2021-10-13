@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@metamask/detect-provider": "^1.2.0",
 		"@synthetixio/contracts-interface": "^2.50.4-ovm-alpha",
+		"@synthetixio/providers": "^2.50.5",
 		"@synthetixio/transaction-notifier": "^2.50.4-ovm-alpha",
 		"@types/react-table": "7.7.5",
 		"bnc-onboard": "^1.35.1",

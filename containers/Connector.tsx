@@ -6,12 +6,8 @@ import {
 } from '@synthetixio/transaction-notifier';
 import detectEthereumProvider from '@metamask/detect-provider';
 
-import {
-	NetworkId,
-	Network as NetworkName,
-	SynthetixJS,
-	synthetix,
-} from '@synthetixio/contracts-interface';
+import { NetworkId, Network as NetworkName } from '@synthetixio/contracts-interface';
+import { loadProvider } from '@synthetixio/providers';
 import { ethers } from 'ethers';
 
 import { Wallet as OnboardWallet } from 'bnc-onboard/dist/src/interfaces';
@@ -19,12 +15,18 @@ import { Wallet as OnboardWallet } from 'bnc-onboard/dist/src/interfaces';
 import useLocalStorage from 'hooks/useLocalStorage';
 
 import { initOnboard } from './config';
+import { chainIdMapping } from 'constants/networks';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 
 type EthereumProvider = {
 	isMetaMask: boolean;
 	chainId: string;
+};
+
+export type NetworkType = {
+	id: NetworkId;
+	name: NetworkName;
 };
 
 export async function getDefaultNetworkId(): Promise<NetworkId> {
@@ -41,10 +43,12 @@ export async function getDefaultNetworkId(): Promise<NetworkId> {
 }
 
 const useConnector = () => {
-	const [network, setNetwork] = useState({ id: NetworkId.Mainnet, name: NetworkName.Mainnet });
+	const [network, setNetwork] = useState<NetworkType>({
+		id: NetworkId.Mainnet,
+		name: NetworkName.Mainnet,
+	});
 	const [provider, setProvider] = useState<ethers.providers.Provider | null>(null);
 	const [signer, setSigner] = useState<ethers.Signer | null>(null);
-	const [synthetixjs, setSynthetixjs] = useState<SynthetixJS | null>(null);
 	const [onboard, setOnboard] = useState<ReturnType<typeof initOnboard> | null>(null);
 	const [isAppReady, setAppReady] = useState(false);
 	const [walletAddress, setWalletAddress] = useState(null);
@@ -57,16 +61,15 @@ const useConnector = () => {
 
 	useEffect(() => {
 		const init = async () => {
-			// TODO: change the network and provider logic here
 			const networkId = await getDefaultNetworkId();
 
 			const provider = loadProvider({
 				networkId,
-				//infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
+				infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
 				provider: window.ethereum,
 			});
-
-			setNetwork(newNetwork);
+			// @ts-ignore
+			setNetwork({ id: networkId, name: chainIdMapping[networkId] });
 			setProvider(provider);
 			setAppReady(true);
 		};
@@ -76,21 +79,18 @@ const useConnector = () => {
 	}, []);
 
 	useEffect(() => {
-		if (isAppReady && network) {
-			const onboard = initOnboard(synthetixjs!, network.id, {
+		if (isAppReady) {
+			const onboard = initOnboard(network, {
 				address: setWalletAddress,
 				network: (networkId: number) => {
-					const isSupportedNetwork =
-						chainIdToNetwork != null && chainIdToNetwork[networkId as NetworkId] ? true : false;
+					// @ts-ignore
+					const isSupportedNetwork = chainIdMapping[networkId] ? true : false;
 
 					if (isSupportedNetwork) {
 						const provider = loadProvider({
 							provider: onboard.getState().wallet.provider,
 						});
 						const signer = provider.getSigner();
-						const useOvm = getIsOVM(networkId);
-
-						const snxjs = synthetix({ provider, networkId, signer, useOvm });
 
 						onboard.config({ networkId });
 						if (transactionNotifier) {
@@ -99,13 +99,11 @@ const useConnector = () => {
 							setTransactionNotifier(new TransactionNotifier(provider));
 						}
 						setProvider(provider);
-						setSynthetixjs(snxjs);
 						setSigner(signer);
 						setNetwork({
 							id: networkId as NetworkId,
 							// @ts-ignore
-							name: chainIdToNetwork[networkId] as NetworkName,
-							useOvm,
+							name: chainIdMapping[networkId] as NetworkName,
 						});
 					}
 				},
@@ -116,15 +114,12 @@ const useConnector = () => {
 						const network = await provider.getNetwork();
 						const networkId = network.chainId as NetworkId;
 
-						const snxjs = synthetix({ provider, networkId, signer: provider.getSigner(), useOvm });
-
 						setProvider(provider);
 						setSigner(provider.getSigner());
-						setSynthetixjs(snxjs);
 						setNetwork({
 							id: networkId,
-							name: chainIdToNetwork[networkId] as NetworkName,
-							useOvm,
+							// @ts-ignore
+							name: chainIdMapping[networkId] as NetworkName,
 						});
 						setSelectedWallet(wallet.name);
 						setTransactionNotifier(new TransactionNotifier(provider));

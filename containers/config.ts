@@ -1,25 +1,21 @@
 import onboard from 'bnc-onboard';
 
 import { Subscriptions, WalletType } from 'bnc-onboard/dist/src/interfaces';
-import { Network, SynthetixJS } from '@synthetixio/contracts-interface';
+import { Network } from '@synthetixio/contracts-interface';
+import { NetworkType } from './Connector';
 
-const getInfuraRpcURL = (network?: { name: Network }) =>
-	`https://${network ? network.name : `mainnet`}.infura.io/v3/${
+const getInfuraRpcURL = (networkName?: Network) =>
+	`https://${networkName ? networkName : `mainnet`}.infura.io/v3/${
 		process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
 	}`;
 
-export const initOnboard = (
-	synthetixjs: SynthetixJS,
-	networkId: number,
-	subscriptions: Subscriptions
-) => {
-	const network = synthetixjs?.network;
-	const infuraRpc = getInfuraRpcURL(network);
+export const initOnboard = (network: NetworkType, subscriptions: Subscriptions) => {
+	const infuraRpc = getInfuraRpcURL(network.name);
 
 	return onboard({
 		dappId: process.env.NEXT_PUBLIC_BN_ONBOARD_API_KEY,
 		hideBranding: true,
-		networkId: networkId,
+		networkId: network.id,
 		subscriptions,
 		darkMode: true,
 		walletSelect: {
