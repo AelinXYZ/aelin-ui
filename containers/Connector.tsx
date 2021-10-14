@@ -44,8 +44,9 @@ export async function getDefaultNetworkId(): Promise<NetworkId> {
 
 const useConnector = () => {
 	const [network, setNetwork] = useState<NetworkType>({
-		id: NetworkId.Mainnet,
-		name: NetworkName.Mainnet,
+		// @ts-ignore
+		id: 1,
+		name: 'mainnet',
 	});
 	const [provider, setProvider] = useState<ethers.providers.Provider | null>(null);
 	const [signer, setSigner] = useState<ethers.Signer | null>(null);

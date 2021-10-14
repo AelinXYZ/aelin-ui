@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
-import { NetworkId } from '@synthetixio/contracts-interface';
 import _ from 'lodash';
 
 import Connector, { NetworkType } from 'containers/Connector';
@@ -14,7 +13,8 @@ type BlockExplorerInstance = {
 };
 
 const getBaseUrl = (network: NetworkType) => {
-	if (network.id === NetworkId.Mainnet) {
+	// TODO fix NetworkId import issue
+	if (network.id === 1) {
 		return 'https://etherscan.io';
 	}
 	return `https://${network.name}.etherscan.io`;
