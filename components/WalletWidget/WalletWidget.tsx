@@ -16,7 +16,7 @@ const WalletWidget: FC = () => {
 		<Container>
 			<FlexDivCentered>
 				<FlexDiv>
-					<DropdownContainer>
+					<DropdownContainer onClick={() => setIsModalOpen(!isModalOpen)}>
 						<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
 							{walletAddress == null ? (
 								<FlexDivCentered>
