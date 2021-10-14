@@ -3,9 +3,9 @@ import styled, { css } from 'styled-components';
 import Image from 'next/image';
 import { FlexDivCentered, FlexDivCol, FlexDivRowCentered } from '../common';
 
-import Spinner from 'assets/svg/app/spinner.svg';
-import Success from 'assets/svg/app/success.svg';
-import Failure from 'assets/svg/app/failure.svg';
+import Spinner from 'assets/svg/spinner.svg';
+import Success from 'assets/svg/success.svg';
+import Failure from 'assets/svg/failure.svg';
 
 type NotificationProps = {
 	closeToast?: Function;

@@ -1,13 +1,13 @@
 import { FC, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 import { truncateAddress } from 'utils/crypto';
 import Connector from 'containers/Connector';
-import { FlexDivCentered, FlexDiv } from 'components/common';
+import { FlexDivCentered, FlexDiv, FlexDivColCentered } from 'components/common';
 import { zIndex } from 'constants/ui';
 
-import { DesktopWalletModal } from './DesktopWalletModal';
+import DesktopWalletModal from './WalletModal';
 
 const WalletWidget: FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -34,7 +34,11 @@ const WalletWidget: FC = () => {
 									</NetworkTag>
 								</>
 							)}
-							{isModalOpen && <DesktopWalletModal onDismiss={() => setIsModalOpen(false)} />}
+							{isModalOpen && (
+								<DesktopStyledMenuModal>
+									<DesktopWalletModal onDismiss={() => setIsModalOpen(false)} />
+								</DesktopStyledMenuModal>
+							)}
 						</OutsideClickHandler>
 					</DropdownContainer>
 				</FlexDiv>
@@ -42,6 +46,13 @@ const WalletWidget: FC = () => {
 		</Container>
 	);
 };
+
+const DesktopStyledMenuModal = styled(FlexDivColCentered)`
+	margin-top: 12px;
+	background: ${(props) => props.theme.colors.grey};
+	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border-radius: 4px;
+`;
 
 const Container = styled.div`
 	display: flex;
@@ -89,30 +100,6 @@ const NetworkTag = styled(FlexDivCentered)`
 	text-align: center;
 	justify-content: center;
 	text-transform: uppercase;
-`;
-
-const WalletButton = styled.button<{ isActive: boolean }>`
-	display: inline-flex;
-	align-items: center;
-	justify-content: space-between;
-	border: 1px solid ${(props) => props.theme.colors.mediumBlue};
-
-	svg {
-		margin-left: 5px;
-		width: 10px;
-		height: 10px;
-		color: ${(props) => props.theme.colors.gray};
-		${(props) =>
-			props.isActive &&
-			css`
-				color: ${(props) => props.theme.colors.white};
-			`}
-	}
-	&:hover {
-		${NetworkTag} {
-			background: ${(props) => props.theme.colors.navy};
-		}
-	}
 `;
 
 const Address = styled.div`
