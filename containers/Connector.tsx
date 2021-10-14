@@ -5,8 +5,6 @@ import {
 	TransactionNotifierInterface,
 } from '@synthetixio/transaction-notifier';
 import detectEthereumProvider from '@metamask/detect-provider';
-
-import { NetworkId, Network as NetworkName } from '@synthetixio/contracts-interface';
 import { loadProvider } from '@synthetixio/providers';
 import { ethers } from 'ethers';
 
@@ -15,18 +13,13 @@ import { Wallet as OnboardWallet } from 'bnc-onboard/dist/src/interfaces';
 import useLocalStorage from 'hooks/useLocalStorage';
 
 import { initOnboard } from './config';
-import { chainIdMapping } from 'constants/networks';
+import { chainIdMapping, NetworkId, Network as NetworkName, NetworkType } from 'constants/networks';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 
 type EthereumProvider = {
 	isMetaMask: boolean;
 	chainId: string;
-};
-
-export type NetworkType = {
-	id: NetworkId;
-	name: NetworkName;
 };
 
 export async function getDefaultNetworkId(): Promise<NetworkId> {
@@ -44,9 +37,8 @@ export async function getDefaultNetworkId(): Promise<NetworkId> {
 
 const useConnector = () => {
 	const [network, setNetwork] = useState<NetworkType>({
-		// @ts-ignore
-		id: 1,
-		name: 'mainnet',
+		id: NetworkId.Mainnet,
+		name: NetworkName.Mainnet,
 	});
 	const [provider, setProvider] = useState<ethers.providers.Provider | null>(null);
 	const [signer, setSigner] = useState<ethers.Signer | null>(null);

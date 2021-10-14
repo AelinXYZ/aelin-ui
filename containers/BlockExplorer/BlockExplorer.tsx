@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import _ from 'lodash';
+import { NetworkId, NetworkType } from 'constants/networks';
 
-import Connector, { NetworkType } from 'containers/Connector';
+import Connector from 'containers/Connector';
 
 type BlockExplorerInstance = {
 	txLink: (txId: string) => string;
@@ -13,8 +14,7 @@ type BlockExplorerInstance = {
 };
 
 const getBaseUrl = (network: NetworkType) => {
-	// TODO fix NetworkId import issue
-	if (network.id === 1) {
+	if (network.id === NetworkId.Mainnet) {
 		return 'https://etherscan.io';
 	}
 	return `https://${network.name}.etherscan.io`;

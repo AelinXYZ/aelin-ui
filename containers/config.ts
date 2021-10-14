@@ -1,13 +1,10 @@
 import onboard from 'bnc-onboard';
 
 import { Subscriptions, WalletType } from 'bnc-onboard/dist/src/interfaces';
-import { Network } from '@synthetixio/contracts-interface';
-import { NetworkType } from './Connector';
+import { Network, NetworkType } from 'constants/networks';
 
-const getInfuraRpcURL = (networkName?: Network) =>
-	`https://${networkName ? networkName : `mainnet`}.infura.io/v3/${
-		process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
-	}`;
+const getInfuraRpcURL = (networkName: Network) =>
+	`https://${networkName}.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_PROJECT_ID}`;
 
 export const initOnboard = (network: NetworkType, subscriptions: Subscriptions) => {
 	const infuraRpc = getInfuraRpcURL(network.name);
