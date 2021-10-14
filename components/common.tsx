@@ -27,21 +27,16 @@ export const FlexDivRowCentered = styled(FlexDivRow)`
 	align-items: center;
 `;
 
-export const Divider = styled.div`
-	background: ${(props) => props.theme.colors.grayBlue};
-	height: 1px;
-	width: 100%;
-`;
-
 export const FlexDivColCentered = styled(FlexDivCol)`
 	align-items: center;
 `;
 
 export const Tooltip = styled(Tippy)`
-	background: ${(props) => props.theme.colors.mediumBlue};
+	background: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
 	border-radius: 4px;
 	.tippy-arrow {
-		color: ${(props) => props.theme.colors.mediumBlue};
+		color: ${(props) => props.theme.colors.white};
 	}
 	.tippy-content {
 		font-size: 12px;

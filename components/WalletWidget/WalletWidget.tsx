@@ -11,39 +11,30 @@ import DesktopWalletModal from './WalletModal';
 
 const WalletWidget: FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const { network, walletAddress } = Connector.useContainer();
+	const { walletAddress } = Connector.useContainer();
 	return (
-		<Container>
-			<FlexDivCentered>
-				<FlexDiv>
-					<DropdownContainer onClick={() => setIsModalOpen(!isModalOpen)}>
-						<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
-							{walletAddress == null ? (
-								<FlexDivCentered>
-									<Dot isActive={false} />
-									<div>Connect</div>
-								</FlexDivCentered>
-							) : (
-								<>
-									<FlexDivCentered>
-										<Dot isActive={true} />
-										<Address>{truncateAddress(walletAddress)}</Address>
-									</FlexDivCentered>
-									<NetworkTag className="network-tag" data-testid="network-tag">
-										{network.name}
-									</NetworkTag>
-								</>
-							)}
-							{isModalOpen && (
-								<DesktopStyledMenuModal>
-									<DesktopWalletModal onDismiss={() => setIsModalOpen(false)} />
-								</DesktopStyledMenuModal>
-							)}
-						</OutsideClickHandler>
-					</DropdownContainer>
-				</FlexDiv>
-			</FlexDivCentered>
-		</Container>
+		<DropdownContainer onClick={() => setIsModalOpen(!isModalOpen)}>
+			<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
+				{walletAddress == null ? (
+					<Container>
+						<Dot isActive={false} />
+						<Address>Connect</Address>
+					</Container>
+				) : (
+					<>
+						<Container>
+							<Dot isActive={true} />
+							<Address>{truncateAddress(walletAddress)}</Address>
+						</Container>
+					</>
+				)}
+				{isModalOpen && (
+					<DesktopStyledMenuModal>
+						<DesktopWalletModal onDismiss={() => setIsModalOpen(false)} />
+					</DesktopStyledMenuModal>
+				)}
+			</OutsideClickHandler>
+		</DropdownContainer>
 	);
 };
 
@@ -56,7 +47,7 @@ const DesktopStyledMenuModal = styled(FlexDivColCentered)`
 
 const Container = styled.div`
 	display: flex;
-	justify-content: space-between;
+	justify-content: center;
 	align-items: center;
 	width: 160px;
 	background-color: ${(props) => props.theme.colors.grey};
@@ -64,11 +55,11 @@ const Container = styled.div`
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	height: 35px;
 	padding: 12px 30px;
-	position: ;
+	cursor: pointer;
 `;
 
 const DropdownContainer = styled.div`
-	width: 185px;
+	width: 160px;
 	height: 32px;
 	position: relative;
 
@@ -87,24 +78,13 @@ const Dot = styled.div<{ isActive: boolean }>`
 	height: 10px;
 	border-radius: 50%;
 	background-color: ${(props) =>
-		props.isActive ? props.theme.colors.success : props.theme.colors.statusRed};
-`;
-
-const NetworkTag = styled(FlexDivCentered)`
-	background: ${(props) => props.theme.colors.grey};
-	font-size: 10px;
-	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	padding: 2px 5px;
-	border-radius: 100px;
-	height: 18px;
-	text-align: center;
-	justify-content: center;
-	text-transform: uppercase;
+		props.isActive ? props.theme.colors.success : props.theme.colors.error};
 `;
 
 const Address = styled.div`
 	font-size: 12px;
 	margin-top: 2px;
+	margin-left: 10px;
 `;
 
 export default WalletWidget;

@@ -2,14 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import {
-	ExternalLink,
-	Tooltip,
-	FlexDiv,
-	FlexDivCol,
-	FlexDivCentered,
-	Divider,
-} from 'components/common';
+import { ExternalLink, Tooltip, FlexDiv, FlexDivCol, FlexDivCentered } from 'components/common';
 import Button from 'components/Button';
 
 import BrowserWalletIcon from 'assets/wallet-icons/browserWallet.svg';
@@ -104,7 +97,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 							<Tooltip
 								hideOnClick={false}
 								arrow={true}
-								placement="bottom"
+								placement="top"
 								content={copiedAddress ? 'Copied' : 'Copy'}
 							>
 								<CopyClipboardContainer>
@@ -117,7 +110,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 									</CopyToClipboard>
 								</CopyClipboardContainer>
 							</Tooltip>
-							<Tooltip hideOnClick={false} arrow={true} placement="bottom" content="etherscan">
+							<Tooltip hideOnClick={false} arrow={true} placement="top" content="etherscan">
 								<LinkContainer>
 									<WrappedExternalLink href={blockExplorerInstance?.addressLink(walletAddress!)}>
 										<Image src={LinkIcon} alt="etherscan-link" />
@@ -126,7 +119,6 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 							</Tooltip>
 						</ActionIcons>
 					</WalletDetails>
-					<StyledDivider />
 					<Buttons>
 						<StyledButton
 							onClick={() => {
@@ -147,21 +139,20 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 							</StyledButton>
 						)}
 					</Buttons>
-					<StyledDivider />
 
-					<StyledTextButton
+					<StyledButton
 						onClick={() => {
 							onDismiss();
 							disconnectWallet();
 						}}
 					>
-						<Image src={ExitIcon} alt="disconnect-wallet" /> Disconnect wallet
-					</StyledTextButton>
+						<Image src={ExitIcon} alt="disconnect-wallet" /> Disconnect
+					</StyledButton>
 				</>
 			) : (
 				<WalletDetails>
 					<Buttons>
-						<StyledGlowingButton
+						<StyledButton
 							onClick={() => {
 								onDismiss();
 								connectWallet();
@@ -169,7 +160,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 							data-testid="connect-wallet"
 						>
 							Connect Wallet
-						</StyledGlowingButton>
+						</StyledButton>
 					</Buttons>
 				</WalletDetails>
 			)}
@@ -177,53 +168,30 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 	);
 };
 
-const StyledGlowingButton = styled(Button).attrs({
-	variant: 'secondary',
-	size: 'lg',
-})`
-	padding: 0 20px;
-	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	text-transform: uppercase;
-	margin: 4px 0px;
-`;
-
 const StyledButton = styled(Button).attrs({
 	variant: 'outline',
 	size: 'lg',
 })`
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
 	padding: 0 20px;
+	width: 140px;
 	display: inline-grid;
 	grid-template-columns: auto 1fr;
 	align-items: center;
 	justify-items: center;
 	text-transform: uppercase;
+	color: ${(props) => props.theme.colors.black};
+	cursor: pointer;
 
-	margin: 6px 0px;
+	margin: 12px 0;
 
-	svg {
-		margin-right: 5px;
-		color: ${(props) => props.theme.colors.gray};
+	&:hover {
+		color: ${(props) => props.theme.colors.white};
 	}
-`;
-
-const StyledTextButton = styled(Button).attrs({
-	variant: 'text',
-	size: 'lg',
-})`
-	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	padding: 0 20px;
-	width: 100%;
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	justify-items: center;
-	text-transform: uppercase;
-	margin: -2px 0 6px 0;
 
 	svg {
 		margin-right: 5px;
-		color: ${(props) => props.theme.colors.gray};
+		color: ${(props) => props.theme.colors.black};
 	}
 `;
 
@@ -250,12 +218,12 @@ const ActionIcons = styled(FlexDivCentered)`
 `;
 
 const CopyClipboardContainer = styled(FlexDiv)`
+	color: ${(props) => props.theme.colors.black};
 	cursor: pointer;
-	color: ${(props) => props.theme.colors.gray};
 	margin-right: 2px;
 	&:hover {
 		svg {
-			color: ${(props) => props.theme.colors.white};
+			color: ${(props) => props.theme.colors.forestGreen};
 		}
 	}
 `;
@@ -282,10 +250,6 @@ const LinkContainer = styled(FlexDiv)`
 
 const Buttons = styled(FlexDivCol)`
 	margin: 0px 8px;
-`;
-
-const StyledDivider = styled(Divider)`
-	margin: 8px 0px;
 `;
 
 export default WalletModal;
