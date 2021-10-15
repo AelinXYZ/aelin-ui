@@ -14,6 +14,7 @@ const LINKS = [
 	{ label: 'Active Pools', pathname: ROUTES.Pools.Home, query: { active: true } },
 	{ label: 'My Pools', pathname: ROUTES.Pools.MyPools },
 	{ label: 'My Sponsorships', pathname: ROUTES.Sponsor },
+	{ label: 'Create Pool', pathname: ROUTES.Pools.Create },
 ];
 
 const Header: FC = () => {
@@ -58,7 +59,7 @@ const StyledImage = styled(Image)`
 
 const Links = styled.div`
 	display: flex;
-	width: 470px;
+	width: 620px;
 	justify-content: space-between;
 	a {
 		&:hover {

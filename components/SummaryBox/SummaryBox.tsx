@@ -16,14 +16,14 @@ const SummaryBox: FC<SummaryBoxProps> = ({ onClick, summaryText, header, summary
 	return (
 		<Container>
 			<SummaryBoxHeader>{header}</SummaryBoxHeader>
-			<SummaryBoxItemWrapper>
+			<SummaryBoxGrid>
 				{(summaryItems ?? []).map(({ label, text }, index) => (
 					<Item key={`${label}-${index}`}>
 						<ItemLabel>{label}:</ItemLabel>
 						<ItemText>{text}</ItemText>
 					</Item>
 				))}
-			</SummaryBoxItemWrapper>
+			</SummaryBoxGrid>
 			<PurchaseButton onClick={onClick}>{summaryText}</PurchaseButton>
 		</Container>
 	);
@@ -43,17 +43,15 @@ const SummaryBoxHeader = styled.div`
 	font-size: 12px;
 `;
 
-const SummaryBoxItemWrapper = styled(FlexDiv)`
-	flex-wrap: wrap;
+const SummaryBoxGrid = styled.div`
+	display: grid;
+	grid-template-columns: auto auto;
 	width: 260px;
-	padding: 5px 20px;
+	padding: 0px 20px 5px 20px;
 `;
 
-const Item = styled(FlexDivCol)`
-	&:nth-child(2n) {
-		margin-left: 70px;
-	}
-	margin-bottom: 15px;
+const Item = styled.div`
+	margin: 8px 0;
 `;
 
 const ItemLabel = styled.div`
