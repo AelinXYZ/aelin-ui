@@ -25,6 +25,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
 			<AppLayout>
 				<Component {...pageProps} />
 			</AppLayout>
+			<div id="modal-root"></div>
 		</GlobalLayout>
 	);
 };

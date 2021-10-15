@@ -4,7 +4,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 
 import { truncateAddress } from 'utils/crypto';
 import Connector from 'containers/Connector';
-import { FlexDivCentered, FlexDiv, FlexDivColCentered } from 'components/common';
+import { FlexDivColCentered } from 'components/common';
 import { zIndex } from 'constants/ui';
 
 import DesktopWalletModal from './WalletModal';

@@ -4,81 +4,79 @@ import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
 import SummaryBox from 'components/SummaryBox';
 import { FlexDiv } from 'components/common';
+import Connector from 'containers/Connector';
 
 const Create: FC = () => {
+	const { walletAddress } = Connector.useContainer();
 	const gridItems = useMemo(
 		() => [
 			{
-				header: 'some header',
-				text: 'some text',
+				header: 'Purchase Token address',
+				text: 'wETH, USDC, sUSD, etc...',
+				input: {
+					type: 'text',
+					placeholder: '',
+				},
+			},
+			{
+				header: 'Pool Cap (Purchase Tokens)',
+				text: 'Uncapped if left blank',
+				input: {
+					type: 'number',
+					placeholder: 0,
+				},
+			},
+			{
+				header: 'Duration',
+				text: 'Duration of the pool',
+				input: {
+					type: 'text',
+					placeholder: '',
+				},
+			},
+			{
+				header: 'Sponsor Fee',
+				text: 'Optional fee from 0 to 98%',
+				input: {
+					type: 'percent',
+					placeholder: '0',
+				},
+			},
+			{
+				header: 'Name',
+				text: 'Name of the pool',
+				input: {
+					type: 'text',
+					placeholder: '',
+				},
+			},
+			{
+				header: 'Symbol',
+				text: 'Symbol of the pool',
+				input: {
+					type: 'text',
+					placeholder: '',
+				},
+			},
+			{
+				header: 'Expiry',
+				text: 'Time to purchase deal tokens',
+				input: {
+					type: 'text',
+					placeholder: '',
+				},
+			},
+			{
+				header: 'Link',
+				text: 'Defaults to the pool address',
 				input: {
 					type: 'text',
 					placeholder: 'Input',
 				},
 			},
 			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
+				header: '',
+				text: '',
 			},
 		],
 		[]
@@ -86,39 +84,39 @@ const Create: FC = () => {
 	const summaryItems = useMemo(
 		() => [
 			{
-				label: 'some label',
+				label: 'Sponsor',
+				text: walletAddress || 'Connect Wallet',
+			},
+			{
+				label: 'Cap:',
 				text: 'some text',
 			},
 			{
-				label: 'some label',
+				label: 'Currency:',
 				text: 'some text',
 			},
 			{
-				label: 'some label',
+				label: 'Fee:',
 				text: 'some text',
 			},
 			{
-				label: 'some label',
+				label: 'Duration:',
 				text: 'some text',
 			},
 			{
-				label: 'some label',
+				label: 'Name:',
 				text: 'some text',
 			},
 			{
-				label: 'some label',
+				label: 'Symbol:',
 				text: 'some text',
 			},
 			{
-				label: 'some label',
-				text: 'some text',
-			},
-			{
-				label: 'some label',
+				label: 'Expiry:',
 				text: 'some text',
 			},
 		],
-		[]
+		[walletAddress]
 	);
 	return (
 		<PageLayout

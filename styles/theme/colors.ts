@@ -11,6 +11,7 @@ const colors = {
 	headerGreen: '#3F7923',
 	forestGreen: '#477830',
 	background: '#DBDBDB',
+	modalBackground: '#DFDFDF',
 	cell: '#E2E2E2',
 
 	statusBlue: '#4EB6F0',

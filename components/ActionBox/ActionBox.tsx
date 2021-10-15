@@ -1,5 +1,6 @@
-import { FC, MouseEventHandler } from 'react';
+import { FC, useState, MouseEventHandler } from 'react';
 import styled from 'styled-components';
+import BaseModal from '../BaseModal';
 
 interface ActionBoxProps {
 	onClick: MouseEventHandler<HTMLButtonElement>;
@@ -18,6 +19,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 	header,
 	input: { type, placeholder, label },
 }) => {
+	const [showTxModal, setShowTxModal] = useState(false);
+
 	return (
 		<Container>
 			<ActionBoxHeader>{header}</ActionBoxHeader>
@@ -28,7 +31,17 @@ const ActionBox: FC<ActionBoxProps> = ({
 					<ActionBoxMax onClick={() => console.log('max balance')}>Max</ActionBoxMax>
 				</InnerInputContainer>
 			</InputContainer>
-			<PurchaseButton onClick={onClick}>{actionText}</PurchaseButton>
+			<PurchaseButton
+				onClick={(e) => {
+					onClick(e);
+					setShowTxModal(true);
+				}}
+			>
+				{actionText}
+			</PurchaseButton>
+			<BaseModal title="test" setIsModalOpen={setShowTxModal} isModalOpen={showTxModal}>
+				<>Hello</>
+			</BaseModal>
 		</Container>
 	);
 };
