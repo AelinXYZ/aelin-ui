@@ -1,85 +1,213 @@
 import { FC, useMemo } from 'react';
+import { useFormik } from 'formik';
 
 import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
 import SummaryBox from 'components/SummaryBox';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
+import TextInput from 'components/Input/TextInput';
+import Input from 'components/Input/Input';
+
+import validateCreatePool from 'utils/validate/create-pool';
+
+export interface CreatePoolValues {
+	purchaseToken: string;
+	poolName: string;
+	poolSymbol: string;
+	poolCap: number;
+	durationDays: number;
+	durationHours: number;
+	durationMinutes: number;
+	sponsorFee: number;
+	purchaseExpiryDays: number;
+	purchaseExpiryHours: number;
+	purchaseExpiryMinutes: number;
+}
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
+	const formik = useFormik({
+		initialValues: {
+			purchaseToken: '',
+			poolName: '',
+			poolSymbol: '',
+			poolCap: 0,
+			durationDays: 0,
+			durationHours: 0,
+			durationMinutes: 0,
+			sponsorFee: 0,
+			purchaseExpiryDays: 0,
+			purchaseExpiryHours: 0,
+			purchaseExpiryMinutes: 0,
+		},
+		validate: validateCreatePool,
+		onSubmit: (values) => {
+			alert(JSON.stringify(values, null, 2));
+		},
+	});
 	const gridItems = useMemo(
 		() => [
 			{
-				header: 'Purchase Token address',
-				text: 'wETH, USDC, sUSD, etc...',
-				input: {
-					type: 'text',
-					placeholder: '',
-				},
+				header: <label htmlFor="purchaseToken">Purchase Token address</label>,
+				subText: 'wETH, USDC, sUSD, etc...',
+				formField: (
+					<TextInput
+						id="purchaseToken"
+						name="purchaseToken"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.purchaseToken}
+					/>
+				),
+				formError: formik.errors.purchaseToken,
 			},
 			{
-				header: 'Pool Cap (Purchase Tokens)',
-				text: 'Uncapped if left blank',
-				input: {
-					type: 'number',
-					placeholder: 0,
-				},
+				header: <label htmlFor="poolCap">Pool Cap (Purchase Tokens)</label>,
+				subText: 'Uncapped if left blank or 0',
+				formField: (
+					<Input
+						id="poolCap"
+						name="poolCap"
+						type="number"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.poolCap}
+					/>
+				),
+				formError: formik.errors.poolCap,
 			},
 			{
-				header: 'Duration',
-				text: 'Duration of the pool',
-				input: {
-					type: 'text',
-					placeholder: '',
-				},
+				header: <label htmlFor="duration">Duration</label>,
+				subText: 'Input days - hours - minutes',
+				formField: (
+					<FlexDivRow>
+						<Input
+							width="50px"
+							id="durationDays"
+							name="durationDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.durationDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="durationHours"
+							name="durationHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.durationHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="durationMinutes"
+							name="durationMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.durationMinutes || ''}
+						/>
+					</FlexDivRow>
+				),
+				formError: formik.errors.durationMinutes,
 			},
 			{
-				header: 'Sponsor Fee',
-				text: 'Optional fee from 0 to 98%',
-				input: {
-					type: 'percent',
-					placeholder: '0',
-				},
+				header: <label htmlFor="sponsorFee">Sponsor Fee</label>,
+				subText: 'Optional fee from 0 to 98%',
+				formField: (
+					<Input
+						id="sponsorFee"
+						name="sponsorFee"
+						type="number"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.sponsorFee}
+					/>
+				),
+				formError: formik.errors.sponsorFee,
 			},
 			{
-				header: 'Name',
-				text: 'Name of the pool',
-				input: {
-					type: 'text',
-					placeholder: '',
-				},
+				header: <label htmlFor="sponsorFee">Name</label>,
+				subText: 'Name of the pool',
+				formField: (
+					<TextInput
+						id="poolName"
+						name="poolName"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.poolName}
+					/>
+				),
+				formError: formik.errors.poolName,
 			},
 			{
-				header: 'Symbol',
-				text: 'Symbol of the pool',
-				input: {
-					type: 'text',
-					placeholder: '',
-				},
+				header: <label htmlFor="sponsorFee">Symbol</label>,
+				subText: 'Symbol of the pool',
+				formField: (
+					<TextInput
+						id="poolSymbol"
+						name="poolSymbol"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.poolSymbol}
+					/>
+				),
+				formError: formik.errors.poolSymbol,
 			},
 			{
-				header: 'Expiry',
-				text: 'Time to purchase deal tokens',
-				input: {
-					type: 'text',
-					placeholder: '',
-				},
-			},
-			{
-				header: 'Link',
-				text: 'Defaults to the pool address',
-				input: {
-					type: 'text',
-					placeholder: 'Input',
-				},
+				header: <label htmlFor="purchaseExpiry">Expiry</label>,
+				subText: 'Time to purchase deal tokens',
+				formField: (
+					<FlexDivRow>
+						<Input
+							width="50px"
+							id="purchaseExpiryDays"
+							name="purchaseExpiryDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseExpiryDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="purchaseExpiryHours"
+							name="purchaseExpiryHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseExpiryHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="purchaseExpiryMinutes"
+							name="purchaseExpiryMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseExpiryMinutes || ''}
+						/>
+					</FlexDivRow>
+				),
+				formError: formik.errors.purchaseExpiryMinutes,
 			},
 			{
 				header: '',
-				text: '',
+				subText: '',
+			},
+			{
+				header: '',
+				subText: '',
 			},
 		],
-		[]
+		[formik]
 	);
 	const summaryItems = useMemo(
 		() => [
@@ -123,15 +251,12 @@ const Create: FC = () => {
 			title={<>Create Pool</>}
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
 		>
-			<FlexDiv>
-				<Grid hasInputFields={true} gridItems={gridItems} />
-				<SummaryBox
-					onClick={() => console.log('summary box clicked')}
-					summaryText="Create Pool"
-					header="Pool summary"
-					summaryItems={summaryItems}
-				/>
-			</FlexDiv>
+			<form onSubmit={formik.handleSubmit}>
+				<FlexDiv>
+					<Grid hasInputFields={true} gridItems={gridItems} />
+					<SummaryBox summaryText="Create Pool" header="Pool summary" summaryItems={summaryItems} />
+				</FlexDiv>
+			</form>
 		</PageLayout>
 	);
 };

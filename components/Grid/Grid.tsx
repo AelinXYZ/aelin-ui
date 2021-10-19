@@ -2,12 +2,10 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 export type GridItem = {
-	header: string;
-	text: string;
-	input?: {
-		type: string;
-		placeholder: string;
-	};
+	header: string | JSX.Element;
+	subText: string;
+	formField?: JSX.Element;
+	formError?: string | null | undefined;
 	// icon?: string; // TODO fix
 };
 
@@ -19,13 +17,12 @@ interface GridProps {
 const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
 	return (
 		<Container>
-			{gridItems.map(({ header, text, input }: GridItem, idx: number) => (
+			{gridItems.map(({ header, subText, formField, formError }: GridItem, idx: number) => (
 				<GridItem hasInputFields={hasInputFields} key={`${header}-${idx}`}>
 					<GridItemHeader>{header}</GridItemHeader>
-					<GridItemText>{text}</GridItemText>
-					{hasInputFields && input ? (
-						<GridItemInput type={input.type} placeholder={input.placeholder} />
-					) : null}
+					<GridItemSubText>{subText}</GridItemSubText>
+					{formField}
+					<ErrorField>{formError}</ErrorField>
 				</GridItem>
 			))}
 		</Container>
@@ -45,7 +42,7 @@ const GridItem = styled.div<{ hasInputFields: boolean }>`
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	padding: 20px;
-	height: ${(props) => (props.hasInputFields ? '125px' : '78px')};
+	height: ${(props) => (props.hasInputFields ? '145px' : '78px')};
 	min-width: 207px;
 	display: flex;
 	flex-direction: column;
@@ -76,27 +73,17 @@ const GridItemHeader = styled.div`
 	font-size: 12px;
 `;
 
-const GridItemText = styled.div`
+const GridItemSubText = styled.div`
 	color: ${(props) => props.theme.colors.black};
 	font-size: 12px;
+	margin-bottom: 15px;
 `;
 
-const GridItemInput = styled.input`
-	outline: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	width: 100%;
-	background-color: ${(props) => props.theme.colors.background};
-	border-radius: 4px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	height: 30px;
-	padding: 6px 12px;
-	margin-top: 18px;
-	&::placeholder {
-		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
-	}
+const ErrorField = styled.div`
+	color: ${(props) => props.theme.colors.statusRed};
+	margin-top: 5px;
+	font-size: 13px;
+	font-weight: bold;
 `;
 
 export default Grid;
