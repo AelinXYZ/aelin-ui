@@ -42,7 +42,7 @@ const GridItem = styled.div<{ hasInputFields: boolean }>`
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	padding: 20px;
-	height: ${(props) => (props.hasInputFields ? '138px' : '78px')};
+	height: ${(props) => (props.hasInputFields ? '145px' : '78px')};
 	min-width: 207px;
 	display: flex;
 	flex-direction: column;
@@ -82,7 +82,8 @@ const GridItemSubText = styled.div`
 const ErrorField = styled.div`
 	color: ${(props) => props.theme.colors.statusRed};
 	margin-top: 5px;
-	font-size: 12px;
+	font-size: 13px;
+	font-weight: bold;
 `;
 
 export default Grid;

@@ -1,48 +1,29 @@
 import { FC, useMemo } from 'react';
 import { useFormik } from 'formik';
-import { ethers } from 'ethers';
 
 import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
 import SummaryBox from 'components/SummaryBox';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 
-interface CreatePoolValues {
+import validateCreatePool from 'utils/validate/create-pool';
+
+export interface CreatePoolValues {
 	purchaseToken: string;
 	poolName: string;
 	poolSymbol: string;
 	poolCap: number;
-	duration: number;
+	durationDays: number;
+	durationHours: number;
+	durationMinutes: number;
 	sponsorFee: number;
-	purchaseExpiry: number;
+	purchaseExpiryDays: number;
+	purchaseExpiryHours: number;
+	purchaseExpiryMinutes: number;
 }
-
-const validate = (values: CreatePoolValues) => {
-	const errors: any = {};
-
-	if (!values.purchaseToken) {
-		errors.purchaseToken = 'Required';
-	} else if (!ethers.utils.isAddress(values.purchaseToken)) {
-		errors.purchaseToken = 'Invalid Ethereum address';
-	}
-
-	if (!values.poolName) {
-		errors.poolName = 'Required';
-	} else if (values.poolName.length > 10) {
-		errors.poolName = 'Must be <= 10 chars';
-	}
-
-	if (!values.poolSymbol) {
-		errors.poolSymbol = 'Required';
-	} else if (values.poolSymbol.length > 5) {
-		errors.poolSymbol = 'Must be <= 5 chars';
-	}
-
-	return errors;
-};
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
@@ -52,11 +33,15 @@ const Create: FC = () => {
 			poolName: '',
 			poolSymbol: '',
 			poolCap: 0,
-			duration: 0,
+			durationDays: 0,
+			durationHours: 0,
+			durationMinutes: 0,
 			sponsorFee: 0,
-			purchaseExpiry: 0,
+			purchaseExpiryDays: 0,
+			purchaseExpiryHours: 0,
+			purchaseExpiryMinutes: 0,
 		},
-		validate,
+		validate: validateCreatePool,
 		onSubmit: (values) => {
 			alert(JSON.stringify(values, null, 2));
 		},
@@ -79,7 +64,7 @@ const Create: FC = () => {
 			},
 			{
 				header: <label htmlFor="poolCap">Pool Cap (Purchase Tokens)</label>,
-				subText: 'Uncapped if left blank',
+				subText: 'Uncapped if left blank or 0',
 				formField: (
 					<Input
 						id="poolCap"
@@ -93,19 +78,43 @@ const Create: FC = () => {
 				formError: formik.errors.poolCap,
 			},
 			{
-				header: <label htmlFor="poolCap">Duration</label>,
-				subText: 'Duration of the pool',
+				header: <label htmlFor="duration">Duration</label>,
+				subText: 'Input days - hours - minutes',
 				formField: (
-					<Input
-						id="duration"
-						name="duration"
-						type="number"
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						value={formik.values.duration}
-					/>
+					<FlexDivRow>
+						<Input
+							width="50px"
+							id="durationDays"
+							name="durationDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.durationDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="durationHours"
+							name="durationHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.durationHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="durationMinutes"
+							name="durationMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.durationMinutes || ''}
+						/>
+					</FlexDivRow>
 				),
-				formError: formik.errors.duration,
+				formError: formik.errors.durationMinutes,
 			},
 			{
 				header: <label htmlFor="sponsorFee">Sponsor Fee</label>,
@@ -154,16 +163,40 @@ const Create: FC = () => {
 				header: <label htmlFor="purchaseExpiry">Expiry</label>,
 				subText: 'Time to purchase deal tokens',
 				formField: (
-					<Input
-						id="purchaseExpiry"
-						name="purchaseExpiry"
-						type="number"
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						value={formik.values.purchaseExpiry}
-					/>
+					<FlexDivRow>
+						<Input
+							width="50px"
+							id="purchaseExpiryDays"
+							name="purchaseExpiryDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseExpiryDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="purchaseExpiryHours"
+							name="purchaseExpiryHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseExpiryHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="purchaseExpiryMinutes"
+							name="purchaseExpiryMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseExpiryMinutes || ''}
+						/>
+					</FlexDivRow>
 				),
-				formError: formik.errors.purchaseExpiry,
+				formError: formik.errors.purchaseExpiryMinutes,
 			},
 			{
 				header: '',

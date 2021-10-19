@@ -1,7 +1,7 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
-export const inputCSS = css`
-	width: 100%;
+export const Input = styled.input<{ width?: string }>`
+	width: ${(props) => props.width || '100%'};
 	min-width: 0;
 	font-family: ${(props) => props.theme.fonts.agrandir};
 	background-color: ${(props) => props.theme.colors.background};
@@ -17,16 +17,10 @@ export const inputCSS = css`
 		color: ${(props) => props.theme.colors.forestGreen};
 	}
 	&:focus {
-		outline: none;
-		cursor: text;
 		box-shadow: 0px 0px 2px ${(props) => props.theme.colors.forestGreen};
 	}
-	caret-color: ${(props) => props.theme.colors.grey};
+	caret-color: ${(props) => props.theme.colors.forestGreen};
 	outline: none;
-`;
-
-export const Input = styled.input`
-	${inputCSS};
 `;
 
 export default Input;
