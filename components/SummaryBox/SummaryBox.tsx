@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { FlexDivCol, FlexDiv } from '../common';
 
 interface SummaryBoxProps {
-	onClick: MouseEventHandler<HTMLButtonElement>;
 	header: string;
 	summaryText: string;
 	summaryItems: {
@@ -12,7 +11,7 @@ interface SummaryBoxProps {
 	}[];
 }
 
-const SummaryBox: FC<SummaryBoxProps> = ({ onClick, summaryText, header, summaryItems }) => {
+const SummaryBox: FC<SummaryBoxProps> = ({ summaryText, header, summaryItems }) => {
 	return (
 		<Container>
 			<SummaryBoxHeader>{header}</SummaryBoxHeader>
@@ -24,7 +23,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({ onClick, summaryText, header, summary
 					</Item>
 				))}
 			</SummaryBoxGrid>
-			<PurchaseButton onClick={onClick}>{summaryText}</PurchaseButton>
+			<PurchaseButton type="submit">{summaryText}</PurchaseButton>
 		</Container>
 	);
 };
