@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import CopyIcon from 'assets/svg/copy.svg';
@@ -13,7 +13,7 @@ import { FlexDivCenterAligned, FlexDiv } from 'components/common';
 import ActionBox from 'components/ActionBox';
 import { truncateAddress } from 'utils/crypto';
 
-const Pool: FC = () => {
+const ViewPool: FC = () => {
 	const [copiedPoolAddress, setCopiedPoolAddress] = useState(false);
 	const [copiedDealAddress, setCopiedDealAddress] = useState(false);
 	const router = useRouter();
@@ -38,52 +38,6 @@ const Pool: FC = () => {
 		}
 	}, [copiedDealAddress]);
 
-	const gridItems = useMemo(
-		() => [
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-			{
-				header: 'some header',
-				text: 'some text',
-			},
-		],
-		[]
-	);
-
-	const hasDeal = true;
-	const createDeal = true;
-	const dealAddress = '0x123456781234567812345678';
-
 	return (
 		<PageLayout
 			title={
@@ -101,15 +55,6 @@ const Pool: FC = () => {
 			}
 			subtitle=""
 		>
-			<FlexDiv>
-				<Grid hasInputFields={false} gridItems={gridItems} />
-				<ActionBox
-					onClick={() => console.log('clicked me')}
-					header="Purchase"
-					input={{ type: 'number', placeholder: '0', label: 'Balance: 2000 USDC' }}
-					actionText="Purchase"
-				/>
-			</FlexDiv>
 			{createDeal ? (
 				<>
 					{/* address _underlyingDealToken,
@@ -177,4 +122,4 @@ const AddressWidget = styled.div`
 	padding-top: 5px;
 `;
 
-export default Pool;
+export default ViewPool;

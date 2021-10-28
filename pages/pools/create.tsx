@@ -1,10 +1,8 @@
 import { FC, useMemo } from 'react';
 import { useFormik } from 'formik';
 
-import { PageLayout } from 'sections/Layout';
-import Grid from 'components/Grid';
-import SummaryBox from 'components/SummaryBox';
-import { FlexDiv, FlexDivRow } from 'components/common';
+import CreatePool from 'sections/AelinPool/CreatePool';
+import { FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
@@ -246,19 +244,7 @@ const Create: FC = () => {
 		],
 		[walletAddress]
 	);
-	return (
-		<PageLayout
-			title={<>Create Pool</>}
-			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
-		>
-			<form onSubmit={formik.handleSubmit}>
-				<FlexDiv>
-					<Grid hasInputFields={true} gridItems={gridItems} />
-					<SummaryBox summaryText="Create Pool" header="Pool summary" summaryItems={summaryItems} />
-				</FlexDiv>
-			</form>
-		</PageLayout>
-	);
+	return <CreatePool formik={formik} gridItems={gridItems} summaryItems={summaryItems} />;
 };
 
 export default Create;
