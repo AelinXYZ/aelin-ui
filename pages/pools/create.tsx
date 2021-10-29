@@ -1,7 +1,8 @@
 import { FC, useMemo } from 'react';
 import { useFormik } from 'formik';
 
-import CreatePool from 'sections/AelinPool/CreatePool';
+import { PageLayout } from 'sections/Layout';
+import CreateForm from 'sections/shared/CreateForm';
 import { FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
 import TextInput from 'components/Input/TextInput';
@@ -244,7 +245,11 @@ const Create: FC = () => {
 		],
 		[walletAddress]
 	);
-	return <CreatePool formik={formik} gridItems={gridItems} summaryItems={summaryItems} />;
+	return (
+		<PageLayout title={<>CreatePool</>} subtitle="">
+			<CreateForm formik={formik} gridItems={gridItems} summaryItems={summaryItems} type="Pool" />
+		</PageLayout>
+	);
 };
 
 export default Create;

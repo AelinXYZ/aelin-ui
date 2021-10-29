@@ -4,11 +4,11 @@ import { FlexDiv } from 'components/common';
 import ActionBox from 'components/ActionBox';
 import { GridItem } from 'components/Grid/Grid';
 
-interface PoolDetailsProps {
+interface SectionDetailsProps {
 	gridItems: GridItem[];
 }
 
-const PoolDetails: FC<PoolDetailsProps> = ({ gridItems }) => (
+const SectionDetails: FC<SectionDetailsProps> = ({ gridItems }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
 		<ActionBox
@@ -20,4 +20,4 @@ const PoolDetails: FC<PoolDetailsProps> = ({ gridItems }) => (
 	</FlexDiv>
 );
 
-export default PoolDetails;
+export default SectionDetails;
