@@ -9,20 +9,7 @@ import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 
 import validateCreatePool from 'utils/validate/create-pool';
-
-export interface CreatePoolValues {
-	purchaseToken: string;
-	poolName: string;
-	poolSymbol: string;
-	poolCap: number;
-	durationDays: number;
-	durationHours: number;
-	durationMinutes: number;
-	sponsorFee: number;
-	purchaseExpiryDays: number;
-	purchaseExpiryHours: number;
-	purchaseExpiryMinutes: number;
-}
+import { truncateAddress } from 'utils/crypto';
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
@@ -212,7 +199,7 @@ const Create: FC = () => {
 		() => [
 			{
 				label: 'Sponsor',
-				text: walletAddress || 'Connect Wallet',
+				text: walletAddress != null ? truncateAddress(walletAddress) : 'Connect Wallet',
 			},
 			{
 				label: 'Cap:',

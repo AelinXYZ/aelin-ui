@@ -4,7 +4,7 @@ import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { PageLayout } from 'sections/Layout';
 import { GridItem } from 'components/Grid/Grid';
-import CreateForm from 'sections/shared/CreateForm';
+
 import SectionTitle from 'sections/shared/SectionTitle';
 import SectionDetails from 'sections/shared/SectionDetails';
 import { FormikHandlers } from 'formik';
@@ -16,11 +16,10 @@ interface ViewPoolProps {
 	poolAddress: string;
 	dealAddress: string | null;
 	createDeal: {
-		isReady: boolean;
 		formik: FormikHandlers;
 		gridItems: GridItem[];
 		summaryItems: SummaryItem[];
-	};
+	} | null;
 }
 
 const ViewPool: FC<ViewPoolProps> = ({
@@ -31,25 +30,10 @@ const ViewPool: FC<ViewPoolProps> = ({
 	createDeal,
 }) => (
 	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
-		<SectionDetails gridItems={poolGridItems} />
-		{createDeal.isReady ? (
+		<SectionDetails isPool={true} gridItems={poolGridItems} />
+		{createDeal != null ? (
 			<>
-				<CreateForm
-					formik={createDeal.formik}
-					gridItems={createDeal.gridItems}
-					summaryItems={createDeal.summaryItems}
-					type="Pool"
-				/>
-				{/* address _underlyingDealToken,
-        uint256 _purchaseTokenTotalForDeal,
-        uint256 _underlyingDealTokenTotal,
-        uint256 _vestingPeriod,
-        uint256 _vestingCliff,
-        uint256 _proRataRedemptionPeriod,
-        uint256 _openRedemptionPeriod,
-        address _holder,
-        uint256 _holderFundingExpiry
-				<Grid hasInputFields={true} gridItems={gridItems} /> */}
+				<CreateDeal />
 			</>
 		) : null}
 		{dealAddress != null && dealGridItems != null ? (
@@ -59,7 +43,7 @@ const ViewPool: FC<ViewPoolProps> = ({
 						<SectionTitle address={dealAddress} title="Aelin Deal" />
 					</ContentTitle>
 				</ContentHeader>
-				<SectionDetails gridItems={dealGridItems} />
+				<SectionDetails isPool={false} gridItems={dealGridItems} />
 			</DealWrapper>
 		) : null}
 	</PageLayout>

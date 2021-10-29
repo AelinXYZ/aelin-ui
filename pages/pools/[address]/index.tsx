@@ -10,46 +10,97 @@ const Pool: FC = () => {
 	const poolGridItems = useMemo(
 		() => [
 			{
-				header: 'some header',
+				header: 'Sponsor',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'My Capital',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Total Capital',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Currency',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Ownership',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Status',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Sponsor Fee',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Expiration',
 				subText: 'some subText',
 			},
 			{
-				header: 'some header',
+				header: 'Contributions',
 				subText: 'some subText',
 			},
 		],
 		[]
 	);
 
-	return <ViewPool poolGridItems={poolGridItems} poolAddress={poolAddress} />;
+	const dealGridItems = useMemo(
+		() => [
+			{
+				header: 'Name',
+				subText: 'some subText',
+			},
+			{
+				header: 'Currency',
+				subText: 'some subText',
+			},
+			{
+				header: 'Exchange rate',
+				subText: 'some subText',
+			},
+			{
+				header: 'Vesting Period',
+				subText: 'some subText',
+			},
+			{
+				header: 'Vesting Cliff',
+				subText: 'some subText',
+			},
+			{
+				header: 'Status',
+				subText: 'some subText',
+			},
+			{
+				header: 'Redemption Period',
+				subText: 'some subText',
+			},
+			{
+				header: 'Vesting Curve',
+				subText: 'some subText',
+			},
+			{
+				header: 'Discount',
+				subText: 'some subText',
+			},
+		],
+		[]
+	);
+	const dealAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+	return (
+		<ViewPool
+			dealAddress={dealAddress}
+			dealGridItems={dealGridItems}
+			createDeal={createDeal}
+			poolGridItems={poolGridItems}
+			poolAddress={poolAddress}
+		/>
+	);
 };
 
 export default Pool;
