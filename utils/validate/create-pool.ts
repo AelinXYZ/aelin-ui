@@ -1,7 +1,20 @@
-import { CreatePoolValues } from 'pages/pools/create';
 import { ethers } from 'ethers';
 import { ONE_YEAR_IN_SECS, ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants/time';
 import { convertToSeconds } from 'utils/time';
+
+interface CreatePoolValues {
+	purchaseToken: string;
+	poolName: string;
+	poolSymbol: string;
+	poolCap: number;
+	durationDays: number;
+	durationHours: number;
+	durationMinutes: number;
+	sponsorFee: number;
+	purchaseExpiryDays: number;
+	purchaseExpiryHours: number;
+	purchaseExpiryMinutes: number;
+}
 
 const validateCreatePool = (values: CreatePoolValues) => {
 	const errors: any = {};

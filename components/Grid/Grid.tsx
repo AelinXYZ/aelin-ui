@@ -6,7 +6,6 @@ export type GridItem = {
 	subText: string;
 	formField?: JSX.Element;
 	formError?: string | null | undefined;
-	// icon?: string; // TODO fix
 };
 
 interface GridProps {
