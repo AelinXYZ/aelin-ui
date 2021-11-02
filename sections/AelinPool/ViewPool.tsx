@@ -7,19 +7,13 @@ import { GridItem } from 'components/Grid/Grid';
 
 import SectionTitle from 'sections/shared/SectionTitle';
 import SectionDetails from 'sections/shared/SectionDetails';
-import { FormikHandlers } from 'formik';
-import { SummaryItem } from 'components/SummaryBox/SummaryBox';
+import CreateDeal from 'sections/AelinDeal/CreateDeal';
 
 interface ViewPoolProps {
 	poolGridItems: GridItem[];
 	dealGridItems: GridItem[] | null;
 	poolAddress: string;
 	dealAddress: string | null;
-	createDeal: {
-		formik: FormikHandlers;
-		gridItems: GridItem[];
-		summaryItems: SummaryItem[];
-	} | null;
 }
 
 const ViewPool: FC<ViewPoolProps> = ({
@@ -27,29 +21,31 @@ const ViewPool: FC<ViewPoolProps> = ({
 	poolAddress,
 	dealAddress,
 	dealGridItems,
-	createDeal,
 }) => (
 	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 		<SectionDetails isPool={true} gridItems={poolGridItems} />
-		{createDeal != null ? (
-			<>
-				<CreateDeal />
-			</>
-		) : null}
+		<SectionWrapper>
+			<ContentHeader>
+				<ContentTitle>
+					<SectionTitle address={null} title="Create Deal" />
+				</ContentTitle>
+			</ContentHeader>
+			<CreateDeal />
+		</SectionWrapper>
 		{dealAddress != null && dealGridItems != null ? (
-			<DealWrapper>
+			<SectionWrapper>
 				<ContentHeader>
 					<ContentTitle>
 						<SectionTitle address={dealAddress} title="Aelin Deal" />
 					</ContentTitle>
 				</ContentHeader>
 				<SectionDetails isPool={false} gridItems={dealGridItems} />
-			</DealWrapper>
+			</SectionWrapper>
 		) : null}
 	</PageLayout>
 );
 
-const DealWrapper = styled.div`
+const SectionWrapper = styled.div`
 	margin-top: 35px;
 `;
 

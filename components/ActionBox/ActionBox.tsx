@@ -7,7 +7,6 @@ interface ActionBoxProps {
 	onPurchase?: MouseEventHandler<HTMLButtonElement>;
 	onAccept?: MouseEventHandler<HTMLButtonElement>;
 	onWithdraw?: MouseEventHandler<HTMLButtonElement>;
-	header: string;
 	input: {
 		type: string;
 		placeholder: string;
@@ -20,7 +19,6 @@ const ActionBox: FC<ActionBoxProps> = ({
 	onPurchase,
 	onAccept,
 	onWithdraw,
-	header,
 	input: { type, placeholder, label },
 	isPool,
 }) => {
@@ -31,7 +29,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 		<Container>
 			<FlexDivRow>
 				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-					{header}
+					{isPool ? 'Purchase' : 'Accept Deal'}
 				</ActionBoxHeader>
 				{!isPool ? (
 					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>

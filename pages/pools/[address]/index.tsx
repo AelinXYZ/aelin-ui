@@ -96,7 +96,6 @@ const Pool: FC = () => {
 		<ViewPool
 			dealAddress={dealAddress}
 			dealGridItems={dealGridItems}
-			createDeal={createDeal}
 			poolGridItems={poolGridItems}
 			poolAddress={poolAddress}
 		/>

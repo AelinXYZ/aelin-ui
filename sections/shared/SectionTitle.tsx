@@ -8,7 +8,7 @@ import { truncateAddress } from 'utils/crypto';
 import { FlexDivCenterAligned } from 'components/common';
 
 interface SectionTitleProps {
-	address: string;
+	address: string | null;
 	title: string;
 }
 
@@ -26,14 +26,18 @@ const SectionTitle: FC<SectionTitleProps> = ({ address, title }) => {
 	return (
 		<FlexDivCenterAligned>
 			{title}
-			<AddressWidget>{truncateAddress(address)}</AddressWidget>
-			<CopyToClipboard text={address} onCopy={() => setCopiedAddress(true)}>
-				{copiedAddress ? (
-					<Image src={CheckIcon} alt="copied" />
-				) : (
-					<Image src={CopyIcon} alt={address} />
-				)}
-			</CopyToClipboard>
+			{address != null ? (
+				<>
+					<AddressWidget>{truncateAddress(address)}</AddressWidget>
+					<CopyToClipboard text={address} onCopy={() => setCopiedAddress(true)}>
+						{copiedAddress ? (
+							<Image src={CheckIcon} alt="copied" />
+						) : (
+							<Image src={CopyIcon} alt={address} />
+						)}
+					</CopyToClipboard>
+				</>
+			) : null}
 		</FlexDivCenterAligned>
 	);
 };
