@@ -3,29 +3,15 @@ import { useFormik } from 'formik';
 import { utils } from 'ethers';
 
 import { PageLayout } from 'sections/Layout';
-import Grid from 'components/Grid';
-import SummaryBox from 'components/SummaryBox';
-import { FlexDiv, FlexDivRow } from 'components/common';
+import CreateForm from 'sections/shared/CreateForm';
+import { FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
 import ContractsInterface from 'containers/ContractsInterface';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 
 import validateCreatePool from 'utils/validate/create-pool';
-
-export interface CreatePoolValues {
-	purchaseToken: string;
-	poolName: string;
-	poolSymbol: string;
-	poolCap: number;
-	durationDays: number;
-	durationHours: number;
-	durationMinutes: number;
-	sponsorFee: number;
-	purchaseExpiryDays: number;
-	purchaseExpiryHours: number;
-	purchaseExpiryMinutes: number;
-}
+import { truncateAddress } from 'utils/crypto';
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
@@ -236,7 +222,7 @@ const Create: FC = () => {
 		() => [
 			{
 				label: 'Sponsor',
-				text: walletAddress || 'Connect Wallet',
+				text: walletAddress != null ? truncateAddress(walletAddress) : 'Connect Wallet',
 			},
 			{
 				label: 'Cap:',
@@ -270,16 +256,8 @@ const Create: FC = () => {
 		[walletAddress]
 	);
 	return (
-		<PageLayout
-			title={<>Create Pool</>}
-			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
-		>
-			<form onSubmit={formik.handleSubmit}>
-				<FlexDiv>
-					<Grid hasInputFields={true} gridItems={gridItems} />
-					<SummaryBox summaryText="Create Pool" header="Pool summary" summaryItems={summaryItems} />
-				</FlexDiv>
-			</form>
+		<PageLayout title={<>CreatePool</>} subtitle="">
+			<CreateForm formik={formik} gridItems={gridItems} summaryItems={summaryItems} type="Pool" />
 		</PageLayout>
 	);
 };

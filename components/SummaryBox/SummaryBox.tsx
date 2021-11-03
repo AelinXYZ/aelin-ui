@@ -1,14 +1,15 @@
-import { FC, MouseEventHandler } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
-import { FlexDivCol, FlexDiv } from '../common';
+
+export type SummaryItem = {
+	label: string;
+	text: string;
+};
 
 interface SummaryBoxProps {
 	header: string;
 	summaryText: string;
-	summaryItems: {
-		label: string;
-		text: string;
-	}[];
+	summaryItems: SummaryItem[];
 }
 
 const SummaryBox: FC<SummaryBoxProps> = ({ summaryText, header, summaryItems }) => {

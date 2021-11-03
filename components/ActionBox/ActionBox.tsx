@@ -1,29 +1,42 @@
 import { FC, useState, MouseEventHandler } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import BaseModal from '../BaseModal';
+import { FlexDivRow } from '../common';
 
 interface ActionBoxProps {
-	onClick: MouseEventHandler<HTMLButtonElement>;
-	header: string;
-	actionText: string;
+	onPurchase?: MouseEventHandler<HTMLButtonElement>;
+	onAccept?: MouseEventHandler<HTMLButtonElement>;
+	onWithdraw?: MouseEventHandler<HTMLButtonElement>;
 	input: {
 		type: string;
 		placeholder: string;
 		label: string;
 	};
+	isPool: boolean;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
-	onClick,
-	actionText,
-	header,
+	onPurchase,
+	onAccept,
+	onWithdraw,
 	input: { type, placeholder, label },
+	isPool,
 }) => {
+	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
 
 	return (
 		<Container>
-			<ActionBoxHeader>{header}</ActionBoxHeader>
+			<FlexDivRow>
+				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
+					{isPool ? 'Purchase' : 'Accept Deal'}
+				</ActionBoxHeader>
+				{!isPool ? (
+					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>
+						Withdraw
+					</ActionBoxHeader>
+				) : null}
+			</FlexDivRow>
 			<InputContainer>
 				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
 				<InnerInputContainer>
@@ -31,14 +44,21 @@ const ActionBox: FC<ActionBoxProps> = ({
 					<ActionBoxMax onClick={() => console.log('max balance')}>Max</ActionBoxMax>
 				</InnerInputContainer>
 			</InputContainer>
-			<PurchaseButton
+			<ActionButton
+				isWithdraw={!isPool && !isDealAccept}
 				onClick={(e) => {
-					onClick(e);
+					if (isPool && onPurchase && typeof onPurchase === 'function') {
+						onPurchase(e);
+					} else if (!isPool && isDealAccept && onAccept && typeof onAccept === 'function') {
+						onAccept(e);
+					} else if (!isPool && !isDealAccept && onWithdraw && typeof onWithdraw === 'function') {
+						onWithdraw(e);
+					}
 					setShowTxModal(true);
 				}}
 			>
-				{actionText}
-			</PurchaseButton>
+				{isPool ? 'Purchase' : isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
+			</ActionButton>
 			<BaseModal title="test" setIsModalOpen={setShowTxModal} isModalOpen={showTxModal}>
 				<>Hello</>
 			</BaseModal>
@@ -55,10 +75,18 @@ const Container = styled.div`
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
 
-const ActionBoxHeader = styled.div`
+const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 	padding: 15px 20px;
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) =>
+		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
 	font-size: 12px;
+	${(props) =>
+		!props.isPool &&
+		css`
+			&:hover {
+				cursor: pointer;
+			}
+		`}
 `;
 
 const InnerInputContainer = styled.div`
@@ -110,7 +138,7 @@ const ActionBoxMax = styled.div`
 	}
 `;
 
-const PurchaseButton = styled.button`
+const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	cursor: pointer;
 	width: 100%;
 	height: 56px;
@@ -119,7 +147,8 @@ const PurchaseButton = styled.button`
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	color: ${(props) => props.theme.colors.black};
 	&:hover {
-		background-color: ${(props) => props.theme.colors.forestGreen};
+		background-color: ${(props) =>
+			props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen};
 		color: ${(props) => props.theme.colors.white};
 	}
 	position: absolute;
