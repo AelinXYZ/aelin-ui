@@ -8,6 +8,7 @@ import theme from 'styles/theme';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import { GlobalLayout, AppLayout } from 'sections/Layout';
 import Connector from 'containers/Connector';
+import ContractsInterface from 'containers/ContractsInterface';
 import BlockExplorer from 'containers/BlockExplorer';
 import TransactionNotifier from 'containers/TransactionNotifier';
 
@@ -35,11 +36,13 @@ const App = (props: AppProps) => {
 		<ThemeProvider theme={theme}>
 			<QueryClientProvider client={queryClient} contextSharing={true}>
 				<Connector.Provider>
-					<BlockExplorer.Provider>
-						<TransactionNotifier.Provider>
-							<InnerApp {...props} />
-						</TransactionNotifier.Provider>
-					</BlockExplorer.Provider>
+					<ContractsInterface.Provider>
+						<BlockExplorer.Provider>
+							<TransactionNotifier.Provider>
+								<InnerApp {...props} />
+							</TransactionNotifier.Provider>
+						</BlockExplorer.Provider>
+					</ContractsInterface.Provider>
 				</Connector.Provider>
 			</QueryClientProvider>
 		</ThemeProvider>

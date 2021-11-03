@@ -1,11 +1,13 @@
 import { FC, useMemo } from 'react';
 import { useFormik } from 'formik';
+import { utils } from 'ethers';
 
 import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
 import SummaryBox from 'components/SummaryBox';
 import { FlexDiv, FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
+import ContractsInterface from 'containers/ContractsInterface';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 
@@ -27,6 +29,29 @@ export interface CreatePoolValues {
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
+	const { contracts } = ContractsInterface.useContainer();
+
+	const handleSubmit = async () => {
+		if (!contracts) return;
+		const name = utils.formatBytes32String('Test token');
+		const symbol = utils.formatBytes32String('WAGMI');
+		const purchaseTokenCap = utils.parseEther('100000');
+		const purchaseTokenAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
+		const duration = 29388523;
+		const sponsorFee = '30';
+		const purchaseExpiry = 30 * 24 * 3600;
+		const tx = await contracts.AelinPoolFactory.createPool(
+			name,
+			symbol,
+			purchaseTokenCap,
+			purchaseTokenAddress,
+			duration,
+			sponsorFee,
+			purchaseExpiry,
+			{ gasLimit: 1000000 }
+		);
+	};
+
 	const formik = useFormik({
 		initialValues: {
 			purchaseToken: '',
@@ -41,10 +66,8 @@ const Create: FC = () => {
 			purchaseExpiryHours: 0,
 			purchaseExpiryMinutes: 0,
 		},
-		validate: validateCreatePool,
-		onSubmit: (values) => {
-			alert(JSON.stringify(values, null, 2));
-		},
+		// validate: validateCreatePool,
+		onSubmit: handleSubmit,
 	});
 	const gridItems = useMemo(
 		() => [
