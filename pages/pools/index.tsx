@@ -8,7 +8,9 @@ import Table from 'components/Table';
 import { Status } from 'components/DealStatus';
 import Currency from 'components/Currency';
 import DealStatus from 'components/DealStatus';
+import TimeLeft from 'components/TimeLeft';
 import { formatNumber } from 'utils/numbers';
+import { truncateAddress } from 'utils/crypto';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -18,10 +20,10 @@ const Pools: FC = () => {
 	const data = useMemo(() => {
 		const list = pools.map(
 			({ sponsorFee, duration, sponsor, name, address, purchaseToken, purchaseTokenCap }) => ({
-				sponsor,
+				sponsor: truncateAddress(sponsor),
 				name,
-				address,
-				purchaseToken, // TODO get symbol
+				address: truncateAddress(address),
+				purchaseToken: truncateAddress(purchaseToken), // TODO get symbol
 				contributions: 1000000, // TODO get contributions
 				cap: purchaseTokenCap,
 				duration,
@@ -53,25 +55,28 @@ const Pools: FC = () => {
 				Header: 'contributions',
 				accessor: 'contributions',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `$${formatNumber(cellProps.value)}`;
+					return `${formatNumber(cellProps.value)}`;
 				},
 			},
 			{
 				Header: 'cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `$${formatNumber(cellProps.value)}`;
+					return `${formatNumber(cellProps.value)}`;
 				},
 			},
 			{
 				Header: 'duration',
 				accessor: 'duration',
+				Cell: (cellProps: CellProps<any, any>) => {
+					return <TimeLeft timeLeft={cellProps.value} />;
+				},
 			},
 			{
 				Header: 'fee',
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${100 * cellProps.value}%`;
+					return `${cellProps.value}%`;
 				},
 			},
 			{
