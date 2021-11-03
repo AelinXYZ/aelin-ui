@@ -8,7 +8,9 @@
 		"start": "next start",
 		"lint": "eslint . --ext ts,.tsx && tsc",
 		"format": "prettier --write \"**/*.{ts,tsx}\"",
-		"lint:fix": "eslint . --ext ts,.tsx --fix"
+		"lint:fix": "eslint . --ext ts,.tsx --fix",
+		"pull-manifest": "codegen-graph-ts pull $AELIN_SUBGRAPH_URL > manifest.json",
+		"codegen-ts": "codegen-graph-ts gen -m reactquery -s manifest.json -o subgraph.ts"
 	},
 	"dependencies": {
 		"@metamask/detect-provider": "1.2.0",
@@ -45,6 +47,7 @@
 		"@types/react-table": "7.7.5",
 		"@types/styled-components": "5.1.14",
 		"babel-plugin-styled-components": "1.13.2",
+		"codegen-graph-ts": "^0.1.2",
 		"eslint": "7.32.0",
 		"eslint-config-next": "11.1.2",
 		"typescript": "4.4.3"

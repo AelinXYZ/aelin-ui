@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react';
 import { CellProps } from 'react-table';
 import { useRouter } from 'next/router';
 
+import useGetPoolsQuery, { parsePools } from 'queries/pools/useGetPoolsQuery';
 import { PageLayout } from 'sections/Layout';
 import Table from 'components/Table';
 import { Status } from 'components/DealStatus';
@@ -11,76 +12,38 @@ import { formatNumber } from 'utils/numbers';
 
 const Pools: FC = () => {
 	const router = useRouter();
+	const poolsQuery = useGetPoolsQuery();
+	const pools = useMemo(() => parsePools(poolsQuery?.data), [poolsQuery?.data]);
+
 	const data = useMemo(() => {
-		const list = [
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				address: '0x4069e799Da927C06b430e247b2ee16C03e8B837d',
-				currency: 'sUSD',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '5 weeks',
-				fee: 0.001,
-				status: Status.OPEN,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				address: '0x4069e799Da927C06b430e247b2ee16C03e8B837d',
-				currency: 'USDT',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '5 weeks',
-				fee: 0.001,
-				status: Status.DEAL,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				address: '0x1234',
-				currency: 'sUSD',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '2 months',
-				fee: 0.001,
-				status: Status.EXPIRED,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				currency: 'USDC',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '5 weeks',
-				fee: 0.001,
-				status: Status.REJECTED,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				currency: 'USDC',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '20 weeks',
-				fee: 0.001,
-				status: Status.OPEN,
-			},
-		];
+		const list = pools.map(
+			({ sponsorFee, duration, sponsor, name, address, purchaseToken, purchaseTokenCap }) => ({
+				sponsor,
+				name,
+				address,
+				purchaseToken, // TODO get symbol
+				contributions: 1000000, // TODO get contributions
+				cap: purchaseTokenCap,
+				duration,
+				fee: sponsorFee,
+				status: Status.OPEN, // TODO get status
+			})
+		);
+
 		console.log('note this will change with pagination');
 		if (router.query.active === 'true') {
 			return list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
 		}
 		return list;
-	}, [router.query.active]);
+	}, [pools, router.query.active]);
 
 	const columns = useMemo(
 		() => [
 			{ Header: 'sponsor', accessor: 'sponsor' },
 			{ Header: 'name', accessor: 'name' },
 			{
-				Header: 'currency',
-				accessor: 'currency',
+				Header: 'purchase token',
+				accessor: 'purchaseToken',
 				// eslint-disable-next-line react/display-name
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <Currency ticker={cellProps.value} />;
