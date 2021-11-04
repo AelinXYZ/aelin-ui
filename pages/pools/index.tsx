@@ -11,9 +11,14 @@ import DealStatus from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
 import { formatNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
+import { MAX_RESULTS_PER_PAGE } from 'constants/defaults';
 
 const Pools: FC = () => {
 	const router = useRouter();
+	// TODO turn this into a query since we are only grabbing the first 10
+	// I have already modified the subgraph code
+	const totalPools = 121;
+	const [currPage, setCurrPage] = useState<number>(0);
 	const [timestampCursor, setTimestampCursor] = useState<number>(Math.round(Date.now() / 1000));
 	const [paginationDirection, setPaginationDirection] = useState<GQLDirection>(GQLDirection.LT);
 	const poolsQuery = useGetPoolsQuery({
@@ -98,7 +103,16 @@ const Pools: FC = () => {
 	);
 	return (
 		<PageLayout title={<>All pools</>} subtitle="">
-			<Table data={data} columns={columns} hasLinksToPool={true} />
+			<Table
+				showPagination={totalPools > MAX_RESULTS_PER_PAGE}
+				numPages={Math.ceil(totalPools / MAX_RESULTS_PER_PAGE)}
+				noResults={data.length === 0}
+				currPage={currPage}
+				setPage={setCurrPage}
+				data={data}
+				columns={columns}
+				hasLinksToPool={true}
+			/>
 		</PageLayout>
 	);
 };

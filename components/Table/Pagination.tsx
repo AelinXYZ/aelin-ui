@@ -10,39 +10,27 @@ import RightArrowIcon from 'assets/svg/caret-right.svg';
 import RightEndArrowIcon from 'assets/svg/caret-right-end.svg';
 
 type PaginationProps = {
-	pageIndex: number;
-	pageCount: number;
-	canNextPage: boolean;
-	canPreviousPage: boolean;
+	currPage: number;
+	numPages: number;
 	setPage: (page: number) => void;
-	previousPage: () => void;
-	nextPage: () => void;
 };
 
-const Pagination: FC<PaginationProps> = ({
-	pageIndex,
-	pageCount,
-	canNextPage = true,
-	canPreviousPage = true,
-	setPage,
-	nextPage,
-	previousPage,
-}) => (
+const Pagination: FC<PaginationProps> = ({ currPage, numPages, setPage }) => (
 	<PaginationContainer className="table-pagination">
 		<span>
-			<ArrowButton onClick={() => setPage(0)} disabled={!canPreviousPage}>
+			<ArrowButton onClick={() => setPage(0)} disabled={currPage === 0}>
 				<Image alt="" src={LeftEndArrowIcon} />
 			</ArrowButton>
-			<ArrowButton onClick={() => previousPage()} disabled={!canPreviousPage}>
+			<ArrowButton onClick={() => setPage(currPage - 1)} disabled={currPage === 0}>
 				<Image alt="" src={LeftArrowIcon} />
 			</ArrowButton>
 		</span>
-		<PageInfo>{`Page ${pageIndex + 1} of ${pageCount}`}</PageInfo>
+		<PageInfo>{`Page ${currPage + 1} of ${numPages}`}</PageInfo>
 		<span>
-			<ArrowButton onClick={() => nextPage()} disabled={!canNextPage}>
+			<ArrowButton onClick={() => setPage(currPage + 1)} disabled={currPage === numPages - 1}>
 				<Image alt="" src={RightArrowIcon} />
 			</ArrowButton>
-			<ArrowButton onClick={() => setPage(pageCount - 1)} disabled={!canNextPage}>
+			<ArrowButton onClick={() => setPage(numPages - 1)} disabled={currPage === numPages - 1}>
 				<Image alt="" src={RightEndArrowIcon} />
 			</ArrowButton>
 		</span>
@@ -72,7 +60,7 @@ const ArrowButton = styled.button`
 		color: ${(props) => props.theme.colors.black};
 	}
 	&[disabled] {
-		cursor: default;
+		cursor: not-allowed;
 		svg {
 			color: ${(props) => props.theme.colors.black};
 		}

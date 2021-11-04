@@ -16,6 +16,9 @@ type TableProps = {
 	hasLinksToPool: boolean;
 	showPagination: boolean;
 	noResults: boolean;
+	numPages: number;
+	currPage: number;
+	setPage: (page: number) => void;
 };
 
 const Table: FC<TableProps> = ({
@@ -24,29 +27,11 @@ const Table: FC<TableProps> = ({
 	hasLinksToPool,
 	showPagination = true,
 	noResults = false,
+	numPages,
+	currPage,
+	setPage,
 }) => {
-	const {
-		getTableBodyProps,
-		headerGroups,
-		rows,
-		prepareRow,
-		// @ts-ignore
-		page,
-		// @ts-ignore
-		canPreviousPage,
-		// @ts-ignore
-		canNextPage,
-		// @ts-ignore
-		pageCount,
-		// @ts-ignore
-		gotoPage,
-		// @ts-ignore
-		nextPage,
-		// @ts-ignore
-		previousPage,
-		// @ts-ignore
-		state: { pageIndex },
-	} = useTable({
+	const { getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
 		columns,
 		data,
 	});
@@ -90,19 +75,11 @@ const Table: FC<TableProps> = ({
 							tableRow
 						);
 					})}
+					{noResults ? 'No results' : null}
 				</tbody>
 			</StyledTable>
-			{noResults ? 'No results' : null}
 			{showPagination ? (
-				<Pagination
-					pageIndex={pageIndex}
-					pageCount={pageCount}
-					canNextPage={canNextPage}
-					canPreviousPage={canPreviousPage}
-					setPage={gotoPage}
-					previousPage={previousPage}
-					nextPage={nextPage}
-				/>
+				<Pagination currPage={currPage} numPages={numPages} setPage={setPage} />
 			) : undefined}
 		</>
 	);
