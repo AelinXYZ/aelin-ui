@@ -1,8 +1,8 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { CellProps } from 'react-table';
 import { useRouter } from 'next/router';
 
-import useGetPoolsQuery, { parsePools } from 'queries/pools/useGetPoolsQuery';
+import useGetPoolsQuery, { parsePools, GQLDirection } from 'queries/pools/useGetPoolsQuery';
 import { PageLayout } from 'sections/Layout';
 import Table from 'components/Table';
 import { Status } from 'components/DealStatus';
@@ -14,10 +14,16 @@ import { truncateAddress } from 'utils/crypto';
 
 const Pools: FC = () => {
 	const router = useRouter();
-	const poolsQuery = useGetPoolsQuery();
+	const [timestampCursor, setTimestampCursor] = useState<number>(Math.round(Date.now() / 1000));
+	const [paginationDirection, setPaginationDirection] = useState<GQLDirection>(GQLDirection.LT);
+	const poolsQuery = useGetPoolsQuery({
+		timestamp: timestampCursor,
+		direction: paginationDirection,
+	});
 	const pools = useMemo(() => parsePools(poolsQuery?.data), [poolsQuery?.data]);
 
 	const data = useMemo(() => {
+		console.log('pools returned', pools);
 		const list = pools.map(
 			({ sponsorFee, duration, sponsor, name, address, purchaseToken, purchaseTokenCap }) => ({
 				sponsor: truncateAddress(sponsor),
@@ -91,10 +97,7 @@ const Pools: FC = () => {
 		[]
 	);
 	return (
-		<PageLayout
-			title={<>All pools</>}
-			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent neque integer odio dui quisque tellus pellentesque."
-		>
+		<PageLayout title={<>All pools</>} subtitle="">
 			<Table data={data} columns={columns} hasLinksToPool={true} />
 		</PageLayout>
 	);

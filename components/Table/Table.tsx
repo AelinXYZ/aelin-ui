@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useTable, Column, Row } from 'react-table';
 import styled, { css } from 'styled-components';
 import ROUTES from 'constants/routes';
+import Pagination from './Pagination';
 
 type ColumnWithSorting<D extends object = {}> = Column<D> & {
 	sortType?: string | ((rowA: Row<any>, rowB: Row<any>) => -1 | 1);
@@ -13,54 +14,97 @@ type TableProps = {
 	data: object[];
 	columns: ColumnWithSorting<object>[];
 	hasLinksToPool: boolean;
+	showPagination: boolean;
+	noResults: boolean;
 };
 
-const Table: FC<TableProps> = ({ data, columns, hasLinksToPool }) => {
-	const { getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+const Table: FC<TableProps> = ({
+	data,
+	columns,
+	hasLinksToPool,
+	showPagination = true,
+	noResults = false,
+}) => {
+	const {
+		getTableBodyProps,
+		headerGroups,
+		rows,
+		prepareRow,
+		// @ts-ignore
+		page,
+		// @ts-ignore
+		canPreviousPage,
+		// @ts-ignore
+		canNextPage,
+		// @ts-ignore
+		pageCount,
+		// @ts-ignore
+		gotoPage,
+		// @ts-ignore
+		nextPage,
+		// @ts-ignore
+		previousPage,
+		// @ts-ignore
+		state: { pageIndex },
+	} = useTable({
 		columns,
 		data,
 	});
 	return (
-		<StyledTable cellSpacing="0">
-			<thead>
-				{headerGroups.map((headerGroup, i) => (
-					<tr key={`tableRowHeader-${i}`} {...headerGroup.getHeaderGroupProps()}>
-						{headerGroup.headers.map((column, j) => (
-							<TH key={`tableHeader-${j}`} {...column.getHeaderProps()}>
-								{column.render('Header')}
-							</TH>
-						))}
-					</tr>
-				))}
-			</thead>
-			<tbody {...getTableBodyProps()}>
-				{rows.map((row, i) => {
-					prepareRow(row);
-					const tableRow = (
-						<TR key={`tableRowBody-${i}`} isEven={i % 2 === 0} {...row.getRowProps()}>
-							{row.cells.map((cell, j) => {
-								return (
-									<TD key={`tableData-${j}`} {...cell.getCellProps()}>
-										{cell.render('Cell')}
-									</TD>
-								);
-							})}
-						</TR>
-					);
-					return hasLinksToPool ? (
-						<Link
-							key={`tableRowLink-${i}`}
-							// @ts-ignore
-							href={ROUTES.Pools.PoolView(row?.original?.address ?? '')}
-						>
-							{tableRow}
-						</Link>
-					) : (
-						tableRow
-					);
-				})}
-			</tbody>
-		</StyledTable>
+		<>
+			<StyledTable cellSpacing="0">
+				<thead>
+					{headerGroups.map((headerGroup, i) => (
+						<tr key={`tableRowHeader-${i}`} {...headerGroup.getHeaderGroupProps()}>
+							{headerGroup.headers.map((column, j) => (
+								<TH key={`tableHeader-${j}`} {...column.getHeaderProps()}>
+									{column.render('Header')}
+								</TH>
+							))}
+						</tr>
+					))}
+				</thead>
+				<tbody {...getTableBodyProps()}>
+					{rows.map((row, i) => {
+						prepareRow(row);
+						const tableRow = (
+							<TR key={`tableRowBody-${i}`} isEven={i % 2 === 0} {...row.getRowProps()}>
+								{row.cells.map((cell, j) => {
+									return (
+										<TD key={`tableData-${j}`} {...cell.getCellProps()}>
+											{cell.render('Cell')}
+										</TD>
+									);
+								})}
+							</TR>
+						);
+						return hasLinksToPool ? (
+							<Link
+								key={`tableRowLink-${i}`}
+								// @ts-ignore
+								href={ROUTES.Pools.PoolView(row?.original?.address ?? '')}
+							>
+								{tableRow}
+							</Link>
+						) : (
+							tableRow
+						);
+					})}
+				</tbody>
+			</StyledTable>
+			{noResults ? 'No results' : null}
+			{showPagination ? (
+				<Pagination
+					pageIndex={pageIndex}
+					pageCount={pageCount}
+					canNextPage={canNextPage}
+					canPreviousPage={canPreviousPage}
+					setPage={gotoPage}
+					previousPage={previousPage}
+					nextPage={nextPage}
+				/>
+			) : undefined}
+		</>
 	);
 };
 

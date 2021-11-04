@@ -4,11 +4,27 @@ import Wei, { wei } from '@synthetixio/wei';
 import { GRAPH_ENDPOINT } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 
-const useGetPoolsQuery = (timestamp?: number) => {
-	// TODO add timestamp cursor
+export enum GQLDirection {
+	GT = 'gt',
+	LT = 'lt',
+}
+
+type GetPoolsQueryArgs = {
+	timestamp: number;
+	direction: GQLDirection;
+};
+
+const useGetPoolsQuery = ({ timestamp, direction }: GetPoolsQueryArgs) => {
+	const where =
+		direction === GQLDirection.GT ? { timestamp_gt: timestamp } : { timestamp_lt: timestamp };
 	return useGetPoolCreateds(
 		GRAPH_ENDPOINT,
-		{ first: 10, orderBy: 'timestamp', orderDirection: 'desc' },
+		{
+			first: 10,
+			orderBy: 'timestamp',
+			orderDirection: 'desc',
+			where,
+		},
 		{
 			id: true,
 			name: true,

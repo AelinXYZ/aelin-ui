@@ -23,7 +23,10 @@ const getKeyValue =
 const useContractsInterface = () => {
 	const { walletAddress, network, signer } = Connector.useContainer();
 	const [contracts, setContracts] = useState<AelinContracts | null>(null);
-	const poolsQuery = useGetPoolsQuery();
+	const poolsQuery = useGetPoolsQuery({
+		timestamp: Math.round(Date.now() / 1000),
+		direction: 'lt',
+	});
 	const pools = useMemo(() => parsePools(poolsQuery?.data), [poolsQuery?.data]);
 	console.log('pools', pools);
 
