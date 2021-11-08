@@ -16,7 +16,7 @@ type CurrencyProps = {
 	ticker: PoolCurrency;
 };
 
-const getCurrencyIcon = (ticker: PoolCurrency) => {
+const getCurrencyIcon = (ticker: PoolCurrency | null) => {
 	switch (ticker) {
 		case PoolCurrency.USDC:
 			return USDCIcon;
@@ -24,13 +24,16 @@ const getCurrencyIcon = (ticker: PoolCurrency) => {
 			return sUSDIcon;
 		case PoolCurrency.USDT:
 			return USDTIcon;
+		default:
+			return null;
 	}
 };
 
 const Currency: FC<CurrencyProps> = ({ ticker }) => {
+	const iconSrc = getCurrencyIcon(ticker);
 	return (
 		<Container>
-			<Image src={getCurrencyIcon(ticker)} alt={`${ticker} icon`} />
+			{iconSrc != null ? <Image src={iconSrc} alt={`${ticker} icon`} /> : null}
 			<Ticker>{ticker}</Ticker>
 		</Container>
 	);
