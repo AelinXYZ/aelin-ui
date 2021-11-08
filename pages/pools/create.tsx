@@ -9,6 +9,7 @@ import Connector from 'containers/Connector';
 import ContractsInterface from 'containers/ContractsInterface';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
+import TokenDropdown from 'components/TokenDropdown';
 
 import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
@@ -61,12 +62,17 @@ const Create: FC = () => {
 				header: <label htmlFor="purchaseToken">Purchase Token address</label>,
 				subText: 'wETH, USDC, sUSD, etc...',
 				formField: (
-					<TextInput
+					<TokenDropdown
 						id="purchaseToken"
 						name="purchaseToken"
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						value={formik.values.purchaseToken}
+						variant={'outline'}
+						onValidationError={(validationMessage) => {
+							formik.setFieldError('purchaseToken', validationMessage);
+						}}
+						onChange={(x) => {
+							formik.setFieldValue('purchaseToken', x?.value.address);
+						}}
+						selectedAddress={formik.values.purchaseToken}
 					/>
 				),
 				formError: formik.errors.purchaseToken,

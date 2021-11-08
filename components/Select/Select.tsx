@@ -1,18 +1,20 @@
 import React, { useMemo } from 'react';
-import ReactSelect, { Props, StylesConfig } from 'react-select';
+import ReactSelect, { GroupBase, Props, StylesConfig } from 'react-select';
 import { useTheme } from 'styled-components';
 
 import { IndicatorSeparator, DropdownIndicator, MultiValueRemove } from './components';
 
-type SelectProps<T> = Props<T> & {
-	variant?: 'solid' | 'outline';
-};
+type Variant = 'solid' | 'outline';
 
-function Select<T>(props: SelectProps<T>) {
+export function useSelectStyles<
+	Option,
+	IsMulti extends boolean = false,
+	Group extends GroupBase<Option> = GroupBase<Option>
+>(props: Props<Option, IsMulti, Group> & { variant: Variant }) {
 	const { colors, fonts } = useTheme();
 
-	const computedStyles = useMemo(() => {
-		const styles: StylesConfig = {
+	return useMemo(() => {
+		const styles: StylesConfig<Option, IsMulti, Group> = {
 			container: (style, state) => ({
 				...style,
 				opacity: state.isDisabled ? 0.4 : 1,
@@ -20,8 +22,7 @@ function Select<T>(props: SelectProps<T>) {
 			}),
 			singleValue: (style) => ({
 				...style,
-				color: colors.white,
-				boxShadow: `0px 0px 20px ${colors.buttonStroke}`,
+				color: colors.black,
 				fontSize: '12px',
 				border: 'none',
 			}),
@@ -34,7 +35,7 @@ function Select<T>(props: SelectProps<T>) {
 				...style,
 				background: colors.grey,
 				borderRadius: 0,
-				color: colors.white,
+				color: colors.black,
 				fontSize: '12px',
 				padding: 0,
 				paddingLeft: 0,
@@ -53,7 +54,7 @@ function Select<T>(props: SelectProps<T>) {
 			noOptionsMessage: (style) => ({
 				...style,
 				fontSize: '12px',
-				color: colors.white,
+				color: colors.black,
 			}),
 			control: (style) => {
 				const baseStyles = {
@@ -65,6 +66,8 @@ function Select<T>(props: SelectProps<T>) {
 					outline: 'none',
 					fontSize: '12px',
 					backgroundColor: colors.grey,
+					height: '32px',
+					minHeight: '32px',
 				};
 				if (props.variant === 'outline') {
 					return {
@@ -117,7 +120,7 @@ function Select<T>(props: SelectProps<T>) {
 				if (props.variant === 'outline') {
 					return {
 						...baseStyles,
-						color: colors.white,
+						color: colors.black,
 					};
 				}
 
@@ -129,18 +132,26 @@ function Select<T>(props: SelectProps<T>) {
 			placeholder: (style) => ({
 				...style,
 				fontSize: '12px',
-				color: colors.white,
+				color: colors.textGrey,
 				textTransform: 'capitalize',
 			}),
 			dropdownIndicator: (style, state) => ({
 				...style,
 				color: state.selectProps.menuIsOpen ? colors.white : colors.black,
 				transition: 'transform 0.2s ease-in-out',
-				transform: state.selectProps.menuIsOpen && 'rotate(180deg)',
+				transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'none',
 			}),
 		};
 		return styles;
 	}, [colors, fonts, props.variant]);
+}
+
+function Select<
+	Option,
+	IsMulti extends boolean = false,
+	Group extends GroupBase<Option> = GroupBase<Option>
+>(props: Props<Option, IsMulti, Group> & { variant: Variant }) {
+	const computedStyles = useSelectStyles(props);
 
 	const { components, ...rest } = props;
 
