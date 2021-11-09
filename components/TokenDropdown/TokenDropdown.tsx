@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import styled from 'styled-components';
 import { ActionMeta, createFilter, Props } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
@@ -11,8 +11,10 @@ import {
 	MultiValueRemove,
 } from 'components/Select/components';
 
-import { Token } from 'constants/token';
+import { Token, validateErc20Address } from 'constants/token';
 import useAelinTokenList from 'hooks/useAelinTokenList';
+import { erc20Abi } from 'contracts/erc20';
+import Connector from 'containers/Connector';
 
 const tokenToOption = (token: Token) => ({
 	value: token,
@@ -29,6 +31,8 @@ type TokenDropdownProps = Props<Option, false> & {
 };
 
 function TokenDropdown(props: TokenDropdownProps) {
+	const { provider } = Connector.useContainer();
+
 	const [customToken, setCustomToken] = useState<Token | undefined>(undefined);
 	const { tokens = [], tokensByAddress = {} } = useAelinTokenList() || {};
 	const computedStyles = useSelectStyles(props);
@@ -82,27 +86,21 @@ function TokenDropdown(props: TokenDropdownProps) {
 					const tokenExists = tokensByAddress[searchTerm];
 					return !tokenExists;
 				}}
-				onCreateOption={(x) => {
-					const todoLogicForValidatingAddress = 1 === 1; // TODO make some calls with the address
-					if (todoLogicForValidatingAddress) {
-						const customToken = {
-							name: 'Custom Token',
-							address: x,
-							decimals: 18,
-							symbol: x,
-							chainId: 1,
-							logoURI: '',
-							tags: [],
+				onCreateOption={async (address) => {
+					const validationResult = await validateErc20Address(address, provider);
+					if (validationResult.result === 'success') {
+						const newOption = {
+							label: validationResult.token.symbol,
+							value: validationResult.token,
 						};
-						const newOption = { label: customToken.symbol, value: customToken };
 						const meta: ActionMeta<Option> = {
 							action: 'create-option',
 							option: newOption,
 						};
 						props.onChange(newOption, meta);
-						setCustomToken(customToken);
+						setCustomToken(validationResult.token);
 					} else {
-						props.onValidationError('Not a valid ERC20 token');
+						props.onValidationError(validationResult.errorMessage);
 					}
 				}}
 				isLoading={tokens.length === 0}
