@@ -231,7 +231,6 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 				max-height: calc(100% - ${CARD_HEIGHT});
 			}
 			${TableCell} {
-				color: ${(props) => props.theme.colors.black};
 				font-size: 12px;
 				height: ${CARD_HEIGHT};
 				border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -239,13 +238,12 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 			}
 			${TableRow} {
 				cursor: pointer;
+				color: ${(props) => props.theme.colors.black};
 				&:nth-child(even) {
 					background-color: ${(props) => props.theme.colors.grey};
-					color: ${(props) => props.theme.colors.black};
 				}
 				&:nth-child(odd) {
 					background-color: ${(props) => props.theme.colors.cell};
-					color: ${(props) => props.theme.colors.black};
 				}
 				&:hover {
 					background-color: ${(props) => props.theme.colors.forestGreen};
