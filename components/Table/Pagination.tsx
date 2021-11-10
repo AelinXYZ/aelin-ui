@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { GridDivCenteredCol, resetButtonCSS } from '../common';
@@ -10,32 +10,54 @@ import RightArrowIcon from 'assets/svg/caret-right.svg';
 import RightEndArrowIcon from 'assets/svg/caret-right-end.svg';
 
 type PaginationProps = {
-	currPage: number;
-	numPages: number;
+	pageIndex: number;
+	pageCount: number;
+	canNextPage: boolean;
+	canPreviousPage: boolean;
 	setPage: (page: number) => void;
+	previousPage: () => void;
+	nextPage: () => void;
+	setIsPageOne: (bool: boolean) => void;
 };
 
-const Pagination: FC<PaginationProps> = ({ currPage, numPages, setPage }) => (
-	<PaginationContainer className="table-pagination">
-		<span>
-			<ArrowButton onClick={() => setPage(0)} disabled={currPage === 0}>
-				<Image alt="" src={LeftEndArrowIcon} />
-			</ArrowButton>
-			<ArrowButton onClick={() => setPage(currPage - 1)} disabled={currPage === 0}>
-				<Image alt="" src={LeftArrowIcon} />
-			</ArrowButton>
-		</span>
-		<PageInfo>{`Page ${currPage + 1} of ${numPages}`}</PageInfo>
-		<span>
-			<ArrowButton onClick={() => setPage(currPage + 1)} disabled={currPage === numPages - 1}>
-				<Image alt="" src={RightArrowIcon} />
-			</ArrowButton>
-			<ArrowButton onClick={() => setPage(numPages - 1)} disabled={currPage === numPages - 1}>
-				<Image alt="" src={RightEndArrowIcon} />
-			</ArrowButton>
-		</span>
-	</PaginationContainer>
-);
+const Pagination: FC<PaginationProps> = ({
+	pageIndex,
+	pageCount,
+	canNextPage = true,
+	canPreviousPage = true,
+	setPage,
+	nextPage,
+	previousPage,
+	setIsPageOne,
+}) => {
+	useEffect(() => {
+		if (pageIndex === 0) {
+			console.log('starting interval');
+			setIsPageOne(true);
+		}
+	}, [pageIndex, setIsPageOne]);
+	return (
+		<PaginationContainer className="table-pagination">
+			<span>
+				<ArrowButton onClick={() => setPage(0)} disabled={!canPreviousPage}>
+					<Image alt="" src={LeftEndArrowIcon} />
+				</ArrowButton>
+				<ArrowButton onClick={() => previousPage()} disabled={!canPreviousPage}>
+					<Image alt="" src={LeftArrowIcon} />
+				</ArrowButton>
+			</span>
+			<PageInfo>{`Page ${pageIndex + 1} of ${pageCount}`}</PageInfo>
+			<span>
+				<ArrowButton onClick={() => nextPage()} disabled={!canNextPage}>
+					<Image alt="" src={RightArrowIcon} />
+				</ArrowButton>
+				<ArrowButton onClick={() => setPage(pageCount - 1)} disabled={!canNextPage}>
+					<Image alt="" src={RightEndArrowIcon} />
+				</ArrowButton>
+			</span>
+		</PaginationContainer>
+	);
+};
 
 const PageInfo = styled.span`
 	color: ${(props) => props.theme.colors.black};

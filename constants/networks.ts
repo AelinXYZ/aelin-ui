@@ -16,7 +16,7 @@ export enum NetworkId {
 
 export type NetworkType = {
 	id: NetworkId;
-	name: NetworkName;
+	name: Network;
 };
 
 export const chainIdMapping = {
