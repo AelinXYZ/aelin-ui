@@ -1,30 +1,15 @@
 import { utils } from 'ethers';
-import Wei, { wei } from '@synthetixio/wei';
+import { wei } from '@synthetixio/wei';
 
 import { GRAPH_ENDPOINT } from 'constants/endpoints';
-import { MAX_RESULTS_PER_PAGE } from 'constants/defaults';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 
-export enum GQLDirection {
-	GT = 'gt',
-	LT = 'lt',
-}
-
-type GetPoolsQueryArgs = {
-	timestamp: number;
-	direction: GQLDirection;
-};
-
-const useGetPoolsQuery = ({ timestamp, direction }: GetPoolsQueryArgs) => {
-	const where =
-		direction === GQLDirection.GT ? { timestamp_gt: timestamp } : { timestamp_lt: timestamp };
+const useGetPoolsQuery = () => {
 	return useGetPoolCreateds(
 		GRAPH_ENDPOINT,
 		{
-			first: MAX_RESULTS_PER_PAGE,
 			orderBy: 'timestamp',
 			orderDirection: 'desc',
-			where,
 		},
 		{
 			id: true,

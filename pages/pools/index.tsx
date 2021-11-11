@@ -1,36 +1,57 @@
-import { FC, useMemo, useState } from 'react';
 import { CellProps } from 'react-table';
+import { FC, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-import useGetPoolsQuery, { parsePools, GQLDirection } from 'queries/pools/useGetPoolsQuery';
+import useGetPoolsQuery, { parsePools } from 'queries/pools/useGetPoolsQuery';
 import { PageLayout } from 'sections/Layout';
+import FilterPool from 'sections/AelinPool/FilterPool';
+
 import Table from 'components/Table';
 import { Status } from 'components/DealStatus';
+import { FlexDivStart } from 'components/common';
 import Currency from 'components/Currency';
 import DealStatus from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
-import { formatNumber } from 'utils/numbers';
+import { truncateNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
-import { MAX_RESULTS_PER_PAGE } from 'constants/defaults';
+import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 const Pools: FC = () => {
 	const router = useRouter();
-	// TODO turn this into a query since we are only grabbing the first 10
-	// I have already modified the subgraph code
-	const totalPools = 121;
-	const [currPage, setCurrPage] = useState<number>(0);
-	const [timestampCursor, setTimestampCursor] = useState<number>(Math.round(Date.now() / 1000));
-	const [paginationDirection, setPaginationDirection] = useState<GQLDirection>(GQLDirection.LT);
-	const poolsQuery = useGetPoolsQuery({
-		timestamp: timestampCursor,
-		direction: paginationDirection,
-	});
+	const [isPageOne, setIsPageOne] = useState<boolean>(true);
+
+	const poolsQuery = useGetPoolsQuery();
+
+	useEffect(() => {
+		let timer: ReturnType<typeof setInterval> | null = null;
+		if (isPageOne) {
+			timer = setInterval(() => {
+				poolsQuery.refetch();
+			}, DEFAULT_REQUEST_REFRESH_INTERVAL); // every 30s check for new pools
+		} else if (timer != null) {
+			clearInterval(timer);
+		}
+		return () => {
+			if (timer != null) {
+				clearInterval(timer);
+			}
+		};
+	}, [isPageOne, poolsQuery]);
+
 	const pools = useMemo(() => parsePools(poolsQuery?.data), [poolsQuery?.data]);
 
 	const data = useMemo(() => {
-		console.log('pools returned', pools);
 		const list = pools.map(
-			({ sponsorFee, duration, sponsor, name, address, purchaseToken, purchaseTokenCap }) => ({
+			({
+				sponsorFee,
+				duration,
+				sponsor,
+				name,
+				address,
+				purchaseToken,
+				purchaseTokenCap,
+				timestamp,
+			}) => ({
 				sponsor: truncateAddress(sponsor),
 				name,
 				address: truncateAddress(address),
@@ -39,11 +60,10 @@ const Pools: FC = () => {
 				cap: purchaseTokenCap,
 				duration,
 				fee: sponsorFee,
+				timestamp,
 				status: Status.OPEN, // TODO get status
 			})
 		);
-
-		console.log('note this will change with pagination');
 		if (router.query.active === 'true') {
 			return list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
 		}
@@ -52,29 +72,41 @@ const Pools: FC = () => {
 
 	const columns = useMemo(
 		() => [
-			{ Header: 'sponsor', accessor: 'sponsor' },
-			{ Header: 'name', accessor: 'name' },
+			{
+				Header: 'sponsor',
+				accessor: 'sponsor',
+				Cell: (cellProps: CellProps<any, any>) => {
+					return <>{truncateAddress(cellProps.value)}</>;
+				},
+			},
+			{ Header: 'name', accessor: 'name', width: 100 },
 			{
 				Header: 'purchase token',
 				accessor: 'purchaseToken',
 				// eslint-disable-next-line react/display-name
 				Cell: (cellProps: CellProps<any, any>) => {
-					return <Currency ticker={cellProps.value} />;
+					return (
+						<FlexDivStart>
+							<Currency ticker={cellProps.value} />
+						</FlexDivStart>
+					);
 				},
 			},
 			{
 				Header: 'contributions',
 				accessor: 'contributions',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${formatNumber(cellProps.value)}`;
+					return <FlexDivStart>{truncateNumber(cellProps.value)}</FlexDivStart>;
 				},
+				width: 125,
 			},
 			{
 				Header: 'cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${formatNumber(cellProps.value)}`;
+					return <FlexDivStart>{truncateNumber(cellProps.value)}</FlexDivStart>;
 				},
+				width: 125,
 			},
 			{
 				Header: 'duration',
@@ -82,6 +114,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <TimeLeft timeLeft={cellProps.value} />;
 				},
+				width: 125,
 			},
 			{
 				Header: 'fee',
@@ -89,6 +122,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return `${cellProps.value}%`;
 				},
+				width: 75,
 			},
 			{
 				Header: 'status',
@@ -97,21 +131,28 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
+				width: 75,
 			},
 		],
 		[]
 	);
+
 	return (
 		<PageLayout title={<>All pools</>} subtitle="">
+			<FilterPool
+				setSponsor={(sponsor) => console.log(sponsor)}
+				setCurrency={(currency) => console.log(currency)}
+				setName={(name) => console.log(name)}
+				setStatus={(status) => console.log(status)}
+			/>
 			<Table
-				showPagination={totalPools > MAX_RESULTS_PER_PAGE}
-				numPages={Math.ceil(totalPools / MAX_RESULTS_PER_PAGE)}
-				noResults={data.length === 0}
-				currPage={currPage}
-				setPage={setCurrPage}
-				data={data}
+				noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
+				setIsPageOne={setIsPageOne}
+				data={data && data.length > 0 ? data : []}
+				isLoading={poolsQuery.isLoading}
 				columns={columns}
 				hasLinksToPool={true}
+				showPagination={true}
 			/>
 		</PageLayout>
 	);
