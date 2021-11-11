@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CopyIcon from 'assets/svg/copy.svg';
 import CheckIcon from 'assets/svg/check.svg';
+import MetamaskIcon from 'assets/svg/metamask.svg';
 import Image from 'next/image';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { truncateAddress } from 'utils/crypto';
@@ -10,9 +11,10 @@ import { FlexDivCenterAligned } from 'components/common';
 interface SectionTitleProps {
 	address: string | null;
 	title: string;
+	addToMetamask?: boolean;
 }
 
-const SectionTitle: FC<SectionTitleProps> = ({ address, title }) => {
+const SectionTitle: FC<SectionTitleProps> = ({ address, title, addToMetamask }) => {
 	const [copiedAddress, setCopiedAddress] = useState(false);
 	useEffect(() => {
 		if (copiedAddress) {
@@ -36,6 +38,28 @@ const SectionTitle: FC<SectionTitleProps> = ({ address, title }) => {
 							<Image src={CopyIcon} alt={address} />
 						)}
 					</CopyToClipboard>
+					{addToMetamask && typeof window !== 'undefined' && window.ethereum && (
+						<Image
+							width={20}
+							height={20}
+							alt="Add to metamask"
+							onClick={() => {
+								window.ethereum?.request({
+									method: 'wallet_watchAsset',
+									params: {
+										type: 'ERC20',
+										options: {
+											address: address,
+											symbol: 'aeD-TODO',
+											decimals: 18,
+											image: '',
+										},
+									},
+								});
+							}}
+							src={MetamaskIcon}
+						/>
+					)}
 				</>
 			) : null}
 		</FlexDivCenterAligned>
