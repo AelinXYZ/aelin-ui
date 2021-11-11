@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { truncateAddress } from 'utils/crypto';
 
 import sUSDIcon from 'assets/svg/currency/susd.svg';
 import USDCIcon from 'assets/svg/currency/usdc.svg';
@@ -34,7 +35,7 @@ const Currency: FC<CurrencyProps> = ({ ticker }) => {
 	return (
 		<Container>
 			{iconSrc != null ? <Image src={iconSrc} alt={`${ticker} icon`} /> : null}
-			<Ticker>{ticker}</Ticker>
+			<Ticker>{iconSrc != null ? ticker : truncateAddress(ticker)}</Ticker>
 		</Container>
 	);
 };

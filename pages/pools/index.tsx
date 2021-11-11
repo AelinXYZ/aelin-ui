@@ -8,12 +8,13 @@ import FilterPool from 'sections/AelinPool/FilterPool';
 
 import Table from 'components/Table';
 import { Status } from 'components/DealStatus';
+import { FlexDivStart } from 'components/common';
 import Currency from 'components/Currency';
 import DealStatus from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
-import { formatNumber } from 'utils/numbers';
+import { truncateNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
-import { DEFAULT_REQUEST_REFRESH_INTERVAL, MAX_RESULTS_PER_PAGE } from 'constants/defaults';
+import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -71,29 +72,41 @@ const Pools: FC = () => {
 
 	const columns = useMemo(
 		() => [
-			{ Header: 'sponsor', accessor: 'sponsor' },
-			{ Header: 'name', accessor: 'name' },
+			{
+				Header: 'sponsor',
+				accessor: 'sponsor',
+				Cell: (cellProps: CellProps<any, any>) => {
+					return <>{truncateAddress(cellProps.value)}</>;
+				},
+			},
+			{ Header: 'name', accessor: 'name', width: 100 },
 			{
 				Header: 'purchase token',
 				accessor: 'purchaseToken',
 				// eslint-disable-next-line react/display-name
 				Cell: (cellProps: CellProps<any, any>) => {
-					return <Currency ticker={cellProps.value} />;
+					return (
+						<FlexDivStart>
+							<Currency ticker={cellProps.value} />
+						</FlexDivStart>
+					);
 				},
 			},
 			{
 				Header: 'contributions',
 				accessor: 'contributions',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${formatNumber(cellProps.value)}`;
+					return <FlexDivStart>{truncateNumber(cellProps.value)}</FlexDivStart>;
 				},
+				width: 125,
 			},
 			{
 				Header: 'cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${formatNumber(cellProps.value)}`;
+					return <FlexDivStart>{truncateNumber(cellProps.value)}</FlexDivStart>;
 				},
+				width: 125,
 			},
 			{
 				Header: 'duration',
@@ -101,6 +114,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <TimeLeft timeLeft={cellProps.value} />;
 				},
+				width: 125,
 			},
 			{
 				Header: 'fee',
@@ -108,6 +122,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return `${cellProps.value}%`;
 				},
+				width: 75,
 			},
 			{
 				Header: 'status',
@@ -116,11 +131,12 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
+				width: 75,
 			},
 		],
 		[]
 	);
-	const test = [...data, ...data, ...data, ...data, ...data, ...data, ...data, ...data];
+
 	return (
 		<PageLayout title={<>All pools</>} subtitle="">
 			<FilterPool
@@ -130,13 +146,13 @@ const Pools: FC = () => {
 				setStatus={(status) => console.log(status)}
 			/>
 			<Table
-				noResultsMessage={poolsQuery.isSuccess && test.length === 0 ? 'no results' : null}
+				noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
 				setIsPageOne={setIsPageOne}
-				data={test}
+				data={data && data.length > 0 ? data : []}
 				isLoading={poolsQuery.isLoading}
 				columns={columns}
 				hasLinksToPool={true}
-				showPagination={(test?.length ?? 0) > MAX_RESULTS_PER_PAGE}
+				showPagination={true}
 			/>
 		</PageLayout>
 	);

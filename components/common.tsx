@@ -5,6 +5,11 @@ export const FlexDiv = styled.div`
 	display: flex;
 `;
 
+export const FlexDivStart = styled.div`
+	display: flex;
+	justify-content: flex-start;
+`;
+
 export const FlexDivCol = styled.div`
 	display: flex;
 	flex-direction: column;

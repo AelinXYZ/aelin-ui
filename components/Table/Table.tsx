@@ -16,7 +16,7 @@ import Pagination from './Pagination';
 
 export type TablePalette = 'primary';
 
-const CARD_HEIGHT = '40px';
+const CARD_HEIGHT = '70px';
 
 type ColumnWithSorting<D extends object = {}> = Column<D> & {
 	sortType?: string | ((rowA: Row<any>, rowB: Row<any>) => -1 | 1);
@@ -50,9 +50,6 @@ export const Table: FC<TableProps> = ({
 	maxRows = MAX_RESULTS_PER_PAGE,
 	setIsPageOne,
 }) => {
-	console.log('pre data length', data.length);
-	console.log('showPagination', showPagination);
-	// TODO: How do I tell Typescript about the usePagination props?
 	const {
 		getTableProps,
 		getTableBodyProps,
@@ -123,40 +120,38 @@ export const Table: FC<TableProps> = ({
 					))}
 					{isLoading ? (
 						<StyledSpinner src={Spinner} />
-					) : (
-						page.length > 0 && (
-							<TableBody className="table-body" {...getTableBodyProps()}>
-								{page.map((row: Row, i: number) => {
-									prepareRow(row);
-									const classNames = ['table-body-row'];
-									const tableBodyRow = (
-										<TableBodyRow className={classNames.join(' ')} {...row.getRowProps()}>
-											{row.cells.map((cell: Cell, idx) => (
-												<TableCell
-													key={`cell-${idx}`}
-													className="table-body-cell"
-													{...cell.getCellProps()}
-												>
-													{cell.render('Cell')}
-												</TableCell>
-											))}
-										</TableBodyRow>
-									);
-									return hasLinksToPool ? (
-										<Link
-											key={`tableRowLink-${i}`}
-											// @ts-ignore
-											href={ROUTES.Pools.PoolView(row?.original?.address ?? '')}
-										>
-											{tableBodyRow}
-										</Link>
-									) : (
-										tableBodyRow
-									);
-								})}
-							</TableBody>
-						)
-					)}
+					) : page.length > 0 ? (
+						<TableBody className="table-body" {...getTableBodyProps()}>
+							{page.map((row: Row, i: number) => {
+								prepareRow(row);
+								const classNames = ['table-body-row'];
+								const tableBodyRow = (
+									<TableBodyRow className={classNames.join(' ')} {...row.getRowProps()}>
+										{row.cells.map((cell: Cell, idx) => (
+											<TableCell
+												key={`cell-${idx}`}
+												className="table-body-cell"
+												{...cell.getCellProps()}
+											>
+												{cell.render('Cell')}
+											</TableCell>
+										))}
+									</TableBodyRow>
+								);
+								return hasLinksToPool ? (
+									<Link
+										key={`tableRowLink-${i}`}
+										// @ts-ignore
+										href={ROUTES.Pools.PoolView(row?.original?.address ?? '')}
+									>
+										{tableBodyRow}
+									</Link>
+								) : (
+									tableBodyRow
+								);
+							})}
+						</TableBody>
+					) : null}
 				</ReactTable>
 			</TableContainer>
 			{noResultsMessage}
