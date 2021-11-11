@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { NetworkId } from 'constants/networks';
+import type { MetaMaskInpageProvider } from '@metamask/providers';
 
 declare global {
 	interface Window {
@@ -14,11 +15,6 @@ declare global {
 				network: NetworkId;
 			};
 		};
-		ethereum?: {
-			on: (event: string, cb: () => void) => void;
-			ethereum: ethers.providers.Provider | undefined;
-			networkVersion: NetworkId;
-			isMetaMask: boolean;
-		};
+		ethereum?: MetaMaskInpageProvider;
 	}
 }
