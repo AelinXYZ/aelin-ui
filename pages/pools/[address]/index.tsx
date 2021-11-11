@@ -90,13 +90,47 @@ const Pool: FC = () => {
 		],
 		[]
 	);
-	const dealAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
+	const dealAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+	const dealVestingGridItems = useMemo(
+		() => [
+			{
+				header: 'Name',
+				subText: 'some subText',
+			},
+			{
+				header: 'Amount of Deal Tokens',
+				subText: 'some subText',
+			},
+			{
+				header: 'Exchange rate',
+				subText: 'some subText',
+			},
+			{
+				header: 'Underlying Deal Token',
+				subText: 'some subText',
+			},
+			{
+				header: 'Vesting Cliff',
+				subText: 'some subText',
+			},
+			{
+				header: 'Vesting Period',
+				subText: 'some subText',
+			},
+			{
+				header: 'Total Underlying Claimed',
+				subText: 'some subText',
+			},
+		],
+		[]
+	);
 	return (
 		<ViewPool
 			dealAddress={dealAddress}
 			dealGridItems={dealGridItems}
 			poolGridItems={poolGridItems}
+			dealVestingGridItems={dealVestingGridItems}
 			poolAddress={poolAddress}
 		/>
 	);
