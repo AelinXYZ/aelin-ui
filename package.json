@@ -13,7 +13,6 @@
 		"codegen-ts": "codegen-graph-ts gen -m reactquery -s manifest.json -o subgraph.ts"
 	},
 	"dependencies": {
-		"@metamask/detect-provider": "1.2.0",
 		"@synthetixio/contracts-interface": "2.50.4-ovm-alpha",
 		"@synthetixio/providers": "2.48.4",
 		"@synthetixio/transaction-notifier": "2.48.4",
@@ -40,6 +39,7 @@
 		"unstated-next": "1.1.0"
 	},
 	"devDependencies": {
+		"@metamask/providers": "8.1.1",
 		"@types/lodash": "4.14.175",
 		"@types/react": "17.0.21",
 		"@types/react-copy-to-clipboard": "5.0.1",
