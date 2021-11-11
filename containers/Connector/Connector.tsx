@@ -4,7 +4,7 @@ import {
 	TransactionNotifier,
 	TransactionNotifierInterface,
 } from '@synthetixio/transaction-notifier';
-import detectEthereumProvider from '@metamask/detect-provider';
+import { detectEthereumProvider } from 'utils/metmask-detect-provider';
 import { loadProvider } from '@synthetixio/providers';
 import { ethers } from 'ethers';
 
@@ -17,14 +17,9 @@ import { chainIdMapping, NetworkId, Network as NetworkName, NetworkType } from '
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 
-type EthereumProvider = {
-	isMetaMask: boolean;
-	chainId: string;
-};
-
 export async function getDefaultNetworkId(): Promise<NetworkId> {
 	try {
-		const provider = (await detectEthereumProvider()) as EthereumProvider;
+		const provider = await detectEthereumProvider();
 		if (provider && provider.chainId) {
 			return Number(provider.chainId);
 		}
@@ -49,10 +44,8 @@ const useConnector = () => {
 		LOCAL_STORAGE_KEYS.SELECTED_WALLET,
 		''
 	);
-	const [
-		transactionNotifier,
-		setTransactionNotifier,
-	] = useState<TransactionNotifierInterface | null>(null);
+	const [transactionNotifier, setTransactionNotifier] =
+		useState<TransactionNotifierInterface | null>(null);
 
 	useEffect(() => {
 		const init = async () => {
