@@ -68,7 +68,7 @@ function TokenDropdown(props: TokenDropdownProps) {
 					})(option, searchTerm);
 				}}
 				noOptionsMessage={() => 'Not a valid Address'}
-				placeholder="Token Address"
+				placeholder="Select Token"
 				onChange={(x, meta) => {
 					props.onValidationError('');
 					setCustomToken(undefined);

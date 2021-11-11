@@ -11,29 +11,49 @@ import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import TokenDropdown from 'components/TokenDropdown';
 
-import validateCreatePool from 'utils/validate/create-pool';
+import validateCreatePool, { CreatePoolValues } from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
+import { getDuration, formatDuration } from 'utils/time';
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 
 	const handleSubmit = async () => {
-		if (!contracts) return;
-		const name = utils.formatBytes32String('Test token');
-		const symbol = utils.formatBytes32String('WAGMI');
-		const purchaseTokenCap = utils.parseEther('100000');
-		const purchaseTokenAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
-		const duration = 29388523;
-		const sponsorFee = '30';
-		const purchaseExpiry = 30 * 24 * 3600;
-		const tx = await contracts.AelinPoolFactory.createPool(
-			name,
-			symbol,
-			purchaseTokenCap,
-			purchaseTokenAddress,
-			duration,
+		if (!contracts || !walletAddress) return;
+		const { formatBytes32String, parseEther } = utils;
+		const now = new Date();
+		const {
+			poolCap,
+			purchaseToken,
 			sponsorFee,
+			durationDays,
+			durationHours,
+			durationMinutes,
+			poolName,
+			poolSymbol,
+			purchaseExpiryDays,
+			purchaseExpiryHours,
+			purchaseExpiryMinutes,
+		} = formik.values;
+
+		const duration = getDuration(now, durationDays, durationHours, durationMinutes);
+		const purchaseExpiry = getDuration(
+			now,
+			purchaseExpiryDays,
+			purchaseExpiryHours,
+			purchaseExpiryMinutes
+		);
+
+		const tx = await contracts.AelinPoolFactory!.createPool(
+			formatBytes32String(poolName),
+			formatBytes32String(poolSymbol),
+			parseEther(poolCap.toString()),
+			// purchaseToken,
+			// we need a kovan address for now to make it work
+			'0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f',
+			duration,
+			sponsorFee.toString(),
 			purchaseExpiry,
 			{ gasLimit: 1000000 }
 		);
@@ -53,7 +73,7 @@ const Create: FC = () => {
 			purchaseExpiryHours: 0,
 			purchaseExpiryMinutes: 0,
 		},
-		// validate: validateCreatePool,
+		validate: validateCreatePool,
 		onSubmit: handleSubmit,
 	});
 	const gridItems = useMemo(
@@ -224,42 +244,51 @@ const Create: FC = () => {
 		],
 		[formik]
 	);
+
 	const summaryItems = useMemo(
 		() => [
 			{
 				label: 'Sponsor',
-				text: walletAddress != null ? truncateAddress(walletAddress) : 'Connect Wallet',
+				text: !!walletAddress ? truncateAddress(walletAddress ?? '') : 'Connect Wallet',
 			},
 			{
-				label: 'Cap:',
-				text: 'some text',
+				label: 'Cap',
+				text: formik.values.poolCap,
 			},
 			{
-				label: 'Currency:',
-				text: 'some text',
+				label: 'Currency',
+				text: formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : '',
 			},
 			{
-				label: 'Fee:',
-				text: 'some text',
+				label: 'Fee',
+				text: `${formik.values.sponsorFee ?? 0}%`,
 			},
 			{
-				label: 'Duration:',
-				text: 'some text',
+				label: 'Duration',
+				text: formatDuration(
+					formik.values.durationDays,
+					formik.values.durationHours,
+					formik.values.durationMinutes
+				),
 			},
 			{
-				label: 'Name:',
-				text: 'some text',
+				label: 'Name',
+				text: formik.values.poolName,
 			},
 			{
-				label: 'Symbol:',
-				text: 'some text',
+				label: 'Symbol',
+				text: formik.values.poolSymbol,
 			},
 			{
-				label: 'Expiry:',
-				text: 'some text',
+				label: 'Expiry',
+				text: formatDuration(
+					formik.values.purchaseExpiryDays,
+					formik.values.purchaseExpiryHours,
+					formik.values.purchaseExpiryMinutes
+				),
 			},
 		],
-		[walletAddress]
+		[walletAddress, formik]
 	);
 	return (
 		<PageLayout title={<>CreatePool</>} subtitle="">

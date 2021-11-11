@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { ONE_YEAR_IN_SECS, ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants/time';
 import { convertToSeconds } from 'utils/time';
 
-interface CreatePoolValues {
+export interface CreatePoolValues {
 	purchaseToken: string;
 	poolName: string;
 	poolSymbol: string;
@@ -39,8 +39,8 @@ const validateCreatePool = (values: CreatePoolValues) => {
 
 	if (!values.sponsorFee) {
 		errors.sponsorFee = 'Required';
-	} else if (values.sponsorFee > 0.98) {
-		errors.sponsorFee = 'Must be <= 0.98';
+	} else if (values.sponsorFee > 98) {
+		errors.sponsorFee = 'Must be <= 98';
 	}
 
 	if (!values.durationDays && !values.durationHours && !values.durationMinutes) {
