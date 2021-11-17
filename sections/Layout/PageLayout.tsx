@@ -2,7 +2,6 @@ import { FC, ReactChildren, ReactChild } from 'react';
 import styled from 'styled-components';
 
 import Header from '../Header';
-import SearchInput from 'components/SearchInput';
 
 type PageLayoutProps = {
 	children: ReactChildren | ReactChild | (JSX.Element | null)[];
@@ -15,9 +14,6 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 		<Container>
 			<Header />
 			<Content>
-				<ColSide>
-					<SearchInput />
-				</ColSide>
 				<ColCenter>
 					<ContentHeader>
 						<ContentTitle>{title}</ContentTitle>
@@ -25,7 +21,6 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 					</ContentHeader>
 					<ContentBody>{children}</ContentBody>
 				</ColCenter>
-				<ColSide />
 			</Content>
 		</Container>
 	);
@@ -60,10 +55,6 @@ const ContentSubtitle = styled.p`
 `;
 
 const ContentBody = styled.div``;
-
-const ColSide = styled.div`
-	flex: 1;
-`;
 
 const ColCenter = styled.div`
 	width: 940px;

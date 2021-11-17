@@ -154,7 +154,7 @@ export const Table: FC<TableProps> = ({
 					) : null}
 				</ReactTable>
 			</TableContainer>
-			{noResultsMessage}
+			<NoResultsContainer>{noResultsMessage}</NoResultsContainer>
 			{showPagination ? (
 				<Pagination
 					setIsPageOne={setIsPageOne}
@@ -210,6 +210,12 @@ const SortIconContainer = styled.span`
 	display: flex;
 	margin-left: 5px;
 	flex-direction: column;
+`;
+
+const NoResultsContainer = styled.div`
+	height: 150px;
+	text-align: center;
+	padding-top: 70px;
 `;
 
 const ReactTable = styled.div<{ palette: TablePalette }>`

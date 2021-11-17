@@ -25,17 +25,17 @@ const FilterPool: FC<FilterPoolProps> = ({ setSponsor, setCurrency, setName, set
 			{isVisible ? (
 				<FlexDivRow>
 					<TextInput
-						width="20%"
+						width="22%"
 						placeholder="sponsor"
 						onChange={(e) => setSponsor(e.target.value)}
 					/>
 					<TextInput
-						width="20%"
+						width="22%"
 						placeholder="currency"
 						onChange={(e) => setCurrency(e.target.value)}
 					/>
-					<TextInput width="20%" placeholder="name" onChange={(e) => setName(e.target.value)} />
-					<TextInput width="20%" placeholder="status" onChange={(e) => setStatus(e.target.value)} />
+					<TextInput width="22%" placeholder="name" onChange={(e) => setName(e.target.value)} />
+					<TextInput width="22%" placeholder="status" onChange={(e) => setStatus(e.target.value)} />
 				</FlexDivRow>
 			) : null}
 		</Container>
