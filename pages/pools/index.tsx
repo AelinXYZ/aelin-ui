@@ -7,10 +7,9 @@ import { PageLayout } from 'sections/Layout';
 import FilterPool from 'sections/AelinPool/FilterPool';
 
 import Table from 'components/Table';
-import { Status } from 'components/DealStatus';
 import { FlexDivStart } from 'components/common';
 import Currency from 'components/Currency';
-import DealStatus from 'components/DealStatus';
+import DealStatus, { Status } from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
 import { truncateNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
@@ -18,6 +17,11 @@ import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 const Pools: FC = () => {
 	const router = useRouter();
+	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
+	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
+	const [nameFilter, setNameFilter] = useState<string | null>(null);
+	// TODO implement dropdown
+	const [statusFilter, setStatusFilter] = useState<Status | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
@@ -41,7 +45,7 @@ const Pools: FC = () => {
 	const pools = useMemo(() => parsePools(poolsQuery?.data), [poolsQuery?.data]);
 
 	const data = useMemo(() => {
-		const list = pools.map(
+		let list = pools.map(
 			({
 				sponsorFee,
 				duration,
@@ -65,10 +69,23 @@ const Pools: FC = () => {
 			})
 		);
 		if (router.query.active === 'true') {
-			return list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
+			list = list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
+		}
+		if (sponsorFilter != null) {
+			list = list.filter(({ sponsor }) =>
+				sponsor.toLowerCase().includes(sponsorFilter.toLowerCase())
+			);
+		}
+		if (currencyFilter != null) {
+			list = list.filter(({ purchaseToken }) =>
+				purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
+			);
+		}
+		if (nameFilter != null) {
+			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
 		return list;
-	}, [pools, router.query.active]);
+	}, [pools, router.query.active, sponsorFilter, currencyFilter, nameFilter]);
 
 	const columns = useMemo(
 		() => [
@@ -140,10 +157,10 @@ const Pools: FC = () => {
 	return (
 		<PageLayout title={<>All pools</>} subtitle="">
 			<FilterPool
-				setSponsor={(sponsor) => console.log(sponsor)}
-				setCurrency={(currency) => console.log(currency)}
-				setName={(name) => console.log(name)}
-				setStatus={(status) => console.log(status)}
+				setSponsor={setSponsorFilter}
+				setCurrency={setCurrencyFilter}
+				setName={setNameFilter}
+				setStatus={setStatusFilter}
 			/>
 			<Table
 				noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
