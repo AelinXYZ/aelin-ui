@@ -2,7 +2,7 @@ import { CellProps } from 'react-table';
 import { FC, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-import useGetPoolsQuery, { parsePools } from 'queries/pools/useGetPoolsQuery';
+import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 import { PageLayout } from 'sections/Layout';
 import FilterPool from 'sections/AelinPool/FilterPool';
 
@@ -42,7 +42,7 @@ const Pools: FC = () => {
 		};
 	}, [isPageOne, poolsQuery]);
 
-	const pools = useMemo(() => parsePools(poolsQuery?.data), [poolsQuery?.data]);
+	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
 
 	const data = useMemo(() => {
 		let list = pools.map(
@@ -56,10 +56,10 @@ const Pools: FC = () => {
 				purchaseTokenCap,
 				timestamp,
 			}) => ({
-				sponsor: truncateAddress(sponsor),
+				sponsor,
 				name,
-				address: truncateAddress(address),
-				purchaseToken: truncateAddress(purchaseToken), // TODO get symbol
+				address,
+				purchaseToken, // TODO get symbol
 				contributions: 1000000, // TODO get contributions
 				cap: purchaseTokenCap,
 				duration,

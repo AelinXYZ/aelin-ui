@@ -26,32 +26,28 @@ const useGetPoolsQuery = () => {
 	);
 };
 
-export const parsePools = (poolData?: PoolCreatedResult[]) => {
-	return (poolData ?? []).map(
-		({
-			id,
-			timestamp,
-			name,
-			symbol,
-			duration,
-			purchaseToken,
-			purchaseExpiry,
-			purchaseTokenCap,
-			sponsor,
-			sponsorFee,
-		}: any) => ({
-			address: id,
-			timestamp: Number(timestamp) * 1000,
-			name: utils.parseBytes32String(name.split('-')[1]),
-			symbol: utils.parseBytes32String(symbol.split('-')[1]),
-			duration: Number(duration) * 1000,
-			purchaseToken: purchaseToken,
-			purchaseExpiry: Number(purchaseExpiry) * 1000,
-			purchaseTokenCap: wei(purchaseTokenCap.toString()),
-			sponsor: sponsor,
-			sponsorFee: Number(sponsorFee) / 100,
-		})
-	);
-};
+export const parsePool = ({
+	id,
+	timestamp,
+	name,
+	symbol,
+	duration,
+	purchaseToken,
+	purchaseExpiry,
+	purchaseTokenCap,
+	sponsor,
+	sponsorFee,
+}: PoolCreatedResult) => ({
+	address: id,
+	timestamp: Number(timestamp) * 1000,
+	name: utils.parseBytes32String(name.split('-')[1]),
+	symbol: utils.parseBytes32String(symbol.split('-')[1]),
+	duration: Number(duration) * 1000,
+	purchaseToken: purchaseToken,
+	purchaseExpiry: Number(purchaseExpiry) * 1000,
+	purchaseTokenCap: wei(purchaseTokenCap.toString()),
+	sponsor: sponsor,
+	sponsorFee: Number(sponsorFee) / 100,
+});
 
 export default useGetPoolsQuery;

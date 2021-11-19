@@ -2,11 +2,10 @@ import { FC, useState, MouseEventHandler } from 'react';
 import styled, { css } from 'styled-components';
 import BaseModal from '../BaseModal';
 import { FlexDivRow } from '../common';
+import Button from 'components/Button';
 
 interface ActionBoxProps {
-	onPurchase?: MouseEventHandler<HTMLButtonElement>;
-	onAccept?: MouseEventHandler<HTMLButtonElement>;
-	onWithdraw?: MouseEventHandler<HTMLButtonElement>;
+	onSubmit: MouseEventHandler<HTMLButtonElement>;
 	input: {
 		type: string;
 		placeholder: string;
@@ -15,15 +14,20 @@ interface ActionBoxProps {
 	isPool: boolean;
 }
 
+enum TransactionType {
+	Purchase = 'PURCHASE',
+	Accept = 'ACCEPT',
+	Withdraw = 'WITHDRAW',
+}
+
 const ActionBox: FC<ActionBoxProps> = ({
-	onPurchase,
-	onAccept,
-	onWithdraw,
+	onSubmit,
 	input: { type, placeholder, label },
 	isPool,
 }) => {
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
+	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
 
 	return (
 		<Container>
@@ -47,20 +51,48 @@ const ActionBox: FC<ActionBoxProps> = ({
 			<ActionButton
 				isWithdraw={!isPool && !isDealAccept}
 				onClick={(e) => {
-					if (isPool && onPurchase && typeof onPurchase === 'function') {
-						onPurchase(e);
-					} else if (!isPool && isDealAccept && onAccept && typeof onAccept === 'function') {
-						onAccept(e);
-					} else if (!isPool && !isDealAccept && onWithdraw && typeof onWithdraw === 'function') {
-						onWithdraw(e);
+					if (isPool) {
+						setTxType(TransactionType.Purchase);
+					} else if (!isPool && isDealAccept) {
+						setTxType(TransactionType.Accept);
+					} else if (!isPool && !isDealAccept) {
+						setTxType(TransactionType.Withdraw);
 					}
 					setShowTxModal(true);
 				}}
 			>
 				{isPool ? 'Purchase' : isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
 			</ActionButton>
-			<BaseModal title="test" setIsModalOpen={setShowTxModal} isModalOpen={showTxModal}>
-				<>Hello</>
+			<BaseModal
+				title="Confirm Transaction"
+				setIsModalOpen={setShowTxModal}
+				isModalOpen={showTxModal}
+			>
+				{/* TODO create new components for the transaction feedback here */}
+				{txType === TransactionType.Purchase ? (
+					<div>
+						<div>You are going to purchase</div>
+						<SubmitButton isWithdraw={false} onClick={(e) => onSubmit()}>
+							Confirm Purchase
+						</SubmitButton>
+					</div>
+				) : null}
+				{txType === TransactionType.Accept ? (
+					<div>
+						<div>You are accepting</div>
+						<SubmitButton isWithdraw={false} onClick={(e) => onSubmit()}>
+							Confirm Accept
+						</SubmitButton>
+					</div>
+				) : null}
+				{txType === TransactionType.Withdraw ? (
+					<div>
+						<div>You are withdrawing</div>
+						<SubmitButton isWithdraw={true} onClick={(e) => onSubmit()}>
+							Confirm Withdraw
+						</SubmitButton>
+					</div>
+				) : null}
 			</BaseModal>
 		</Container>
 	);
@@ -87,6 +119,12 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 				cursor: pointer;
 			}
 		`}
+`;
+
+const SubmitButton = styled(Button)<{ isWithdraw: boolean }>`
+	background-color: ${(props) =>
+		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
 `;
 
 const InnerInputContainer = styled.div`
