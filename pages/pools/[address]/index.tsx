@@ -2,28 +2,41 @@ import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ViewPool from 'sections/AelinPool/ViewPool';
 
+import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
+import { parsePool } from 'queries/pools/useGetPoolsQuery';
+import { truncateAddress } from 'utils/crypto';
+import TimeLeft from 'components/TimeLeft';
+
 const Pool: FC = () => {
 	const router = useRouter();
 	const { address } = router.query;
 	const poolAddress = (address ?? '') as string;
 
+	const poolQuery = useGetPoolByIdQuery({ id: poolAddress });
+
+	const pool = useMemo(
+		// @ts-ignore
+		() => ((poolQuery?.data ?? null) != null ? parsePool(poolQuery.data) : null),
+		[poolQuery?.data]
+	);
+
 	const poolGridItems = useMemo(
 		() => [
 			{
 				header: 'Sponsor',
-				subText: 'some subText',
+				subText: truncateAddress(pool?.sponsor ?? ''),
 			},
 			{
 				header: 'My Capital',
-				subText: 'some subText',
+				subText: '',
 			},
 			{
-				header: 'Total Capital',
-				subText: 'some subText',
+				header: 'Purchase Token Cap',
+				subText: pool?.purchaseTokenCap.toNumber() ?? '',
 			},
 			{
-				header: 'Currency',
-				subText: 'some subText',
+				header: 'Purchase Token',
+				subText: truncateAddress(pool?.purchaseToken ?? ''),
 			},
 			{
 				header: 'Ownership',
@@ -35,18 +48,18 @@ const Pool: FC = () => {
 			},
 			{
 				header: 'Sponsor Fee',
-				subText: 'some subText',
+				subText: pool?.sponsorFee,
 			},
 			{
-				header: 'Expiration',
-				subText: 'some subText',
+				header: 'Purchase Expiration',
+				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
 			},
 			{
-				header: 'Contributions',
-				subText: 'some subText',
+				header: 'Pool Duration',
+				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
 			},
 		],
-		[]
+		[pool]
 	);
 
 	const dealGridItems = useMemo(

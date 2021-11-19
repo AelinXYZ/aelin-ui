@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export type GridItem = {
 	header: string | JSX.Element;
-	subText: string;
+	subText: string | number | JSX.Element;
 	formField?: JSX.Element;
 	formError?: string | null | undefined;
 };

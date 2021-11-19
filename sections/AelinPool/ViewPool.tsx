@@ -27,7 +27,11 @@ const ViewPool: FC<ViewPoolProps> = ({
 	dealVestingGridItems,
 }) => (
 	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
-		<SectionDetails isPool={true} gridItems={poolGridItems} />
+		<SectionDetails
+			isPool={true}
+			gridItems={poolGridItems}
+			onSubmit={() => console.log('purchase me')}
+		/>
 		<SectionWrapper>
 			<ContentHeader>
 				<ContentTitle>
@@ -43,7 +47,12 @@ const ViewPool: FC<ViewPoolProps> = ({
 						<SectionTitle address={dealAddress} title="Aelin Deal" />
 					</ContentTitle>
 				</ContentHeader>
-				<SectionDetails isPool={false} gridItems={dealGridItems} />
+				{/* TODO toggle on submit method based on withdraw or submit */}
+				<SectionDetails
+					isPool={false}
+					gridItems={dealGridItems}
+					onSubmit={() => console.log('click me to accept or reject')}
+				/>
 			</SectionWrapper>
 		) : null}
 		{dealAddress != null && dealVestingGridItems != null ? (

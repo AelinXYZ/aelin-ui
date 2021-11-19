@@ -61,11 +61,11 @@ const StyledModal = styled.div`
 	padding: 15px;
 `;
 const StyledModalOverlay = styled.div`
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	height: 100vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
