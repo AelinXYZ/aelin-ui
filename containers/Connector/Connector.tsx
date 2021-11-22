@@ -35,7 +35,7 @@ const useConnector = () => {
 		id: NetworkId.Mainnet,
 		name: NetworkName.Mainnet,
 	});
-	const [provider, setProvider] = useState<ethers.providers.Provider | null>(null);
+	const [provider, setProvider] = useState<ethers.providers.Provider | undefined>(undefined);
 	const [signer, setSigner] = useState<ethers.Signer | null>(null);
 	const [onboard, setOnboard] = useState<ReturnType<typeof initOnboard> | null>(null);
 	const [isAppReady, setAppReady] = useState(false);

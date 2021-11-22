@@ -1,32 +1,46 @@
-import { FC } from 'react';
-import { FormikHandlers } from 'formik';
+import { FC, useMemo } from 'react';
+import { FormikProps } from 'formik';
 
-import { PageLayout } from 'sections/Layout';
 import Grid from 'components/Grid';
 import { GridItem } from 'components/Grid/Grid';
 import SummaryBox from 'components/SummaryBox';
-import { SummaryItem } from 'components/SummaryBox/SummaryBox';
+import { SummaryItem, CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { FlexDiv } from 'components/common';
+import { Transaction } from 'constants/transactions';
 
 export interface CreateFormProps {
-	formik: FormikHandlers;
+	formik: FormikProps<any>;
 	gridItems: GridItem[];
 	summaryItems: SummaryItem[];
-	type: 'Pool' | 'Deal';
+	txType: CreateTxType;
+	txState: Transaction;
+	txHash: string | null;
 }
 
-const CreateForm: FC<CreateFormProps> = ({ formik, gridItems, summaryItems, type }) => {
+const CreateForm: FC<CreateFormProps> = ({
+	txState,
+	txHash,
+	formik,
+	gridItems,
+	summaryItems,
+	txType,
+}) => {
+	const isValidForm = useMemo(
+		() => Object.keys(formik?.errors ?? {}).length === 0,
+		[formik.errors]
+	);
 	return (
-		<form onSubmit={formik.handleSubmit}>
-			<FlexDiv>
-				<Grid hasInputFields={true} gridItems={gridItems} />
-				<SummaryBox
-					summaryText={`Create ${type}`}
-					header={`${type} summary`}
-					summaryItems={summaryItems}
-				/>
-			</FlexDiv>
-		</form>
+		<FlexDiv>
+			<Grid hasInputFields={true} gridItems={gridItems} />
+			<SummaryBox
+				formik={formik}
+				isValidForm={isValidForm}
+				txType={txType}
+				summaryItems={summaryItems}
+				txState={txState}
+				txHash={txHash}
+			/>
+		</FlexDiv>
 	);
 };
 

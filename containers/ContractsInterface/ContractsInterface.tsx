@@ -11,7 +11,10 @@ type AelinContracts = {
 	AelinPoolFactory: Contract | null;
 };
 
-const getKeyValue = <T extends object, U extends keyof T>(obj: T) => (key: U) => obj[key];
+const getKeyValue =
+	<T extends object, U extends keyof T>(obj: T) =>
+	(key: U) =>
+		obj[key];
 
 const useContractsInterface = () => {
 	const { walletAddress, network, signer } = Connector.useContainer();
