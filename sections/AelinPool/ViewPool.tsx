@@ -29,7 +29,7 @@ const ViewPool: FC<ViewPoolProps> = ({
 }) => (
 	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 		<SectionDetails
-			actionBoxType={ActionBoxType.Pool}
+			actionBoxType={ActionBoxType.FundPool}
 			gridItems={poolGridItems}
 			onSubmit={(value) => console.log(`purchase ${value} tokens`)}
 		/>
@@ -39,7 +39,7 @@ const ViewPool: FC<ViewPoolProps> = ({
 					<SectionTitle address={null} title="Create Deal" />
 				</ContentTitle>
 			</ContentHeader>
-			<CreateDeal />
+			<CreateDeal poolAddress={poolAddress} />
 		</SectionWrapper>
 		{dealAddress != null && dealGridItems != null ? (
 			<SectionWrapper>

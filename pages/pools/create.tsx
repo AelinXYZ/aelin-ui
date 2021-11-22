@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import { utils } from 'ethers';
 
@@ -7,17 +7,23 @@ import CreateForm from 'sections/shared/CreateForm';
 import { FlexDivRow } from 'components/common';
 import Connector from 'containers/Connector';
 import ContractsInterface from 'containers/ContractsInterface';
+import TransactionNotifier from 'containers/TransactionNotifier';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import TokenDropdown from 'components/TokenDropdown';
+import { Transaction } from 'constants/transactions';
 
 import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
+import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
+	const { monitorTransaction } = TransactionNotifier.useContainer();
+	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
+	const [txHash, setTxHash] = useState<string | null>(null);
 
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;
@@ -44,19 +50,32 @@ const Create: FC = () => {
 			purchaseExpiryHours,
 			purchaseExpiryMinutes
 		);
-
-		const tx = await contracts.AelinPoolFactory!.createPool(
-			formatBytes32String(poolName),
-			formatBytes32String(poolSymbol),
-			parseEther(poolCap.toString()),
-			// purchaseToken,
-			// we need a kovan address for now to make it work
-			'0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f',
-			duration,
-			sponsorFee.toString(),
-			purchaseExpiry,
-			{ gasLimit: 1000000 }
-		);
+		try {
+			const tx = await contracts.AelinPoolFactory!.createPool(
+				formatBytes32String(poolName),
+				formatBytes32String(poolSymbol),
+				parseEther(poolCap.toString()),
+				// purchaseToken,
+				// we need a kovan address for now to make it work
+				'0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f',
+				duration,
+				sponsorFee.toString(),
+				purchaseExpiry,
+				{ gasLimit: 1000000 }
+			);
+			if (tx) {
+				setTxState(Transaction.WAITING);
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => {
+						setTxHash(tx.hash);
+						setTxState(Transaction.SUCCESS);
+					},
+				});
+			}
+		} catch (e) {
+			setTxState(Transaction.FAILED);
+		}
 	};
 
 	const formik = useFormik({
@@ -292,7 +311,14 @@ const Create: FC = () => {
 	);
 	return (
 		<PageLayout title={<>CreatePool</>} subtitle="">
-			<CreateForm formik={formik} gridItems={gridItems} summaryItems={summaryItems} type="Pool" />
+			<CreateForm
+				formik={formik}
+				gridItems={gridItems}
+				summaryItems={summaryItems}
+				txType={CreateTxType.CreatePool}
+				txState={txState}
+				txHash={txHash}
+			/>
 		</PageLayout>
 	);
 };

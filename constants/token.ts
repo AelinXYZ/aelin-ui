@@ -42,7 +42,7 @@ type ValidateErc20AddressReturn =
 
 export const validateErc20Address = async (
 	address: string,
-	provider: ethers.providers.Provider | null
+	provider: ethers.providers.Provider | undefined
 ): Promise<ValidateErc20AddressReturn> => {
 	if (!provider) return { result: 'failure', errorMessage: 'Wallet not connected' };
 	const contract = new ethers.Contract(address, erc20Abi, provider);

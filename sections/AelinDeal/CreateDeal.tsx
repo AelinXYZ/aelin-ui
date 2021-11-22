@@ -1,20 +1,126 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
+import { ethers } from 'ethers';
 
-// import Connector from 'containers/Connector';
+import Connector from 'containers/Connector';
 
 import { FlexDivRow } from 'components/common';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import { truncateAddress } from 'utils/crypto';
 import { formatNumber } from 'utils/numbers';
-import { formatDuration } from 'utils/time';
+import { getDuration, formatDuration } from 'utils/time';
+import { poolAbi } from 'contracts/pool';
+import { erc20Abi } from 'contracts/erc20';
 
 import validateCreateDeal from 'utils/validate/create-deal';
 import CreateForm from 'sections/shared/CreateForm';
 import TokenDropdown from 'components/TokenDropdown';
+import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+import { Transaction } from 'constants/transactions';
+import TransactionNotifier from 'containers/TransactionNotifier';
 
-const CreateDeal: FC = () => {
+interface CreateDealProps {
+	poolAddress: string;
+}
+
+const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
+	const { walletAddress, signer, provider } = Connector.useContainer();
+	const { monitorTransaction } = TransactionNotifier.useContainer();
+	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
+	const [txHash, setTxHash] = useState<string | null>(null);
+
+	const handleSubmit = async () => {
+		if (!walletAddress || !signer) return;
+		const now = new Date();
+		const {
+			underlyingDealToken,
+			purchaseTokenTotal,
+			underlyingDealTokenTotal,
+			vestingPeriodDays,
+			vestingPeriodHours,
+			vestingPeriodMinutes,
+			vestingCliffDays,
+			vestingCliffHours,
+			vestingCliffMinutes,
+			proRataRedemptionDays,
+			proRataRedemptionHours,
+			proRataRedemptionMinutes,
+			openRedemptionDays,
+			openRedemptionHours,
+			openRedemptionMinutes,
+			holderFundingExpiryDays,
+			holderFundingExpiryHours,
+			holderFundingExpiryMinutes,
+			holder,
+		} = formik.values;
+
+		const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+		const underlyingDealContract = new ethers.Contract(underlyingDealToken, erc20Abi, provider);
+
+		const purchaseTokenDecimals = await poolContract.decimals();
+		const underlyingDealTokenDecimals = await underlyingDealContract.decimals();
+
+		const vestingCliffDuration = getDuration(
+			now,
+			vestingCliffDays,
+			vestingCliffHours,
+			vestingCliffMinutes
+		);
+		const vestingPeriodDuration = getDuration(
+			now,
+			vestingPeriodDays,
+			vestingPeriodHours,
+			vestingPeriodMinutes
+		);
+		const proRataRedemptionDuration = getDuration(
+			now,
+			proRataRedemptionDays,
+			proRataRedemptionHours,
+			proRataRedemptionMinutes
+		);
+		const openRedemptionDuration = getDuration(
+			now,
+			openRedemptionDays,
+			openRedemptionHours,
+			openRedemptionMinutes
+		);
+		const holderFundingDuration = getDuration(
+			now,
+			holderFundingExpiryDays,
+			holderFundingExpiryHours,
+			holderFundingExpiryMinutes
+		);
+
+		try {
+			const tx = await poolContract!.createDeal(
+				underlyingDealToken,
+				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
+				ethers.utils.parseUnits(underlyingDealToken.toString(), underlyingDealTokenDecimals),
+				vestingPeriodDuration,
+				vestingCliffDuration,
+				proRataRedemptionDuration,
+				openRedemptionDuration,
+				holder,
+				holderFundingDuration,
+				{ gasLimit: 1000000 }
+			);
+
+			if (tx) {
+				setTxState(Transaction.WAITING);
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => {
+						setTxHash(tx.hash);
+						setTxState(Transaction.SUCCESS);
+					},
+				});
+			}
+		} catch (e) {
+			setTxState(Transaction.FAILED);
+		}
+	};
+
 	const formik = useFormik({
 		initialValues: {
 			underlyingDealToken: '',
@@ -38,9 +144,7 @@ const CreateDeal: FC = () => {
 			holder: '',
 		},
 		validate: validateCreateDeal,
-		onSubmit: (values) => {
-			alert(JSON.stringify(values, null, 2));
-		},
+		onSubmit: handleSubmit,
 	});
 
 	const gridItems = useMemo(
@@ -380,7 +484,14 @@ const CreateDeal: FC = () => {
 	);
 
 	return (
-		<CreateForm formik={formik} gridItems={gridItems} summaryItems={summaryItems} type="Deal" />
+		<CreateForm
+			formik={formik}
+			gridItems={gridItems}
+			summaryItems={summaryItems}
+			txType={CreateTxType.CreateDeal}
+			txState={txState}
+			txHash={txHash}
+		/>
 	);
 };
 

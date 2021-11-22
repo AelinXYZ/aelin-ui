@@ -12,14 +12,14 @@ export enum TransactionType {
 }
 
 export enum ActionBoxType {
-	Pool = 'Pool',
+	FundPool = 'FundPool',
 	PendingDeal = 'PENDING_DEAL',
 	VestingDeal = 'VESTING_DEAL',
 }
 
 const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
 	switch (actionBoxType) {
-		case ActionBoxType.Pool:
+		case ActionBoxType.FundPool:
 			return 'Purchase';
 		case ActionBoxType.PendingDeal:
 			return 'Accept Deal';
@@ -30,7 +30,7 @@ const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
 
 const getActionButtonLabel = (actionBoxType: ActionBoxType, isDealAccept: boolean) => {
 	switch (actionBoxType) {
-		case ActionBoxType.Pool:
+		case ActionBoxType.FundPool:
 			return 'Purchase';
 		case ActionBoxType.PendingDeal:
 			return isDealAccept ? 'Accept Deal' : 'Withdraw from Pool';
@@ -59,7 +59,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [inputValue, setInputValue] = useState(value || 0);
 	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
-	const isPool = actionBoxType === ActionBoxType.Pool;
+	const isPool = actionBoxType === ActionBoxType.FundPool;
 	const canWithdraw = actionBoxType === ActionBoxType.PendingDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	return (
@@ -233,7 +233,6 @@ const ActionBoxInput = styled.input`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	width: 260px;
 	background-color: ${(props) => props.theme.colors.background};
 	border-radius: 4px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};

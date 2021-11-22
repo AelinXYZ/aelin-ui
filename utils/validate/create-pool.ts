@@ -37,9 +37,7 @@ const validateCreatePool = (values: CreatePoolValues) => {
 		errors.poolSymbol = 'No more than 5 chars';
 	}
 
-	if (!values.sponsorFee) {
-		errors.sponsorFee = 'Required';
-	} else if (values.sponsorFee > 98) {
+	if (values.sponsorFee > 98) {
 		errors.sponsorFee = 'Must be <= 98';
 	}
 

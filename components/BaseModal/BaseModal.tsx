@@ -29,7 +29,7 @@ const BaseModal: FC<BaseModalProps> = ({ isModalOpen, setIsModalOpen, children, 
 							<Image src={CloseIcon} alt="close" />
 						</a>
 					</StyledModalHeader>
-					{title && <div>{title}</div>}
+					{title != null ? <StyledTitle>{title}</StyledTitle> : null}
 					<StyledModalBody>{children}</StyledModalBody>
 				</StyledModal>
 			</OutsideClickHandler>
@@ -53,10 +53,15 @@ const StyledModalHeader = styled.div`
 	font-size: 25px;
 `;
 
+const StyledTitle = styled.div`
+	text-align: center;
+	color: ${(props) => props.theme.colors.forestGreen};
+`;
+
 const StyledModal = styled.div`
 	background: ${(props) => props.theme.colors.modalBackground};
 	width: 500px;
-	height: 400px;
+	height: 420px;
 	border-radius: 8px;
 	padding: 15px;
 `;
