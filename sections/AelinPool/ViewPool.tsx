@@ -6,6 +6,7 @@ import { PageLayout } from 'sections/Layout';
 import { GridItem } from 'components/Grid/Grid';
 import { FlexDiv } from 'components/common';
 import Grid from 'components/Grid';
+import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox';
 
 import SectionTitle from 'sections/shared/SectionTitle';
 import SectionDetails from 'sections/shared/SectionDetails';
@@ -28,9 +29,9 @@ const ViewPool: FC<ViewPoolProps> = ({
 }) => (
 	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 		<SectionDetails
-			isPool={true}
+			actionBoxType={ActionBoxType.Pool}
 			gridItems={poolGridItems}
-			onSubmit={() => console.log('purchase me')}
+			onSubmit={(value) => console.log(`purchase ${value} tokens`)}
 		/>
 		<SectionWrapper>
 			<ContentHeader>
@@ -47,11 +48,16 @@ const ViewPool: FC<ViewPoolProps> = ({
 						<SectionTitle address={dealAddress} title="Aelin Deal" />
 					</ContentTitle>
 				</ContentHeader>
-				{/* TODO toggle on submit method based on withdraw or submit */}
 				<SectionDetails
-					isPool={false}
+					actionBoxType={ActionBoxType.PendingDeal}
 					gridItems={dealGridItems}
-					onSubmit={() => console.log('click me to accept or reject')}
+					onSubmit={(value, txnType) => {
+						if (txnType === TransactionType.Withdraw) {
+							console.log('withdral', value);
+						} else {
+							console.log('click me to accept or reject: ', `tokens: ${value}`);
+						}
+					}}
 				/>
 			</SectionWrapper>
 		) : null}
@@ -64,6 +70,13 @@ const ViewPool: FC<ViewPoolProps> = ({
 				</ContentHeader>
 				<FlexDiv>
 					<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
+					<ActionBox
+						actionBoxType={ActionBoxType.VestingDeal}
+						onSubmit={(value) => {
+							console.log('vest:', value);
+						}}
+						input={{ placeholder: '0', label: 'Vested: 2000 USDC', maxValue: 2000 }}
+					/>
 				</FlexDiv>
 			</SectionWrapper>
 		) : null}
