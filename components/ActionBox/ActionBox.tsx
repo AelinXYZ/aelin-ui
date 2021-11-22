@@ -4,64 +4,119 @@ import BaseModal from '../BaseModal';
 import { FlexDivRow } from '../common';
 import Button from 'components/Button';
 
-interface ActionBoxProps {
-	onSubmit: MouseEventHandler<HTMLButtonElement>;
-	input: {
-		type: string;
-		placeholder: string;
-		label: string;
-	};
-	isPool: boolean;
-}
-
-enum TransactionType {
+export enum TransactionType {
 	Purchase = 'PURCHASE',
 	Accept = 'ACCEPT',
 	Withdraw = 'WITHDRAW',
+	Vest = 'Vest',
+}
+
+export enum ActionBoxType {
+	Pool = 'Pool',
+	PendingDeal = 'PENDING_DEAL',
+	VestingDeal = 'VESTING_DEAL',
+}
+
+const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
+	switch (actionBoxType) {
+		case ActionBoxType.Pool:
+			return 'Purchase';
+		case ActionBoxType.PendingDeal:
+			return 'Accept Deal';
+		case ActionBoxType.VestingDeal:
+			return 'Vest Deal';
+	}
+};
+
+const getActionButtonLabel = (actionBoxType: ActionBoxType, isDealAccept: boolean) => {
+	switch (actionBoxType) {
+		case ActionBoxType.Pool:
+			return 'Purchase';
+		case ActionBoxType.PendingDeal:
+			return isDealAccept ? 'Accept Deal' : 'Withdraw from Pool';
+		case ActionBoxType.VestingDeal:
+			return 'Vest Deal';
+	}
+};
+
+interface ActionBoxProps {
+	onSubmit: (value: number, transactionType: TransactionType) => void;
+	input: {
+		placeholder: string;
+		label: string;
+		value?: number;
+		maxValue?: number;
+	};
+	actionBoxType: ActionBoxType;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
 	onSubmit,
-	input: { type, placeholder, label },
-	isPool,
+	input: { placeholder, label, value, maxValue },
+	actionBoxType,
 }) => {
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
+	const [inputValue, setInputValue] = useState(value || 0);
 	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
-
+	const isPool = actionBoxType === ActionBoxType.Pool;
+	const canWithdraw = actionBoxType === ActionBoxType.PendingDeal;
+	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	return (
 		<Container>
 			<FlexDivRow>
 				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-					{isPool ? 'Purchase' : 'Accept Deal'}
+					{actionBoxTypeToTitle(actionBoxType)}
 				</ActionBoxHeader>
-				{!isPool ? (
+				{canWithdraw ? (
 					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>
 						Withdraw
 					</ActionBoxHeader>
 				) : null}
 			</FlexDivRow>
-			<InputContainer>
-				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
-				<InnerInputContainer>
-					<ActionBoxInput type={type} placeholder={placeholder} />
-					<ActionBoxMax onClick={() => console.log('max balance')}>Max</ActionBoxMax>
-				</InnerInputContainer>
-			</InputContainer>
+			<ContentContainer>
+				{isVesting ? (
+					<Paragraph>{maxValue || 0} tokens vested</Paragraph>
+				) : (
+					<>
+						<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
+						<InputContainer>
+							<ActionBoxInput
+								type={'number'}
+								placeholder={placeholder}
+								value={inputValue}
+								onChange={(e) => {
+									setInputValue(parseFloat(e.target.value));
+								}}
+							/>
+							{maxValue && <ActionBoxMax onClick={() => setInputValue(maxValue)}>Max</ActionBoxMax>}
+						</InputContainer>
+					</>
+				)}
+			</ContentContainer>
 			<ActionButton
 				isWithdraw={!isPool && !isDealAccept}
+				isWithdraw={actionBoxType === ActionBoxType.PendingDeal && !isDealAccept}
 				onClick={(e) => {
-					if (isPool) {
-						setTxType(TransactionType.Purchase);
-					} else if (!isPool && isDealAccept) {
-						setTxType(TransactionType.Accept);
-					} else if (!isPool && !isDealAccept) {
-						setTxType(TransactionType.Withdraw);
-					}
+					const setCorrectTxnType = () => {
+						if (isPool) {
+							return setTxType(TransactionType.Purchase);
+						}
+						if (actionBoxType === ActionBoxType.PendingDeal && isDealAccept) {
+							return setTxType(TransactionType.Accept);
+						}
+						if (actionBoxType === ActionBoxType.PendingDeal && !isDealAccept) {
+							return setTxType(TransactionType.Withdraw);
+						}
+						if (actionBoxType === ActionBoxType.VestingDeal) {
+							return setTxType(TransactionType.Vest);
+						}
+					};
+					setCorrectTxnType();
 					setShowTxModal(true);
 				}}
 			>
-				{isPool ? 'Purchase' : isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
+				{getActionButtonLabel(actionBoxType, isDealAccept)}
 			</ActionButton>
 			<BaseModal
 				title="Confirm Transaction"
@@ -71,25 +126,49 @@ const ActionBox: FC<ActionBoxProps> = ({
 				{/* TODO create new components for the transaction feedback here */}
 				{txType === TransactionType.Purchase ? (
 					<div>
-						<div>You are going to purchase</div>
-						<SubmitButton isWithdraw={false} onClick={(e) => onSubmit()}>
+						<div>You are going to purchase for {inputValue}</div>
+						<SubmitButton
+							variant={'text'}
+							isWithdraw={false}
+							onClick={(e) => onSubmit(inputValue, txType)}
+						>
 							Confirm Purchase
 						</SubmitButton>
 					</div>
 				) : null}
 				{txType === TransactionType.Accept ? (
 					<div>
-						<div>You are accepting</div>
-						<SubmitButton isWithdraw={false} onClick={(e) => onSubmit()}>
+						<div>You are accepting {inputValue} tokens</div>
+						<SubmitButton
+							variant={'text'}
+							isWithdraw={false}
+							onClick={(e) => onSubmit(inputValue, txType)}
+						>
 							Confirm Accept
 						</SubmitButton>
 					</div>
 				) : null}
 				{txType === TransactionType.Withdraw ? (
 					<div>
-						<div>You are withdrawing</div>
-						<SubmitButton isWithdraw={true} onClick={(e) => onSubmit()}>
+						<div>You are withdrawing {inputValue} tokens</div>
+						<SubmitButton
+							variant={'text'}
+							isWithdraw={true}
+							onClick={(e) => onSubmit(inputValue, txType)}
+						>
 							Confirm Withdraw
+						</SubmitButton>
+					</div>
+				) : null}
+				{txType === TransactionType.Vest && maxValue ? (
+					<div>
+						<div>You are vesting {maxValue}</div>
+						<SubmitButton
+							variant={'text'}
+							isWithdraw={true}
+							onClick={(e) => onSubmit(maxValue, txType)}
+						>
+							Confirm Vesting
 						</SubmitButton>
 					</div>
 				) : null}
@@ -127,12 +206,17 @@ const SubmitButton = styled(Button)<{ isWithdraw: boolean }>`
 	color: ${(props) => props.theme.colors.white};
 `;
 
-const InnerInputContainer = styled.div`
+const InputContainer = styled.div`
 	position: relative;
 `;
 
-const InputContainer = styled.div`
+const ContentContainer = styled.div`
 	padding: 15px 20px;
+`;
+
+const Paragraph = styled.p`
+	color: ${(props) => props.theme.colors.black};
+	font-size: 12px;
 `;
 
 const ActionBoxInputLabel = styled.div`
