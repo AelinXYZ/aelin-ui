@@ -11,7 +11,7 @@ import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import TokenDropdown from 'components/TokenDropdown';
 
-import validateCreatePool, { CreatePoolValues } from 'utils/validate/create-pool';
+import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 
