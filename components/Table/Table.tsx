@@ -123,7 +123,6 @@ export const Table: FC<TableProps> = ({
 					) : page.length > 0 ? (
 						<TableBody className="table-body" {...getTableBodyProps()}>
 							{page.map((row: Row, i: number) => {
-								console.log('row', row);
 								prepareRow(row);
 								const classNames = ['table-body-row'];
 								const tableBodyRow = (

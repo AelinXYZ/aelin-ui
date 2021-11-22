@@ -57,7 +57,7 @@ const ContentSubtitle = styled.p`
 const ContentBody = styled.div``;
 
 const ColCenter = styled.div`
-	width: 940px;
+	width: 1150px;
 `;
 
 export default PageLayout;

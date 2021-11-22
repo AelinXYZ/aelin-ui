@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export type SummaryItem = {
 	label: string;
-	text: string;
+	text: string | number;
 };
 
 interface SummaryBoxProps {
@@ -51,7 +51,7 @@ const SummaryBoxGrid = styled.div`
 `;
 
 const Item = styled.div`
-	margin: 8px 0;
+	margin: 8px 3px 8px 0;
 `;
 
 const ItemLabel = styled.div`

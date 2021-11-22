@@ -6,10 +6,13 @@ import { useFormik } from 'formik';
 import { FlexDivRow } from 'components/common';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
-// import { truncateAddress } from 'utils/crypto';
+import { truncateAddress } from 'utils/crypto';
+import { formatNumber } from 'utils/numbers';
+import { formatDuration } from 'utils/time';
 
 import validateCreateDeal from 'utils/validate/create-deal';
 import CreateForm from 'sections/shared/CreateForm';
+import TokenDropdown from 'components/TokenDropdown';
 
 const CreateDeal: FC = () => {
 	const formik = useFormik({
@@ -46,12 +49,17 @@ const CreateDeal: FC = () => {
 				header: <label htmlFor="underlyingDealToken">Underlying Deal Token</label>,
 				subText: 'address',
 				formField: (
-					<TextInput
+					<TokenDropdown
 						id="underlyingDealToken"
 						name="underlyingDealToken"
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						value={formik.values.underlyingDealToken}
+						variant={'outline'}
+						onValidationError={(validationMessage) => {
+							formik.setFieldError('underlyingDealToken', validationMessage);
+						}}
+						onChange={(x) => {
+							formik.setFieldValue('underlyingDealToken', x?.value.address);
+						}}
+						selectedAddress={formik.values.underlyingDealToken}
 					/>
 				),
 				formError: formik.errors.underlyingDealToken,
@@ -66,7 +74,7 @@ const CreateDeal: FC = () => {
 						type="number"
 						onChange={formik.handleChange}
 						onBlur={formik.handleBlur}
-						value={formik.values.purchaseTokenTotal}
+						value={formik.values.purchaseTokenTotal || ''}
 					/>
 				),
 				formError: formik.errors.purchaseTokenTotal,
@@ -81,7 +89,7 @@ const CreateDeal: FC = () => {
 						type="number"
 						onChange={formik.handleChange}
 						onBlur={formik.handleBlur}
-						value={formik.values.underlyingDealTokenTotal}
+						value={formik.values.underlyingDealTokenTotal || ''}
 					/>
 				),
 				formError: formik.errors.underlyingDealTokenTotal,
@@ -281,37 +289,94 @@ const CreateDeal: FC = () => {
 				),
 				formError: formik.errors.holderFundingExpiryMinutes,
 			},
+			{
+				header: <label htmlFor="holder">Holder address</label>,
+				subText: 'address',
+				formField: (
+					<TextInput
+						id="holder"
+						name="holder"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.holder}
+					/>
+				),
+				formError: formik.errors.holder,
+			},
 		],
 		[formik]
 	);
+
 	const summaryItems = useMemo(
 		() => [
 			{
 				label: 'Underlyign deal token',
-				text: 'some token',
-			},
-			{
-				label: 'Vesting period:',
-				text: 'some text',
-			},
-			{
-				label: 'Vesting cliff:',
-				text: 'some text',
+				text: formik.values.underlyingDealToken
+					? truncateAddress(formik.values.underlyingDealToken)
+					: '',
 			},
 			{
 				label: 'Purchase token total:',
-				text: 'some text',
+				text: formik.values.purchaseTokenTotal
+					? formatNumber(formik.values.purchaseTokenTotal)
+					: '',
 			},
 			{
 				label: 'Underlying deal token total:',
-				text: 'some text',
+				text: formik.values.underlyingDealTokenTotal
+					? formatNumber(formik.values.underlyingDealTokenTotal)
+					: '',
 			},
 			{
-				label: 'Exchange Rate',
-				text: 'some text',
+				label: 'Underlying Per Purchase',
+				text:
+					// @ts-ignore
+					formik.values.underlyingDealTokenTotal === '' || formik.values.purchaseTokenTotal === ''
+						? ''
+						: formatNumber(
+								Number(formik.values?.underlyingDealTokenTotal ?? 0) /
+									Number(formik.values?.purchaseTokenTotal ?? 0),
+								2
+						  ),
+			},
+			{
+				label: 'Vesting period:',
+				text: formatDuration(
+					formik.values.vestingPeriodDays,
+					formik.values.vestingPeriodHours,
+					formik.values.vestingPeriodMinutes
+				),
+			},
+			{
+				label: 'Vesting cliff:',
+				text: formatDuration(
+					formik.values.vestingCliffDays,
+					formik.values.vestingCliffHours,
+					formik.values.vestingCliffMinutes
+				),
+			},
+			{
+				label: 'Pro rata period:',
+				text: formatDuration(
+					formik.values.proRataRedemptionDays,
+					formik.values.proRataRedemptionHours,
+					formik.values.proRataRedemptionMinutes
+				),
+			},
+			{
+				label: 'Open period:',
+				text: formatDuration(
+					formik.values.openRedemptionDays,
+					formik.values.openRedemptionHours,
+					formik.values.openRedemptionMinutes
+				),
+			},
+			{
+				label: 'Holder',
+				text: formik.values.holder ? truncateAddress(formik.values.holder) : '',
 			},
 		],
-		[]
+		[formik.values]
 	);
 
 	return (
