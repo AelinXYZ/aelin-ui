@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { FlexDivRow, FlexDiv } from 'components/common';
@@ -6,15 +6,23 @@ import { Status } from 'components/DealStatus';
 import TextInput from 'components/Input/TextInput';
 import PlusIcon from 'assets/svg/plus.svg';
 import Image from 'next/image';
+import StatusDropdown from 'sections/shared/StatusDropdown';
 
 interface FilterPoolProps {
 	setSponsor: (sponsor: string) => void;
 	setCurrency: (currency: string) => void;
 	setName: (name: string) => void;
-	setStatus: (status: Status) => void;
+	setStatus: (status: Status | string) => void;
+	status: Status | string;
 }
 
-const FilterPool: FC<FilterPoolProps> = ({ setSponsor, setCurrency, setName, setStatus }) => {
+const FilterPool: FC<FilterPoolProps> = ({
+	setSponsor,
+	setCurrency,
+	setName,
+	setStatus,
+	status,
+}) => {
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	return (
 		<Container>
@@ -24,18 +32,28 @@ const FilterPool: FC<FilterPoolProps> = ({ setSponsor, setCurrency, setName, set
 			</HeaderSection>
 			{isVisible ? (
 				<FlexDivRow>
-					<TextInput
+					<StyledTextInput
 						width="22%"
 						placeholder="sponsor"
 						onChange={(e) => setSponsor(e.target.value)}
 					/>
-					<TextInput
+					<StyledTextInput
 						width="22%"
 						placeholder="currency"
 						onChange={(e) => setCurrency(e.target.value)}
 					/>
-					<TextInput width="22%" placeholder="name" onChange={(e) => setName(e.target.value)} />
-					<TextInput width="22%" placeholder="status" onChange={(e) => setStatus(e.target.value)} />
+					<StyledTextInput
+						width="22%"
+						placeholder="name"
+						onChange={(e) => setName(e.target.value)}
+					/>
+					<StatusDropdown
+						id="statusDropdown"
+						name="statusDropdown"
+						variant="outline"
+						selectedStatus={status}
+						onChange={setStatus}
+					/>
 				</FlexDivRow>
 			) : null}
 		</Container>
@@ -49,6 +67,11 @@ const Header = styled.div`
 
 const Container = styled.div`
 	margin-bottom: 15px;
+`;
+
+const StyledTextInput = styled(TextInput)`
+	border-radius: 8px;
+	height: 35px;
 `;
 
 const StyledImage = styled(Image)`
