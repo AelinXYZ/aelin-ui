@@ -95,7 +95,10 @@ const ActionBox: FC<ActionBoxProps> = ({
 				)}
 			</ContentContainer>
 			<ActionButton
-				isWithdraw={!isPool && !isDealAccept}
+				disabled={
+					(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
+					(actionBoxType !== ActionBoxType.VestingDeal && !inputValue)
+				}
 				isWithdraw={actionBoxType === ActionBoxType.PendingDeal && !isDealAccept}
 				onClick={(e) => {
 					const setCorrectTxnType = () => {
@@ -267,12 +270,21 @@ const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	background-color: transparent;
 	border: none;
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	color: ${(props) => props.theme.colors.black};
-	&:hover {
-		background-color: ${(props) =>
-			props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen};
-		color: ${(props) => props.theme.colors.white};
-	}
+	${(props) => {
+		if (props.disabled) {
+			return `color: ${props.theme.colors.textGrey};`;
+		}
+		return `
+		color: ${props.theme.colors.black};
+		&:hover {
+			background-color: ${
+				props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen
+			};
+			color: ${props.theme.colors.white};
+		}
+		`;
+	}}
+
 	position: absolute;
 	bottom: 0;
 	border-radius: 0 0 8px 8px;
