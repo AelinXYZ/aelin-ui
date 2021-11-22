@@ -21,7 +21,7 @@ const Pools: FC = () => {
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	// TODO implement dropdown
-	const [statusFilter, setStatusFilter] = useState<Status | null>(null);
+	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.OPEN);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
@@ -84,8 +84,11 @@ const Pools: FC = () => {
 		if (nameFilter != null) {
 			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
+		if (statusFilter != null) {
+			list = list.filter(({ status }) => status.toLowerCase().includes(statusFilter.toLowerCase()));
+		}
 		return list;
-	}, [pools, router.query.active, sponsorFilter, currencyFilter, nameFilter]);
+	}, [pools, router.query.active, sponsorFilter, currencyFilter, nameFilter, statusFilter]);
 
 	const columns = useMemo(
 		() => [
@@ -161,6 +164,7 @@ const Pools: FC = () => {
 				setCurrency={setCurrencyFilter}
 				setName={setNameFilter}
 				setStatus={setStatusFilter}
+				status={statusFilter}
 			/>
 			<Table
 				noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
