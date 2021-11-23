@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 
 export const FlexDiv = styled.div`
 	display: flex;
@@ -81,4 +82,10 @@ export const resetButtonCSS = css`
 	outline: none;
 	cursor: pointer;
 	padding: 0;
+`;
+
+// @ts-ignore
+export const StyledSpinner = styled(Image)`
+	display: block;
+	margin: 30px auto;
 `;

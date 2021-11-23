@@ -4,6 +4,7 @@ import { FlexDiv } from 'components/common';
 import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox';
 import { GridItem } from 'components/Grid/Grid';
 import { InputType } from 'components/ActionBox/ActionBox';
+import { Transaction } from 'constants/transactions';
 
 interface SectionDetailsProps {
 	gridItems: GridItem[];
@@ -12,6 +13,8 @@ interface SectionDetailsProps {
 	input: InputType;
 	allowance: string;
 	onApprove: () => void;
+	txState: Transaction;
+	setTxState: (tx: Transaction) => void;
 }
 
 const SectionDetails: FC<SectionDetailsProps> = ({
@@ -21,6 +24,8 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	onApprove,
 	allowance,
 	input = { placeholder: '0', label: 'Balance: 2000 USDC', maxValue: 2000, symbol: 'USDC' },
+	txState,
+	setTxState,
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
@@ -30,6 +35,8 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			allowance={allowance}
 			onSubmit={onSubmit}
 			input={input}
+			txState={txState}
+			setTxState={setTxState}
 		/>
 	</FlexDiv>
 );
