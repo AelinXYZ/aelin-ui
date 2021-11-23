@@ -11,9 +11,11 @@ import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox'
 import SectionTitle from 'sections/shared/SectionTitle';
 import SectionDetails from 'sections/shared/SectionDetails';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
+import PurchasePool from './PurchasePool';
+import { PoolCreatedResult } from 'subgraph';
 
 interface ViewPoolProps {
-	poolGridItems: GridItem[];
+	pool: PoolCreatedResult | null;
 	dealGridItems: GridItem[] | null;
 	dealVestingGridItems: GridItem[] | null;
 	poolAddress: string;
@@ -21,18 +23,14 @@ interface ViewPoolProps {
 }
 
 const ViewPool: FC<ViewPoolProps> = ({
-	poolGridItems,
+	pool,
 	poolAddress,
 	dealAddress,
 	dealGridItems,
 	dealVestingGridItems,
 }) => (
 	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
-		<SectionDetails
-			actionBoxType={ActionBoxType.FundPool}
-			gridItems={poolGridItems}
-			onSubmit={(value) => console.log(`purchase ${value} tokens`)}
-		/>
+		<PurchasePool pool={pool} />
 		<SectionWrapper>
 			<ContentHeader>
 				<ContentTitle>

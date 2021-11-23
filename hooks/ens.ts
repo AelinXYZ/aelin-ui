@@ -1,28 +1,29 @@
 import { isAddress } from '@ethersproject/address';
 import Connector from 'containers/Connector';
 import { useEffect, useState } from 'react';
+import { NetworkId } from 'constants/networks';
 
 export const isEns = (x: string) => x.endsWith('.eth');
 export const useEnsToAddress = (ensName: string) => {
-	const { provider } = Connector.useContainer();
+	const { provider, network } = Connector.useContainer();
 	const [address, setAddress] = useState(ensName);
 	useEffect(() => {
 		const getAddress = async () => {
-			if (!isEns(ensName)) return ensName;
+			if (!isEns(ensName) || network.id !== NetworkId.Mainnet) return ensName;
 			const address = await provider?.resolveName(ensName);
 			setAddress(address || ensName);
 		};
 		getAddress();
-	}, [ensName, provider]);
+	}, [ensName, provider, network.id]);
 	return address;
 };
 
 export const useAddressToEns = (address: string) => {
-	const { provider } = Connector.useContainer();
+	const { provider, network } = Connector.useContainer();
 	const [ensName, setEnsName] = useState(address);
 	useEffect(() => {
 		const getEnsName = async () => {
-			if (!isAddress(address)) return address;
+			if (!isAddress(address) || network.id !== NetworkId.Mainnet) return address;
 			const resolvedEnsName = await provider?.lookupAddress(address);
 			// ENS does not enforce the accuracy of reverse records - for instance, anyone may claim that the name for their address is 'alice.eth'. To be certain that the claim is accurate, you must always perform a forward resolution for the returned name and check it matches the original address.
 			const resolvedAddress = resolvedEnsName
@@ -34,6 +35,6 @@ export const useAddressToEns = (address: string) => {
 			setEnsName(validEnsName || address);
 		};
 		getEnsName();
-	}, [address, provider]);
+	}, [address, provider, network.id]);
 	return ensName;
 };

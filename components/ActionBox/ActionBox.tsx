@@ -1,4 +1,4 @@
-import { FC, useState, MouseEventHandler } from 'react';
+import { FC, useState } from 'react';
 import styled, { css } from 'styled-components';
 import BaseModal from '../BaseModal';
 import { FlexDivRow } from '../common';
@@ -17,6 +17,13 @@ export enum ActionBoxType {
 	VestingDeal = 'VESTING_DEAL',
 }
 
+export type InputType = {
+	placeholder: string;
+	label: string;
+	value?: string | number;
+	maxValue?: string | number;
+};
+
 const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
@@ -28,7 +35,20 @@ const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
 	}
 };
 
-const getActionButtonLabel = (actionBoxType: ActionBoxType, isDealAccept: boolean) => {
+const getActionButtonLabel = ({
+	actionBoxType,
+	isDealAccept,
+	allowance,
+	amount,
+}: {
+	actionBoxType: ActionBoxType;
+	isDealAccept: boolean;
+	allowance: string;
+	amount: string | number;
+}) => {
+	if (Number(allowance) < Number(amount)) {
+		return 'Approve';
+	}
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
 			return 'Purchase';
@@ -40,20 +60,19 @@ const getActionButtonLabel = (actionBoxType: ActionBoxType, isDealAccept: boolea
 };
 
 interface ActionBoxProps {
-	onSubmit: (value: number, transactionType: TransactionType) => void;
-	input: {
-		placeholder: string;
-		label: string;
-		value?: number;
-		maxValue?: number;
-	};
+	onSubmit: (value: number | string, transactionType: TransactionType) => void;
+	input: InputType;
 	actionBoxType: ActionBoxType;
+	allowance: string;
+	onApprove: () => void;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
 	onSubmit,
 	input: { placeholder, label, value, maxValue },
 	actionBoxType,
+	allowance,
+	onApprove,
 }) => {
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -97,7 +116,10 @@ const ActionBox: FC<ActionBoxProps> = ({
 			<ActionButton
 				disabled={
 					(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
-					(actionBoxType !== ActionBoxType.VestingDeal && !inputValue)
+					(actionBoxType !== ActionBoxType.VestingDeal &&
+						(!inputValue || Number(inputValue) === 0)) ||
+					(actionBoxType !== ActionBoxType.VestingDeal &&
+						Number(maxValue ?? 0) < Number(inputValue ?? 0))
 				}
 				isWithdraw={actionBoxType === ActionBoxType.PendingDeal && !isDealAccept}
 				onClick={(e) => {
@@ -119,8 +141,12 @@ const ActionBox: FC<ActionBoxProps> = ({
 					setShowTxModal(true);
 				}}
 			>
-				{getActionButtonLabel(actionBoxType, isDealAccept)}
+				{getActionButtonLabel({ actionBoxType, isDealAccept, allowance, amount: inputValue })}
 			</ActionButton>
+			{actionBoxType !== ActionBoxType.VestingDeal &&
+			Number(maxValue ?? 0) < Number(inputValue ?? 0) ? (
+				<ErrorNote>Max balance exceeded</ErrorNote>
+			) : null}
 			<BaseModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
@@ -220,6 +246,13 @@ const ContentContainer = styled.div`
 const Paragraph = styled.p`
 	color: ${(props) => props.theme.colors.black};
 	font-size: 12px;
+`;
+
+const ErrorNote = styled.div`
+	color: ${(props) => props.theme.colors.statusRed};
+	padding-left: 20px;
+	font-size: 12px;
+	font-weight: bold;
 `;
 
 const ActionBoxInputLabel = styled.div`

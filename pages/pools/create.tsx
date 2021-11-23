@@ -57,7 +57,8 @@ const Create: FC = () => {
 				parseEther(poolCap.toString()),
 				// purchaseToken,
 				// we need a kovan address for now to make it work
-				'0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f',
+				// https://faucet.paradigm.xyz/ will give you this token on kovan
+				'0xd0A1E359811322d97991E03f863a0C30C2cF029C',
 				duration,
 				sponsorFee.toString(),
 				purchaseExpiry,
