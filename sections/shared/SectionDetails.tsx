@@ -20,7 +20,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	onSubmit,
 	onApprove,
 	allowance,
-	input = { placeholder: '0', label: 'Balance: 2000 USDC', maxValue: 2000 },
+	input = { placeholder: '0', label: 'Balance: 2000 USDC', maxValue: 2000, symbol: 'USDC' },
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />

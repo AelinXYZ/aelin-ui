@@ -5,6 +5,7 @@ import { FlexDivRow } from '../common';
 import Button from 'components/Button';
 
 export enum TransactionType {
+	Allowance = 'ALLOWANCE',
 	Purchase = 'PURCHASE',
 	Accept = 'ACCEPT',
 	Withdraw = 'WITHDRAW',
@@ -22,6 +23,7 @@ export type InputType = {
 	label: string;
 	value?: string | number;
 	maxValue?: string | number;
+	symbol?: string;
 };
 
 const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
@@ -69,7 +71,7 @@ interface ActionBoxProps {
 
 const ActionBox: FC<ActionBoxProps> = ({
 	onSubmit,
-	input: { placeholder, label, value, maxValue },
+	input: { placeholder, label, value, maxValue, symbol },
 	actionBoxType,
 	allowance,
 	onApprove,
@@ -124,6 +126,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 				isWithdraw={actionBoxType === ActionBoxType.PendingDeal && !isDealAccept}
 				onClick={(e) => {
 					const setCorrectTxnType = () => {
+						if (isPool && Number(allowance ?? 0) < Number(inputValue ?? 0)) {
+							return setTxType(TransactionType.Allowance);
+						}
 						if (isPool) {
 							return setTxType(TransactionType.Purchase);
 						}
@@ -153,6 +158,14 @@ const ActionBox: FC<ActionBoxProps> = ({
 				isModalOpen={showTxModal}
 			>
 				{/* TODO create new components for the transaction feedback here */}
+				{txType === TransactionType.Allowance ? (
+					<div>
+						<div>{`Please approve ${symbol} usage by the pool contract`}</div>
+						<SubmitButton variant={'text'} isWithdraw={false} onClick={(e) => onApprove()}>
+							Confirm Approval
+						</SubmitButton>
+					</div>
+				) : null}
 				{txType === TransactionType.Purchase ? (
 					<div>
 						<div>You are going to purchase for {inputValue}</div>

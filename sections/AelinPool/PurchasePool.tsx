@@ -1,6 +1,7 @@
-import { FC, useMemo, useState, useEffect } from 'react';
+import { FC, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Connector from 'containers/Connector';
+import TransactionNotifier from 'containers/TransactionNotifier';
 import SectionDetails from 'sections/shared/SectionDetails';
 import { ActionBoxType } from 'components/ActionBox';
 import { truncateAddress } from 'utils/crypto';
@@ -9,6 +10,7 @@ import Ens from 'components/Ens';
 import { PoolCreatedResult } from 'subgraph';
 import { ethers } from 'ethers';
 import { erc20Abi } from 'contracts/erc20';
+import { poolAbi } from 'contracts/pool';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -16,6 +18,9 @@ interface PurchasePoolProps {
 
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { walletAddress, provider, signer } = Connector.useContainer();
+	const { monitorTransaction } = TransactionNotifier.useContainer();
+
+	const [purchaseTokenDecimals, setPurchaseTokenDecimlas] = useState<number | null>(null);
 	const [purchaseTokenSymbol, setPurchaseTokenSymbol] = useState<string>('');
 	const [purchaseTokenAllowance, setPurchaseTokenAllowance] = useState<string>('0');
 	const [userBalance, setUserBalance] = useState<string>('0');
@@ -23,13 +28,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	useEffect(() => {
 		async function getUserBalance() {
 			if (pool?.purchaseToken && pool?.id) {
-				const purchaseTokenContract = new ethers.Contract(pool.purchaseToken, erc20Abi, provider);
-				const balance = await purchaseTokenContract.balanceOf(walletAddress);
-				const purchaseTokenDecimals = await purchaseTokenContract.decimals();
-				const symbol = await purchaseTokenContract.symbol();
-				const allowance = await purchaseTokenContract.allowance(walletAddress, pool.id);
-				const formattedBalance = ethers.utils.formatUnits(balance, purchaseTokenDecimals);
-				const formattedAllowance = ethers.utils.formatUnits(allowance, purchaseTokenDecimals);
+				const contract = new ethers.Contract(pool.purchaseToken, erc20Abi, provider);
+				const balance = await contract.balanceOf(walletAddress);
+				const decimals = await contract.decimals();
+				const symbol = await contract.symbol();
+				const allowance = await contract.allowance(walletAddress, pool.id);
+				const formattedBalance = ethers.utils.formatUnits(balance, decimals);
+				const formattedAllowance = ethers.utils.formatUnits(allowance, decimals);
+				setPurchaseTokenDecimlas(decimals);
 				setUserBalance(formattedBalance.toString());
 				setPurchaseTokenSymbol(symbol);
 				setPurchaseTokenAllowance(formattedAllowance.toString());
@@ -80,13 +86,45 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		[pool]
 	);
 
-	const handleSubmit = (value: number) => {
-		if (!walletAddress || !signer) return;
-	};
+	const handleSubmit = useCallback(
+		async (value: number) => {
+			if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals) return;
+			const contract = new ethers.Contract(pool.id, poolAbi, signer);
+			const tx = await contract.purchasePoolTokens(
+				ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
+				// TODO update gasPrice and gasLimit
+				{
+					gasLimit: 1000000,
+				}
+			);
+			if (tx) {
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => console.log('TODO proper workflow from success'),
+				});
+			}
+		},
+		[walletAddress, signer, monitorTransaction, pool?.id, purchaseTokenDecimals]
+	);
 
-	const handleApprove = () => {
-		if (!walletAddress || !signer) return;
-	};
+	const handleApprove = useCallback(async () => {
+		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken) return;
+		const contract = new ethers.Contract(pool.purchaseToken, erc20Abi, signer);
+		const tx = await contract.approve(
+			pool.id,
+			ethers.constants.MaxUint256,
+			// TODO update gasPrice and gasLimit
+			{
+				gasLimit: 1000000,
+			}
+		);
+		if (tx) {
+			monitorTransaction({
+				txHash: tx.hash,
+				onTxConfirmed: () => console.log('TODO proper workflow from approve'),
+			});
+		}
+	}, [pool?.id, pool?.purchaseToken, monitorTransaction, walletAddress, signer]);
 
 	return (
 		<SectionDetails
@@ -97,6 +135,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				label: `Balance ${userBalance} ${purchaseTokenSymbol}`,
 				value: '0',
 				maxValue: userBalance,
+				symbol: purchaseTokenSymbol,
 			}}
 			allowance={purchaseTokenAllowance}
 			onApprove={handleApprove}
