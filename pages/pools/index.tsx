@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import { CellProps } from 'react-table';
 import { FC, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -11,8 +12,8 @@ import { FlexDivStart } from 'components/common';
 import Currency from 'components/Currency';
 import DealStatus, { Status } from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
+import Ens from 'components/Ens';
 import { truncateNumber } from 'utils/numbers';
-import { truncateAddress } from 'utils/crypto';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 const Pools: FC = () => {
@@ -95,15 +96,14 @@ const Pools: FC = () => {
 			{
 				Header: 'sponsor',
 				accessor: 'sponsor',
-				Cell: (cellProps: CellProps<any, any>) => {
-					return <>{truncateAddress(cellProps.value)}</>;
+				Cell: (cellProps: CellProps<any, string>) => {
+					return <Ens address={cellProps.value} />;
 				},
 			},
 			{ Header: 'name', accessor: 'name', width: 100 },
 			{
 				Header: 'purchase token',
 				accessor: 'purchaseToken',
-				// eslint-disable-next-line react/display-name
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
@@ -147,7 +147,6 @@ const Pools: FC = () => {
 			{
 				Header: 'status',
 				accessor: 'status',
-				// eslint-disable-next-line react/display-name
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
