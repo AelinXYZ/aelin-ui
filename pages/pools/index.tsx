@@ -52,14 +52,14 @@ const Pools: FC = () => {
 				duration,
 				sponsor,
 				name,
-				address,
+				id,
 				purchaseToken,
 				purchaseTokenCap,
 				timestamp,
 			}) => ({
 				sponsor,
 				name,
-				address,
+				id,
 				purchaseToken, // TODO get symbol
 				contributions: 1000000, // TODO get contributions
 				cap: purchaseTokenCap,

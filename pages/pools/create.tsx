@@ -58,7 +58,7 @@ const Create: FC = () => {
 				// purchaseToken,
 				// we need a kovan address for now to make it work
 				// https://faucet.paradigm.xyz/ will give you this token on kovan
-				'0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+				'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
 				duration,
 				sponsorFee.toString(),
 				purchaseExpiry,
