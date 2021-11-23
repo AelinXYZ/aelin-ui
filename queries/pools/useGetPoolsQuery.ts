@@ -38,7 +38,7 @@ export const parsePool = ({
 	sponsor,
 	sponsorFee,
 }: PoolCreatedResult) => ({
-	address: id,
+	id,
 	timestamp: Number(timestamp) * 1000,
 	name: utils.parseBytes32String(name.split('-')[1]),
 	symbol: utils.parseBytes32String(symbol.split('-')[1]),

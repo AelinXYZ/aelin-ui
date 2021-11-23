@@ -4,9 +4,6 @@ import ViewPool from 'sections/AelinPool/ViewPool';
 
 import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
 import { parsePool } from 'queries/pools/useGetPoolsQuery';
-import { truncateAddress } from 'utils/crypto';
-import TimeLeft from 'components/TimeLeft';
-import Ens from 'components/Ens';
 
 const Pool: FC = () => {
 	const router = useRouter();
@@ -19,48 +16,6 @@ const Pool: FC = () => {
 		// @ts-ignore
 		() => ((poolQuery?.data ?? null) != null ? parsePool(poolQuery.data) : null),
 		[poolQuery?.data]
-	);
-
-	const poolGridItems = useMemo(
-		() => [
-			{
-				header: 'Sponsor',
-				subText: <Ens address={pool?.sponsor ?? ''} />,
-			},
-			{
-				header: 'My Capital',
-				subText: '',
-			},
-			{
-				header: 'Purchase Token Cap',
-				subText: pool?.purchaseTokenCap.toNumber() ?? '',
-			},
-			{
-				header: 'Purchase Token',
-				subText: truncateAddress(pool?.purchaseToken ?? ''),
-			},
-			{
-				header: 'Ownership',
-				subText: 'some subText',
-			},
-			{
-				header: 'Status',
-				subText: 'some subText',
-			},
-			{
-				header: 'Sponsor Fee',
-				subText: pool?.sponsorFee || 0,
-			},
-			{
-				header: 'Purchase Expiration',
-				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
-			},
-			{
-				header: 'Pool Duration',
-				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
-			},
-		],
-		[pool]
 	);
 
 	const dealGridItems = useMemo(
@@ -143,7 +98,7 @@ const Pool: FC = () => {
 		<ViewPool
 			dealAddress={dealAddress}
 			dealGridItems={dealGridItems}
-			poolGridItems={poolGridItems}
+			pool={pool}
 			dealVestingGridItems={dealVestingGridItems}
 			poolAddress={poolAddress}
 		/>
