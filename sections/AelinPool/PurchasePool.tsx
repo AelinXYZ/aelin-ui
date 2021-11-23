@@ -11,6 +11,7 @@ import { PoolCreatedResult } from 'subgraph';
 import { ethers } from 'ethers';
 import { erc20Abi } from 'contracts/erc20';
 import { poolAbi } from 'contracts/pool';
+import { Transaction } from 'constants/transactions';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -20,14 +21,18 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { walletAddress, provider, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
+	const [txState, setTxState] = useState(Transaction.PRESUBMIT);
 	const [purchaseTokenDecimals, setPurchaseTokenDecimlas] = useState<number | null>(null);
 	const [purchaseTokenSymbol, setPurchaseTokenSymbol] = useState<string>('');
 	const [purchaseTokenAllowance, setPurchaseTokenAllowance] = useState<string>('0');
-	const [userBalance, setUserBalance] = useState<string>('0');
+	const [userPurchaseBalance, setUserPurchaseBalance] = useState<string>('0');
+	const [userPoolBalance, setUserPoolBalance] = useState<string>('0');
 
 	useEffect(() => {
 		async function getUserBalance() {
-			if (pool?.purchaseToken && pool?.id) {
+			if (pool?.purchaseToken && pool?.id && provider != null) {
+				const poolContract = new ethers.Contract(pool?.id, poolAbi, provider);
+				const poolBalance = await poolContract.balanceOf(walletAddress);
 				const contract = new ethers.Contract(pool.purchaseToken, erc20Abi, provider);
 				const balance = await contract.balanceOf(walletAddress);
 				const decimals = await contract.decimals();
@@ -35,8 +40,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				const allowance = await contract.allowance(walletAddress, pool.id);
 				const formattedBalance = ethers.utils.formatUnits(balance, decimals);
 				const formattedAllowance = ethers.utils.formatUnits(allowance, decimals);
+				const formattedPoolBalance = ethers.utils.formatUnits(poolBalance, decimals);
 				setPurchaseTokenDecimlas(decimals);
-				setUserBalance(formattedBalance.toString());
+				setUserPurchaseBalance(formattedBalance.toString());
+				setUserPoolBalance(formattedPoolBalance.toString());
 				setPurchaseTokenSymbol(symbol);
 				setPurchaseTokenAllowance(formattedAllowance.toString());
 			}
@@ -51,8 +58,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: <Ens address={pool?.sponsor ?? ''} />,
 			},
 			{
-				header: 'My Capital',
-				subText: '',
+				header: `My ${purchaseTokenSymbol} Balance`,
+				subText: userPurchaseBalance,
 			},
 			{
 				header: 'Purchase Token Cap',
@@ -60,11 +67,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Token',
-				subText: truncateAddress(pool?.purchaseToken ?? ''),
+				subText: `${purchaseTokenSymbol ?? ''} (${truncateAddress(pool?.purchaseToken ?? '')})`,
 			},
 			{
-				header: 'Ownership',
-				subText: 'some subText',
+				header: 'My Pool Balance',
+				subText: userPoolBalance,
 			},
 			{
 				header: 'Status',
@@ -83,25 +90,29 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
 			},
 		],
-		[pool]
+		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol]
 	);
 
 	const handleSubmit = useCallback(
 		async (value: number) => {
 			if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals) return;
 			const contract = new ethers.Contract(pool.id, poolAbi, signer);
-			const tx = await contract.purchasePoolTokens(
-				ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
-				// TODO update gasPrice and gasLimit
-				{
-					gasLimit: 1000000,
+			try {
+				const tx = await contract.purchasePoolTokens(
+					ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
+					// TODO update gasPrice and gasLimit
+					{
+						gasLimit: 1000000,
+					}
+				);
+				if (tx) {
+					monitorTransaction({
+						txHash: tx.hash,
+						onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+					});
 				}
-			);
-			if (tx) {
-				monitorTransaction({
-					txHash: tx.hash,
-					onTxConfirmed: () => console.log('TODO proper workflow from success'),
-				});
+			} catch (e) {
+				setTxState(Transaction.FAILED);
 			}
 		},
 		[walletAddress, signer, monitorTransaction, pool?.id, purchaseTokenDecimals]
@@ -110,19 +121,23 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const handleApprove = useCallback(async () => {
 		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken) return;
 		const contract = new ethers.Contract(pool.purchaseToken, erc20Abi, signer);
-		const tx = await contract.approve(
-			pool.id,
-			ethers.constants.MaxUint256,
-			// TODO update gasPrice and gasLimit
-			{
-				gasLimit: 1000000,
+		try {
+			const tx = await contract.approve(
+				pool.id,
+				ethers.constants.MaxUint256,
+				// TODO update gasPrice and gasLimit
+				{
+					gasLimit: 1000000,
+				}
+			);
+			if (tx) {
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+				});
 			}
-		);
-		if (tx) {
-			monitorTransaction({
-				txHash: tx.hash,
-				onTxConfirmed: () => console.log('TODO proper workflow from approve'),
-			});
+		} catch (e) {
+			setTxState(Transaction.FAILED);
 		}
 	}, [pool?.id, pool?.purchaseToken, monitorTransaction, walletAddress, signer]);
 
@@ -132,14 +147,16 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			gridItems={poolGridItems}
 			input={{
 				placeholder: '0',
-				label: `Balance ${userBalance} ${purchaseTokenSymbol}`,
+				label: `Balance ${userPurchaseBalance} ${purchaseTokenSymbol}`,
 				value: '0',
-				maxValue: userBalance,
+				maxValue: userPurchaseBalance,
 				symbol: purchaseTokenSymbol,
 			}}
 			allowance={purchaseTokenAllowance}
 			onApprove={handleApprove}
 			onSubmit={handleSubmit}
+			txState={txState}
+			setTxState={setTxState}
 		/>
 	);
 };

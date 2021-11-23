@@ -11,9 +11,16 @@ interface BaseModalProps {
 	children: React.ReactChildren | React.ReactNode | JSX.Element;
 	title: string;
 	setIsModalOpen: (isOpen: boolean) => void;
+	onClose?: () => void;
 }
 
-const BaseModal: FC<BaseModalProps> = ({ isModalOpen, setIsModalOpen, children, title }) => {
+const BaseModal: FC<BaseModalProps> = ({
+	isModalOpen,
+	setIsModalOpen,
+	children,
+	title,
+	onClose,
+}) => {
 	const [isBrowser, setIsBrowser] = useState(false);
 
 	useEffect(() => {
@@ -22,10 +29,25 @@ const BaseModal: FC<BaseModalProps> = ({ isModalOpen, setIsModalOpen, children, 
 
 	const modalContent = isModalOpen ? (
 		<StyledModalOverlay>
-			<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
+			<OutsideClickHandler
+				onOutsideClick={() => {
+					if (onClose != null) {
+						onClose();
+					}
+					setIsModalOpen(false);
+				}}
+			>
 				<StyledModal>
 					<StyledModalHeader>
-						<a href="#" onClick={() => setIsModalOpen(false)}>
+						<a
+							href="#"
+							onClick={() => {
+								if (onClose != null) {
+									onClose();
+								}
+								setIsModalOpen(false);
+							}}
+						>
 							<Image src={CloseIcon} alt="close" />
 						</a>
 					</StyledModalHeader>

@@ -1,8 +1,11 @@
 import { FC, useState } from 'react';
 import styled, { css } from 'styled-components';
+import Spinner from 'assets/svg/loader.svg';
+
 import BaseModal from '../BaseModal';
-import { FlexDivRow } from '../common';
+import { FlexDivRow, StyledSpinner } from '../common';
 import Button from 'components/Button';
+import { Transaction } from 'constants/transactions';
 
 export enum TransactionType {
 	Allowance = 'ALLOWANCE',
@@ -67,6 +70,8 @@ interface ActionBoxProps {
 	actionBoxType: ActionBoxType;
 	allowance: string;
 	onApprove: () => void;
+	txState: Transaction;
+	setTxState: (tx: Transaction) => void;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
@@ -75,6 +80,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 	actionBoxType,
 	allowance,
 	onApprove,
+	txState,
+	setTxState,
 }) => {
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -156,59 +163,85 @@ const ActionBox: FC<ActionBoxProps> = ({
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
 				isModalOpen={showTxModal}
+				onClose={() => setTxState(Transaction.PRESUBMIT)}
 			>
 				{/* TODO create new components for the transaction feedback here */}
-				{txType === TransactionType.Allowance ? (
+				{txState === Transaction.SUCCESS ? (
+					<div>
+						<div>Your transaction has been submitted successfully</div>
+					</div>
+				) : null}
+				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
+				{txType === TransactionType.Allowance && txState === Transaction.PRESUBMIT ? (
 					<div>
 						<div>{`Please approve ${symbol} usage by the pool contract`}</div>
-						<SubmitButton variant={'text'} isWithdraw={false} onClick={(e) => onApprove()}>
+						<SubmitButton
+							variant={'text'}
+							isWithdraw={false}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								onApprove();
+							}}
+						>
 							Confirm Approval
 						</SubmitButton>
 					</div>
 				) : null}
-				{txType === TransactionType.Purchase ? (
+				{txType === TransactionType.Purchase && txState === Transaction.PRESUBMIT ? (
 					<div>
 						<div>You are going to purchase for {inputValue}</div>
 						<SubmitButton
 							variant={'text'}
 							isWithdraw={false}
-							onClick={(e) => onSubmit(inputValue, txType)}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								onSubmit(inputValue, txType);
+							}}
 						>
 							Confirm Purchase
 						</SubmitButton>
 					</div>
 				) : null}
-				{txType === TransactionType.Accept ? (
+				{txType === TransactionType.Accept && txState === Transaction.PRESUBMIT ? (
 					<div>
 						<div>You are accepting {inputValue} tokens</div>
 						<SubmitButton
 							variant={'text'}
 							isWithdraw={false}
-							onClick={(e) => onSubmit(inputValue, txType)}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								onSubmit(inputValue, txType);
+							}}
 						>
 							Confirm Accept
 						</SubmitButton>
 					</div>
 				) : null}
-				{txType === TransactionType.Withdraw ? (
+				{txType === TransactionType.Withdraw && txState === Transaction.PRESUBMIT ? (
 					<div>
 						<div>You are withdrawing {inputValue} tokens</div>
 						<SubmitButton
 							variant={'text'}
 							isWithdraw={true}
-							onClick={(e) => onSubmit(inputValue, txType)}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								onSubmit(inputValue, txType);
+							}}
 						>
 							Confirm Withdraw
 						</SubmitButton>
 					</div>
 				) : null}
-				{txType === TransactionType.Vest && maxValue ? (
+				{txType === TransactionType.Vest && txState === Transaction.PRESUBMIT && maxValue ? (
 					<div>
 						<div>You are vesting {maxValue}</div>
 						<SubmitButton
 							variant={'text'}
 							isWithdraw={true}
-							onClick={(e) => onSubmit(maxValue, txType)}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								onSubmit(maxValue, txType);
+							}}
 						>
 							Confirm Vesting
 						</SubmitButton>

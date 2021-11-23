@@ -1,6 +1,5 @@
 import { FC, useState } from 'react';
 import { FormikProps } from 'formik';
-import Image from 'next/image';
 
 import Spinner from 'assets/svg/loader.svg';
 import styled from 'styled-components';
@@ -8,7 +7,7 @@ import BaseModal from 'components/BaseModal';
 import Button from 'components/Button';
 import { Transaction } from 'constants/transactions';
 import Etherscan from 'containers/BlockExplorer';
-import { ExternalLink } from 'components/common';
+import { ExternalLink, StyledSpinner } from 'components/common';
 
 export type SummaryItem = {
 	label: string;
@@ -152,12 +151,6 @@ const SummaryBoxHeader = styled.div`
 
 const StyledExternalLink = styled(ExternalLink)`
 	color: ${(props) => props.theme.colors.statusBlue};
-`;
-
-// @ts-ignore
-const StyledSpinner = styled(Image)`
-	display: block;
-	margin: 30px auto;
 `;
 
 const SummaryBoxGrid = styled.div`
