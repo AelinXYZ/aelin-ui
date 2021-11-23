@@ -142,7 +142,7 @@ export const Table: FC<TableProps> = ({
 									<Link
 										key={`tableRowLink-${i}`}
 										// @ts-ignore
-										href={ROUTES.Pools.PoolView(row?.original?.address ?? '')}
+										href={ROUTES.Pools.PoolView(row?.original?.id ?? '')}
 									>
 										{tableBodyRow}
 									</Link>
