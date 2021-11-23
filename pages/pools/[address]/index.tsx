@@ -6,6 +6,7 @@ import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
 import { parsePool } from 'queries/pools/useGetPoolsQuery';
 import { truncateAddress } from 'utils/crypto';
 import TimeLeft from 'components/TimeLeft';
+import Ens from 'components/Ens';
 
 const Pool: FC = () => {
 	const router = useRouter();
@@ -24,7 +25,7 @@ const Pool: FC = () => {
 		() => [
 			{
 				header: 'Sponsor',
-				subText: truncateAddress(pool?.sponsor ?? ''),
+				subText: <Ens address={pool?.sponsor ?? ''} />,
 			},
 			{
 				header: 'My Capital',
@@ -48,7 +49,7 @@ const Pool: FC = () => {
 			},
 			{
 				header: 'Sponsor Fee',
-				subText: pool?.sponsorFee,
+				subText: pool?.sponsorFee || 0,
 			},
 			{
 				header: 'Purchase Expiration',
