@@ -22,7 +22,7 @@ const Pools: FC = () => {
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	// TODO implement dropdown
-	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.OPEN);
+	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.PoolOpen);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
@@ -66,11 +66,11 @@ const Pools: FC = () => {
 				duration,
 				fee: sponsorFee,
 				timestamp,
-				status: Status.OPEN, // TODO get status
+				status: Status.PoolOpen, // TODO get status
 			})
 		);
 		if (router.query.active === 'true') {
-			list = list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
+			list = list.filter(({ status }) => status === Status.PoolOpen || status === Status.DealOpen);
 		}
 		if (sponsorFilter != null) {
 			list = list.filter(({ sponsor }) =>

@@ -1,13 +1,20 @@
 import { FC } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import colors from 'styles/theme/colors';
 
+// POOL OPEN (when the current time is less than the purchase expiry - track this in the client and show a timer)
+// SEEKING DEAL (when the current time is more than the purchase expiry but no deal has been presented yet)
+// FUNDING DEAL (when a deal is in need of funding)
+// DEAL OPEN (during the pro rata or redemption period phases)
+// CLOSED (when either a deal has been submitted and is no longer redeemable or when a deal is never found and the duration passes)
+
 export enum Status {
-	OPEN = 'open',
-	DEAL = 'deal',
-	EXPIRED = 'expired',
-	REJECTED = 'rejected',
+	PoolOpen = 'Pool open',
+	SeekingDeal = 'Seeking deal',
+	FundingDeal = 'Funding deal',
+	DealOpen = 'Deal open',
+	Closed = 'Closed',
 }
 
 type DealStatusProps = {
@@ -16,13 +23,13 @@ type DealStatusProps = {
 
 const getBackground = (status: Status) => {
 	switch (status) {
-		case Status.OPEN:
+		case Status.PoolOpen:
+		case Status.DealOpen:
 			return colors.statusBlue;
-		case Status.DEAL:
-			return colors.statusGreen;
-		case Status.EXPIRED:
+		case Status.SeekingDeal:
+		case Status.FundingDeal:
 			return colors.statusYellow;
-		case Status.REJECTED:
+		case Status.Closed:
 			return colors.statusRed;
 	}
 };
