@@ -1,5 +1,6 @@
 import { add } from 'date-fns';
 import { ONE_DAY_IN_SECS, ONE_HOUR_IN_SECS, ONE_MINUTE_IN_SECS } from 'constants/time';
+import { Status } from 'components/DealStatus';
 export const convertToSeconds = ({
 	days,
 	hours,
@@ -22,4 +23,12 @@ export const getDuration = (startDate: Date, days: number, hours: number, minute
 
 export const formatDuration = (days: number, hours: number, minutes: number) => {
 	return `${days || 0}d ${hours || 0}h ${minutes || 0}m`;
+};
+
+export const calculateStatus = ({ purchaseExpiry }: { purchaseExpiry: number }) => {
+	const now = Date.now();
+	if (now > purchaseExpiry) {
+		return Status.SeekingDeal;
+	}
+	return Status.PoolOpen;
 };

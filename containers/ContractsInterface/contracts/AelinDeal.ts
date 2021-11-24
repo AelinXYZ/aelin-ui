@@ -1,45 +1,8 @@
-export const poolAbi = [
+const dealAbi = [
 	{
 		inputs: [],
 		stateMutability: 'nonpayable',
 		type: 'constructor',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'purchaser',
-				type: 'address',
-			},
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'dealAddress',
-				type: 'address',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'poolTokenAmount',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'sponsorFee',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'aelinFee',
-				type: 'uint256',
-			},
-		],
-		name: 'AcceptDeal',
-		type: 'event',
 	},
 	{
 		anonymous: false,
@@ -70,31 +33,25 @@ export const poolAbi = [
 		anonymous: false,
 		inputs: [
 			{
-				indexed: false,
-				internalType: 'string',
-				name: 'name',
-				type: 'string',
-			},
-			{
-				indexed: false,
-				internalType: 'string',
-				name: 'symbol',
-				type: 'string',
-			},
-			{
 				indexed: true,
 				internalType: 'address',
-				name: 'sponsor',
+				name: 'underlyingDealTokenAddress',
 				type: 'address',
 			},
 			{
 				indexed: true,
 				internalType: 'address',
-				name: 'dealContract',
+				name: 'recipient',
 				type: 'address',
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'underlyingDealTokensClaimed',
+				type: 'uint256',
 			},
 		],
-		name: 'CreateDeal',
+		name: 'ClaimedUnderlyingDealTokens',
 		type: 'event',
 	},
 	{
@@ -103,97 +60,73 @@ export const poolAbi = [
 			{
 				indexed: true,
 				internalType: 'address',
-				name: 'dealContract',
+				name: 'poolAddress',
+				type: 'address',
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'proRataRedemptionStart',
+				type: 'uint256',
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'proRataRedemptionExpiry',
+				type: 'uint256',
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'openRedemptionStart',
+				type: 'uint256',
+			},
+			{
+				indexed: false,
+				internalType: 'uint256',
+				name: 'openRedemptionExpiry',
+				type: 'uint256',
+			},
+		],
+		name: 'DealFullyFunded',
+		type: 'event',
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: 'address',
+				name: 'underlyingDealTokenAddress',
 				type: 'address',
 			},
 			{
 				indexed: true,
 				internalType: 'address',
-				name: 'underlyingDealToken',
+				name: 'depositor',
 				type: 'address',
 			},
 			{
 				indexed: false,
 				internalType: 'uint256',
-				name: 'purchaseTokenTotalForDeal',
+				name: 'underlyingDealTokenAmount',
 				type: 'uint256',
 			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'underlyingDealTokenTotal',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'vestingPeriod',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'vestingCliff',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'proRataRedemptionPeriod',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'openRedemptionPeriod',
-				type: 'uint256',
-			},
+		],
+		name: 'DepositDealTokens',
+		type: 'event',
+	},
+	{
+		anonymous: false,
+		inputs: [
 			{
 				indexed: true,
 				internalType: 'address',
 				name: 'holder',
 				type: 'address',
 			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'holderFundingDuration',
-				type: 'uint256',
-			},
 		],
-		name: 'DealDetails',
-		type: 'event',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'purchaser',
-				type: 'address',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'purchaseTokenAmount',
-				type: 'uint256',
-			},
-		],
-		name: 'PurchasePoolToken',
-		type: 'event',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'sponsor',
-				type: 'address',
-			},
-		],
-		name: 'SetSponsor',
+		name: 'SetHolder',
 		type: 'event',
 	},
 	{
@@ -227,99 +160,40 @@ export const poolAbi = [
 			{
 				indexed: true,
 				internalType: 'address',
-				name: 'purchaser',
+				name: 'underlyingDealTokenAddress',
+				type: 'address',
+			},
+			{
+				indexed: true,
+				internalType: 'address',
+				name: 'depositor',
 				type: 'address',
 			},
 			{
 				indexed: false,
 				internalType: 'uint256',
-				name: 'purchaseTokenAmount',
+				name: 'underlyingDealTokenAmount',
 				type: 'uint256',
 			},
 		],
-		name: 'WithdrawFromPool',
+		name: 'WithdrawUnderlyingDealTokens',
 		type: 'event',
 	},
 	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: 'poolTokenAmount',
-				type: 'uint256',
-			},
-		],
-		name: 'acceptDealTokens',
+		inputs: [],
+		name: 'acceptHolder',
 		outputs: [],
 		stateMutability: 'nonpayable',
 		type: 'function',
 	},
 	{
 		inputs: [],
-		name: 'acceptMaxDealTokens',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'acceptSponsor',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'aelinDeal',
-		outputs: [
-			{
-				internalType: 'contract AelinDeal',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'aelinDealLogicAddress',
+		name: 'aelinPool',
 		outputs: [
 			{
 				internalType: 'address',
 				name: '',
 				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'aelinRewardsAddress',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		name: 'allowList',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
 			},
 		],
 		stateMutability: 'view',
@@ -357,7 +231,7 @@ export const poolAbi = [
 				type: 'address',
 			},
 		],
-		name: 'amountAccepted',
+		name: 'amountVested',
 		outputs: [
 			{
 				internalType: 'uint256',
@@ -425,62 +299,40 @@ export const poolAbi = [
 		type: 'function',
 	},
 	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_underlyingDealToken',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: '_purchaseTokenTotalForDeal',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_underlyingDealTokenTotal',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_vestingPeriod',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_vestingCliff',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_proRataRedemptionPeriod',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_openRedemptionPeriod',
-				type: 'uint256',
-			},
-			{
-				internalType: 'address',
-				name: '_holder',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: '_holderFundingDuration',
-				type: 'uint256',
-			},
-		],
-		name: 'createDeal',
+		inputs: [],
+		name: 'claim',
 		outputs: [
 			{
-				internalType: 'address',
+				internalType: 'uint256',
 				name: '',
-				type: 'address',
+				type: 'uint256',
 			},
 		],
 		stateMutability: 'nonpayable',
+		type: 'function',
+	},
+	{
+		inputs: [
+			{
+				internalType: 'address',
+				name: 'purchaser',
+				type: 'address',
+			},
+		],
+		name: 'claimableTokens',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: 'underlyingClaimable',
+				type: 'uint256',
+			},
+			{
+				internalType: 'uint256',
+				name: 'dealTokensClaimable',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
 		type: 'function',
 	},
 	{
@@ -522,25 +374,44 @@ export const poolAbi = [
 	},
 	{
 		inputs: [],
-		name: 'futureSponsor',
+		name: 'depositComplete',
 		outputs: [
 			{
-				internalType: 'address',
+				internalType: 'bool',
 				name: '',
-				type: 'address',
+				type: 'bool',
 			},
 		],
 		stateMutability: 'view',
 		type: 'function',
 	},
 	{
-		inputs: [],
-		name: 'hasAllowList',
+		inputs: [
+			{
+				internalType: 'uint256',
+				name: '_underlyingDealTokenAmount',
+				type: 'uint256',
+			},
+		],
+		name: 'depositUnderlying',
 		outputs: [
 			{
 				internalType: 'bool',
 				name: '',
 				type: 'bool',
+			},
+		],
+		stateMutability: 'nonpayable',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'futureHolder',
+		outputs: [
+			{
+				internalType: 'address',
+				name: '',
+				type: 'address',
 			},
 		],
 		stateMutability: 'view',
@@ -609,44 +480,49 @@ export const poolAbi = [
 				type: 'string',
 			},
 			{
-				internalType: 'uint256',
-				name: '_purchaseTokenCap',
-				type: 'uint256',
-			},
-			{
 				internalType: 'address',
-				name: '_purchaseToken',
+				name: '_underlyingDealToken',
 				type: 'address',
 			},
 			{
 				internalType: 'uint256',
-				name: '_duration',
+				name: '_underlyingDealTokenTotal',
 				type: 'uint256',
 			},
 			{
 				internalType: 'uint256',
-				name: '_sponsorFee',
+				name: '_vestingPeriod',
+				type: 'uint256',
+			},
+			{
+				internalType: 'uint256',
+				name: '_vestingCliff',
+				type: 'uint256',
+			},
+			{
+				internalType: 'uint256',
+				name: '_proRataRedemptionPeriod',
+				type: 'uint256',
+			},
+			{
+				internalType: 'uint256',
+				name: '_openRedemptionPeriod',
 				type: 'uint256',
 			},
 			{
 				internalType: 'address',
-				name: '_sponsor',
+				name: '_holder',
 				type: 'address',
 			},
 			{
 				internalType: 'uint256',
-				name: '_purchaseDuration',
+				name: '_maxDealTotalSupply',
 				type: 'uint256',
 			},
 			{
-				internalType: 'address',
-				name: '_aelinDealLogicAddress',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: '_aelinRewardsAddress',
-				type: 'address',
+				internalType: 'uint256',
+				name: '_holderFundingDuration',
+				type: 'uint256',
 			},
 		],
 		name: 'initialize',
@@ -655,14 +531,8 @@ export const poolAbi = [
 		type: 'function',
 	},
 	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: 'purchaser',
-				type: 'address',
-			},
-		],
-		name: 'maxDealAccept',
+		inputs: [],
+		name: 'maxTotalSupply',
 		outputs: [
 			{
 				internalType: 'uint256',
@@ -677,19 +547,18 @@ export const poolAbi = [
 		inputs: [
 			{
 				internalType: 'address',
-				name: 'purchaser',
+				name: 'dst',
 				type: 'address',
 			},
-		],
-		name: 'maxProRataAvail',
-		outputs: [
 			{
 				internalType: 'uint256',
-				name: '',
+				name: 'dealTokenAmount',
 				type: 'uint256',
 			},
 		],
-		stateMutability: 'view',
+		name: 'mint',
+		outputs: [],
+		stateMutability: 'nonpayable',
 		type: 'function',
 	},
 	{
@@ -706,178 +575,94 @@ export const poolAbi = [
 		type: 'function',
 	},
 	{
+		inputs: [],
+		name: 'openRedemptionExpiry',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'openRedemptionPeriod',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'openRedemptionStart',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'proRataRedemptionExpiry',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'proRataRedemptionPeriod',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'proRataRedemptionStart',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
 		inputs: [
 			{
 				internalType: 'address',
-				name: '',
+				name: '_holder',
 				type: 'address',
 			},
 		],
-		name: 'openPeriodEligible',
-		outputs: [
-			{
-				internalType: 'bool',
-				name: '',
-				type: 'bool',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'poolExpiry',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'poolFactory',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'proRataConversion',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'purchaseExpiry',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '_purchaseTokenAmount',
-				type: 'uint256',
-			},
-		],
-		name: 'purchasePoolTokens',
+		name: 'setHolder',
 		outputs: [],
 		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'purchaseToken',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'purchaseTokenCap',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'purchaseTokenDecimals',
-		outputs: [
-			{
-				internalType: 'uint8',
-				name: '',
-				type: 'uint8',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'purchaseTokenTotalForDeal',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_sponsor',
-				type: 'address',
-			},
-		],
-		name: 'setSponsor',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'sponsor',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'sponsorFee',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
 		type: 'function',
 	},
 	{
@@ -888,19 +673,6 @@ export const poolAbi = [
 				internalType: 'string',
 				name: '',
 				type: 'string',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'totalAmountAccepted',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
 			},
 		],
 		stateMutability: 'view',
@@ -920,10 +692,23 @@ export const poolAbi = [
 		type: 'function',
 	},
 	{
+		inputs: [],
+		name: 'totalUnderlyingClaimed',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
 		inputs: [
 			{
 				internalType: 'address',
-				name: 'dst',
+				name: 'recipient',
 				type: 'address',
 			},
 			{
@@ -947,12 +732,12 @@ export const poolAbi = [
 		inputs: [
 			{
 				internalType: 'address',
-				name: 'src',
+				name: 'sender',
 				type: 'address',
 			},
 			{
 				internalType: 'address',
-				name: 'dst',
+				name: 'recipient',
 				type: 'address',
 			},
 			{
@@ -975,39 +760,138 @@ export const poolAbi = [
 	{
 		inputs: [
 			{
-				internalType: 'address[]',
-				name: '_allowList',
-				type: 'address[]',
+				internalType: 'address',
+				name: 'sender',
+				type: 'address',
 			},
 			{
-				internalType: 'uint256[]',
-				name: '_allowListAmounts',
-				type: 'uint256[]',
+				internalType: 'address',
+				name: 'recipient',
+				type: 'address',
 			},
 		],
-		name: 'updateAllowList',
-		outputs: [],
+		name: 'transferFromMax',
+		outputs: [
+			{
+				internalType: 'bool',
+				name: '',
+				type: 'bool',
+			},
+		],
 		stateMutability: 'nonpayable',
 		type: 'function',
 	},
 	{
 		inputs: [
 			{
+				internalType: 'address',
+				name: 'recipient',
+				type: 'address',
+			},
+		],
+		name: 'transferMax',
+		outputs: [
+			{
+				internalType: 'bool',
+				name: '',
+				type: 'bool',
+			},
+		],
+		stateMutability: 'nonpayable',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'underlyingDealToken',
+		outputs: [
+			{
+				internalType: 'address',
+				name: '',
+				type: 'address',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'underlyingDealTokenTotal',
+		outputs: [
+			{
 				internalType: 'uint256',
-				name: 'purchaseTokenAmount',
+				name: '',
 				type: 'uint256',
 			},
 		],
-		name: 'withdrawFromPool',
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'underlyingPerDealExchangeRate',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'vestingCliff',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'vestingExpiry',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'vestingPeriod',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'withdraw',
 		outputs: [],
 		stateMutability: 'nonpayable',
 		type: 'function',
 	},
 	{
 		inputs: [],
-		name: 'withdrawMaxFromPool',
+		name: 'withdrawExpiry',
 		outputs: [],
 		stateMutability: 'nonpayable',
 		type: 'function',
 	},
 ];
+
+export default dealAbi;

@@ -10,7 +10,7 @@ import Input from 'components/Input/Input';
 import { truncateAddress } from 'utils/crypto';
 import { formatNumber } from 'utils/numbers';
 import { getDuration, formatDuration } from 'utils/time';
-import { poolAbi } from 'contracts/pool';
+import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { erc20Abi } from 'contracts/erc20';
 
 import validateCreateDeal from 'utils/validate/create-deal';

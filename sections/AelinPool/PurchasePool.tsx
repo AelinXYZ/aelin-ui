@@ -10,7 +10,7 @@ import Ens from 'components/Ens';
 import { PoolCreatedResult } from 'subgraph';
 import { ethers } from 'ethers';
 import { erc20Abi } from 'contracts/erc20';
-import { poolAbi } from 'contracts/pool';
+import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 

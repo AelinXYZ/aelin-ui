@@ -14,6 +14,7 @@ import DealStatus, { Status } from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { truncateNumber } from 'utils/numbers';
+import { calculateStatus } from 'utils/time';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 const Pools: FC = () => {
@@ -22,7 +23,7 @@ const Pools: FC = () => {
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	// TODO implement dropdown
-	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.OPEN);
+	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.PoolOpen);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
@@ -56,6 +57,7 @@ const Pools: FC = () => {
 				purchaseToken,
 				purchaseTokenCap,
 				timestamp,
+				purchaseExpiry,
 			}) => ({
 				sponsor,
 				name,
@@ -66,11 +68,11 @@ const Pools: FC = () => {
 				duration,
 				fee: sponsorFee,
 				timestamp,
-				status: Status.OPEN, // TODO get status
+				status: calculateStatus({ purchaseExpiry }), // TODO get status
 			})
 		);
 		if (router.query.active === 'true') {
-			list = list.filter(({ status }) => status === Status.OPEN || status === Status.DEAL);
+			list = list.filter(({ status }) => status === Status.PoolOpen || status === Status.DealOpen);
 		}
 		if (sponsorFilter != null) {
 			list = list.filter(({ sponsor }) =>

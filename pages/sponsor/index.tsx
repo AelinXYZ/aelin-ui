@@ -20,7 +20,7 @@ const Pools: FC = () => {
 				cap: 10000000,
 				duration: '5 weeks',
 				fee: 0.001,
-				status: Status.OPEN,
+				status: Status.PoolOpen,
 			},
 			{
 				sponsor: 'Synthetix',
@@ -31,7 +31,7 @@ const Pools: FC = () => {
 				cap: 10000000,
 				duration: '5 weeks',
 				fee: 0.001,
-				status: Status.DEAL,
+				status: Status.SeekingDeal,
 			},
 			{
 				sponsor: 'Synthetix',
@@ -42,7 +42,7 @@ const Pools: FC = () => {
 				cap: 10000000,
 				duration: '2 months',
 				fee: 0.001,
-				status: Status.EXPIRED,
+				status: Status.FundingDeal,
 			},
 			{
 				sponsor: 'Synthetix',
@@ -52,7 +52,7 @@ const Pools: FC = () => {
 				cap: 10000000,
 				duration: '5 weeks',
 				fee: 0.001,
-				status: Status.REJECTED,
+				status: Status.Closed,
 			},
 			{
 				sponsor: 'Synthetix',
@@ -62,7 +62,7 @@ const Pools: FC = () => {
 				cap: 10000000,
 				duration: '20 weeks',
 				fee: 0.001,
-				status: Status.OPEN,
+				status: Status.PoolOpen,
 			},
 		],
 		[]
@@ -104,6 +104,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return `${100 * cellProps.value}%`;
 				},
+				width: 75,
 			},
 			{
 				Header: 'status',
@@ -112,6 +113,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
+				width: 75,
 			},
 		],
 		[]
