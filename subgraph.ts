@@ -1073,6 +1073,10 @@ export type PoolCreatedFilter = {
     hasAllowList_not?: boolean | null;
     hasAllowList_in?: boolean[];
     hasAllowList_not_in?: boolean[];
+    poolStatus?: PoolStatusFilter | null;
+    poolStatus_not?: PoolStatusFilter | null;
+    poolStatus_in?: PoolStatusFilter[];
+    poolStatus_not_in?: PoolStatusFilter[];
 };
 export type PoolCreatedResult = {
     id: string;
@@ -1087,6 +1091,7 @@ export type PoolCreatedResult = {
     purchaseExpiry: Wei;
     timestamp: Wei;
     hasAllowList: boolean;
+    poolStatus: Partial<PoolStatusResult>;
 };
 export type PoolCreatedFields = {
     id: true;
@@ -1101,6 +1106,7 @@ export type PoolCreatedFields = {
     purchaseExpiry: true;
     timestamp: true;
     hasAllowList: true;
+    poolStatus: PoolStatusFields;
 };
 export type PoolCreatedArgs<K extends keyof PoolCreatedResult> = {
     [Property in keyof Pick<PoolCreatedFields, K>]: PoolCreatedFields[Property];
@@ -1140,6 +1146,8 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: st
             formattedObj["timestamp"] = wei(obj["timestamp"], 0);
         if (obj["hasAllowList"])
             formattedObj["hasAllowList"] = obj["hasAllowList"];
+        if (obj["poolStatus"])
+            formattedObj["poolStatus"] = obj["poolStatus"];
         return formattedObj as Pick<PoolCreatedResult, K>;
     };
     const enabled = options && args;
@@ -1198,6 +1206,8 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: strin
                     formattedObj["timestamp"] = wei(obj["timestamp"], 0);
                 if (obj["hasAllowList"])
                     formattedObj["hasAllowList"] = obj["hasAllowList"];
+                if (obj["poolStatus"])
+                    formattedObj["poolStatus"] = obj["poolStatus"];
                 return formattedObj as Pick<PoolCreatedResult, K>;
             });
             results = results.concat(newResults);

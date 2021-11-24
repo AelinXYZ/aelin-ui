@@ -23,7 +23,7 @@ const Pools: FC = () => {
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	// TODO implement dropdown
-	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.PoolOpen);
+	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
@@ -45,7 +45,6 @@ const Pools: FC = () => {
 	}, [isPageOne, poolsQuery]);
 
 	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
-
 	const data = useMemo(() => {
 		let list = pools.map(
 			({
@@ -58,6 +57,7 @@ const Pools: FC = () => {
 				purchaseTokenCap,
 				timestamp,
 				purchaseExpiry,
+				poolStatus,
 			}) => ({
 				sponsor,
 				name,
@@ -68,26 +68,32 @@ const Pools: FC = () => {
 				duration,
 				fee: sponsorFee,
 				timestamp,
-				status: calculateStatus({ purchaseExpiry }), // TODO get status
+				status: calculateStatus({ poolStatus, purchaseExpiry }), // TODO get status
 			})
 		);
+		console.log('list', list);
 		if (router.query.active === 'true') {
+			console.log('what 1?');
 			list = list.filter(({ status }) => status === Status.PoolOpen || status === Status.DealOpen);
 		}
 		if (sponsorFilter != null) {
+			console.log('what 2?');
 			list = list.filter(({ sponsor }) =>
 				sponsor.toLowerCase().includes(sponsorFilter.toLowerCase())
 			);
 		}
 		if (currencyFilter != null) {
+			console.log('what 3?');
 			list = list.filter(({ purchaseToken }) =>
 				purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
 			);
 		}
 		if (nameFilter != null) {
+			console.log('what 4?');
 			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
 		if (statusFilter != null) {
+			console.log('what 5?', statusFilter);
 			list = list.filter(({ status }) => status.toLowerCase().includes(statusFilter.toLowerCase()));
 		}
 		return list;
@@ -157,7 +163,7 @@ const Pools: FC = () => {
 		],
 		[]
 	);
-
+	console.log('data', data);
 	return (
 		<PageLayout title={<>All pools</>} subtitle="">
 			<FilterPool
