@@ -1,6 +1,6 @@
 const contract = {
 	42: {
-		address: '0xedA0008e2afdfe87E57e5eC100269217fbd3389C',
+		address: '0xb38766658dc08B360287E7b3255bCDb657F5F965',
 		abi: [
 			{
 				inputs: [
@@ -12,6 +12,11 @@ const contract = {
 					{
 						internalType: 'address',
 						name: '_aelinDealLogic',
+						type: 'address',
+					},
+					{
+						internalType: 'address',
+						name: '_aelinRewards',
 						type: 'address',
 					},
 				],
@@ -72,8 +77,14 @@ const contract = {
 					{
 						indexed: false,
 						internalType: 'uint256',
-						name: 'purchaseExpiry',
+						name: 'purchaseDuration',
 						type: 'uint256',
+					},
+					{
+						indexed: false,
+						internalType: 'bool',
+						name: 'hasAllowList',
+						type: 'bool',
 					},
 				],
 				name: 'CreatePool',
@@ -95,6 +106,19 @@ const contract = {
 			{
 				inputs: [],
 				name: 'AELIN_POOL_LOGIC',
+				outputs: [
+					{
+						internalType: 'address',
+						name: '',
+						type: 'address',
+					},
+				],
+				stateMutability: 'view',
+				type: 'function',
+			},
+			{
+				inputs: [],
+				name: 'AELIN_REWARDS',
 				outputs: [
 					{
 						internalType: 'address',
@@ -139,8 +163,18 @@ const contract = {
 					},
 					{
 						internalType: 'uint256',
-						name: '_purchaseExpiry',
+						name: '_purchaseDuration',
 						type: 'uint256',
+					},
+					{
+						internalType: 'address[]',
+						name: '_allowList',
+						type: 'address[]',
+					},
+					{
+						internalType: 'uint256[]',
+						name: '_allowListAmounts',
+						type: 'uint256[]',
 					},
 				],
 				name: 'createPool',

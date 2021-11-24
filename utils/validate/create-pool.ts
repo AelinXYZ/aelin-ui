@@ -11,9 +11,9 @@ export interface CreatePoolValues {
 	durationHours: number;
 	durationMinutes: number;
 	sponsorFee: number;
-	purchaseExpiryDays: number;
-	purchaseExpiryHours: number;
-	purchaseExpiryMinutes: number;
+	purchaseDurationDays: number;
+	purchaseDurationHours: number;
+	purchaseDurationMinutes: number;
 }
 
 const validateCreatePool = (values: CreatePoolValues) => {
@@ -54,18 +54,22 @@ const validateCreatePool = (values: CreatePoolValues) => {
 		}
 	}
 
-	if (!values.purchaseExpiryDays && !values.purchaseExpiryHours && !values.purchaseExpiryMinutes) {
-		errors.purchaseExpiryMinutes = 'Required';
+	if (
+		!values.purchaseDurationDays &&
+		!values.purchaseDurationHours &&
+		!values.purchaseDurationMinutes
+	) {
+		errors.purchaseDurationMinutes = 'Required';
 	} else {
-		const purchaseExpirySeconds = convertToSeconds({
-			days: values?.purchaseExpiryDays ?? 0,
-			hours: values?.purchaseExpiryHours ?? 0,
-			minutes: values?.purchaseExpiryMinutes ?? 0,
+		const purchaseDurationSeconds = convertToSeconds({
+			days: values?.purchaseDurationDays ?? 0,
+			hours: values?.purchaseDurationHours ?? 0,
+			minutes: values?.purchaseDurationMinutes ?? 0,
 		});
-		if (purchaseExpirySeconds > ONE_DAY_IN_SECS * 30) {
-			errors.purchaseExpiryMinutes = 'Max purchase expiry is 30 days';
-		} else if (purchaseExpirySeconds < ONE_MINUTE_IN_SECS * 30) {
-			errors.purchaseExpiryMinutes = 'Min purchase expiry is 30 mins';
+		if (purchaseDurationSeconds > ONE_DAY_IN_SECS * 30) {
+			errors.purchaseDurationMinutes = 'Max purchase expiry is 30 days';
+		} else if (purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 30) {
+			errors.purchaseDurationMinutes = 'Min purchase expiry is 30 mins';
 		}
 	}
 

@@ -38,17 +38,17 @@ const Create: FC = () => {
 			durationMinutes,
 			poolName,
 			poolSymbol,
-			purchaseExpiryDays,
-			purchaseExpiryHours,
-			purchaseExpiryMinutes,
+			purchaseDurationDays,
+			purchaseDurationHours,
+			purchaseDurationMinutes,
 		} = formik.values;
 
 		const duration = getDuration(now, durationDays, durationHours, durationMinutes);
-		const purchaseExpiry = getDuration(
+		const purchaseDuration = getDuration(
 			now,
-			purchaseExpiryDays,
-			purchaseExpiryHours,
-			purchaseExpiryMinutes
+			purchaseDurationDays,
+			purchaseDurationHours,
+			purchaseDurationMinutes
 		);
 		try {
 			const tx = await contracts.AelinPoolFactory!.createPool(
@@ -61,7 +61,9 @@ const Create: FC = () => {
 				'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
 				duration,
 				sponsorFee.toString(),
-				purchaseExpiry,
+				purchaseDuration,
+				[], // allow list
+				[], // allow list amounts
 				{ gasLimit: 1000000 }
 			);
 			if (tx) {
@@ -75,6 +77,7 @@ const Create: FC = () => {
 				});
 			}
 		} catch (e) {
+			console.log('e', e);
 			setTxState(Transaction.FAILED);
 		}
 	};
@@ -89,9 +92,9 @@ const Create: FC = () => {
 			durationHours: 0,
 			durationMinutes: 0,
 			sponsorFee: 0,
-			purchaseExpiryDays: 0,
-			purchaseExpiryHours: 0,
-			purchaseExpiryMinutes: 0,
+			purchaseDurationDays: 0,
+			purchaseDurationHours: 0,
+			purchaseDurationMinutes: 0,
 		},
 		validate: validateCreatePool,
 		onSubmit: handleSubmit,
@@ -215,43 +218,43 @@ const Create: FC = () => {
 				formError: formik.errors.poolSymbol,
 			},
 			{
-				header: <label htmlFor="purchaseExpiry">Expiry</label>,
+				header: <label htmlFor="purchaseDuration">Purchase Duration</label>,
 				subText: 'Time to purchase deal tokens',
 				formField: (
 					<FlexDivRow>
 						<Input
 							width="50px"
-							id="purchaseExpiryDays"
-							name="purchaseExpiryDays"
+							id="purchaseDurationDays"
+							name="purchaseDurationDays"
 							type="number"
 							placeholder="days"
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							value={formik.values.purchaseExpiryDays || ''}
+							value={formik.values.purchaseDurationDays || ''}
 						/>
 						<Input
 							width="55px"
-							id="purchaseExpiryHours"
-							name="purchaseExpiryHours"
+							id="purchaseDurationHours"
+							name="purchaseDurationHours"
 							type="number"
 							placeholder="hours"
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							value={formik.values.purchaseExpiryHours || ''}
+							value={formik.values.purchaseDurationHours || ''}
 						/>
 						<Input
 							width="50px"
-							id="purchaseExpiryMinutes"
-							name="purchaseExpiryMinutes"
+							id="purchaseDurationMinutes"
+							name="purchaseDurationMinutes"
 							type="number"
 							placeholder="mins"
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							value={formik.values.purchaseExpiryMinutes || ''}
+							value={formik.values.purchaseDurationMinutes || ''}
 						/>
 					</FlexDivRow>
 				),
-				formError: formik.errors.purchaseExpiryMinutes,
+				formError: formik.errors.purchaseDurationMinutes,
 			},
 			{
 				header: '',
@@ -302,9 +305,9 @@ const Create: FC = () => {
 			{
 				label: 'Expiry',
 				text: formatDuration(
-					formik.values.purchaseExpiryDays,
-					formik.values.purchaseExpiryHours,
-					formik.values.purchaseExpiryMinutes
+					formik.values.purchaseDurationDays,
+					formik.values.purchaseDurationHours,
+					formik.values.purchaseDurationMinutes
 				),
 			},
 		],

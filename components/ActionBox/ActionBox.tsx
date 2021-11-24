@@ -6,6 +6,7 @@ import BaseModal from '../BaseModal';
 import { FlexDivRow, StyledSpinner } from '../common';
 import Button from 'components/Button';
 import { Transaction } from 'constants/transactions';
+import Connector from 'containers/Connector';
 
 export enum TransactionType {
 	Allowance = 'ALLOWANCE',
@@ -83,6 +84,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	txState,
 	setTxState,
 }) => {
+	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [inputValue, setInputValue] = useState(value || 0);
@@ -124,6 +126,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 			</ContentContainer>
 			<ActionButton
 				disabled={
+					!walletAddress ||
 					(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
 					(actionBoxType !== ActionBoxType.VestingDeal &&
 						(!inputValue || Number(inputValue) === 0)) ||

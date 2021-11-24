@@ -8,6 +8,7 @@ import Button from 'components/Button';
 import { Transaction } from 'constants/transactions';
 import Etherscan from 'containers/BlockExplorer';
 import { ExternalLink, StyledSpinner } from 'components/common';
+import Connector from 'containers/Connector';
 
 export type SummaryItem = {
 	label: string;
@@ -54,8 +55,10 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	isValidForm,
 	txHash,
 }) => {
+	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const { blockExplorerInstance } = Etherscan.useContainer();
+	const isValid = isValidForm && walletAddress ? true : false;
 	const link =
 		blockExplorerInstance != null && txHash != null ? blockExplorerInstance.txLink(txHash) : null;
 	const summaryBoxGrid = (
@@ -73,9 +76,9 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>
 			{summaryBoxGrid}
 			<PurchaseButton
-				isValidForm={isValidForm}
+				isValidForm={isValid}
 				onClick={() => {
-					if (isValidForm) {
+					if (isValid) {
 						setShowTxModal(true);
 					}
 				}}
