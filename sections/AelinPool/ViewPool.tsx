@@ -6,32 +6,26 @@ import { PageLayout } from 'sections/Layout';
 import { GridItem } from 'components/Grid/Grid';
 import { FlexDiv } from 'components/common';
 import Grid from 'components/Grid';
-import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox';
+import ActionBox, { ActionBoxType } from 'components/ActionBox';
 
 import SectionTitle from 'sections/shared/SectionTitle';
-import SectionDetails from 'sections/shared/SectionDetails';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import PurchasePool from './PurchasePool';
 import { PoolCreatedResult } from 'subgraph';
 import { Status } from 'components/DealStatus';
 import Connector from 'containers/Connector';
+import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
-	dealGridItems: GridItem[] | null;
 	dealVestingGridItems: GridItem[] | null;
 	poolAddress: string;
-	dealAddress: string | null;
 }
 
-const ViewPool: FC<ViewPoolProps> = ({
-	pool,
-	poolAddress,
-	dealAddress,
-	dealGridItems,
-	dealVestingGridItems,
-}) => {
+const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, dealVestingGridItems }) => {
 	const { walletAddress } = Connector.useContainer();
+	// TODO get rid of this when added dealAddress to the pool entity on the graph
+	const dealAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />
@@ -46,24 +40,15 @@ const ViewPool: FC<ViewPoolProps> = ({
 				</SectionWrapper>
 			) : null}
 			{/* TODO manage these sections below with the user flow */}
-			{dealAddress != null && dealGridItems != null ? (
+			{pool?.poolStatus === Status.DealOpen ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
+							{/* TODO add the deal address to the pool entity when a deal is created and use it here and pass it below */}
 							<SectionTitle address={dealAddress} title="Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<SectionDetails
-						actionBoxType={ActionBoxType.PendingDeal}
-						gridItems={dealGridItems}
-						onSubmit={(value, txnType) => {
-							if (txnType === TransactionType.Withdraw) {
-								console.log('withdral', value);
-							} else {
-								console.log('click me to accept or reject: ', `tokens: ${value}`);
-							}
-						}}
-					/>
+					<AcceptOrRejectDeal dealAddress={dealAddress} />
 				</SectionWrapper>
 			) : null}
 			{dealAddress != null && dealVestingGridItems != null ? (

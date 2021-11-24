@@ -19,49 +19,6 @@ const Pool: FC = () => {
 		[poolQuery?.data]
 	);
 
-	const dealGridItems = useMemo(
-		() => [
-			{
-				header: 'Name',
-				subText: 'some subText',
-			},
-			{
-				header: 'Currency',
-				subText: 'some subText',
-			},
-			{
-				header: 'Exchange rate',
-				subText: 'some subText',
-			},
-			{
-				header: 'Vesting Period',
-				subText: 'some subText',
-			},
-			{
-				header: 'Vesting Cliff',
-				subText: 'some subText',
-			},
-			{
-				header: 'Status',
-				subText: 'some subText',
-			},
-			{
-				header: 'Redemption Period',
-				subText: 'some subText',
-			},
-			{
-				header: 'Vesting Curve',
-				subText: 'some subText',
-			},
-			{
-				header: 'Discount',
-				subText: 'some subText',
-			},
-		],
-		[]
-	);
-
-	const dealAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 	const dealVestingGridItems = useMemo(
 		() => [
 			{
@@ -98,13 +55,7 @@ const Pool: FC = () => {
 		[]
 	);
 	return (
-		<ViewPool
-			dealAddress={dealAddress}
-			dealGridItems={dealGridItems}
-			pool={pool}
-			dealVestingGridItems={dealVestingGridItems}
-			poolAddress={poolAddress}
-		/>
+		<ViewPool pool={pool} dealVestingGridItems={dealVestingGridItems} poolAddress={poolAddress} />
 	);
 };
 
