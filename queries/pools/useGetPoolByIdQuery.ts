@@ -20,6 +20,7 @@ const useGetPoolByIdQuery = ({ id }: { id: string }) =>
 			timestamp: true,
 			poolStatus: true,
 			purchaseDuration: true,
+			contributions: true,
 		}
 	);
 

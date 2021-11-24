@@ -4,7 +4,6 @@ const ROUTES = {
 		Home: '/pools',
 		MyPools: '/pools/my-pools',
 		Create: '/pools/create',
-		Active: '/pools/active',
 		PoolView: (address: string) => `/pools/${address}`,
 	},
 	Sponsor: '/sponsor',

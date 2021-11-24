@@ -1077,6 +1077,14 @@ export type PoolCreatedFilter = {
     poolStatus_not?: PoolStatusFilter | null;
     poolStatus_in?: PoolStatusFilter[];
     poolStatus_not_in?: PoolStatusFilter[];
+    contributions?: WeiSource | null;
+    contributions_not?: WeiSource | null;
+    contributions_gt?: WeiSource | null;
+    contributions_lt?: WeiSource | null;
+    contributions_gte?: WeiSource | null;
+    contributions_lte?: WeiSource | null;
+    contributions_in?: WeiSource[];
+    contributions_not_in?: WeiSource[];
 };
 export type PoolCreatedResult = {
     id: string;
@@ -1092,6 +1100,7 @@ export type PoolCreatedResult = {
     timestamp: Wei;
     hasAllowList: boolean;
     poolStatus: Partial<PoolStatusResult>;
+    contributions: Wei;
 };
 export type PoolCreatedFields = {
     id: true;
@@ -1107,6 +1116,7 @@ export type PoolCreatedFields = {
     timestamp: true;
     hasAllowList: true;
     poolStatus: PoolStatusFields;
+    contributions: true;
 };
 export type PoolCreatedArgs<K extends keyof PoolCreatedResult> = {
     [Property in keyof Pick<PoolCreatedFields, K>]: PoolCreatedFields[Property];
@@ -1148,6 +1158,8 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: st
             formattedObj["hasAllowList"] = obj["hasAllowList"];
         if (obj["poolStatus"])
             formattedObj["poolStatus"] = obj["poolStatus"];
+        if (obj["contributions"])
+            formattedObj["contributions"] = wei(obj["contributions"], 0);
         return formattedObj as Pick<PoolCreatedResult, K>;
     };
     const enabled = options && args;
@@ -1208,6 +1220,8 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: strin
                     formattedObj["hasAllowList"] = obj["hasAllowList"];
                 if (obj["poolStatus"])
                     formattedObj["poolStatus"] = obj["poolStatus"];
+                if (obj["contributions"])
+                    formattedObj["contributions"] = wei(obj["contributions"], 0);
                 return formattedObj as Pick<PoolCreatedResult, K>;
             });
             results = results.concat(newResults);
