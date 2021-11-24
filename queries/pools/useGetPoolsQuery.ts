@@ -22,6 +22,8 @@ const useGetPoolsQuery = () => {
 			sponsor: true,
 			purchaseExpiry: true,
 			timestamp: true,
+			poolStatus: true,
+			purchaseDuration: true,
 		}
 	);
 };
@@ -38,6 +40,7 @@ export const parsePool = ({
 	purchaseTokenCap,
 	sponsor,
 	sponsorFee,
+	poolStatus,
 }: PoolCreatedResult) => ({
 	id,
 	timestamp: Number(timestamp) * 1000,
@@ -50,6 +53,7 @@ export const parsePool = ({
 	sponsor,
 	purchaseDuration,
 	sponsorFee: Number(sponsorFee) / 100,
+	poolStatus,
 });
 
 export default useGetPoolsQuery;

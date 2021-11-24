@@ -23,7 +23,7 @@ const Pools: FC = () => {
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	// TODO implement dropdown
-	const [statusFilter, setStatusFilter] = useState<Status | string>(Status.PoolOpen);
+	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
@@ -45,7 +45,6 @@ const Pools: FC = () => {
 	}, [isPageOne, poolsQuery]);
 
 	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
-
 	const data = useMemo(() => {
 		let list = pools.map(
 			({
@@ -58,6 +57,7 @@ const Pools: FC = () => {
 				purchaseTokenCap,
 				timestamp,
 				purchaseExpiry,
+				poolStatus,
 			}) => ({
 				sponsor,
 				name,
@@ -68,9 +68,10 @@ const Pools: FC = () => {
 				duration,
 				fee: sponsorFee,
 				timestamp,
-				status: calculateStatus({ purchaseExpiry }), // TODO get status
+				status: calculateStatus({ poolStatus, purchaseExpiry }), // TODO get status
 			})
 		);
+
 		if (router.query.active === 'true') {
 			list = list.filter(({ status }) => status === Status.PoolOpen || status === Status.DealOpen);
 		}

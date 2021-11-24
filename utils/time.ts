@@ -25,10 +25,16 @@ export const formatDuration = (days: number, hours: number, minutes: number) => 
 	return `${days || 0}d ${hours || 0}h ${minutes || 0}m`;
 };
 
-export const calculateStatus = ({ purchaseExpiry }: { purchaseExpiry: number }) => {
+export const calculateStatus = ({
+	poolStatus,
+	purchaseExpiry,
+}: {
+	poolStatus: Status;
+	purchaseExpiry: number;
+}): Status => {
 	const now = Date.now();
-	if (now > purchaseExpiry) {
+	if (poolStatus === Status.PoolOpen && now > purchaseExpiry) {
 		return Status.SeekingDeal;
 	}
-	return Status.PoolOpen;
+	return poolStatus;
 };

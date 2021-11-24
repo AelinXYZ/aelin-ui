@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components';
 
 import { FlexDivRow, FlexDiv } from 'components/common';
@@ -13,7 +13,7 @@ interface FilterPoolProps {
 	setCurrency: (currency: string) => void;
 	setName: (name: string) => void;
 	setStatus: (status: Status | string) => void;
-	status: Status | string;
+	status: Status | string | null;
 }
 
 const FilterPool: FC<FilterPoolProps> = ({
