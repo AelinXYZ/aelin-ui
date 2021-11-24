@@ -19,9 +19,6 @@ const Pool: FC = () => {
 		[poolQuery?.data]
 	);
 
-	console.log('poolQuery?.data', poolQuery?.data);
-	console.log('pool', pool);
-
 	const dealGridItems = useMemo(
 		() => [
 			{

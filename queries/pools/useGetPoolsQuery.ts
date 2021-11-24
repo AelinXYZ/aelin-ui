@@ -34,6 +34,7 @@ export const parsePool = ({
 	duration,
 	purchaseToken,
 	purchaseExpiry,
+	purchaseDuration,
 	purchaseTokenCap,
 	sponsor,
 	sponsorFee,
@@ -46,7 +47,8 @@ export const parsePool = ({
 	purchaseToken: purchaseToken,
 	purchaseExpiry: Number(purchaseExpiry) * 1000,
 	purchaseTokenCap: wei(purchaseTokenCap.toString()),
-	sponsor: sponsor,
+	sponsor,
+	purchaseDuration,
 	sponsorFee: Number(sponsorFee) / 100,
 });
 

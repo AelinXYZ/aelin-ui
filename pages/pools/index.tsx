@@ -14,6 +14,7 @@ import DealStatus, { Status } from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { truncateNumber } from 'utils/numbers';
+import { calculateStatus } from 'utils/time';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 const Pools: FC = () => {
@@ -56,6 +57,7 @@ const Pools: FC = () => {
 				purchaseToken,
 				purchaseTokenCap,
 				timestamp,
+				purchaseExpiry,
 			}) => ({
 				sponsor,
 				name,
@@ -66,7 +68,7 @@ const Pools: FC = () => {
 				duration,
 				fee: sponsorFee,
 				timestamp,
-				status: Status.PoolOpen, // TODO get status
+				status: calculateStatus({ purchaseExpiry }), // TODO get status
 			})
 		);
 		if (router.query.active === 'true') {

@@ -77,7 +77,6 @@ const Create: FC = () => {
 				});
 			}
 		} catch (e) {
-			console.log('e', e);
 			setTxState(Transaction.FAILED);
 		}
 	};
