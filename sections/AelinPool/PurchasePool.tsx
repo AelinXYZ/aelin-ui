@@ -12,6 +12,7 @@ import { ethers } from 'ethers';
 import { erc20Abi } from 'contracts/erc20';
 import { poolAbi } from 'contracts/pool';
 import { Transaction } from 'constants/transactions';
+import TokenDisplay from 'components/TokenDisplay';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -67,7 +68,13 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Token',
-				subText: `${purchaseTokenSymbol ?? ''} (${truncateAddress(pool?.purchaseToken ?? '')})`,
+				subText: (
+					<TokenDisplay
+						displayAddress={true}
+						symbol={purchaseTokenSymbol}
+						address={pool?.purchaseToken ?? ''}
+					/>
+				),
 			},
 			{
 				header: 'My Pool Balance',
