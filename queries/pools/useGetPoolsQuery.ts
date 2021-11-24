@@ -3,6 +3,7 @@ import { wei } from '@synthetixio/wei';
 
 import { GRAPH_ENDPOINT } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
+import { calculateStatus } from 'utils/time';
 
 const useGetPoolsQuery = () => {
 	return useGetPoolCreateds(
@@ -24,6 +25,7 @@ const useGetPoolsQuery = () => {
 			timestamp: true,
 			poolStatus: true,
 			purchaseDuration: true,
+			contributions: true,
 		}
 	);
 };
@@ -41,6 +43,7 @@ export const parsePool = ({
 	sponsor,
 	sponsorFee,
 	poolStatus,
+	contributions,
 }: PoolCreatedResult) => ({
 	id,
 	timestamp: Number(timestamp) * 1000,
@@ -51,9 +54,10 @@ export const parsePool = ({
 	purchaseExpiry: Number(purchaseExpiry) * 1000,
 	purchaseTokenCap: wei(purchaseTokenCap.toString()),
 	sponsor,
+	contributions,
 	purchaseDuration,
 	sponsorFee: Number(sponsorFee) / 100,
-	poolStatus,
+	poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
 });
 
 export default useGetPoolsQuery;

@@ -10,8 +10,7 @@ import NotificationCenter from 'components/NotificationCenter';
 import WalletWidget from 'components/WalletWidget';
 
 const LINKS = [
-	{ label: 'All Pools', pathname: ROUTES.Pools.Home, query: { active: false } },
-	{ label: 'Active Pools', pathname: ROUTES.Pools.Home, query: { active: true } },
+	{ label: 'All Pools', pathname: ROUTES.Pools.Home },
 	{ label: 'My Pools', pathname: ROUTES.Pools.MyPools },
 	{ label: 'My Sponsorships', pathname: ROUTES.Sponsor },
 	{ label: 'Create Pool', pathname: ROUTES.Pools.Create },

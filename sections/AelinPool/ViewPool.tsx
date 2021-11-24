@@ -13,6 +13,8 @@ import SectionDetails from 'sections/shared/SectionDetails';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import PurchasePool from './PurchasePool';
 import { PoolCreatedResult } from 'subgraph';
+import { Status } from 'components/DealStatus';
+import Connector from 'containers/Connector';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -28,58 +30,64 @@ const ViewPool: FC<ViewPoolProps> = ({
 	dealAddress,
 	dealGridItems,
 	dealVestingGridItems,
-}) => (
-	<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
-		<PurchasePool pool={pool} />
-		<SectionWrapper>
-			<ContentHeader>
-				<ContentTitle>
-					<SectionTitle address={null} title="Create Deal" />
-				</ContentTitle>
-			</ContentHeader>
-			<CreateDeal poolAddress={poolAddress} />
-		</SectionWrapper>
-		{dealAddress != null && dealGridItems != null ? (
-			<SectionWrapper>
-				<ContentHeader>
-					<ContentTitle>
-						<SectionTitle address={dealAddress} title="Aelin Deal" />
-					</ContentTitle>
-				</ContentHeader>
-				<SectionDetails
-					actionBoxType={ActionBoxType.PendingDeal}
-					gridItems={dealGridItems}
-					onSubmit={(value, txnType) => {
-						if (txnType === TransactionType.Withdraw) {
-							console.log('withdral', value);
-						} else {
-							console.log('click me to accept or reject: ', `tokens: ${value}`);
-						}
-					}}
-				/>
-			</SectionWrapper>
-		) : null}
-		{dealAddress != null && dealVestingGridItems != null ? (
-			<SectionWrapper>
-				<ContentHeader>
-					<ContentTitle>
-						<SectionTitle addToMetamask={true} address={dealAddress} title="Deal Vesting" />
-					</ContentTitle>
-				</ContentHeader>
-				<FlexDiv>
-					<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-					<ActionBox
-						actionBoxType={ActionBoxType.VestingDeal}
-						onSubmit={(value) => {
-							console.log('vest:', value);
+}) => {
+	const { walletAddress } = Connector.useContainer();
+	return (
+		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
+			<PurchasePool pool={pool} />
+			{pool?.poolStatus === Status.SeekingDeal && walletAddress === pool?.sponsor ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle address={null} title="Create Deal" />
+						</ContentTitle>
+					</ContentHeader>
+					<CreateDeal poolAddress={poolAddress} />
+				</SectionWrapper>
+			) : null}
+			{/* TODO manage these sections below with the user flow */}
+			{dealAddress != null && dealGridItems != null ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle address={dealAddress} title="Aelin Deal" />
+						</ContentTitle>
+					</ContentHeader>
+					<SectionDetails
+						actionBoxType={ActionBoxType.PendingDeal}
+						gridItems={dealGridItems}
+						onSubmit={(value, txnType) => {
+							if (txnType === TransactionType.Withdraw) {
+								console.log('withdral', value);
+							} else {
+								console.log('click me to accept or reject: ', `tokens: ${value}`);
+							}
 						}}
-						input={{ placeholder: '0', label: 'Vested: 2000 USDC', maxValue: 2000 }}
 					/>
-				</FlexDiv>
-			</SectionWrapper>
-		) : null}
-	</PageLayout>
-);
+				</SectionWrapper>
+			) : null}
+			{dealAddress != null && dealVestingGridItems != null ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle addToMetamask={true} address={dealAddress} title="Deal Vesting" />
+						</ContentTitle>
+					</ContentHeader>
+					<FlexDiv>
+						<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
+						<ActionBox
+							actionBoxType={ActionBoxType.VestingDeal}
+							onSubmit={(value) => {
+								console.log('vest:', value);
+							}}
+							input={{ placeholder: '0', label: 'Vested: 2000 USDC', maxValue: 2000 }}
+						/>
+					</FlexDiv>
+				</SectionWrapper>
+			) : null}
+		</PageLayout>
+	);
+};
 
 const SectionWrapper = styled.div`
 	margin-top: 35px;

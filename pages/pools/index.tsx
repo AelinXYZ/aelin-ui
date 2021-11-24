@@ -1,7 +1,6 @@
 /* eslint-disable react/display-name */
 import { CellProps } from 'react-table';
 import { FC, useMemo, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 import { PageLayout } from 'sections/Layout';
@@ -9,16 +8,15 @@ import FilterPool from 'sections/AelinPool/FilterPool';
 
 import Table from 'components/Table';
 import { FlexDivStart } from 'components/common';
-import Currency from 'components/Currency';
+
 import DealStatus, { Status } from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { truncateNumber } from 'utils/numbers';
-import { calculateStatus } from 'utils/time';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import TokenDisplay from 'components/TokenDisplay';
 
 const Pools: FC = () => {
-	const router = useRouter();
 	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
@@ -54,6 +52,7 @@ const Pools: FC = () => {
 				name,
 				id,
 				purchaseToken,
+				contributions,
 				purchaseTokenCap,
 				timestamp,
 				purchaseExpiry,
@@ -63,18 +62,15 @@ const Pools: FC = () => {
 				name,
 				id,
 				purchaseToken, // TODO get symbol
-				contributions: 1000000, // TODO get contributions
+				contributions,
 				cap: purchaseTokenCap,
 				duration,
 				fee: sponsorFee,
 				timestamp,
-				status: calculateStatus({ poolStatus, purchaseExpiry }), // TODO get status
+				poolStatus, // TODO get status
 			})
 		);
 
-		if (router.query.active === 'true') {
-			list = list.filter(({ status }) => status === Status.PoolOpen || status === Status.DealOpen);
-		}
 		if (sponsorFilter != null) {
 			list = list.filter(({ sponsor }) =>
 				sponsor.toLowerCase().includes(sponsorFilter.toLowerCase())
@@ -89,10 +85,12 @@ const Pools: FC = () => {
 			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
 		if (statusFilter != null) {
-			list = list.filter(({ status }) => status.toLowerCase().includes(statusFilter.toLowerCase()));
+			list = list.filter(({ poolStatus }) =>
+				poolStatus.toLowerCase().includes(statusFilter.toLowerCase())
+			);
 		}
 		return list;
-	}, [pools, router.query.active, sponsorFilter, currencyFilter, nameFilter, statusFilter]);
+	}, [pools, sponsorFilter, currencyFilter, nameFilter, statusFilter]);
 
 	const columns = useMemo(
 		() => [
@@ -110,7 +108,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							<Currency ticker={cellProps.value} />
+							<TokenDisplay displayAddress={true} symbol={undefined} address={cellProps.value} />
 						</FlexDivStart>
 					);
 				},
@@ -127,7 +125,11 @@ const Pools: FC = () => {
 				Header: 'cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return <FlexDivStart>{truncateNumber(cellProps.value)}</FlexDivStart>;
+					return (
+						<FlexDivStart>
+							{Number(cellProps.value) === 0 ? 'Uncapped' : truncateNumber(cellProps.value)}
+						</FlexDivStart>
+					);
 				},
 				width: 125,
 			},
@@ -149,7 +151,7 @@ const Pools: FC = () => {
 			},
 			{
 				Header: 'status',
-				accessor: 'status',
+				accessor: 'poolStatus',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
