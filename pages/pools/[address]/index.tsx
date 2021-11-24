@@ -4,6 +4,7 @@ import ViewPool from 'sections/AelinPool/ViewPool';
 
 import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
 import { parsePool } from 'queries/pools/useGetPoolsQuery';
+import TokenDisplay from 'components/TokenDisplay';
 
 const Pool: FC = () => {
 	const router = useRouter();
@@ -77,7 +78,9 @@ const Pool: FC = () => {
 			},
 			{
 				header: 'Underlying Deal Token',
-				subText: 'some subText',
+				subText: (
+					<TokenDisplay address={'0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f'} displayAddress />
+				),
 			},
 			{
 				header: 'Vesting Cliff',
