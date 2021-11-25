@@ -15,6 +15,7 @@ export interface CreateFormProps {
 	txType: CreateTxType;
 	txState: Transaction;
 	txHash: string | null;
+	setGasPrice: Function;
 }
 
 const CreateForm: FC<CreateFormProps> = ({
@@ -24,6 +25,7 @@ const CreateForm: FC<CreateFormProps> = ({
 	gridItems,
 	summaryItems,
 	txType,
+	setGasPrice
 }) => {
 	const isValidForm = useMemo(
 		() => Object.keys(formik?.errors ?? {}).length === 0,
@@ -39,6 +41,7 @@ const CreateForm: FC<CreateFormProps> = ({
 				summaryItems={summaryItems}
 				txState={txState}
 				txHash={txHash}
+				setGasPrice={setGasPrice}
 			/>
 		</FlexDiv>
 	);

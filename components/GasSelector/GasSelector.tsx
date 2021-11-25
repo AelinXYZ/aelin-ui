@@ -1,0 +1,177 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import styled from 'styled-components';
+import Wei, { wei } from "@synthetixio/wei";
+
+import { Tooltip } from 'components/common';
+import Connector from 'containers/Connector';
+import useEthGasPriceQuery, { GasSpeed, GasPrices, GAS_SPEEDS } from 'hooks/useEthGasPriceQuery';
+
+interface IGasSelector {
+	setGasPrice: Function;
+	initialGasSpeed?: GasSpeed;
+}
+
+const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'fast' }) => {
+	const [customGasPrice, setCustomGasPrice] = useState<string>('')
+	const [gasSpeed, setGasSpeed] = useState<GasSpeed>(initialGasSpeed);
+	const [isOpen, setIsOpen] = useState(false);
+
+	const { network, provider } = Connector.useContainer();
+
+	const networkProps = {
+		networkId: network.id,
+		provider,
+	};
+
+	const ethGasStationQuery = useEthGasPriceQuery(networkProps);
+
+	const gasPrices = ethGasStationQuery.data ?? ({} as GasPrices);
+	
+	const gasPrice: Wei | null = useMemo(() => {
+		try {
+			return wei(customGasPrice, 9);
+		} catch (_) {
+			if (!ethGasStationQuery.data) return null;
+
+			return wei(ethGasStationQuery.data[gasSpeed], 9);
+		}
+	}, [customGasPrice, ethGasStationQuery.data, gasSpeed]);
+
+	useEffect(() => {
+		try {
+			setGasPrice(wei(customGasPrice, 9));
+		} catch (_) {
+			setGasPrice(gasPrice || wei(0));
+		}
+		// eslint-disable-next-line
+	}, [gasPrice, customGasPrice]);
+
+	return (
+		<StyledContainer>
+			<StyledGasDescription>{`GAS PRICE (GWEI): ${customGasPrice === '' ? gasPrices![gasSpeed]: customGasPrice}`}</StyledGasDescription>
+			<EditGasEstimateTooltip
+				visible={isOpen}
+				appendTo="parent"
+				trigger="click"
+				allowHTML
+				interactive
+				content={
+					<StyledUl>
+						<StyledLi>
+							<StyledInput
+								type="number"
+								value={customGasPrice}
+								placeholder="Custom"
+								onChange={(e) => {
+									setCustomGasPrice(e.target.value);
+								}}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') {
+										setIsOpen(!isOpen)
+									}
+								}}
+							/>
+						</StyledLi>
+						{GAS_SPEEDS.map((gasSpeed) => (
+							<StyledLi
+								key={gasSpeed}
+								onClick={() => {
+									setCustomGasPrice('');
+									setGasSpeed(gasSpeed);
+									setIsOpen(!isOpen);
+								}}>
+								<StyledSpeed>{gasSpeed}</StyledSpeed>
+								<span>{gasPrices![gasSpeed]}</span>
+							</StyledLi>
+						))}
+					</StyledUl>
+				}
+			>
+				<StyledEditButton
+					type="button"
+					onClick={()=> setIsOpen(!isOpen)}
+				>
+					Edit
+				</StyledEditButton>
+			</EditGasEstimateTooltip>
+		</StyledContainer>
+	);
+};
+
+const StyledContainer = styled.div`
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	margin: 25px 0;
+`;
+
+const StyledGasDescription = styled.span`
+	color: #5B5B5B;
+	font-size: 14px;
+`
+
+const StyledInput = styled.input`
+	width: 120px;
+	min-width: 0;
+	font-family: Agrandir-Regular;
+	background-color: #DBDBDB;
+	height: 32px;
+  padding: 0 8px;
+	font-size: 14px;
+	border: 0;
+	border-radius: 4px;
+	border: 1px solid #C4C4C4;
+	color: #252626;
+	caret-color: #477830;
+	outline: none;
+`;
+
+const EditGasEstimateTooltip = styled(Tooltip)`
+	background-color: ${(props) => props.theme.colors.background};
+`;
+
+const StyledUl = styled.ul`
+	padding: 0;
+`;
+
+const StyledLi = styled.li`
+	list-style-type: none;
+	padding: 8px 0;
+	color: ${(props) => props.theme.colors.black};
+	cursor: pointer;
+	letter-spacing: 1px;
+	font-weight: 300;
+	text-align: left;
+	display: flex;
+	justify-content: space-between;
+
+	&:hover {
+		color: ${(props) => props.theme.colors.white};
+		background-color: ${(props) => props.theme.colors.headerGreen};
+	}
+
+	&:first-child {
+		&:hover {
+			background-color: inherit;
+		}
+		border-top: none;
+	}
+`;
+
+const StyledSpeed = styled.span`
+	&::first-letter {
+    text-transform: uppercase;
+	}
+`;
+
+const StyledEditButton = styled.button`
+	border: 0;
+	border-radius: 4px;
+	cursor: pointer;
+	padding: 5px 15px;
+	color: ${(props) => props.theme.colors.white};
+	background-color: #5B5B5B;
+`;
+
+export { GasSelector }
+export default GasSelector;

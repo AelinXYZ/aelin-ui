@@ -24,6 +24,7 @@ const Create: FC = () => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
 	const [txHash, setTxHash] = useState<string | null>(null);
+	const [gasPrice, setGasPrice] = useState();
 
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;
@@ -64,7 +65,7 @@ const Create: FC = () => {
 				purchaseDuration,
 				[], // allow list
 				[], // allow list amounts
-				{ gasLimit: 1000000 }
+				{ gasLimit: 1000000, gasPrice }
 			);
 			if (tx) {
 				setTxState(Transaction.WAITING);
@@ -321,6 +322,7 @@ const Create: FC = () => {
 				txType={CreateTxType.CreatePool}
 				txState={txState}
 				txHash={txHash}
+				setGasPrice={setGasPrice}
 			/>
 		</PageLayout>
 	);

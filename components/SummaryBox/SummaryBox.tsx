@@ -5,9 +5,10 @@ import Spinner from 'assets/svg/loader.svg';
 import styled from 'styled-components';
 import BaseModal from 'components/BaseModal';
 import Button from 'components/Button';
+import GasSelector from 'components/GasSelector';
 import { Transaction } from 'constants/transactions';
 import Etherscan from 'containers/BlockExplorer';
-import { ExternalLink, StyledSpinner } from 'components/common';
+import { ExternalLink, StyledSpinner, Tooltip } from 'components/common';
 import Connector from 'containers/Connector';
 
 export type SummaryItem = {
@@ -27,6 +28,7 @@ interface SummaryBoxProps {
 	formik: FormikProps<any>;
 	txState: Transaction;
 	txHash: string | null;
+	setGasPrice: Function;
 }
 
 const txTypeToTitle = (txType: CreateTxType) => {
@@ -54,6 +56,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	txType,
 	isValidForm,
 	txHash,
+	setGasPrice
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
@@ -109,6 +112,11 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				{txType === CreateTxType.CreatePool && txState === Transaction.PRESUBMIT ? (
 					<ModalContainer>
 						{summaryBoxGrid}
+						<hr/>
+						<GasSelector
+							initialGasSpeed="fast"
+							setGasPrice={setGasPrice}
+						/>
 						<SubmitButton variant="text" type="submit" onClick={() => formik.handleSubmit()}>
 							Submit
 						</SubmitButton>
@@ -117,6 +125,11 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				{txType === CreateTxType.CreateDeal && txState === Transaction.PRESUBMIT ? (
 					<ModalContainer>
 						{summaryBoxGrid}
+						<hr/>
+						<GasSelector
+							initialGasSpeed="fast"
+							setGasPrice={setGasPrice}
+						/>
 						<SubmitButton variant="text" type="submit" onClick={() => formik.handleSubmit()}>
 							Submit
 						</SubmitButton>
@@ -159,8 +172,8 @@ const StyledExternalLink = styled(ExternalLink)`
 const SummaryBoxGrid = styled.div`
 	display: grid;
 	grid-template-columns: auto auto;
-	padding: 0px 20px 5px 20px;
-	text-align: left;
+	padding: 20px;
+	text-align: center;
 `;
 
 const Item = styled.div`

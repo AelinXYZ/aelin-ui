@@ -29,6 +29,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
 	const [txHash, setTxHash] = useState<string | null>(null);
+	const [gasPrice, setGasPrice] = useState();
 
 	const handleSubmit = async () => {
 		if (!walletAddress || !signer) return;
@@ -103,7 +104,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				openRedemptionDuration,
 				holder,
 				holderFundingDuration,
-				{ gasLimit: 1000000 }
+				{ gasLimit: 1000000, gasPrice }
 			);
 
 			if (tx) {
@@ -491,6 +492,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			txType={CreateTxType.CreateDeal}
 			txState={txState}
 			txHash={txHash}
+			setGasPrice={setGasPrice}
 		/>
 	);
 };

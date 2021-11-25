@@ -83,7 +83,6 @@ const StyledTitle = styled.div`
 const StyledModal = styled.div`
 	background: ${(props) => props.theme.colors.modalBackground};
 	width: 500px;
-	height: 420px;
 	border-radius: 8px;
 	padding: 15px;
 `;
