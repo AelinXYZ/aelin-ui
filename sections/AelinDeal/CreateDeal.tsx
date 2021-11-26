@@ -1,6 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import { ethers } from 'ethers';
+import Wei, { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
 
@@ -29,7 +30,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
 	const [txHash, setTxHash] = useState<string | null>(null);
-	const [gasPrice, setGasPrice] = useState();
+	const [gasPrice, setGasPrice] = useState<Wei>(wei(0));
 
 	const handleSubmit = async () => {
 		if (!walletAddress || !signer) return;
@@ -104,7 +105,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				openRedemptionDuration,
 				holder,
 				holderFundingDuration,
-				{ gasLimit: 1000000, gasPrice }
+				{ gasLimit: 1000000, gasPrice: gasPrice.toBN() }
 			);
 
 			if (tx) {
