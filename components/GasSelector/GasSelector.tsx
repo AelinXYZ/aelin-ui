@@ -4,15 +4,12 @@ import Wei, { wei } from "@synthetixio/wei";
 
 import { Tooltip } from 'components/common';
 import Connector from 'containers/Connector';
-import useEthGasPriceQuery, { GasSpeed, GasPrices, GAS_SPEEDS } from 'hooks/useEthGasPriceQuery';
+import useEthGasPriceQuery, { GAS_SPEEDS } from 'hooks/useEthGasPriceQuery';
 
-interface IGasSelector {
-	setGasPrice: Function;
-	initialGasSpeed?: GasSpeed;
-}
+import { IGasSelector, GasSpeed, GasPrices } from './types';
 
 const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'fast' }) => {
-	const [customGasPrice, setCustomGasPrice] = useState<string>('')
+	const [customGasPrice, setCustomGasPrice] = useState<string>('');
 	const [gasSpeed, setGasSpeed] = useState<GasSpeed>(initialGasSpeed);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -37,6 +34,19 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'f
 		}
 	}, [customGasPrice, ethGasStationQuery.data, gasSpeed]);
 
+	const formattedGasPrice = useMemo(() => {
+		const nGasPrice = Number(gasPrices[gasSpeed] ?? 0);
+		const nCustomGasPrice = Number(customGasPrice);
+
+		if(!nCustomGasPrice) {
+			if (!Number.isInteger(nGasPrice)) return nGasPrice.toFixed(2);
+			return nGasPrice
+		}
+
+		if (!Number.isInteger(nCustomGasPrice)) return nCustomGasPrice.toFixed(2);
+		return nCustomGasPrice;
+	}, [customGasPrice, gasPrices[gasSpeed]]);
+
 	useEffect(() => {
 		try {
 			setGasPrice(wei(customGasPrice, 9));
@@ -46,9 +56,11 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'f
 		// eslint-disable-next-line
 	}, [gasPrice, customGasPrice]);
 
+	
+
 	return (
 		<StyledContainer>
-			<StyledGasDescription>{`GAS PRICE (GWEI): ${customGasPrice === '' ? gasPrices![gasSpeed]: customGasPrice}`}</StyledGasDescription>
+			<StyledGasDescription>{`GAS PRICE (GWEI): ${formattedGasPrice}`}</StyledGasDescription>
 			<EditGasEstimateTooltip
 				visible={isOpen}
 				appendTo="parent"
@@ -81,7 +93,7 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'f
 									setIsOpen(!isOpen);
 								}}>
 								<StyledSpeed>{gasSpeed}</StyledSpeed>
-								<span>{gasPrices![gasSpeed]}</span>
+								<span>{Number(gasPrices[gasSpeed]).toFixed(2)}</span>
 							</StyledLi>
 						))}
 					</StyledUl>
@@ -128,6 +140,10 @@ const StyledInput = styled.input`
 
 const EditGasEstimateTooltip = styled(Tooltip)`
 	background-color: ${(props) => props.theme.colors.background};
+
+	> div {
+		padding: 0 !important;
+	}
 `;
 
 const StyledUl = styled.ul`
@@ -136,7 +152,7 @@ const StyledUl = styled.ul`
 
 const StyledLi = styled.li`
 	list-style-type: none;
-	padding: 8px 0;
+	padding: 15px;
 	color: ${(props) => props.theme.colors.black};
 	cursor: pointer;
 	letter-spacing: 1px;
@@ -148,6 +164,11 @@ const StyledLi = styled.li`
 	&:hover {
 		color: ${(props) => props.theme.colors.white};
 		background-color: ${(props) => props.theme.colors.headerGreen};
+
+		&:last-child {
+			border-bottom-left-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
 	}
 
 	&:first-child {

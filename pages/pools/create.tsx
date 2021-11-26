@@ -1,6 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import { utils } from 'ethers';
+import Wei, { wei } from '@synthetixio/wei';
 
 import { PageLayout } from 'sections/Layout';
 import CreateForm from 'sections/shared/CreateForm';
@@ -24,10 +25,11 @@ const Create: FC = () => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
 	const [txHash, setTxHash] = useState<string | null>(null);
-	const [gasPrice, setGasPrice] = useState();
-
+	const [gasPrice, setGasPrice] = useState<Wei>(wei(0));
+	
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;
+
 		const { formatBytes32String, parseEther } = utils;
 		const now = new Date();
 		const {
@@ -65,7 +67,7 @@ const Create: FC = () => {
 				purchaseDuration,
 				[], // allow list
 				[], // allow list amounts
-				{ gasLimit: 1000000, gasPrice }
+				{ gasLimit: 1000000, gasPrice: gasPrice.toBN() }
 			);
 			if (tx) {
 				setTxState(Transaction.WAITING);
@@ -78,6 +80,7 @@ const Create: FC = () => {
 				});
 			}
 		} catch (e) {
+			console.log('e', e)
 			setTxState(Transaction.FAILED);
 		}
 	};

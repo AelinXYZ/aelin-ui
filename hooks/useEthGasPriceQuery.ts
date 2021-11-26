@@ -1,20 +1,13 @@
 import axios from 'axios';
 import { useQuery, UseQueryOptions } from 'react-query';
+
 import { NetworkId } from 'constants/networks';
+import { formatGwei } from 'utils/crypto';
+import { ETH_GAS_STATION_API_URL, GAS_NOW_API_URL } from 'constants/endpoints'
 
-export type GasPrices = {
-	fastest: number;
-	fast: number;
-	average: number;
-};
+import {GasSpeed, GasPrices} from 'components/GasSelector/types'
 
-export type GasSpeed = keyof GasPrices;
 export const GAS_SPEEDS: GasSpeed[] = ['average', 'fast', 'fastest'];
-
-const formatGwei = (wei: number) => wei / 1e8 / 10;
-
-const ETH_GAS_STATION_API_URL = 'https://ethgasstation.info/json/ethgasAPI.json';
-const GAS_NOW_API_URL = 'https://www.gasnow.org/api/v3/gas/price?utm_source=kwenta';
 
 type EthGasStationResponse = {
 	average: number;
