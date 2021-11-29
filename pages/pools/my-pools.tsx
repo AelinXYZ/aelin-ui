@@ -4,85 +4,31 @@ import { CellProps } from 'react-table';
 import { PageLayout } from 'sections/Layout';
 import Table from 'components/Table';
 import { Status } from 'components/DealStatus';
+import uniqBy from 'lodash/uniqBy';
 import Currency from 'components/Currency';
 import DealStatus from 'components/DealStatus';
 import { formatNumber } from 'utils/numbers';
+import useGetPurchasePoolTokensQuery, {
+	parsePurchasePoolToken,
+} from 'queries/pools/useGetPurchasePoolTokensQuery';
+import Connector from 'containers/Connector';
 
 const Pools: FC = () => {
+	const { walletAddress } = Connector.useContainer();
+	const purchaseTokenQuery = useGetPurchasePoolTokensQuery({ purchaser: walletAddress ?? '' });
 	const data = useMemo(
-		() => [
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				address: '0x4069e799Da927C06b430e247b2ee16C03e8B837d',
-				currency: 'sUSD',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '5 weeks',
-				fee: 0.001,
-				status: Status.PoolOpen,
-			},
-			{
-				sponsor: 'Synthetix',
-				name: 'Kwenta token',
-				address: '0x4069e799Da927C06b430e247b2ee16C03e8B837d',
-				currency: 'USDT',
-				contributions: 1000000,
-				cap: 10000000,
-				duration: '5 weeks',
-				fee: 0.001,
-				status: Status.DealOpen,
-			},
-		],
-		[]
+		() =>
+			(purchaseTokenQuery?.data ?? []).length > 0
+				? uniqBy(purchaseTokenQuery?.data ?? [], 'poolAddress').map(parsePurchasePoolToken)
+				: [],
+		[purchaseTokenQuery?.data]
 	);
 
 	const columns = useMemo(
 		() => [
-			{ Header: 'sponsor', accessor: 'sponsor' },
-			{ Header: 'name', accessor: 'name' },
 			{
-				Header: 'currency',
-				accessor: 'currency',
-				// eslint-disable-next-line react/display-name
-				Cell: (cellProps: CellProps<any, any>) => {
-					return <Currency ticker={cellProps.value} />;
-				},
-			},
-			{
-				Header: 'contributions',
-				accessor: 'contributions',
-				Cell: (cellProps: CellProps<any, any>) => {
-					return `$${formatNumber(cellProps.value)}`;
-				},
-			},
-			{
-				Header: 'cap',
-				accessor: 'cap',
-				Cell: (cellProps: CellProps<any, any>) => {
-					return `$${formatNumber(cellProps.value)}`;
-				},
-			},
-			{
-				Header: 'duration',
-				accessor: 'duration',
-			},
-			{
-				Header: 'fee',
-				accessor: 'fee',
-				Cell: (cellProps: CellProps<any, any>) => {
-					return `${100 * cellProps.value}%`;
-				},
-				width: 75,
-			},
-			{
-				Header: 'status',
-				accessor: 'status',
-				// eslint-disable-next-line react/display-name
-				Cell: (cellProps: CellProps<any, any>) => {
-					return <DealStatus status={cellProps.value} />;
-				},
-				width: 75,
+				Header: 'Pool Address',
+				accessor: 'poolAddress',
 			},
 		],
 		[]
