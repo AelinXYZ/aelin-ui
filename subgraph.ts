@@ -1085,6 +1085,12 @@ export type PoolCreatedFilter = {
     contributions_lte?: WeiSource | null;
     contributions_in?: WeiSource[];
     contributions_not_in?: WeiSource[];
+    dealAddress?: string | null;
+    dealAddress_not?: string | null;
+    dealAddress_in?: string[];
+    dealAddress_not_in?: string[];
+    dealAddress_contains?: string | null;
+    dealAddress_not_contains?: string | null;
 };
 export type PoolCreatedResult = {
     id: string;
@@ -1101,6 +1107,7 @@ export type PoolCreatedResult = {
     hasAllowList: boolean;
     poolStatus: Partial<PoolStatusResult>;
     contributions: Wei;
+    dealAddress: string | null;
 };
 export type PoolCreatedFields = {
     id: true;
@@ -1117,6 +1124,7 @@ export type PoolCreatedFields = {
     hasAllowList: true;
     poolStatus: PoolStatusFields;
     contributions: true;
+    dealAddress: true;
 };
 export type PoolCreatedArgs<K extends keyof PoolCreatedResult> = {
     [Property in keyof Pick<PoolCreatedFields, K>]: PoolCreatedFields[Property];
@@ -1160,6 +1168,8 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: st
             formattedObj["poolStatus"] = obj["poolStatus"];
         if (obj["contributions"])
             formattedObj["contributions"] = wei(obj["contributions"], 0);
+        if (obj["dealAddress"])
+            formattedObj["dealAddress"] = obj["dealAddress"];
         return formattedObj as Pick<PoolCreatedResult, K>;
     };
     const enabled = options && args;
@@ -1222,6 +1232,8 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: strin
                     formattedObj["poolStatus"] = obj["poolStatus"];
                 if (obj["contributions"])
                     formattedObj["contributions"] = wei(obj["contributions"], 0);
+                if (obj["dealAddress"])
+                    formattedObj["dealAddress"] = obj["dealAddress"];
                 return formattedObj as Pick<PoolCreatedResult, K>;
             });
             results = results.concat(newResults);

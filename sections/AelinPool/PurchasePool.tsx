@@ -4,7 +4,6 @@ import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import SectionDetails from 'sections/shared/SectionDetails';
 import { ActionBoxType } from 'components/ActionBox';
-import { truncateAddress } from 'utils/crypto';
 import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { PoolCreatedResult } from 'subgraph';

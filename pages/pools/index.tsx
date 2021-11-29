@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import { CellProps } from 'react-table';
 import { FC, useMemo, useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 import { PageLayout } from 'sections/Layout';
@@ -17,6 +18,7 @@ import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import TokenDisplay from 'components/TokenDisplay';
 
 const Pools: FC = () => {
+	const router = useRouter();
 	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
@@ -25,6 +27,10 @@ const Pools: FC = () => {
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery();
+
+	useEffect(() => {
+		setSponsorFilter((router.query?.sponsorFilter ?? null) as string | null);
+	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
 		let timer: ReturnType<typeof setInterval> | null = null;

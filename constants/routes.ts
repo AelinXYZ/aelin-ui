@@ -6,7 +6,6 @@ const ROUTES = {
 		Create: '/pools/create',
 		PoolView: (address: string) => `/pools/${address}`,
 	},
-	Sponsor: '/sponsor',
 };
 
 export default ROUTES;
