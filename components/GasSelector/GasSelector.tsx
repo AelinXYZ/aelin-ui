@@ -22,7 +22,7 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 
 	const { network, provider } = Connector.useContainer();
 
-	const exchangeRatesQuery = useExchangeRatesQuery(network.id);
+	const exchangeRatesQuery = useExchangeRatesQuery(network);
 	const ethGasStationQuery = useEthGasPriceQuery({ networkId: network.id, provider });
 
 	const gasPrices = ethGasStationQuery.data ?? ({} as GasPrices);

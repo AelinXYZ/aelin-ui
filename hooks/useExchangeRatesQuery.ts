@@ -4,17 +4,17 @@ import { useQuery, UseQueryOptions } from 'react-query';
 import  synthetix, { CurrencyKey } from '@synthetixio/contracts-interface';
 import { iStandardSynth, synthToAsset } from 'utils/currencies';
 
-import { Network } from 'constants/networks';
+import { NetworkType } from 'constants/networks';
 
 type Rates = Record<string, Wei>;
 type CurrencyRate = BigNumberish;
 type SynthRatesTuple = [string[], CurrencyRate[]];
 
-const useExchangeRatesQuery = (networkId: number, options?: UseQueryOptions<Rates>) => {
-  const snxjs = synthetix({ network: Network.Kovan });
+const useExchangeRatesQuery = (network: NetworkType, options?: UseQueryOptions<Rates>) => {
+  const snxjs = synthetix({ network: network.name });
 
 	return useQuery<Rates>(
-		['rates', 'exchangeRates', networkId],
+		['rates', 'exchangeRates', network.id],
 		async () => {
 			const exchangeRates: Rates = {};
 
@@ -37,7 +37,7 @@ const useExchangeRatesQuery = (networkId: number, options?: UseQueryOptions<Rate
 			return exchangeRates;
 		},
 		{
-			enabled: !!networkId,
+			enabled: !!network.id,
 			...options,
 		}
 	);
