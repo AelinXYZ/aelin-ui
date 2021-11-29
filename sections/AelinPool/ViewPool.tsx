@@ -1,37 +1,39 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { PageLayout } from 'sections/Layout';
-import { GridItem } from 'components/Grid/Grid';
-import { FlexDiv } from 'components/common';
-import Grid from 'components/Grid';
-import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox';
+import useGetDealDetailsByIdQuery, {
+	parseDealDetails,
+} from 'queries/deals/useGetDealDetailsByIdQuery';
+import useGetDealByIdQuery, { parseDeal } from 'queries/deals/useGetDealByIdQuery';
 
 import SectionTitle from 'sections/shared/SectionTitle';
-import SectionDetails from 'sections/shared/SectionDetails';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import PurchasePool from './PurchasePool';
 import { PoolCreatedResult } from 'subgraph';
 import { Status } from 'components/DealStatus';
 import Connector from 'containers/Connector';
+import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
+import VestingDeal from 'sections/AelinDeal/VestingDeal';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
-	dealGridItems: GridItem[] | null;
-	dealVestingGridItems: GridItem[] | null;
 	poolAddress: string;
-	dealAddress: string | null;
 }
 
-const ViewPool: FC<ViewPoolProps> = ({
-	pool,
-	poolAddress,
-	dealAddress,
-	dealGridItems,
-	dealVestingGridItems,
-}) => {
+const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const { walletAddress } = Connector.useContainer();
+	const dealDetailsQuery = useGetDealDetailsByIdQuery({ id: pool?.dealAddress ?? '' });
+	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '' });
+
+	const deal = useMemo(() => {
+		const dealDetails =
+			dealDetailsQuery?.data != null ? parseDealDetails(dealDetailsQuery?.data) : {};
+		const dealInfo = dealQuery?.data != null ? parseDeal(dealQuery?.data) : {};
+		return { ...dealInfo, ...dealDetails };
+	}, [dealQuery?.data, dealDetailsQuery?.data]);
+
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />
@@ -45,44 +47,36 @@ const ViewPool: FC<ViewPoolProps> = ({
 					<CreateDeal poolAddress={poolAddress} />
 				</SectionWrapper>
 			) : null}
-			{/* TODO manage these sections below with the user flow */}
-			{dealAddress != null && dealGridItems != null ? (
+			{pool?.poolStatus === Status.FundingDeal &&
+			deal?.id != null &&
+			walletAddress === deal?.holder ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle address={dealAddress} title="Aelin Deal" />
+							<SectionTitle address={deal.id} title="Fund Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<SectionDetails
-						actionBoxType={ActionBoxType.PendingDeal}
-						gridItems={dealGridItems}
-						onSubmit={(value, txnType) => {
-							if (txnType === TransactionType.Withdraw) {
-								console.log('withdral', value);
-							} else {
-								console.log('click me to accept or reject: ', `tokens: ${value}`);
-							}
-						}}
-					/>
+					<div>TODO funding section for the holder</div>
 				</SectionWrapper>
 			) : null}
-			{dealAddress != null && dealVestingGridItems != null ? (
+			{pool?.poolStatus === Status.DealOpen && deal?.id != null ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle addToMetamask={true} address={dealAddress} title="Deal Vesting" />
+							<SectionTitle address={deal.id} title="Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<FlexDiv>
-						<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-						<ActionBox
-							actionBoxType={ActionBoxType.VestingDeal}
-							onSubmit={(value) => {
-								console.log('vest:', value);
-							}}
-							input={{ placeholder: '0', label: 'Vested: 2000 USDC', maxValue: 2000 }}
-						/>
-					</FlexDiv>
+					<AcceptOrRejectDeal deal={deal} />
+				</SectionWrapper>
+			) : null}
+			{deal?.id != null ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Vesting" />
+						</ContentTitle>
+					</ContentHeader>
+					<VestingDeal deal={deal} />
 				</SectionWrapper>
 			) : null}
 		</PageLayout>

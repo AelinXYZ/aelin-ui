@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 import Link from 'next/link';
@@ -8,16 +8,27 @@ import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
 import NotificationCenter from 'components/NotificationCenter';
 import WalletWidget from 'components/WalletWidget';
-
-const LINKS = [
-	{ label: 'All Pools', pathname: ROUTES.Pools.Home },
-	{ label: 'My Pools', pathname: ROUTES.Pools.MyPools },
-	{ label: 'My Sponsorships', pathname: ROUTES.Sponsor },
-	{ label: 'Create Pool', pathname: ROUTES.Pools.Create },
-];
+import Connector from 'containers/Connector';
 
 const Header: FC = () => {
 	const router = useRouter();
+	const { walletAddress } = Connector.useContainer();
+
+	const LINKS = useMemo(() => {
+		const links = [{ label: 'All Pools', pathname: ROUTES.Pools.Home }];
+		return walletAddress != null
+			? [
+					...links,
+					{ label: 'My Pools', pathname: ROUTES.Pools.MyPools },
+					{
+						label: 'My Sponsorships',
+						pathname: ROUTES.Pools.Home,
+						query: { sponsorFilter: walletAddress },
+					},
+					{ label: 'Create Pool', pathname: ROUTES.Pools.Create },
+			  ]
+			: links;
+	}, [walletAddress]);
 	return (
 		<Container>
 			<StyledImage

@@ -41,7 +41,7 @@ const GridItem = styled.div<{ hasInputFields: boolean }>`
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	padding: 20px;
-	height: ${(props) => (props.hasInputFields ? '145px' : '78px')};
+	height: ${(props) => (props.hasInputFields ? '145px' : '97px')};
 	min-width: 207px;
 	display: flex;
 	flex-direction: column;

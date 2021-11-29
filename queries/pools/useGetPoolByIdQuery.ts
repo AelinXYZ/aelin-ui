@@ -21,6 +21,7 @@ const useGetPoolByIdQuery = ({ id }: { id: string }) =>
 			poolStatus: true,
 			purchaseDuration: true,
 			contributions: true,
+			dealAddress: true,
 		}
 	);
 
