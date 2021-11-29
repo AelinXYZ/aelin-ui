@@ -1,12 +1,12 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { PageLayout } from 'sections/Layout';
-import { GridItem } from 'components/Grid/Grid';
-import { FlexDiv } from 'components/common';
-import Grid from 'components/Grid';
-import ActionBox, { ActionBoxType } from 'components/ActionBox';
+import useGetDealDetailsByIdQuery, {
+	parseDealDetails,
+} from 'queries/deals/useGetDealDetailsByIdQuery';
+import useGetDealByIdQuery, { parseDeal } from 'queries/deals/useGetDealByIdQuery';
 
 import SectionTitle from 'sections/shared/SectionTitle';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
@@ -15,17 +15,25 @@ import { PoolCreatedResult } from 'subgraph';
 import { Status } from 'components/DealStatus';
 import Connector from 'containers/Connector';
 import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
+import VestingDeal from 'sections/AelinDeal/VestingDeal';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
-	dealVestingGridItems: GridItem[] | null;
 	poolAddress: string;
 }
 
-const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, dealVestingGridItems }) => {
+const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const { walletAddress } = Connector.useContainer();
-	// TODO get rid of this when added dealAddress to the pool entity on the graph
-	const dealAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+	const dealDetailsQuery = useGetDealDetailsByIdQuery({ id: pool?.dealAddress ?? '' });
+	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '' });
+
+	const deal = useMemo(() => {
+		const dealDetails =
+			dealDetailsQuery?.data != null ? parseDealDetails(dealDetailsQuery?.data) : {};
+		const dealInfo = dealQuery?.data != null ? parseDeal(dealQuery?.data) : {};
+		return { ...dealInfo, ...dealDetails };
+	}, [dealQuery?.data, dealDetailsQuery?.data]);
+
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />
@@ -39,35 +47,36 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, dealVestingGridItems }
 					<CreateDeal poolAddress={poolAddress} />
 				</SectionWrapper>
 			) : null}
-			{/* TODO manage these sections below with the user flow */}
-			{pool?.poolStatus === Status.DealOpen ? (
+			{pool?.poolStatus === Status.FundingDeal &&
+			deal?.id != null &&
+			walletAddress === deal?.holder ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							{/* TODO add the deal address to the pool entity when a deal is created and use it here and pass it below */}
-							<SectionTitle address={dealAddress} title="Aelin Deal" />
+							<SectionTitle address={deal.id} title="Fund Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<AcceptOrRejectDeal dealAddress={dealAddress} />
+					<div>TODO funding section for the holder</div>
 				</SectionWrapper>
 			) : null}
-			{dealAddress != null && dealVestingGridItems != null ? (
+			{pool?.poolStatus === Status.DealOpen && deal?.id != null ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle addToMetamask={true} address={dealAddress} title="Deal Vesting" />
+							<SectionTitle address={deal.id} title="Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<FlexDiv>
-						<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-						<ActionBox
-							actionBoxType={ActionBoxType.VestingDeal}
-							onSubmit={(value) => {
-								console.log('vest:', value);
-							}}
-							input={{ placeholder: '0', label: 'Vested: 2000 USDC', maxValue: 2000 }}
-						/>
-					</FlexDiv>
+					<AcceptOrRejectDeal deal={deal} />
+				</SectionWrapper>
+			) : null}
+			{deal?.id != null ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Vesting" />
+						</ContentTitle>
+					</ContentHeader>
+					<VestingDeal deal={deal} />
 				</SectionWrapper>
 			) : null}
 		</PageLayout>

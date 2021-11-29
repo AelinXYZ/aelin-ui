@@ -11,16 +11,8 @@ const useGetDealByIdQuery = ({ id }: { id: string }) =>
 			id: true,
 			name: true,
 			symbol: true,
-			purchaseTokenCap: true,
-			purchaseToken: true,
-			duration: true,
-			sponsorFee: true,
 			sponsor: true,
-			purchaseExpiry: true,
-			timestamp: true,
-			DealStatus: true,
-			purchaseDuration: true,
-			contributions: true,
+			poolAddress: true,
 		}
 	);
 

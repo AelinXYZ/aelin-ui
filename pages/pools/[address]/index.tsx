@@ -4,7 +4,6 @@ import ViewPool from 'sections/AelinPool/ViewPool';
 
 import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
 import { parsePool } from 'queries/pools/useGetPoolsQuery';
-import TokenDisplay from 'components/TokenDisplay';
 
 const Pool: FC = () => {
 	const router = useRouter();
@@ -19,44 +18,7 @@ const Pool: FC = () => {
 		[poolQuery?.data]
 	);
 
-	const dealVestingGridItems = useMemo(
-		() => [
-			{
-				header: 'Name',
-				subText: 'some subText',
-			},
-			{
-				header: 'Amount of Deal Tokens',
-				subText: 'some subText',
-			},
-			{
-				header: 'Exchange rate',
-				subText: 'some subText',
-			},
-			{
-				header: 'Underlying Deal Token',
-				subText: (
-					<TokenDisplay address={'0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f'} displayAddress />
-				),
-			},
-			{
-				header: 'Vesting Cliff',
-				subText: 'some subText',
-			},
-			{
-				header: 'Vesting Period',
-				subText: 'some subText',
-			},
-			{
-				header: 'Total Underlying Claimed',
-				subText: 'some subText',
-			},
-		],
-		[]
-	);
-	return (
-		<ViewPool pool={pool} dealVestingGridItems={dealVestingGridItems} poolAddress={poolAddress} />
-	);
+	return <ViewPool pool={pool} poolAddress={poolAddress} />;
 };
 
 export default Pool;

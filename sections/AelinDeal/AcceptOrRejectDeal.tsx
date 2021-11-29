@@ -1,70 +1,79 @@
 import { FC, useMemo } from 'react';
 import { ActionBoxType, TransactionType } from 'components/ActionBox';
 import SectionDetails from 'sections/shared/SectionDetails';
-import useGetDealByIdQuery, { parseDeal } from 'queries/deals/useGetDealByIdQuery';
+import { Status } from 'components/DealStatus';
 
 interface AcceptOrRejectDealProps {
-	dealAddress: string;
+	deal: any;
 }
 
-const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ dealAddress }) => {
-	const dealQuery = useGetDealByIdQuery({ id: dealAddress });
-
-	const deal = useMemo(
-		// @ts-ignore
-		() => ((dealQuery?.data ?? null) != null ? parseDeal(dealQuery.data) : null),
-		[dealQuery?.data]
-	);
+const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal }) => {
 	const dealGridItems = useMemo(
 		() => [
 			{
 				header: 'Name',
-				subText: 'some subText',
+				subText: deal.name,
 			},
 			{
-				header: 'Currency',
-				subText: 'some subText',
+				header: 'Symbol',
+				subText: deal.symbol,
+			},
+			{
+				header: 'Underlying Deal Token',
+				subText: deal.underlyingDealToken,
+			},
+			{
+				header: 'Underlying Total',
+				subText: deal.underlyingDealTokenTotal,
 			},
 			{
 				header: 'Exchange rate',
-				subText: 'some subText',
+				subText: deal.underlyingDealTokenTotal / deal.purchaseTokenTotalForDeal,
 			},
 			{
 				header: 'Vesting Period',
-				subText: 'some subText',
+				subText: deal.vestingPeriod,
 			},
 			{
 				header: 'Vesting Cliff',
-				subText: 'some subText',
+				subText: deal.vestingCliff,
 			},
 			{
 				header: 'Status',
-				subText: 'some subText',
+				subText: Status.DealOpen,
 			},
 			{
-				header: 'Redemption Period',
-				subText: 'some subText',
+				header: 'Pro Rata Redemption Period',
+				subText: deal.proRataRedemptionPeriod,
+			},
+			{
+				header: 'Open Redemption Period',
+				subText: deal.openRedemptionPeriod,
 			},
 			{
 				header: 'Vesting Curve',
-				subText: 'some subText',
-			},
-			{
-				header: 'Discount',
-				subText: 'some subText',
+				subText: 'linear',
 			},
 		],
-		[]
+		[deal]
 	);
+
+	const handleAccept = (value: number) => {
+		console.log('accepting deal with value:', value);
+	};
+
+	const handleReject = (value: number) => {
+		console.log('rejecting deal with value:', value);
+	};
 	return (
 		<SectionDetails
 			actionBoxType={ActionBoxType.PendingDeal}
 			gridItems={dealGridItems}
 			onSubmit={(value, txnType) => {
 				if (txnType === TransactionType.Withdraw) {
-					console.log('withdral', value);
+					handleReject(value);
 				} else {
-					console.log('click me to accept or reject: ', `tokens: ${value}`);
+					handleAccept(value);
 				}
 			}}
 		/>
