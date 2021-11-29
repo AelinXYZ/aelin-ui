@@ -1,6 +1,7 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { utils } from 'ethers';
+import Wei, { wei } from '@synthetixio/wei';
 
 import { PageLayout } from 'sections/Layout';
 import CreateForm from 'sections/shared/CreateForm';
@@ -17,6 +18,7 @@ import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+import { GasLimitEstimate } from 'constants/networks';
 
 const Create: FC = () => {
 	const { walletAddress } = Connector.useContainer();
@@ -24,20 +26,21 @@ const Create: FC = () => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
 	const [txHash, setTxHash] = useState<string | null>(null);
+	const [gasPrice, setGasPrice] = useState<Wei>(wei(0));
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const handleSubmit = async () => {
-		if (!contracts || !walletAddress) return;
+	const createVariablesToCreatePool = () => {
 		const { formatBytes32String, parseEther } = utils;
 		const now = new Date();
+
 		const {
+			poolName,
+			poolSymbol,
 			poolCap,
-			purchaseToken,
 			sponsorFee,
 			durationDays,
 			durationHours,
 			durationMinutes,
-			poolName,
-			poolSymbol,
 			purchaseDurationDays,
 			purchaseDurationHours,
 			purchaseDurationMinutes,
@@ -50,11 +53,36 @@ const Create: FC = () => {
 			purchaseDurationHours,
 			purchaseDurationMinutes
 		);
+
+		return {
+			...formik.values,
+			poolName: formatBytes32String(poolName),
+			poolSymbol: formatBytes32String(poolSymbol),
+			poolCap: parseEther(poolCap.toString()),
+			sponsorFee: sponsorFee.toString(),
+			duration,
+			purchaseDuration
+		}
+	}
+	
+	const handleSubmit = async () => {
+		if (!contracts || !walletAddress) return;
+
+		const {
+			poolName,
+			poolSymbol,
+			poolCap,
+			sponsorFee,
+			// purchaseToken,
+			duration,
+			purchaseDuration
+		} = createVariablesToCreatePool();
+
 		try {
 			const tx = await contracts.AelinPoolFactory!.createPool(
-				formatBytes32String(poolName),
-				formatBytes32String(poolSymbol),
-				parseEther(poolCap.toString()),
+				poolName,
+				poolSymbol,
+				poolCap,
 				// purchaseToken,
 				// we need a kovan address for now to make it work
 				// https://faucet.paradigm.xyz/ will give you this token on kovan
@@ -64,7 +92,7 @@ const Create: FC = () => {
 				purchaseDuration,
 				[], // allow list
 				[], // allow list amounts
-				{ gasLimit: 1000000 }
+				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
 			);
 			if (tx) {
 				setTxState(Transaction.WAITING);
@@ -77,6 +105,7 @@ const Create: FC = () => {
 				});
 			}
 		} catch (e) {
+			console.log('e', e)
 			setTxState(Transaction.FAILED);
 		}
 	};
@@ -98,6 +127,49 @@ const Create: FC = () => {
 		validate: validateCreatePool,
 		onSubmit: handleSubmit,
 	});
+
+	useEffect(() => {
+		const getGasLimitEstimate = async () => {
+			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
+			
+			const errors = validateCreatePool(formik.values);
+			const hasError = Object.keys(errors).length !== 0;
+			if (hasError) return setGasLimitEstimate(null);
+
+			try {
+				const {
+					poolName,
+					poolSymbol,
+					poolCap,
+					sponsorFee,
+					// purchaseToken,
+					duration,
+					purchaseDuration
+				} = createVariablesToCreatePool();
+
+				let gasEstimate = wei(await contracts.AelinPoolFactory!.estimateGas.createPool(
+					poolName,
+					poolSymbol,
+					poolCap,
+					// purchaseToken,
+					// we need a kovan address for now to make it work
+					// https://faucet.paradigm.xyz/ will give you this token on kovan
+					'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+					duration,
+					sponsorFee.toString(),
+					purchaseDuration,
+					[], // allow list
+					[], // allow list amounts
+				), 0);
+
+				setGasLimitEstimate(gasEstimate);
+			} catch (_) {
+				setGasLimitEstimate(null);
+			}
+		}
+		getGasLimitEstimate();
+	}, [contracts, walletAddress, formik.values]);
+
 	const gridItems = useMemo(
 		() => [
 			{
@@ -312,6 +384,7 @@ const Create: FC = () => {
 		],
 		[walletAddress, formik]
 	);
+
 	return (
 		<PageLayout title={<>CreatePool</>} subtitle="">
 			<CreateForm
@@ -321,6 +394,8 @@ const Create: FC = () => {
 				txType={CreateTxType.CreatePool}
 				txState={txState}
 				txHash={txHash}
+				setGasPrice={setGasPrice}
+				gasLimitEstimate={gasLimitEstimate}
 			/>
 		</PageLayout>
 	);
