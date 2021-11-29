@@ -4,35 +4,50 @@ import Wei, { wei } from "@synthetixio/wei";
 
 import { Tooltip } from 'components/common';
 import Connector from 'containers/Connector';
+
+import useExchangeRatesQuery from 'hooks/useExchangeRatesQuery';
 import useEthGasPriceQuery, { GAS_SPEEDS } from 'hooks/useEthGasPriceQuery';
+
+import { getExchangeRatesForCurrencies } from 'utils/currencies';
+import { getTransactionPrice } from 'utils/network';
+
+import { GWEI_PRECISION } from 'constants/networks';
 
 import { IGasSelector, GasSpeed, GasPrices } from './types';
 
-const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'fast' }) => {
+const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, initialGasSpeed = 'fast' }) => {
 	const [customGasPrice, setCustomGasPrice] = useState<string>('');
 	const [gasSpeed, setGasSpeed] = useState<GasSpeed>(initialGasSpeed);
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { network, provider } = Connector.useContainer();
 
-	const networkProps = {
-		networkId: network.id,
-		provider,
-	};
-
-	const ethGasStationQuery = useEthGasPriceQuery(networkProps);
+	const exchangeRatesQuery = useExchangeRatesQuery(network.id);
+	const ethGasStationQuery = useEthGasPriceQuery({ networkId: network.id, provider });
 
 	const gasPrices = ethGasStationQuery.data ?? ({} as GasPrices);
+	const exchangeRates = exchangeRatesQuery.data ?? null;
 	
 	const gasPrice: Wei | null = useMemo(() => {
 		try {
-			return wei(customGasPrice, 9);
+			return wei(customGasPrice, GWEI_PRECISION);
 		} catch (_) {
 			if (!ethGasStationQuery.data) return null;
 
-			return wei(ethGasStationQuery.data[gasSpeed], 9);
+			return wei(ethGasStationQuery.data[gasSpeed], GWEI_PRECISION);
 		}
 	}, [customGasPrice, ethGasStationQuery.data, gasSpeed]);
+
+	const ethPriceRate = getExchangeRatesForCurrencies(
+		exchangeRates,
+		'sETH',
+		'sUSD'
+	);
+	
+	const transactionFee = useMemo(
+		() => getTransactionPrice(gasPrice, gasLimitEstimate, ethPriceRate) ?? 0,
+		[gasPrice, gasLimitEstimate, ethPriceRate]
+	);
 
 	const formattedGasPrice = useMemo(() => {
 		const nGasPrice = Number(gasPrices[gasSpeed] ?? 0);
@@ -49,63 +64,68 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, initialGasSpeed = 'f
 
 	useEffect(() => {
 		try {
-			setGasPrice(wei(customGasPrice, 9));
+			setGasPrice(wei(customGasPrice, GWEI_PRECISION));
 		} catch (_) {
 			setGasPrice(gasPrice || wei(0));
 		}
 		// eslint-disable-next-line
 	}, [gasPrice, customGasPrice]);
 
-	
-
 	return (
 		<StyledContainer>
-			<StyledGasDescription>{`GAS PRICE (GWEI): ${formattedGasPrice}`}</StyledGasDescription>
-			<EditGasEstimateTooltip
-				visible={isOpen}
-				appendTo="parent"
-				trigger="click"
-				allowHTML
-				interactive
-				content={
-					<StyledUl>
-						<StyledLi>
-							<StyledInput
-								type="number"
-								value={customGasPrice}
-								placeholder="Custom"
-								onChange={(e) => {
-									setCustomGasPrice(e.target.value);
-								}}
-								onKeyDown={(e) => {
-									if (e.key === 'Enter') {
-										setIsOpen(!isOpen)
-									}
-								}}
-							/>
-						</StyledLi>
-						{GAS_SPEEDS.map((gasSpeed) => (
-							<StyledLi
-								key={gasSpeed}
-								onClick={() => {
-									setCustomGasPrice('');
-									setGasSpeed(gasSpeed);
-									setIsOpen(!isOpen);
-								}}>
-								<StyledSpeed>{gasSpeed}</StyledSpeed>
-								<span>{Number(gasPrices[gasSpeed]).toFixed(2)}</span>
+			<StyledGasDescription>
+				{`GAS PRICE (GWEI): `} 
+			</StyledGasDescription>
+			<span>
+				<StyledGasPrice>
+					{`≈${formattedGasPrice} ($${transactionFee})`}
+				</StyledGasPrice>
+				<EditGasEstimateTooltip
+					visible={isOpen}
+					appendTo="parent"
+					trigger="click"
+					allowHTML
+					interactive
+					content={
+						<StyledUl>
+							<StyledLi>
+								<StyledInput
+									type="number"
+									value={customGasPrice}
+									placeholder="Custom"
+									onChange={(e) => {
+										setCustomGasPrice(e.target.value);
+									}}
+									onKeyDown={(e) => {
+										if (e.key === 'Enter') {
+											setIsOpen(!isOpen)
+										}
+									}}
+								/>
 							</StyledLi>
-						))}
-					</StyledUl>
-				}
-			>
-				<StyledEditButton
-					type="button"
-					onClick={()=> setIsOpen(!isOpen)}
+							{GAS_SPEEDS.map((gasSpeed) => (
+								<StyledLi
+									key={gasSpeed}
+									onClick={() => {
+										setCustomGasPrice('');
+										setGasSpeed(gasSpeed);
+										setIsOpen(!isOpen);
+									}}>
+									<StyledSpeed>{gasSpeed}</StyledSpeed>
+									<span>{Number(gasPrices[gasSpeed]).toFixed(2)}</span>
+								</StyledLi>
+							))}
+						</StyledUl>
+					}
 				>
-					Edit
-				</StyledEditButton>
-			</EditGasEstimateTooltip>
+					<StyledEditButton
+						type="button"
+						onClick={()=> setIsOpen(!isOpen)}
+					>
+						Edit
+					</StyledEditButton>
+				</EditGasEstimateTooltip>
+			</span>
 		</StyledContainer>
 	);
 };
@@ -120,7 +140,12 @@ const StyledContainer = styled.div`
 const StyledGasDescription = styled.span`
 	color: #5B5B5B;
 	font-size: 14px;
-`
+`;
+
+const StyledGasPrice = styled.span`
+	font-size: 14px;
+	margin: 0 10px;
+`;
 
 const StyledInput = styled.input`
 	width: 120px;

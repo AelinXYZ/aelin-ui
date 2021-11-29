@@ -6,10 +6,11 @@ import styled from 'styled-components';
 import BaseModal from 'components/BaseModal';
 import Button from 'components/Button';
 import GasSelector from 'components/GasSelector';
-import { Transaction } from 'constants/transactions';
 import Etherscan from 'containers/BlockExplorer';
 import { ExternalLink, StyledSpinner, Tooltip } from 'components/common';
 import Connector from 'containers/Connector';
+
+import { Transaction, GasLimitEstimate } from 'constants/transactions';
 
 export type SummaryItem = {
 	label: string;
@@ -29,6 +30,7 @@ interface SummaryBoxProps {
 	txState: Transaction;
 	txHash: string | null;
 	setGasPrice: Function;
+	gasLimitEstimate: GasLimitEstimate;
 }
 
 const txTypeToTitle = (txType: CreateTxType) => {
@@ -56,7 +58,8 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	txType,
 	isValidForm,
 	txHash,
-	setGasPrice
+	setGasPrice,
+	gasLimitEstimate
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
@@ -116,6 +119,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 						<GasSelector
 							initialGasSpeed="fast"
 							setGasPrice={setGasPrice}
+							gasLimitEstimate={gasLimitEstimate}
 						/>
 						<SubmitButton variant="text" type="submit" onClick={() => formik.handleSubmit()}>
 							Submit
@@ -129,6 +133,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 						<GasSelector
 							initialGasSpeed="fast"
 							setGasPrice={setGasPrice}
+							gasLimitEstimate={gasLimitEstimate}
 						/>
 						<SubmitButton variant="text" type="submit" onClick={() => formik.handleSubmit()}>
 							Submit

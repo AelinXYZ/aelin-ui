@@ -1,3 +1,5 @@
+import Wei from '@synthetixio/wei';
+
 export enum Network {
 	Mainnet = 'mainnet',
 	Ropsten = 'ropsten',
@@ -26,3 +28,7 @@ export const chainIdMapping = {
 	[NetworkId.Rinkeby]: Network.Rinkeby,
 	[NetworkId.Ropsten]: Network.Kovan,
 };
+
+export const GWEI_PRECISION = 9;
+export const GWEI_UNIT = 1000000000;
+export type GasLimitEstimate = Wei | null;
