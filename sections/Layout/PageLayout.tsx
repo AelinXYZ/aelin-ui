@@ -27,7 +27,7 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 };
 
 const Container = styled.div`
-	padding: 32px 42px;
+	padding: 32px 42px 112px 42px;
 `;
 
 const Content = styled.div`

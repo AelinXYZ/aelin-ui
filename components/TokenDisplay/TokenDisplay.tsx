@@ -2,7 +2,7 @@ import Connector from 'containers/Connector';
 import { erc20Abi } from 'contracts/erc20';
 import { ethers } from 'ethers';
 import { FC, useEffect, useState } from 'react';
-import { truncateAddress } from 'utils/crypto';
+import { truncateAddress, getERC20Data } from 'utils/crypto';
 
 type TokenProps = { symbol?: string; address: string; displayAddress?: boolean };
 
@@ -17,8 +17,7 @@ const TokenDisplay: FC<TokenProps> = (props) => {
 
 		let mounted = true;
 		const getSymbol = async () => {
-			const contract = new ethers.Contract(address, erc20Abi, provider);
-			const symbol = await contract.symbol();
+			const { symbol } = await getERC20Data({ address, provider });
 			if (mounted) setResolvedSymbol(symbol);
 		};
 		getSymbol();

@@ -1,9 +1,12 @@
 import { FC, useState } from 'react';
 import styled, { css } from 'styled-components';
 import Spinner from 'assets/svg/loader.svg';
+import Info from 'assets/svg/info.svg';
+import Image from 'next/image';
 
 import BaseModal from '../BaseModal';
-import { FlexDivRow, StyledSpinner } from '../common';
+import OutsideClickHandler from 'react-outside-click-handler';
+import { FlexDivRow, FlexDivRowCentered, StyledSpinner, Tooltip } from '../common';
 import Button from 'components/Button';
 import { Transaction } from 'constants/transactions';
 import Connector from 'containers/Connector';
@@ -87,6 +90,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
+	const [showTooltip, setShowTooltip] = useState(false);
+
 	const [inputValue, setInputValue] = useState(value || 0);
 	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
 	const isPool = actionBoxType === ActionBoxType.FundPool;
@@ -94,6 +99,36 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	return (
 		<Container>
+			{canWithdraw ? (
+				<RedemptionHeader>
+					<OutsideClickHandler
+						onOutsideClick={() => {
+							setShowTooltip(false);
+						}}
+					>
+						<RedemptionPeriodTooltip
+							visible={showTooltip}
+							appendTo="parent"
+							trigger="click"
+							allowHTML
+							interactive
+							content={
+								<div>
+									If you max your pro rata contribution you will be eligible for the open redemption
+									period where all uncollected deal tokens are available for purchase
+								</div>
+							}
+						>
+							<FlexDivRowCentered>
+								{`Redemption Period: Pro Rata`}
+								<InfoClick onClick={() => setShowTooltip(!showTooltip)}>
+									<Image src={Info} alt="" />
+								</InfoClick>
+							</FlexDivRowCentered>
+						</RedemptionPeriodTooltip>
+					</OutsideClickHandler>
+				</RedemptionHeader>
+			) : null}
 			<FlexDivRow>
 				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
 					{actionBoxTypeToTitle(actionBoxType)}
@@ -257,7 +292,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	height: 234px;
+	max-height: 400px;
 	width: 300px;
 	position: relative;
 	border-radius: 8px;
@@ -278,10 +313,31 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 		`}
 `;
 
+const RedemptionHeader = styled.div`
+	background-color: ${(props) => props.theme.colors.forestGreen};
+	height: 30px;
+	width: 100%;
+	color: ${(props) => props.theme.colors.white};
+	text-align: center;
+	padding-top: 7px;
+	font-size: 12px;
+	border-radius: 4px 4px 0 0;
+`;
+
 const SubmitButton = styled(Button)<{ isWithdraw: boolean }>`
 	background-color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
+`;
+
+const RedemptionPeriodTooltip = styled(Tooltip)`
+	background-color: ${(props) => props.theme.colors.forestGreen};
+`;
+
+const InfoClick = styled.div`
+	padding-left: 5px;
+	cursor: pointer;
+	display: inline;
 `;
 
 const InputContainer = styled.div`

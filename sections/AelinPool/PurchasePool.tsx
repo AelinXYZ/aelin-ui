@@ -12,6 +12,7 @@ import { erc20Abi } from 'contracts/erc20';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
+import usePoolBalances from 'hooks/usePoolBalances';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -22,34 +23,17 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [txState, setTxState] = useState(Transaction.PRESUBMIT);
-	const [purchaseTokenDecimals, setPurchaseTokenDecimlas] = useState<number | null>(null);
-	const [purchaseTokenSymbol, setPurchaseTokenSymbol] = useState<string>('');
-	const [purchaseTokenAllowance, setPurchaseTokenAllowance] = useState<string>('0');
-	const [userPurchaseBalance, setUserPurchaseBalance] = useState<string>('0');
-	const [userPoolBalance, setUserPoolBalance] = useState<string>('0');
 
-	useEffect(() => {
-		async function getUserBalance() {
-			if (pool?.purchaseToken && pool?.id && provider != null) {
-				const poolContract = new ethers.Contract(pool?.id, poolAbi, provider);
-				const poolBalance = await poolContract.balanceOf(walletAddress);
-				const contract = new ethers.Contract(pool.purchaseToken, erc20Abi, provider);
-				const balance = await contract.balanceOf(walletAddress);
-				const decimals = await contract.decimals();
-				const symbol = await contract.symbol();
-				const allowance = await contract.allowance(walletAddress, pool.id);
-				const formattedBalance = ethers.utils.formatUnits(balance, decimals);
-				const formattedAllowance = ethers.utils.formatUnits(allowance, decimals);
-				const formattedPoolBalance = ethers.utils.formatUnits(poolBalance, decimals);
-				setPurchaseTokenDecimlas(decimals);
-				setUserPurchaseBalance(formattedBalance.toString());
-				setUserPoolBalance(formattedPoolBalance.toString());
-				setPurchaseTokenSymbol(symbol);
-				setPurchaseTokenAllowance(formattedAllowance.toString());
-			}
-		}
-		getUserBalance();
-	}, [pool?.purchaseToken, pool?.id, provider, walletAddress]);
+	const {
+		purchaseTokenDecimals,
+		purchaseTokenSymbol,
+		purchaseTokenAllowance,
+		userPurchaseBalance,
+		userPoolBalance,
+	} = usePoolBalances({
+		poolAddress: pool?.id ?? null,
+		purchaseToken: pool?.purchaseToken ?? null,
+	});
 
 	const poolGridItems = useMemo(
 		() => [

@@ -31,6 +31,7 @@ export const FlexDivRow = styled(FlexDiv)`
 
 export const FlexDivRowCentered = styled(FlexDivRow)`
 	align-items: center;
+	justify-content: center;
 `;
 
 export const FlexDivColCentered = styled(FlexDivCol)`
