@@ -11,6 +11,7 @@ import Connector from 'containers/Connector';
 import ContractsInterface from 'containers/ContractsInterface';
 import BlockExplorer from 'containers/BlockExplorer';
 import TransactionNotifier from 'containers/TransactionNotifier';
+import TransactionData from 'containers/TransactionData';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -39,7 +40,9 @@ const App = (props: AppProps) => {
 					<ContractsInterface.Provider>
 						<BlockExplorer.Provider>
 							<TransactionNotifier.Provider>
-								<InnerApp {...props} />
+								<TransactionData.Provider>
+									<InnerApp {...props} />
+								</TransactionData.Provider>
 							</TransactionNotifier.Provider>
 						</BlockExplorer.Provider>
 					</ContractsInterface.Provider>

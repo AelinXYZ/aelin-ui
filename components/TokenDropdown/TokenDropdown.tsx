@@ -13,7 +13,6 @@ import {
 
 import { Token, validateErc20Address } from 'constants/token';
 import useAelinTokenList from 'hooks/useAelinTokenList';
-import { erc20Abi } from 'contracts/erc20';
 import Connector from 'containers/Connector';
 
 const tokenToOption = (token: Token) => ({

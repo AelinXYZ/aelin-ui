@@ -20,6 +20,7 @@ import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { Transaction } from 'constants/transactions';
 import TransactionNotifier from 'containers/TransactionNotifier';
+import TransactionData from 'containers/TransactionData';
 
 import { GasLimitEstimate } from 'constants/networks';
 
@@ -29,12 +30,17 @@ interface CreateDealProps {
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const { walletAddress, signer, provider } = Connector.useContainer();
+	const {
+		txHash,
+		setTxHash,
+		gasPrice,
+		setGasPrice,
+		gasLimitEstimate,
+		setGasLimitEstimate,
+		txState,
+		setTxState,
+	} = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-
-	const [txState, setTxState] = useState<Transaction>(Transaction.PRESUBMIT);
-	const [txHash, setTxHash] = useState<string | null>(null);
-	const [gasPrice, setGasPrice] = useState<Wei>(wei(0));
-	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const createVariablesToCreateDeal: any = async () => {
 		if (!walletAddress || !signer) return;
@@ -106,8 +112,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			openRedemptionDuration,
 			holder,
 			holderFundingDuration,
-		}
-
+		};
 	};
 
 	const handleSubmit = async () => {
@@ -139,7 +144,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				openRedemptionDuration,
 				holder,
 				holderFundingDuration,
-				{ gasLimit: gasLimitEstimate?.toBN() ,gasPrice: gasPrice.toBN() }
+				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
 			);
 
 			if (tx) {
@@ -153,7 +158,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				});
 			}
 		} catch (e) {
-			console.log('e', e)
+			console.log('e', e);
 			setTxState(Transaction.FAILED);
 		}
 	};
@@ -187,7 +192,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!walletAddress || !signer) return setGasLimitEstimate(null);
-			
+
 			const errors = validateCreateDeal(formik.values);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
@@ -208,23 +213,26 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 
-				let gasEstimate = wei(await poolContract!.estimateGas.createDeal(
-					underlyingDealToken,
-					ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-					ethers.utils.parseUnits(underlyingDealToken.toString(), underlyingDealTokenDecimals),
-					vestingPeriodDuration,
-					vestingCliffDuration,
-					proRataRedemptionDuration,
-					openRedemptionDuration,
-					holder,
-					holderFundingDuration
-				), 0);
+				let gasEstimate = wei(
+					await poolContract!.estimateGas.createDeal(
+						underlyingDealToken,
+						ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
+						ethers.utils.parseUnits(underlyingDealToken.toString(), underlyingDealTokenDecimals),
+						vestingPeriodDuration,
+						vestingCliffDuration,
+						proRataRedemptionDuration,
+						openRedemptionDuration,
+						holder,
+						holderFundingDuration
+					),
+					0
+				);
 
 				setGasLimitEstimate(gasEstimate);
 			} catch (_) {
 				setGasLimitEstimate(null);
 			}
-		}
+		};
 		getGasLimitEstimate();
 	}, [signer, walletAddress, formik.values]);
 

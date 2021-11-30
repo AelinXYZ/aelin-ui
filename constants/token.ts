@@ -1,5 +1,5 @@
-import { erc20Abi } from 'contracts/erc20';
 import { ethers } from 'ethers';
+import { getERC20Data } from 'utils/crypto';
 
 export const TokenListUrls = {
 	Synthetix: 'https://synths.snx.eth.link',
@@ -45,13 +45,7 @@ export const validateErc20Address = async (
 	provider: ethers.providers.Provider | undefined
 ): Promise<ValidateErc20AddressReturn> => {
 	if (!provider) return { result: 'failure', errorMessage: 'Wallet not connected' };
-	const contract = new ethers.Contract(address, erc20Abi, provider);
-	const [name, symbol, decimals, totalSupply] = await Promise.all([
-		contract.name(),
-		contract.symbol(),
-		contract.decimals(),
-		contract.totalSupply(),
-	]).catch(() => []);
+	const { name, symbol, decimals, totalSupply } = await getERC20Data({ address, provider });
 
 	if (
 		typeof name === 'string' &&

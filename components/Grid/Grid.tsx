@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export type GridItem = {
 	header: string | JSX.Element;
@@ -17,7 +17,11 @@ const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
 	return (
 		<Container>
 			{gridItems.map(({ header, subText, formField, formError }: GridItem, idx: number) => (
-				<GridItem hasInputFields={hasInputFields} key={`${header}-${idx}`}>
+				<GridItem
+					gridSize={gridItems.length <= 9 ? 9 : 12}
+					hasInputFields={hasInputFields}
+					key={`${header}-${idx}`}
+				>
 					<GridItemHeader>{header}</GridItemHeader>
 					<GridItemSubText>{subText}</GridItemSubText>
 					{formField}
@@ -36,7 +40,7 @@ const Container = styled.div`
 	border-radius: 8px;
 `;
 
-const GridItem = styled.div<{ hasInputFields: boolean }>`
+const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 	background-color: ${(props) => props.theme.colors.cell};
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -45,26 +49,54 @@ const GridItem = styled.div<{ hasInputFields: boolean }>`
 	min-width: 207px;
 	display: flex;
 	flex-direction: column;
-	&:nth-child(3n) {
-		border-right: none;
-	}
-	&:nth-child(1) {
-		border-radius: 8px 0 0 0;
-	}
-	&:nth-child(3) {
-		border-radius: 0 8px 0 0;
-	}
-	&:nth-child(7) {
-		border-bottom: none;
-		border-radius: 0 0 0 8px;
-	}
-	&:nth-child(8) {
-		border-bottom: none;
-	}
-	&:nth-child(9) {
-		border-bottom: none;
-		border-radius: 0 0 8px 0;
-	}
+	${(props) =>
+		props.gridSize === 9 &&
+		css`
+			&:nth-child(3n) {
+				border-right: none;
+			}
+			&:nth-child(1) {
+				border-radius: 8px 0 0 0;
+			}
+			&:nth-child(3) {
+				border-radius: 0 8px 0 0;
+			}
+			&:nth-child(7) {
+				border-bottom: none;
+				border-radius: 0 0 0 8px;
+			}
+			&:nth-child(8) {
+				border-bottom: none;
+			}
+			&:nth-child(9) {
+				border-bottom: none;
+				border-radius: 0 0 8px 0;
+			}
+		`}
+	${(props) =>
+		props.gridSize === 12 &&
+		css`
+			&:nth-child(3n) {
+				border-right: none;
+			}
+			&:nth-child(1) {
+				border-radius: 8px 0 0 0;
+			}
+			&:nth-child(3) {
+				border-radius: 0 8px 0 0;
+			}
+			&:nth-child(10) {
+				border-bottom: none;
+				border-radius: 0 0 0 8px;
+			}
+			&:nth-child(11) {
+				border-bottom: none;
+			}
+			&:nth-child(12) {
+				border-bottom: none;
+				border-radius: 0 0 8px 0;
+			}
+		`}
 `;
 
 const GridItemHeader = styled.div`

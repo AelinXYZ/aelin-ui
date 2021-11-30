@@ -30,6 +30,7 @@ const Footer: FC = () => (
 );
 
 const Container = styled.div`
+	margin-top: 20px;
 	position: absolute;
 	bottom: 50px;
 	left: 50%;

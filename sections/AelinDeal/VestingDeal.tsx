@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react';
 import { FlexDiv } from 'components/common';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
+import ActionBox, { ActionBoxType } from 'components/ActionBox';
 
 interface VestingDealProps {
 	deal: any;
