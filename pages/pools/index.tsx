@@ -151,7 +151,7 @@ const Pools: FC = () => {
 				Header: 'fee',
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${cellProps.value}%`;
+					return `${cellProps.value * 100}%`;
 				},
 				width: 75,
 			},

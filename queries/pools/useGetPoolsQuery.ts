@@ -54,7 +54,7 @@ export const parsePool = ({
 	duration: Number(duration) * 1000,
 	purchaseToken,
 	purchaseExpiry: Number(purchaseExpiry) * 1000,
-	purchaseTokenCap: wei(purchaseTokenCap.toString()),
+	purchaseTokenCap,
 	sponsor,
 	contributions,
 	purchaseDuration,
