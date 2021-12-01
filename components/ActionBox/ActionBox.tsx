@@ -21,7 +21,6 @@ export enum TransactionType {
 
 export enum ActionBoxType {
 	FundPool = 'FundPool',
-	FundDeal = 'FundDeal',
 	PendingDeal = 'PENDING_DEAL',
 	VestingDeal = 'VESTING_DEAL',
 }

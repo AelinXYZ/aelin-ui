@@ -48,17 +48,19 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					<CreateDeal poolAddress={poolAddress} />
 				</SectionWrapper>
 			) : null}
-			{pool?.poolStatus === Status.FundingDeal &&
-			deal?.id != null &&
-			deal?.underlyingDealToken != null &&
-			deal.underlyingDealTokenTotal != null ? (
+			{pool?.poolStatus === Status.FundingDeal && deal?.id != null ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
 							<SectionTitle address={deal.id} title="Fund Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<FundDeal token={deal.underlyingDealToken} amount={deal.underlyingDealTokenTotal} />
+					<FundDeal
+						purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
+						purchaseToken={pool.purchaseToken}
+						token={deal?.underlyingDealToken}
+						amount={deal?.underlyingDealTokenTotal}
+					/>
 				</SectionWrapper>
 			) : null}
 			{pool?.poolStatus === Status.DealOpen && deal?.id != null ? (

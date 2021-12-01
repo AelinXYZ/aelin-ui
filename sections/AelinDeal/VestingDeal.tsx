@@ -21,7 +21,7 @@ const VestingDeal: FC<VestingDealProps> = ({ deal }) => {
 			},
 			{
 				header: 'Exchange rate',
-				subText: deal.underlyingDealTokenTotal / deal.purchaseTokenTotalForDeal,
+				subText: deal.underlyingDealTokenTotal.div(deal.purchaseTokenTotalForDeal),
 			},
 			{
 				header: 'Underlying Deal Token',
