@@ -1,7 +1,7 @@
-import { FC, useEffect, useMemo, useCallback } from 'react';
+import { FC, useEffect, useMemo, useCallback, useState } from 'react';
 import { useFormik } from 'formik';
 import { ethers } from 'ethers';
-import Wei, { wei } from '@synthetixio/wei';
+import { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
 
@@ -14,7 +14,7 @@ import { getDuration, formatDuration } from 'utils/time';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { erc20Abi } from 'contracts/erc20';
 
-import validateCreateDeal from 'utils/validate/create-deal';
+import validateCreateDeal, { CreateDealValues } from 'utils/validate/create-deal';
 import CreateForm from 'sections/shared/CreateForm';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
@@ -27,6 +27,7 @@ interface CreateDealProps {
 }
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
+	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
 	const { walletAddress, signer, provider } = Connector.useContainer();
 	const {
 		txHash,
@@ -41,11 +42,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const handleSubmit = async () => {
-		console.log('calling handleSubmit');
 		if (!walletAddress || !signer) return;
 
 		try {
 			const {
+				underlyingDealToken,
 				underlyingDealTokenTotal,
 				purchaseTokenTotal,
 				purchaseTokenDecimals,
@@ -113,7 +114,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			holderFundingExpiryMinutes: 0,
 			holder: '',
 		},
-		validate: validateCreateDeal,
+		validate: (values: CreateDealValues) => validateCreateDeal(values, totalPoolSupply),
 		onSubmit: handleSubmit,
 	});
 
@@ -191,16 +192,29 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	}, [formik?.values, poolAddress, provider, signer, walletAddress]);
 
 	useEffect(() => {
+		async function getTotalSupply() {
+			if (signer != null && poolAddress != null) {
+				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+				const supply = await poolContract.totalSupply();
+				const decimals = await poolContract.decimals();
+				setTotalPoolSupply(Number(ethers.utils.formatUnits(supply, decimals)));
+			}
+		}
+		getTotalSupply();
+	}, [poolAddress, signer]);
+
+	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!walletAddress || !signer) return setGasLimitEstimate(null);
 
-			const errors = validateCreateDeal(formik.values);
+			const errors = validateCreateDeal(formik.values, totalPoolSupply);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
 
 			try {
 				const {
 					underlyingDealToken,
+					underlyingDealTokenTotal,
 					purchaseTokenTotal,
 					purchaseTokenDecimals,
 					underlyingDealTokenDecimals,
@@ -211,14 +225,28 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					holder,
 					holderFundingDuration,
 				} = await createVariablesToCreateDeal();
-
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+
+				const test = await poolContract!.estimateGas.createDeal(
+					underlyingDealToken,
+					ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
+					ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
+					vestingPeriodDuration,
+					vestingCliffDuration,
+					proRataRedemptionDuration,
+					openRedemptionDuration,
+					holder,
+					holderFundingDuration
+				);
 
 				let gasEstimate = wei(
 					await poolContract!.estimateGas.createDeal(
 						underlyingDealToken,
 						ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-						ethers.utils.parseUnits(underlyingDealToken.toString(), underlyingDealTokenDecimals),
+						ethers.utils.parseUnits(
+							underlyingDealTokenTotal.toString(),
+							underlyingDealTokenDecimals
+						),
 						vestingPeriodDuration,
 						vestingCliffDuration,
 						proRataRedemptionDuration,
@@ -230,7 +258,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				);
 
 				setGasLimitEstimate(gasEstimate);
-			} catch (_) {
+			} catch (e) {
+				console.log('caught an error estimating', e);
 				setGasLimitEstimate(null);
 			}
 		};
@@ -242,6 +271,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 		poolAddress,
 		createVariablesToCreateDeal,
 		setGasLimitEstimate,
+		totalPoolSupply,
 	]);
 
 	const gridItems = useMemo(

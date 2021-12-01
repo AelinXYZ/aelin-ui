@@ -171,6 +171,7 @@ const Create: FC = () => {
 					),
 					0
 				);
+				console.log('create pool gas esimate', gasEstimate);
 
 				setGasLimitEstimate(gasEstimate);
 			} catch (_) {

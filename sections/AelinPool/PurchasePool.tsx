@@ -20,7 +20,7 @@ interface PurchasePoolProps {
 }
 
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
-	const { walletAddress, provider, signer } = Connector.useContainer();
+	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [txState, setTxState] = useState(Transaction.PRESUBMIT);
@@ -48,7 +48,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Token Cap',
-				subText: pool?.purchaseTokenCap.toString() ?? '0',
+				subText: ethers.utils
+					.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+					.toString(),
 			},
 			{
 				header: 'Purchase Token',
