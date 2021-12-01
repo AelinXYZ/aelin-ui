@@ -7,10 +7,10 @@ import BaseModal from 'components/BaseModal';
 import Button from 'components/Button';
 import GasSelector from 'components/GasSelector';
 import Etherscan from 'containers/BlockExplorer';
-import { ExternalLink, StyledSpinner, Tooltip } from 'components/common';
+import { ExternalLink, StyledSpinner } from 'components/common';
 import Connector from 'containers/Connector';
-
-import { Transaction, GasLimitEstimate } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
+import { Transaction } from 'constants/transactions';
 
 export type SummaryItem = {
 	label: string;
@@ -59,7 +59,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	isValidForm,
 	txHash,
 	setGasPrice,
-	gasLimitEstimate
+	gasLimitEstimate,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
@@ -115,7 +115,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				{txType === CreateTxType.CreatePool && txState === Transaction.PRESUBMIT ? (
 					<ModalContainer>
 						{summaryBoxGrid}
-						<hr/>
+						<hr />
 						<GasSelector
 							initialGasSpeed="fast"
 							setGasPrice={setGasPrice}
@@ -129,7 +129,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				{txType === CreateTxType.CreateDeal && txState === Transaction.PRESUBMIT ? (
 					<ModalContainer>
 						{summaryBoxGrid}
-						<hr/>
+						<hr />
 						<GasSelector
 							initialGasSpeed="fast"
 							setGasPrice={setGasPrice}

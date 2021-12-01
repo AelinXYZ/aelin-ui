@@ -13,6 +13,7 @@ import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import usePoolBalances from 'hooks/usePoolBalances';
+import { formatNumber } from 'utils/numbers';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -47,7 +48,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Token Cap',
-				subText: pool?.purchaseTokenCap.toNumber() ?? '',
+				subText: pool?.purchaseTokenCap.toString() ?? '0',
 			},
 			{
 				header: 'Purchase Token',
@@ -64,8 +65,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: userPoolBalance,
 			},
 			{
-				header: 'Status',
-				subText: 'some subText',
+				header: 'Contributions',
+				subText: ethers.utils
+					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+					.toString(),
 			},
 			{
 				header: 'Sponsor Fee',
@@ -80,7 +83,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
 			},
 		],
-		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol]
+		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]
 	);
 
 	const handleSubmit = useCallback(

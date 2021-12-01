@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useCallback } from 'react';
 import { useFormik } from 'formik';
 import { ethers } from 'ethers';
 import Wei, { wei } from '@synthetixio/wei';
@@ -22,8 +22,6 @@ import { Transaction } from 'constants/transactions';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 
-import { GasLimitEstimate } from 'constants/networks';
-
 interface CreateDealProps {
 	poolAddress: string;
 }
@@ -42,7 +40,84 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	} = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
-	const createVariablesToCreateDeal: any = async () => {
+	const handleSubmit = async () => {
+		console.log('calling handleSubmit');
+		if (!walletAddress || !signer) return;
+
+		try {
+			const {
+				underlyingDealTokenTotal,
+				purchaseTokenTotal,
+				purchaseTokenDecimals,
+				underlyingDealTokenDecimals,
+				vestingPeriodDuration,
+				vestingCliffDuration,
+				proRataRedemptionDuration,
+				openRedemptionDuration,
+				holder,
+				holderFundingDuration,
+			} = await createVariablesToCreateDeal();
+
+			const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+
+			const tx = await poolContract!.createDeal(
+				// underlyingDealToken,
+				// using wETH as the kovan underlying deal token for tests
+				'0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
+				ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
+				vestingPeriodDuration,
+				vestingCliffDuration,
+				proRataRedemptionDuration,
+				openRedemptionDuration,
+				holder,
+				holderFundingDuration,
+				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
+			);
+
+			if (tx) {
+				setTxState(Transaction.WAITING);
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => {
+						setTxHash(tx.hash);
+						setTxState(Transaction.SUCCESS);
+					},
+				});
+			}
+		} catch (e) {
+			console.log('e', e);
+			setTxState(Transaction.FAILED);
+		}
+	};
+
+	const formik = useFormik({
+		initialValues: {
+			underlyingDealToken: '',
+			purchaseTokenTotal: 0,
+			underlyingDealTokenTotal: 0,
+			vestingPeriodDays: 0,
+			vestingPeriodHours: 0,
+			vestingPeriodMinutes: 0,
+			vestingCliffDays: 0,
+			vestingCliffHours: 0,
+			vestingCliffMinutes: 0,
+			proRataRedemptionDays: 0,
+			proRataRedemptionHours: 0,
+			proRataRedemptionMinutes: 0,
+			openRedemptionDays: 0,
+			openRedemptionHours: 0,
+			openRedemptionMinutes: 0,
+			holderFundingExpiryDays: 0,
+			holderFundingExpiryHours: 0,
+			holderFundingExpiryMinutes: 0,
+			holder: '',
+		},
+		validate: validateCreateDeal,
+		onSubmit: handleSubmit,
+	});
+
+	const createVariablesToCreateDeal: any = useCallback(async () => {
 		if (!walletAddress || !signer) return;
 		const now = new Date();
 		const {
@@ -113,81 +188,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			holder,
 			holderFundingDuration,
 		};
-	};
-
-	const handleSubmit = async () => {
-		if (!walletAddress || !signer) return;
-
-		try {
-			const {
-				underlyingDealToken,
-				purchaseTokenTotal,
-				purchaseTokenDecimals,
-				underlyingDealTokenDecimals,
-				vestingPeriodDuration,
-				vestingCliffDuration,
-				proRataRedemptionDuration,
-				openRedemptionDuration,
-				holder,
-				holderFundingDuration,
-			} = await createVariablesToCreateDeal();
-
-			const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
-
-			const tx = await poolContract!.createDeal(
-				underlyingDealToken,
-				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-				ethers.utils.parseUnits(underlyingDealToken.toString(), underlyingDealTokenDecimals),
-				vestingPeriodDuration,
-				vestingCliffDuration,
-				proRataRedemptionDuration,
-				openRedemptionDuration,
-				holder,
-				holderFundingDuration,
-				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
-			);
-
-			if (tx) {
-				setTxState(Transaction.WAITING);
-				monitorTransaction({
-					txHash: tx.hash,
-					onTxConfirmed: () => {
-						setTxHash(tx.hash);
-						setTxState(Transaction.SUCCESS);
-					},
-				});
-			}
-		} catch (e) {
-			console.log('e', e);
-			setTxState(Transaction.FAILED);
-		}
-	};
-
-	const formik = useFormik({
-		initialValues: {
-			underlyingDealToken: '',
-			purchaseTokenTotal: 0,
-			underlyingDealTokenTotal: 0,
-			vestingPeriodDays: 0,
-			vestingPeriodHours: 0,
-			vestingPeriodMinutes: 0,
-			vestingCliffDays: 0,
-			vestingCliffHours: 0,
-			vestingCliffMinutes: 0,
-			proRataRedemptionDays: 0,
-			proRataRedemptionHours: 0,
-			proRataRedemptionMinutes: 0,
-			openRedemptionDays: 0,
-			openRedemptionHours: 0,
-			openRedemptionMinutes: 0,
-			holderFundingExpiryDays: 0,
-			holderFundingExpiryHours: 0,
-			holderFundingExpiryMinutes: 0,
-			holder: '',
-		},
-		validate: validateCreateDeal,
-		onSubmit: handleSubmit,
-	});
+	}, [formik?.values, poolAddress, provider, signer, walletAddress]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -234,7 +235,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [signer, walletAddress, formik.values]);
+	}, [
+		signer,
+		walletAddress,
+		formik.values,
+		poolAddress,
+		createVariablesToCreateDeal,
+		setGasLimitEstimate,
+	]);
 
 	const gridItems = useMemo(
 		() => [
