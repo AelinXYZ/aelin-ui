@@ -11,6 +11,7 @@ import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
+import Button from 'components/Button';
 
 interface FundDealProps {
 	token: string;
@@ -18,6 +19,7 @@ interface FundDealProps {
 	amount: any;
 	purchaseTokenTotalForDeal: any;
 	purchaseToken: string;
+	holder: string;
 }
 
 const FundDeal: FC<FundDealProps> = ({
@@ -26,8 +28,8 @@ const FundDeal: FC<FundDealProps> = ({
 	dealAddress,
 	purchaseToken,
 	purchaseTokenTotalForDeal,
+	holder,
 }) => {
-	console.log('FundDeal issue');
 	const { provider, walletAddress, signer } = Connector.useContainer();
 	const { txState, setTxState } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -80,7 +82,7 @@ const FundDeal: FC<FundDealProps> = ({
 	);
 
 	const handleSubmit = useCallback(
-		async (value: number) => {
+		async (event: any, value: number) => {
 			if (!walletAddress || !signer || !dealAddress || !decimals) return;
 			const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 			try {
@@ -158,6 +160,9 @@ const FundDeal: FC<FundDealProps> = ({
 					purchaseTokenDecimals
 				),
 			},
+			{
+				header: 'time left to fund',
+			},
 		],
 		[
 			depositAmount,
@@ -175,10 +180,34 @@ const FundDeal: FC<FundDealProps> = ({
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
-			<Container>Button to submit here</Container>
+			<Container>
+				<Header>
+					{walletAddress != holder
+						? 'Only the holder funds the deal'
+						: (allowance ?? 0) > Number(depositAmount)
+						? 'Finalize Deal'
+						: 'Approval is Required First'}
+				</Header>
+				<StyledButton
+					disabled={walletAddress != holder}
+					onClick={(allowance ?? 0) > Number(depositAmount) ? handleSubmit : handleApprove}
+				>
+					{(allowance ?? 0) > Number(depositAmount)
+						? `Deposit ${ethers.utils.formatUnits(depositAmount, decimals)} ${symbol}`
+						: `Approve ${ethers.utils.formatUnits(depositAmount, decimals)} ${symbol}`}
+				</StyledButton>
+			</Container>
 		</FlexDiv>
 	);
 };
+
+const StyledButton = styled(Button)`
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 56px;
+	background-color: ${(props) => props.theme.colors.forestGreen};
+`;
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
@@ -188,4 +217,12 @@ const Container = styled.div`
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
+
+const Header = styled.div`
+	color: ${(props) => props.theme.colors.forestGreen};
+	font-size: 14px;
+	margin: 20px 0 50px 0;
+	padding-left: 20px;
+`;
+
 export default FundDeal;

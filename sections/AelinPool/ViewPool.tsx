@@ -52,10 +52,11 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle address={deal.id} title="Fund Aelin Deal" />
+							<SectionTitle address={deal.id} title="Awaiting Holder Funding of Proposed Deal" />
 						</ContentTitle>
 					</ContentHeader>
 					<FundDeal
+						holder={deal?.holder}
 						purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
 						purchaseToken={pool.purchaseToken}
 						token={deal?.underlyingDealToken}
