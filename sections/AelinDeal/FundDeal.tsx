@@ -2,6 +2,7 @@ import { FC, useEffect, useState, useCallback, useMemo } from 'react';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
 
+import Spinner from 'assets/svg/loader.svg';
 import { erc20Abi } from 'contracts/erc20';
 import Connector from 'containers/Connector';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
@@ -10,8 +11,9 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import Grid from 'components/Grid';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, StyledSpinner } from 'components/common';
 import Button from 'components/Button';
+import BaseModal from 'components/BaseModal';
 
 interface FundDealProps {
 	token: string;
@@ -34,6 +36,7 @@ const FundDeal: FC<FundDealProps> = ({
 	const { txState, setTxState } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
+	const [showTxModal, setShowTxModal] = useState(false);
 	const [allowance, setAllowance] = useState<number | null>(null);
 	const [decimals, setDecimals] = useState<number | null>(null);
 	const [balance, setBalance] = useState<number | null>(null);
@@ -81,30 +84,27 @@ const FundDeal: FC<FundDealProps> = ({
 		[amount, decimals]
 	);
 
-	const handleSubmit = useCallback(
-		async (event: any, value: number) => {
-			if (!walletAddress || !signer || !dealAddress || !decimals) return;
-			const contract = new ethers.Contract(dealAddress, dealAbi, signer);
-			try {
-				const tx = await contract.depositUnderlying(
-					ethers.utils.parseUnits(value.toString(), decimals),
-					// TODO update gasPrice and gasLimit
-					{
-						gasLimit: 1000000,
-					}
-				);
-				if (tx) {
-					monitorTransaction({
-						txHash: tx.hash,
-						onTxConfirmed: () => setTxState(Transaction.SUCCESS),
-					});
+	const handleSubmit = useCallback(async () => {
+		if (!walletAddress || !signer || !dealAddress || !decimals) return;
+		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
+		try {
+			const tx = await contract.depositUnderlying(
+				depositAmount,
+				// TODO update gasPrice and gasLimit
+				{
+					gasLimit: 1000000,
 				}
-			} catch (e) {
-				setTxState(Transaction.FAILED);
+			);
+			if (tx) {
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+				});
 			}
-		},
-		[walletAddress, signer, monitorTransaction, dealAddress, decimals, setTxState]
-	);
+		} catch (e) {
+			setTxState(Transaction.FAILED);
+		}
+	}, [walletAddress, signer, monitorTransaction, dealAddress, decimals, setTxState, depositAmount]);
 
 	const handleApprove = useCallback(async () => {
 		if (!walletAddress || !signer || !dealAddress || !token) return;
@@ -141,7 +141,7 @@ const FundDeal: FC<FundDealProps> = ({
 			},
 			{
 				header: 'Exchange rate',
-				subText: Number(amount) / purchaseTokenTotalForDeal.toNumber(),
+				subText: Number(depositAmount ?? 0) / Number((purchaseTokenTotalForDeal ?? 0).toString()),
 			},
 			{
 				header: 'Purchase token',
@@ -156,7 +156,7 @@ const FundDeal: FC<FundDealProps> = ({
 			{
 				header: 'Purchase token total',
 				subText: ethers.utils.formatUnits(
-					purchaseTokenTotalForDeal.toString(),
+					(purchaseTokenTotalForDeal ?? 0).toString(),
 					purchaseTokenDecimals
 				),
 			},
@@ -171,10 +171,14 @@ const FundDeal: FC<FundDealProps> = ({
 			purchaseToken,
 			purchaseTokenSymbol,
 			purchaseTokenTotalForDeal,
-			amount,
 			decimals,
 			purchaseTokenDecimals,
 		]
+	);
+
+	const isAllowance = useMemo(
+		() => Number(allowance ?? 0) < Number(amount.toString()),
+		[amount, allowance]
 	);
 
 	return (
@@ -184,22 +188,66 @@ const FundDeal: FC<FundDealProps> = ({
 				<Header>
 					{walletAddress != holder
 						? 'Only the holder funds the deal'
-						: (allowance ?? 0) > Number(depositAmount)
-						? 'Finalize Deal'
-						: 'Approval is Required First'}
+						: isAllowance
+						? 'Approval is Required First'
+						: 'Finalize Deal'}
 				</Header>
-				<StyledButton
-					disabled={walletAddress != holder}
-					onClick={(allowance ?? 0) > Number(depositAmount) ? handleSubmit : handleApprove}
-				>
-					{(allowance ?? 0) > Number(depositAmount)
-						? `Deposit ${ethers.utils.formatUnits(depositAmount, decimals)} ${symbol}`
-						: `Approve ${ethers.utils.formatUnits(depositAmount, decimals)} ${symbol}`}
+				<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
+					{isAllowance
+						? `Approve ${amount.toString()} ${symbol}`
+						: `Deposit ${amount.toString()} ${symbol}`}
 				</StyledButton>
 			</Container>
+			<BaseModal
+				title="Confirm Transaction"
+				setIsModalOpen={setShowTxModal}
+				isModalOpen={showTxModal}
+				onClose={() => setTxState(Transaction.PRESUBMIT)}
+			>
+				{/* TODO merge this with the new tx components when we refactor the action box */}
+				{txState === Transaction.SUCCESS ? (
+					<div>
+						<div>Your transaction has been submitted successfully</div>
+					</div>
+				) : null}
+				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
+				{isAllowance && txState === Transaction.PRESUBMIT ? (
+					<div>
+						<div>{`Please approve ${symbol} usage by the deal contract`}</div>
+						<SubmitButton
+							variant={'text'}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								handleApprove();
+							}}
+						>
+							Confirm Approval
+						</SubmitButton>
+					</div>
+				) : null}
+				{!isAllowance && txState === Transaction.PRESUBMIT ? (
+					<div>
+						<div>{`You are going to finalize the depositing ${depositAmount} of ${symbol}`}</div>
+						<SubmitButton
+							variant={'text'}
+							onClick={(e) => {
+								setTxState(Transaction.WAITING);
+								handleSubmit();
+							}}
+						>
+							Confirm Purchase
+						</SubmitButton>
+					</div>
+				) : null}
+			</BaseModal>
 		</FlexDiv>
 	);
 };
+
+const SubmitButton = styled(Button)`
+	background-color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
+`;
 
 const StyledButton = styled(Button)`
 	position: absolute;

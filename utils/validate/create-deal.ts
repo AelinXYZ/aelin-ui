@@ -72,7 +72,7 @@ const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) =
 		!values.openRedemptionDays && !values.openRedemptionHours && !values.openRedemptionMinutes;
 	if (values.purchaseTokenTotal === totalPoolSupply && !noOpenValues) {
 		errors.openRedemptionMinutes = 'Pool supply maxed. Set open to 0';
-	} else if (noOpenValues) {
+	} else if (values.purchaseTokenTotal !== totalPoolSupply && noOpenValues) {
 		errors.openRedemptionMinutes = 'Required';
 	} else {
 		const openRedemptionSeconds = convertToSeconds({
@@ -82,7 +82,10 @@ const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) =
 		});
 		if (openRedemptionSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.openRedemptionMinutes = 'Max open is 30 days';
-		} else if (openRedemptionSeconds < ONE_MINUTE_IN_SECS * 30) {
+		} else if (
+			openRedemptionSeconds < ONE_MINUTE_IN_SECS * 30 &&
+			values.purchaseTokenTotal !== totalPoolSupply
+		) {
 			errors.openRedemptionMinutes = 'Min open is 30 mins';
 		}
 	}

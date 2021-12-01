@@ -32,7 +32,6 @@ const Pagination: FC<PaginationProps> = ({
 }) => {
 	useEffect(() => {
 		if (pageIndex === 0) {
-			console.log('starting interval');
 			setIsPageOne(true);
 		}
 	}, [pageIndex, setIsPageOne]);

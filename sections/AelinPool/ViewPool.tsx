@@ -57,6 +57,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					</ContentHeader>
 					<FundDeal
 						holder={deal?.holder}
+						dealAddress={deal?.id}
 						purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
 						purchaseToken={pool.purchaseToken}
 						token={deal?.underlyingDealToken}
