@@ -315,7 +315,7 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 
 const RedemptionHeader = styled.div`
 	background-color: ${(props) => props.theme.colors.forestGreen};
-	height: 30px;
+	height: 32px;
 	width: 100%;
 	color: ${(props) => props.theme.colors.white};
 	text-align: center;
@@ -335,7 +335,8 @@ const RedemptionPeriodTooltip = styled(Tooltip)`
 `;
 
 const InfoClick = styled.div`
-	padding-left: 5px;
+	padding-left: 8px;
+	padding-top: 3px;
 	cursor: pointer;
 	display: inline;
 `;
