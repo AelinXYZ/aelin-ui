@@ -4,7 +4,6 @@ import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import SectionDetails from 'sections/shared/SectionDetails';
 import { ActionBoxType } from 'components/ActionBox';
-import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { PoolCreatedResult } from 'subgraph';
 import { ethers } from 'ethers';
@@ -13,7 +12,7 @@ import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import usePoolBalances from 'hooks/usePoolBalances';
-import { formatNumber } from 'utils/numbers';
+import { formatShortDateWithTime } from 'utils/time';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -78,11 +77,13 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Expiration',
-				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
+				subText: <>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>,
 			},
 			{
 				header: 'Pool Duration',
-				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
+				subText: (
+					<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
+				),
 			},
 		],
 		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]

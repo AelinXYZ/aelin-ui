@@ -17,6 +17,7 @@ const useGetPoolByIdQuery = ({ id }: { id: string }) =>
 			sponsorFee: true,
 			sponsor: true,
 			purchaseExpiry: true,
+			purchaseTokenDecimals: true,
 			timestamp: true,
 			poolStatus: true,
 			purchaseDuration: true,

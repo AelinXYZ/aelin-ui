@@ -50,7 +50,8 @@ const FundDeal: FC<FundDealProps> = ({
 				provider != null &&
 				walletAddress != null &&
 				dealAddress != null &&
-				purchaseToken != null
+				purchaseToken != null &&
+				token != null
 			) {
 				const purchaseContract = new ethers.Contract(purchaseToken, erc20Abi, provider);
 				const purchaseSymbol = await purchaseContract.symbol();
@@ -177,7 +178,7 @@ const FundDeal: FC<FundDealProps> = ({
 	);
 
 	const isAllowance = useMemo(
-		() => Number(allowance ?? 0) < Number(amount.toString()),
+		() => Number(allowance ?? 0) < Number((amount ?? 0).toString()),
 		[amount, allowance]
 	);
 
@@ -194,8 +195,8 @@ const FundDeal: FC<FundDealProps> = ({
 				</Header>
 				<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
 					{isAllowance
-						? `Approve ${amount.toString()} ${symbol}`
-						: `Deposit ${amount.toString()} ${symbol}`}
+						? `Approve ${(amount ?? 0).toString()} ${symbol}`
+						: `Deposit ${(amount ?? 0).toString()} ${symbol}`}
 				</StyledButton>
 			</Container>
 			<BaseModal

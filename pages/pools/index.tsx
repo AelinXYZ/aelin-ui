@@ -14,8 +14,10 @@ import DealStatus, { Status } from 'components/DealStatus';
 import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { truncateNumber } from 'utils/numbers';
+import { formatShortDateWithTime } from 'utils/time';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import TokenDisplay from 'components/TokenDisplay';
+import { ethers } from 'ethers';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -49,6 +51,7 @@ const Pools: FC = () => {
 	}, [isPageOne, poolsQuery]);
 
 	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
+
 	const data = useMemo(() => {
 		let list = pools.map(
 			({
@@ -60,6 +63,7 @@ const Pools: FC = () => {
 				purchaseToken,
 				contributions,
 				purchaseTokenCap,
+				purchaseTokenDecimals,
 				timestamp,
 				purchaseExpiry,
 				poolStatus,
@@ -70,8 +74,10 @@ const Pools: FC = () => {
 				purchaseToken, // TODO get symbol
 				contributions,
 				cap: purchaseTokenCap,
+				purchaseTokenDecimals,
 				duration,
 				fee: sponsorFee,
+				purchaseExpiry,
 				timestamp,
 				poolStatus, // TODO get status
 			})
@@ -123,7 +129,16 @@ const Pools: FC = () => {
 				Header: 'contributions',
 				accessor: 'contributions',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return <FlexDivStart>{truncateNumber(cellProps.value)}</FlexDivStart>;
+					return (
+						<FlexDivStart>
+							{ethers.utils
+								.formatUnits(
+									cellProps.value.toString(),
+									cellProps.row.original.purchaseTokenDecimals
+								)
+								.toString()}
+						</FlexDivStart>
+					);
 				},
 				width: 125,
 			},
@@ -133,17 +148,36 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							{Number(cellProps.value) === 0 ? 'Uncapped' : truncateNumber(cellProps.value)}
+							{Number(cellProps.value) === 0
+								? 'Uncapped'
+								: ethers.utils
+										.formatUnits(
+											cellProps.value.toString(),
+											cellProps.row.original.purchaseTokenDecimals
+										)
+										.toString()}
 						</FlexDivStart>
 					);
 				},
 				width: 125,
 			},
 			{
-				Header: 'duration',
+				// TODO update this to be right
+				Header: 'time to purchase',
+				accessor: 'purchaseExpiry',
+				Cell: (cellProps: CellProps<any, any>) => {
+					return <>{formatShortDateWithTime(cellProps.value)}</>;
+				},
+				width: 125,
+			},
+			{
+				// TODO update this to be right
+				Header: 'Pool ends',
 				accessor: 'duration',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return <TimeLeft timeLeft={cellProps.value} />;
+					return (
+						<>{formatShortDateWithTime(cellProps.row.original.purchaseExpiry + cellProps.value)}</>
+					);
 				},
 				width: 125,
 			},
