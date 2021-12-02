@@ -45,6 +45,31 @@ const poolAbi = [
 		anonymous: false,
 		inputs: [
 			{
+				indexed: false,
+				internalType: 'string',
+				name: 'name',
+				type: 'string',
+			},
+			{
+				indexed: false,
+				internalType: 'string',
+				name: 'symbol',
+				type: 'string',
+			},
+			{
+				indexed: false,
+				internalType: 'uint8',
+				name: 'decimals',
+				type: 'uint8',
+			},
+		],
+		name: 'AelinToken',
+		type: 'event',
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
 				indexed: true,
 				internalType: 'address',
 				name: 'owner',

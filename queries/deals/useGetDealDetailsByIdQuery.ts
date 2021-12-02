@@ -22,6 +22,9 @@ const useGetDealDetailsByIdQuery = ({ id }: { id: string }) =>
 		}
 	);
 
-export const parseDealDetails = (dealDetails: DealDetailsResult) => dealDetails;
+export const parseDealDetails = (dealDetails: DealDetailsResult) => ({
+	...dealDetails,
+	holderFundingExpiration: Number(dealDetails.holderFundingExpiration) * 1000,
+});
 
 export default useGetDealDetailsByIdQuery;

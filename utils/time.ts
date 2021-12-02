@@ -1,4 +1,4 @@
-import { add } from 'date-fns';
+import { add, format } from 'date-fns';
 import { ONE_DAY_IN_SECS, ONE_HOUR_IN_SECS, ONE_MINUTE_IN_SECS } from 'constants/time';
 import { Status } from 'components/DealStatus';
 export const convertToSeconds = ({
@@ -24,6 +24,8 @@ export const getDuration = (startDate: Date, days: number, hours: number, minute
 export const formatDuration = (days: number, hours: number, minutes: number) => {
 	return `${days || 0}d ${hours || 0}h ${minutes || 0}m`;
 };
+
+export const formatShortDateWithTime = (date: Date | number) => format(date, 'MMM d, yyyy H:mma');
 
 export const calculateStatus = ({
 	poolStatus,
