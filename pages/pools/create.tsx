@@ -101,8 +101,8 @@ const Create: FC = () => {
 				[], // allow list amounts
 				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
 			);
+			setTxState(Transaction.WAITING);
 			if (tx) {
-				setTxState(Transaction.WAITING);
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {

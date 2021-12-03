@@ -17,9 +17,12 @@ const NotificationPending = () => {
 	return (
 		<NotificationContainer>
 			<IconContainer>
-				<Image width={25} src={Spinner} alt="pending tx" />
+				<Image width={25} height={25} src={Spinner} alt="pending tx" />
 			</IconContainer>
-			<TransactionInfo>Tx Sent</TransactionInfo>
+			<TransactionInfo style={{ marginTop: '5px' }}>
+				<TransactionInfoHeading>Transaction Sent</TransactionInfoHeading>
+				<TransactionInfoBody>Click to verify on Etherscan</TransactionInfoBody>
+			</TransactionInfo>
 		</NotificationContainer>
 	);
 };
@@ -28,9 +31,12 @@ const NotificationSuccess = ({ link }: NotificationProps) => {
 	return (
 		<NotificationContainer data-testid="tx-notification-transaction-confirmed" data-href={link}>
 			<IconContainer>
-				<Image width={35} src={Success} alt="successful tx" />
+				<Image width={35} height={35} src={Success} alt="successful tx" />
 			</IconContainer>
-			<TransactionInfo>Tx Confirmed</TransactionInfo>
+			<TransactionInfo>
+				<TransactionInfoHeading>Transaction Confirmed!</TransactionInfoHeading>
+				<TransactionInfoBody>Click to verify on Etherscan</TransactionInfoBody>
+			</TransactionInfo>
 		</NotificationContainer>
 	);
 };
@@ -42,7 +48,7 @@ const NotificationError = ({ failureReason }: NotificationProps) => {
 				<Image width={35} src={Failure} alt="failed tx" />
 			</IconContainer>
 			<TransactionInfo>
-				<TransactionInfoBody>Tx Failed</TransactionInfoBody>
+				<TransactionInfoHeading>Transaction Failed</TransactionInfoHeading>
 				<TransactionInfoBody isFailureMessage={true}>{failureReason}</TransactionInfoBody>
 			</TransactionInfo>
 		</NotificationContainer>
@@ -54,12 +60,21 @@ const IconContainer = styled(FlexDivRowCentered)`
 	width: 35px;
 `;
 
-const TransactionInfo = styled(FlexDivCol)``;
+const TransactionInfo = styled(FlexDivCol)`
+	margin-left: 10px;
+`;
+const TransactionInfoHeading = styled.h3`
+	margin: 0;
+	font-size: 14px;
+	color: ${(props) => props.theme.colors.headerGreen};
+`;
+
 const TransactionInfoBody = styled.div<{ isFailureMessage?: boolean }>`
+	font-size: 12px;
 	${(props) =>
 		props.isFailureMessage &&
 		css`
-			color: ${(props) => props.theme.colors.gray};
+			color: ${(props) => props.theme.colors.black};
 		`}
 `;
 
