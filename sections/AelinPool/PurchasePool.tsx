@@ -66,7 +66,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: userPoolBalance,
 			},
 			{
-				header: 'Contributions',
+				header: 'Total Contributions',
 				subText: ethers.utils
 					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
 					.toString(),

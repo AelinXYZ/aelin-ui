@@ -161,7 +161,7 @@ const Pools: FC = () => {
 			},
 			{
 				// TODO update this to be right
-				Header: 'time to purchase',
+				Header: 'Purchase ends',
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <>{formatShortDateWithTime(cellProps.value)}</>;
