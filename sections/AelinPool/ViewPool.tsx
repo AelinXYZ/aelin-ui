@@ -65,6 +65,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						purchaseToken={pool.purchaseToken}
 						token={deal?.underlyingDealToken}
 						amount={deal?.underlyingDealTokenTotal}
+						holderFundingExpiration={deal?.holderFundingExpiration}
 					/>
 				</SectionWrapper>
 			) : null}

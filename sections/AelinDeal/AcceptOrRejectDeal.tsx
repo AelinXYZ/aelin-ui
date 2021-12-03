@@ -45,44 +45,37 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 		() => [
 			{
 				header: 'Name',
-				subText: deal.name,
+				subText: <>{deal?.name ?? ''}</>,
 			},
 			{
 				header: 'Symbol',
-				subText: deal.symbol,
+				subText: <>{deal?.symbol ?? ''}</>,
 			},
 			{
 				header: 'Underlying Deal Token',
 				subText: (
 					<TokenDisplay
-						symbol={deal.symbol}
-						address={deal.underlyingDealToken}
+						symbol={deal?.symbol}
+						address={deal?.underlyingDealToken}
 						displayAddress={true}
 					/>
 				),
 			},
 			{
 				header: 'Underlying Total',
-				subText: formatNumber(
-					Number(
-						ethers.utils.formatUnits(
-							deal.underlyingDealTokenTotal.toString(),
-							underlyingDealTokenDecimals ?? 0
-						)
-					)
-				),
+				subText: 0,
 			},
 			{
 				header: 'Exchange rate',
-				subText: deal.underlyingDealTokenTotal.div(deal.purchaseTokenTotalForDeal).toString(),
+				subText: 0,
 			},
 			{
 				header: 'Vesting Period',
-				subText: deal.vestingPeriod,
+				subText: <>{deal?.vestingPeriod.toString() ?? ''}</>,
 			},
 			{
 				header: 'Vesting Cliff',
-				subText: deal.vestingCliff,
+				subText: <>{deal?.vestingCliff.toString() ?? ''}</>,
 			},
 			{
 				header: 'Status',
@@ -90,18 +83,18 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 			},
 			{
 				header: 'Pro Rata Redemption Period',
-				subText: deal.proRataRedemptionPeriod,
+				subText: <>{deal?.proRataRedemptionPeriod.toString() ?? ''}</>,
 			},
 			{
 				header: 'Open Redemption Period',
-				subText: deal.openRedemptionPeriod,
+				subText: <>{deal?.openRedemptionPeriod.toString() ?? ''}</>,
 			},
 			{
 				header: 'Vesting Curve',
 				subText: 'linear',
 			},
 		],
-		[deal, underlyingDealTokenDecimals]
+		[deal]
 	);
 
 	const handleSubmit = useCallback(
@@ -114,6 +107,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 			txnType: TransactionType;
 			isMax: boolean;
 		}) => {
+			// console.log('value', value, 'txnType', txnType, 'isMax', isMax);
 			if (!walletAddress || !signer || !deal?.poolAddress || !purchaseTokenDecimals) return;
 			const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 			try {
@@ -154,7 +148,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 				setTxState(Transaction.FAILED);
 			}
 		},
-		[deal?.poolAddress, walletAddress, signer, monitorTransaction, purchaseTokenDecimals]
+		[
+			deal?.poolAddress,
+			setTxState,
+			walletAddress,
+			signer,
+			monitorTransaction,
+			purchaseTokenDecimals,
+		]
 	);
 
 	return (

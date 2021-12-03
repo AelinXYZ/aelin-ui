@@ -63,8 +63,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 
 			const tx = await poolContract!.createDeal(
 				// underlyingDealToken,
-				// using wETH as the kovan underlying deal token for tests
-				'0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+				// using DAI as the kovan underlying deal token for tests
+				'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
 				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
 				ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
 				vestingPeriodDuration,
