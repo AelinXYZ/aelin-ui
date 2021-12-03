@@ -1,4 +1,4 @@
-import { add, format } from 'date-fns';
+import { add, format, formatDistanceStrict } from 'date-fns';
 import { ONE_DAY_IN_SECS, ONE_HOUR_IN_SECS, ONE_MINUTE_IN_SECS } from 'constants/time';
 import { Status } from 'components/DealStatus';
 export const convertToSeconds = ({
@@ -39,4 +39,9 @@ export const calculateStatus = ({
 		return Status.SeekingDeal;
 	}
 	return poolStatus;
+};
+
+export const formatTimeDifference = (timeDiff: number) => {
+	const now = Date.now();
+	return formatDistanceStrict(now, now + timeDiff);
 };
