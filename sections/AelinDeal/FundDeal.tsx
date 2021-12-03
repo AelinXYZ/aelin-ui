@@ -14,6 +14,7 @@ import Grid from 'components/Grid';
 import { FlexDiv, StyledSpinner } from 'components/common';
 import Button from 'components/Button';
 import BaseModal from 'components/BaseModal';
+import { formatShortDateWithTime } from 'utils/time';
 
 interface FundDealProps {
 	token: string;
@@ -22,6 +23,7 @@ interface FundDealProps {
 	purchaseTokenTotalForDeal: any;
 	purchaseToken: string;
 	holder: string;
+	holderFundingExpiration: number;
 }
 
 const FundDeal: FC<FundDealProps> = ({
@@ -31,6 +33,7 @@ const FundDeal: FC<FundDealProps> = ({
 	purchaseToken,
 	purchaseTokenTotalForDeal,
 	holder,
+	holderFundingExpiration,
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
 	const { txState, setTxState } = TransactionData.useContainer();
@@ -80,17 +83,12 @@ const FundDeal: FC<FundDealProps> = ({
 		getDecimals();
 	}, [provider, walletAddress, token, dealAddress, purchaseToken]);
 
-	const depositAmount = useMemo(
-		() => ethers.utils.parseUnits(String(amount ?? 0), decimals ?? 0).toString(),
-		[amount, decimals]
-	);
-
 	const handleSubmit = useCallback(async () => {
-		if (!walletAddress || !signer || !dealAddress || !decimals) return;
+		if (!walletAddress || !signer || !dealAddress || !decimals || !amount) return;
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 		try {
 			const tx = await contract.depositUnderlying(
-				depositAmount,
+				amount.toString(),
 				// TODO update gasPrice and gasLimit
 				{
 					gasLimit: 1000000,
@@ -105,7 +103,7 @@ const FundDeal: FC<FundDealProps> = ({
 		} catch (e) {
 			setTxState(Transaction.FAILED);
 		}
-	}, [walletAddress, signer, monitorTransaction, dealAddress, decimals, setTxState, depositAmount]);
+	}, [walletAddress, signer, monitorTransaction, dealAddress, decimals, setTxState, amount]);
 
 	const handleApprove = useCallback(async () => {
 		if (!walletAddress || !signer || !dealAddress || !token) return;
@@ -113,7 +111,7 @@ const FundDeal: FC<FundDealProps> = ({
 		try {
 			const tx = await contract.approve(
 				dealAddress,
-				depositAmount,
+				amount.toString(),
 				// TODO update gasPrice and gasLimit
 				{
 					gasLimit: 1000000,
@@ -128,7 +126,12 @@ const FundDeal: FC<FundDealProps> = ({
 		} catch (e) {
 			setTxState(Transaction.FAILED);
 		}
-	}, [dealAddress, token, monitorTransaction, setTxState, walletAddress, signer, depositAmount]);
+	}, [dealAddress, token, monitorTransaction, setTxState, walletAddress, signer, amount]);
+
+	const visibleAmount = useMemo(
+		() => ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 0),
+		[amount, decimals]
+	);
 
 	const gridItems = useMemo(
 		() => [
@@ -138,11 +141,12 @@ const FundDeal: FC<FundDealProps> = ({
 			},
 			{
 				header: 'Amount to deposit',
-				subText: ethers.utils.formatUnits(depositAmount, decimals),
+				subText: visibleAmount,
 			},
 			{
 				header: 'Exchange rate',
-				subText: Number(depositAmount ?? 0) / Number((purchaseTokenTotalForDeal ?? 0).toString()),
+				subText:
+					Number(amount?.toString() ?? '0') / Number((purchaseTokenTotalForDeal ?? 0).toString()),
 			},
 			{
 				header: 'Purchase token',
@@ -162,24 +166,34 @@ const FundDeal: FC<FundDealProps> = ({
 				),
 			},
 			{
-				header: 'time left to fund',
+				header: 'Funding deadline',
+				subText:
+					holderFundingExpiration == null ? null : (
+						<>{formatShortDateWithTime(holderFundingExpiration)}</>
+					),
 			},
 		],
 		[
-			depositAmount,
+			visibleAmount,
+			holderFundingExpiration,
 			symbol,
 			token,
 			purchaseToken,
 			purchaseTokenSymbol,
 			purchaseTokenTotalForDeal,
-			decimals,
+			amount,
 			purchaseTokenDecimals,
 		]
 	);
 
 	const isAllowance = useMemo(
-		() => Number(allowance ?? 0) < Number((amount ?? 0).toString()),
-		[amount, allowance]
+		() => Number(allowance ?? 0) < Number((visibleAmount ?? 0).toString()),
+		[visibleAmount, allowance]
+	);
+
+	const isEnough = useMemo(
+		() => Number((balance ?? -1).toString()) >= Number(visibleAmount.toString()),
+		[balance, visibleAmount]
 	);
 
 	return (
@@ -189,14 +203,16 @@ const FundDeal: FC<FundDealProps> = ({
 				<Header>
 					{walletAddress != holder
 						? 'Only the holder funds the deal'
+						: !isEnough
+						? `Holder balance is only ${balance} but ${visibleAmount} is required to finalize the deal`
 						: isAllowance
 						? 'Approval is Required First'
 						: 'Finalize Deal'}
 				</Header>
 				<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
 					{isAllowance
-						? `Approve ${(amount ?? 0).toString()} ${symbol}`
-						: `Deposit ${(amount ?? 0).toString()} ${symbol}`}
+						? `Approve ${visibleAmount} ${symbol}`
+						: `Deposit ${visibleAmount} ${symbol}`}
 				</StyledButton>
 			</Container>
 			<BaseModal
@@ -214,7 +230,7 @@ const FundDeal: FC<FundDealProps> = ({
 				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
 				{isAllowance && txState === Transaction.PRESUBMIT ? (
 					<div>
-						<div>{`Please approve ${symbol} usage by the deal contract`}</div>
+						<div>{`Please approve ${visibleAmount} of ${symbol} usage by the deal contract`}</div>
 						<SubmitButton
 							variant={'text'}
 							onClick={(e) => {
@@ -228,7 +244,7 @@ const FundDeal: FC<FundDealProps> = ({
 				) : null}
 				{!isAllowance && txState === Transaction.PRESUBMIT ? (
 					<div>
-						<div>{`You are going to finalize the depositing ${depositAmount} of ${symbol}`}</div>
+						<div>{`You are going to finalize the depositing ${visibleAmount} of ${symbol}`}</div>
 						<SubmitButton
 							variant={'text'}
 							onClick={(e) => {
