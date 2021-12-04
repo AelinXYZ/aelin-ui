@@ -12,8 +12,6 @@ import Trash from "assets/svg/trash.svg";
 import { IWhiteListComponent, IWhitelist, IStyleProps } from './types';
 
 const WhiteList: FC<IWhiteListComponent> = ({ isOpen, setOpen, formik }) => {
-  if (!isOpen) return null;
-
   const clearRows = () => {
     const whitelist = [
       ...new Array(5).fill(
@@ -123,7 +121,7 @@ const WhiteList: FC<IWhiteListComponent> = ({ isOpen, setOpen, formik }) => {
           <StyledButton
             size='lg'
             variant='solid'
-            onClick={setOpen(!isOpen)}
+            onClick={() => setOpen(!isOpen)}
           >
             Save
           </StyledButton>

@@ -48,6 +48,7 @@ const Create: FC = () => {
 			poolCap,
 			whitelist,
 			sponsorFee,
+			poolPrivacy,
 			durationDays,
 			durationHours,
 			durationMinutes,
@@ -64,6 +65,8 @@ const Create: FC = () => {
 			purchaseDurationMinutes
 		);
 
+		const isPrivate = poolPrivacy === 'private';
+
 		const formattedWhiteList = whitelist.reduce((accum, curr) => {
 			const { address, amount } = curr;
 			
@@ -79,8 +82,13 @@ const Create: FC = () => {
 			return accum;
 		}, [] as { address: string, amount: BigNumber }[]);
 
-		const poolAddresses = formattedWhiteList.map(({ address }) => address);
-		const poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
+		const poolAddresses = isPrivate
+			? formattedWhiteList.map(({ address }) => address)
+			: [];
+			
+		const poolAddressesAmounts = isPrivate
+			? formattedWhiteList.map(({ amount }) => amount)
+			: [];
 
 		return {
 			...formik.values,
@@ -106,6 +114,7 @@ const Create: FC = () => {
 			// purchaseToken,
 			duration,
 			purchaseDuration,
+			poolPrivacy,
 			poolAddresses,
 			poolAddressesAmounts,
 		} = createVariablesToCreatePool();
