@@ -67,28 +67,28 @@ const Create: FC = () => {
 
 		const isPrivate = poolPrivacy === 'private';
 
-		const formattedWhiteList = whitelist.reduce((accum, curr) => {
-			const { address, amount } = curr;
-			
-			if (!address.length) return accum;
+		let poolAddresses: string[] = [];
+		let poolAddressesAmounts: BigNumber[] = [];
 
-			accum.push({
-				address,
-				amount: amount
-					? utils.parseEther(String(amount))
-					: ethers.constants.MaxUint256
-			});
+		if (isPrivate) {
+			const formattedWhiteList = whitelist.reduce((accum, curr) => {
+				const { address, amount } = curr;
+				
+				if (!address.length) return accum;
+	
+				accum.push({
+					address,
+					amount: amount
+						? utils.parseEther(String(amount))
+						: ethers.constants.MaxUint256
+				});
+	
+				return accum;
+			}, [] as { address: string, amount: BigNumber }[]);
 
-			return accum;
-		}, [] as { address: string, amount: BigNumber }[]);
-
-		const poolAddresses = isPrivate
-			? formattedWhiteList.map(({ address }) => address)
-			: [];
-			
-		const poolAddressesAmounts = isPrivate
-			? formattedWhiteList.map(({ amount }) => amount)
-			: [];
+			poolAddresses = formattedWhiteList.map(({ address }) => address);
+			poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
+		}
 
 		return {
 			...formik.values,
