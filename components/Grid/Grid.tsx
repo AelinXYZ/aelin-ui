@@ -1,10 +1,5 @@
 import { FC } from 'react';
-import { FormikErrors } from 'formik';
 import styled, { css } from 'styled-components';
-interface IWhitelist {
-	address: string;
-	amount: number | null;
-}
 
 export type GridItem = {
 	header: string | JSX.Element;
