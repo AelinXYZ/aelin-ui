@@ -71,18 +71,18 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 			},
 			{
 				header: 'Vesting Period',
-				subText: <>{deal?.vestingPeriod?.toString() ?? ''}</>,
+				subText: <>{formatTimeDifference(Number(deal?.vestingPeriod ?? 0))}</>,
 			},
 			{
 				header: 'Vesting Cliff',
-				subText: <>{deal?.vestingCliff?.toString() ?? ''}</>,
+				subText: <>{formatTimeDifference(Number(deal?.vestingCliff ?? 0))}</>,
 			},
 			{
 				header: 'Status',
 				subText: Status.DealOpen,
 			},
 			{
-				header: 'Pro Rata Redemption',
+				header: deal?.isDealFunded ? 'Pro Rata Redemption Ends' : 'Pro Rata Redemption',
 				subText: (
 					<>
 						{deal?.proRataRedemptionPeriodStart != null && deal?.proRataRedemptionPeriod != null
@@ -94,7 +94,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 				),
 			},
 			{
-				header: 'Open Redemption',
+				header: deal?.isDealFunded ? 'Open Redemption Ends' : 'Open Redemption',
 				subText: (
 					<>
 						{deal?.proRataRedemptionPeriodStart != null &&
@@ -104,7 +104,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 							? formatShortDateWithTime(
 									deal?.proRataRedemptionPeriodStart +
 										deal?.proRataRedemptionPeriod +
-										deal?.openRedemptionperiod
+										deal?.openRedemptionPeriod
 							  )
 							: deal?.openRedemptionPeriod > 0
 							? formatTimeDifference(deal?.openRedemptionPeriod)

@@ -107,6 +107,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const canWithdraw = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = canWithdraw && !isDealAccept;
+
 	return (
 		<Container>
 			{canWithdraw ? (

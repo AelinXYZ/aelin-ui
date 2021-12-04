@@ -355,18 +355,26 @@ export type ClaimedUnderlyingDealTokensFilter = {
     underlyingDealTokensClaimed_lte?: WeiSource | null;
     underlyingDealTokensClaimed_in?: WeiSource[];
     underlyingDealTokensClaimed_not_in?: WeiSource[];
+    dealAddress?: string | null;
+    dealAddress_not?: string | null;
+    dealAddress_in?: string[];
+    dealAddress_not_in?: string[];
+    dealAddress_contains?: string | null;
+    dealAddress_not_contains?: string | null;
 };
 export type ClaimedUnderlyingDealTokensResult = {
     id: string;
     underlyingDealTokenAddress: string;
     recipient: string;
     underlyingDealTokensClaimed: Wei;
+    dealAddress: string;
 };
 export type ClaimedUnderlyingDealTokensFields = {
     id: true;
     underlyingDealTokenAddress: true;
     recipient: true;
     underlyingDealTokensClaimed: true;
+    dealAddress: true;
 };
 export type ClaimedUnderlyingDealTokensArgs<K extends keyof ClaimedUnderlyingDealTokensResult> = {
     [Property in keyof Pick<ClaimedUnderlyingDealTokensFields, K>]: ClaimedUnderlyingDealTokensFields[Property];
@@ -390,6 +398,8 @@ export const useGetClaimedUnderlyingDealTokensById = <K extends keyof ClaimedUnd
             formattedObj["recipient"] = obj["recipient"];
         if (obj["underlyingDealTokensClaimed"])
             formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
+        if (obj["dealAddress"])
+            formattedObj["dealAddress"] = obj["dealAddress"];
         return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
     };
     const enabled = options && args;
@@ -432,6 +442,8 @@ export const useGetClaimedUnderlyingDealTokenss = <K extends keyof ClaimedUnderl
                     formattedObj["recipient"] = obj["recipient"];
                 if (obj["underlyingDealTokensClaimed"])
                     formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
+                if (obj["dealAddress"])
+                    formattedObj["dealAddress"] = obj["dealAddress"];
                 return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
             });
             results = results.concat(newResults);
