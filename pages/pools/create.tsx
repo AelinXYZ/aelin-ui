@@ -5,16 +5,19 @@ import { wei } from '@synthetixio/wei';
 
 import { PageLayout } from 'sections/Layout';
 import CreateForm from 'sections/shared/CreateForm';
-import { FlexDivRow } from 'components/common';
-import Connector from 'containers/Connector';
+
 import ContractsInterface from 'containers/ContractsInterface';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
-import TextInput from 'components/Input/TextInput';
-import Input from 'components/Input/Input';
+import Connector from 'containers/Connector';
+
 import Radio from 'components/Radio'
-import TokenDropdown from 'components/TokenDropdown';
+import Input from 'components/Input/Input';
 import WhiteList from 'components/WhiteList';
+import { FlexDivRow } from 'components/common';
+import TextInput from 'components/Input/TextInput';
+import TokenDropdown from 'components/TokenDropdown';
+import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 
 import { Transaction } from 'constants/transactions';
 import { Privacy } from 'constants/pool';
@@ -22,11 +25,15 @@ import { Privacy } from 'constants/pool';
 import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
-import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+
+import { erc20Abi } from 'contracts/erc20';
+
+
 
 const Create: FC = () => {
 	const [isPoolPrivacyModalOpen, setPoolPrivacyModalOpen] = useState(false);
-	const { walletAddress } = Connector.useContainer();
+
+	const { walletAddress, provider } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const {
@@ -40,7 +47,7 @@ const Create: FC = () => {
 		setTxState,
 	} = TransactionData.useContainer();
 
-	const createVariablesToCreatePool = () => {
+	const createVariablesToCreatePool = async () => {
 		const { formatBytes32String, parseEther } = utils;
 		const now = new Date();
 
@@ -54,10 +61,14 @@ const Create: FC = () => {
 			durationDays,
 			durationHours,
 			durationMinutes,
+			purchaseToken,
 			purchaseDurationDays,
 			purchaseDurationHours,
 			purchaseDurationMinutes,
 		} = formik.values;
+
+		const purchaseContract = new ethers.Contract(purchaseToken, erc20Abi, provider);
+		const purchaseTokenDecimals = await purchaseContract.decimals();
 
 		const duration = getDuration(now, durationDays, durationHours, durationMinutes);
 		const purchaseDuration = getDuration(
@@ -81,7 +92,7 @@ const Create: FC = () => {
 				accum.push({
 					address,
 					amount: amount
-						? utils.parseEther(String(amount))
+						? utils.parseUnits(String(amount), purchaseTokenDecimals)
 						: ethers.constants.MaxUint256
 				});
 	
@@ -119,7 +130,7 @@ const Create: FC = () => {
 			poolPrivacy,
 			poolAddresses,
 			poolAddressesAmounts,
-		} = createVariablesToCreatePool();
+		} = await createVariablesToCreatePool();
 
 		try {
 			const tx = await contracts.AelinPoolFactory!.createPool(
@@ -197,7 +208,7 @@ const Create: FC = () => {
 					purchaseDuration,
 					poolAddresses,
 					poolAddressesAmounts,
-				} = createVariablesToCreatePool();
+				} = await createVariablesToCreatePool();
 
 				let gasEstimate = wei(
 					await contracts.AelinPoolFactory!.estimateGas.createPool(
