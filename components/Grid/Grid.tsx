@@ -1,11 +1,16 @@
 import { FC } from 'react';
+import { FormikErrors } from 'formik';
 import styled, { css } from 'styled-components';
+interface IWhitelist {
+	address: string;
+	amount: number | null;
+}
 
 export type GridItem = {
 	header: string | JSX.Element;
 	subText: string | number | JSX.Element;
 	formField?: JSX.Element;
-	formError?: string | null | undefined;
+	formError?: string  | null | undefined | any[];
 };
 
 interface GridProps {

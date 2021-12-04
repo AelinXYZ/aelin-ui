@@ -1,7 +1,7 @@
 import { FC, useMemo, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
-import { utils } from 'ethers';
-import Wei, { wei } from '@synthetixio/wei';
+import { BigNumber, ethers, utils } from 'ethers';
+import { wei } from '@synthetixio/wei';
 
 import { PageLayout } from 'sections/Layout';
 import CreateForm from 'sections/shared/CreateForm';
@@ -12,16 +12,18 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
+import Radio from 'components/Radio'
 import TokenDropdown from 'components/TokenDropdown';
 import { Transaction } from 'constants/transactions';
+import WhiteList from 'components/WhiteList';
 
 import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { GasLimitEstimate } from 'constants/networks';
 
 const Create: FC = () => {
+	const [isPoolPrivacyModalOpen, setPoolPrivacyModalOpen] = useState(false);
 	const { walletAddress } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -44,6 +46,7 @@ const Create: FC = () => {
 			poolName,
 			poolSymbol,
 			poolCap,
+			whitelist,
 			sponsorFee,
 			durationDays,
 			durationHours,
@@ -61,6 +64,24 @@ const Create: FC = () => {
 			purchaseDurationMinutes
 		);
 
+		const formattedWhiteList = whitelist.reduce((accum, curr) => {
+			const { address, amount } = curr;
+			
+			if (!address.length) return accum;
+
+			accum.push({
+				address,
+				amount: amount
+					? utils.parseEther(String(amount))
+					: ethers.constants.MaxUint256
+			});
+
+			return accum;
+		}, [] as { address: string, amount: BigNumber }[]);
+
+		const poolAddresses = formattedWhiteList.map(({ address }) => address);
+		const poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
+
 		return {
 			...formik.values,
 			poolName: formatBytes32String(poolName),
@@ -69,6 +90,8 @@ const Create: FC = () => {
 			sponsorFee: sponsorFee.toString(),
 			duration,
 			purchaseDuration,
+			poolAddresses,
+			poolAddressesAmounts,
 		};
 	};
 
@@ -83,6 +106,8 @@ const Create: FC = () => {
 			// purchaseToken,
 			duration,
 			purchaseDuration,
+			poolAddresses,
+			poolAddressesAmounts,
 		} = createVariablesToCreatePool();
 
 		try {
@@ -97,8 +122,8 @@ const Create: FC = () => {
 				duration,
 				sponsorFee.toString(),
 				purchaseDuration,
-				[], // allow list
-				[], // allow list amounts
+				poolAddresses,
+				poolAddressesAmounts,
 				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
 			);
 			if (tx) {
@@ -130,6 +155,13 @@ const Create: FC = () => {
 			purchaseDurationDays: 0,
 			purchaseDurationHours: 0,
 			purchaseDurationMinutes: 0,
+			poolPrivacy: 'public',
+			whitelist: new Array(5).fill(
+				{
+					address: '',
+					amount: null,
+				},
+			)
 		},
 		validate: validateCreatePool,
 		onSubmit: handleSubmit,
@@ -152,6 +184,8 @@ const Create: FC = () => {
 					// purchaseToken,
 					duration,
 					purchaseDuration,
+					poolAddresses,
+					poolAddressesAmounts,
 				} = createVariablesToCreatePool();
 
 				let gasEstimate = wei(
@@ -166,8 +200,8 @@ const Create: FC = () => {
 						duration,
 						sponsorFee.toString(),
 						purchaseDuration,
-						[], // allow list
-						[] // allow list amounts
+						poolAddresses,
+						poolAddressesAmounts,
 					),
 					0
 				);
@@ -179,6 +213,12 @@ const Create: FC = () => {
 		};
 		getGasLimitEstimate();
 	}, [contracts, walletAddress, formik.values]);
+
+	useEffect(() => {
+		if (formik.values.poolPrivacy === 'private') {
+			setPoolPrivacyModalOpen(true);
+		}
+	}, [formik.values.poolPrivacy])
 
 	const gridItems = useMemo(
 		() => [
@@ -338,8 +378,32 @@ const Create: FC = () => {
 				formError: formik.errors.purchaseDurationMinutes,
 			},
 			{
-				header: '',
-				subText: '',
+				header: 'Pool Privacy',
+				subText: 'Visibility of the pool',
+				formField: (
+					<FlexDivRow>
+						<>
+							<div role="group" aria-labelledby="pool-privacy">
+								<Radio
+									name="poolPrivacy"
+									value="public"
+									formik={formik}
+								/>
+								<Radio
+									name="poolPrivacy"
+									value="private"
+									formik={formik}
+								/>
+							</div>
+							<WhiteList
+								formik={formik}
+								setOpen={setPoolPrivacyModalOpen}
+								isOpen={isPoolPrivacyModalOpen}
+							/>
+						</>
+					</FlexDivRow>
+				),
+				formError: formik.errors.whitelist,
 			},
 			{
 				header: '',
@@ -396,17 +460,19 @@ const Create: FC = () => {
 	);
 
 	return (
-		<PageLayout title={<>CreatePool</>} subtitle="">
-			<CreateForm
-				formik={formik}
-				gridItems={gridItems}
-				summaryItems={summaryItems}
-				txType={CreateTxType.CreatePool}
-				txState={txState}
-				txHash={txHash}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-			/>
+		<PageLayout title={<>Create Pool</>} subtitle="">
+			<>
+				<CreateForm
+					formik={formik}
+					gridItems={gridItems}
+					summaryItems={summaryItems}
+					txType={CreateTxType.CreatePool}
+					txState={txState}
+					txHash={txHash}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+				/>
+			</>
 		</PageLayout>
 	);
 };
