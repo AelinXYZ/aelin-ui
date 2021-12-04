@@ -9,10 +9,23 @@ import Button from "components/Button";
 
 import Trash from "assets/svg/trash.svg";
 
-import {IWhiteListComponent, IWhitelist, IStyleProps} from './types';
+import { IWhiteListComponent, IWhitelist, IStyleProps } from './types';
 
 const WhiteList: FC<IWhiteListComponent> = ({ isOpen, setOpen, formik }) => {
   if (!isOpen) return null;
+
+  const clearRows = () => {
+    const whitelist = [
+      ...new Array(5).fill(
+        {
+          address: '',
+          amount: null
+        }
+      )
+    ];
+
+    formik.setFieldValue("whitelist", whitelist);
+  };
 
   const handleAddRows = (): void => {
     const whitelist = [
@@ -41,7 +54,10 @@ const WhiteList: FC<IWhiteListComponent> = ({ isOpen, setOpen, formik }) => {
   return (
     <BaseModal
       isModalOpen={isOpen}
-      setIsModalOpen={(isOpen) => setOpen(isOpen)}
+      setIsModalOpen={(isOpen) => {
+        clearRows();
+        setOpen(isOpen);
+      }}
       title={`Whitelist Addresses`}
     >
       <StyledRow>
@@ -107,6 +123,7 @@ const WhiteList: FC<IWhiteListComponent> = ({ isOpen, setOpen, formik }) => {
           <StyledButton
             size='lg'
             variant='solid'
+            onClick={setOpen(!isOpen)}
           >
             Save
           </StyledButton>
