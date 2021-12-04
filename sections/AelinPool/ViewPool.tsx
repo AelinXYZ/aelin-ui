@@ -1,12 +1,18 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
 import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
+import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
 import { PageLayout } from 'sections/Layout';
 import useGetDealDetailsByIdQuery, {
 	parseDealDetails,
 } from 'queries/deals/useGetDealDetailsByIdQuery';
 import useGetDealByIdQuery, { parseDeal } from 'queries/deals/useGetDealByIdQuery';
+import useGetClaimedUnderlyingDealTokensQuery, {
+	parseClaimedResult,
+} from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
 
 import SectionTitle from 'sections/shared/SectionTitle';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
@@ -16,7 +22,7 @@ import { Status } from 'components/DealStatus';
 import Connector from 'containers/Connector';
 import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
 import VestingDeal from 'sections/AelinDeal/VestingDeal';
-import { ethers } from 'ethers';
+import FundDeal from '../AelinDeal/FundDeal';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -24,7 +30,8 @@ interface ViewPoolProps {
 }
 
 const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
-	const { walletAddress } = Connector.useContainer();
+	const { walletAddress, provider } = Connector.useContainer();
+	const [dealBalance, setDealBalance] = useState<number | null>(null);
 	const dealDetailsQuery = useGetDealDetailsByIdQuery({ id: pool?.dealAddress ?? '' });
 	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '' });
 
@@ -35,27 +42,38 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		return { ...dealInfo, ...dealDetails };
 	}, [dealQuery?.data, dealDetailsQuery?.data]);
 
-	const fakeDeal = useMemo(
-		() => ({
-			id: '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F6',
-			name: 'fake deal',
-			symbol: 'fkd',
-			poolAddress: '0x443Af0B28c62C092C9727F1Ee09c02CA627EB7F5',
-			underlyingDealToken: '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5',
-			underlyingDealTokenTotal: ethers.utils.parseEther('1'),
-			purchaseTokenTotalForDeal: ethers.utils.parseEther('0.5'),
-			vestingPeriod: 0,
-			vestingCliff: 0,
-			proRataRedemptionPeriod: 30 * 60 + 1,
-			openRedemptionPeriod: 30 * 60 + 1,
-		}),
-		[]
+	const claimedQuery = useGetClaimedUnderlyingDealTokensQuery({
+		dealAddress: deal?.id ?? '',
+		recipient: walletAddress ?? '',
+	});
+
+	const claims = useMemo(
+		() => (claimedQuery?.data ?? []).map(parseClaimedResult),
+		[claimedQuery?.data]
 	);
+
+	useEffect(() => {
+		async function getDealBalance() {
+			if (deal?.id != null && provider != null && walletAddress != null) {
+				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
+				const balance = await contract.balanceOf(walletAddress);
+				const decimals = await contract.decimals();
+				const formattedDealBalance = Number(ethers.utils.formatUnits(balance, decimals));
+				setDealBalance(formattedDealBalance);
+			}
+		}
+		getDealBalance();
+	}, [deal?.id, provider, walletAddress]);
+
+	const now = useMemo(() => Date.now(), []);
+
+	useEffect;
 
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />
-			{pool?.poolStatus === Status.SeekingDeal && walletAddress === pool?.sponsor ? (
+			{(pool?.poolStatus === Status.FundingDeal && (deal?.holderFundingExpiration ?? 0) <= now) ||
+			(pool?.poolStatus === Status.SeekingDeal && walletAddress === pool?.sponsor) ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
@@ -65,36 +83,43 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					<CreateDeal poolAddress={poolAddress} />
 				</SectionWrapper>
 			) : null}
-			{pool?.poolStatus === Status.FundingDeal &&
-			deal?.id != null &&
-			walletAddress === deal?.holder ? (
+			{pool?.poolStatus === Status.FundingDeal && deal?.id != null ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle address={deal.id} title="Fund Aelin Deal" />
+							<SectionTitle address={deal.id} title="Awaiting Holder Funding of Proposed Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<div>TODO funding section for the holder</div>
+					<FundDeal
+						holder={deal?.holder}
+						dealAddress={deal?.id}
+						purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
+						purchaseToken={pool.purchaseToken}
+						token={deal?.underlyingDealToken}
+						amount={deal?.underlyingDealTokenTotal}
+						holderFundingExpiration={deal?.holderFundingExpiration}
+					/>
 				</SectionWrapper>
 			) : null}
-			{/* pool?.poolStatus === Status.DealOpen && deal?.id != null ? ( */}
-			<SectionWrapper>
-				<ContentHeader>
-					<ContentTitle>
-						<SectionTitle address={fakeDeal.id} title="Aelin Deal" />
-					</ContentTitle>
-				</ContentHeader>
-				<AcceptOrRejectDeal pool={pool} deal={fakeDeal} />
-			</SectionWrapper>
-			{/*) : null} */}
-			{deal?.id != null ? (
+			{pool?.poolStatus === Status.DealOpen && deal?.id != null ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle address={deal?.id} title="Aelin Deal" />
+						</ContentTitle>
+					</ContentHeader>
+					<AcceptOrRejectDeal pool={pool} deal={deal} />
+				</SectionWrapper>
+			) : null}
+			{deal?.id != null &&
+			((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0) ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
 							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Vesting" />
 						</ContentTitle>
 					</ContentHeader>
-					<VestingDeal deal={deal} />
+					<VestingDeal deal={deal} dealBalance={dealBalance} claims={claims} />
 				</SectionWrapper>
 			) : null}
 		</PageLayout>

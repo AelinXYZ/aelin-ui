@@ -1,10 +1,9 @@
-import { FC, useMemo, useState, useEffect, useCallback } from 'react';
+import { FC, useMemo, useState, useCallback } from 'react';
 
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import SectionDetails from 'sections/shared/SectionDetails';
 import { ActionBoxType } from 'components/ActionBox';
-import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
 import { PoolCreatedResult } from 'subgraph';
 import { ethers } from 'ethers';
@@ -13,14 +12,14 @@ import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import usePoolBalances from 'hooks/usePoolBalances';
-import { formatNumber } from 'utils/numbers';
+import { formatShortDateWithTime } from 'utils/time';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
 }
 
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
-	const { walletAddress, provider, signer } = Connector.useContainer();
+	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [txState, setTxState] = useState(Transaction.PRESUBMIT);
@@ -48,7 +47,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Token Cap',
-				subText: pool?.purchaseTokenCap.toString() ?? '0',
+				subText: ethers.utils
+					.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+					.toString(),
 			},
 			{
 				header: 'Purchase Token',
@@ -65,7 +66,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: userPoolBalance,
 			},
 			{
-				header: 'Contributions',
+				header: 'Total Contributions',
 				subText: ethers.utils
 					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
 					.toString(),
@@ -76,11 +77,13 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Expiration',
-				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
+				subText: <>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>,
 			},
 			{
 				header: 'Pool Duration',
-				subText: <TimeLeft timeLeft={pool?.duration ?? 0} />,
+				subText: (
+					<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
+				),
 			},
 		],
 		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]
@@ -134,8 +137,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		}
 	}, [pool?.id, pool?.purchaseToken, monitorTransaction, walletAddress, signer]);
 
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
+
 	return (
 		<SectionDetails
+			isPurchaseExpired={isPurchaseExpired}
 			actionBoxType={ActionBoxType.FundPool}
 			gridItems={poolGridItems}
 			input={{

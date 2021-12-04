@@ -19,7 +19,6 @@ const Header: FC = () => {
 		return walletAddress != null
 			? [
 					...links,
-					{ label: 'My Pools', pathname: ROUTES.Pools.MyPools },
 					{
 						label: 'My Sponsorships',
 						pathname: ROUTES.Pools.Home,

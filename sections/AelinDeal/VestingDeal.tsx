@@ -1,56 +1,104 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useCallback } from 'react';
+import { ethers } from 'ethers';
 import { FlexDiv } from 'components/common';
+import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
 import ActionBox, { ActionBoxType } from 'components/ActionBox';
+import { formatTimeDifference } from 'utils/time';
+import TransactionData from 'containers/TransactionData';
+import Connector from 'containers/Connector';
+import TransactionNotifier from 'containers/TransactionNotifier';
+import { Transaction } from 'constants/transactions';
 
 interface VestingDealProps {
 	deal: any;
+	dealBalance: number | null;
+	claims: any[];
 }
 
-const VestingDeal: FC<VestingDealProps> = ({ deal }) => {
+const VestingDeal: FC<VestingDealProps> = ({ deal, dealBalance, claims }) => {
+	const { walletAddress, signer } = Connector.useContainer();
+	const { monitorTransaction } = TransactionNotifier.useContainer();
+	const { txState, setTxState } = TransactionData.useContainer();
 	const dealVestingGridItems = useMemo(
 		() => [
 			{
 				header: 'Name',
-				subText: deal.name,
+				subText: deal?.name ?? '',
 			},
 			{
 				header: 'Amount of Deal Tokens',
-				subText: 'some subText',
+				subText: dealBalance ?? '',
 			},
 			{
 				header: 'Exchange rate',
-				subText: deal.underlyingDealTokenTotal / deal.purchaseTokenTotalForDeal,
+				subText: deal.underlyingDealTokenTotal.div(deal.purchaseTokenTotalForDeal).toString(),
 			},
 			{
 				header: 'Underlying Deal Token',
-				subText: <TokenDisplay address={deal.underlyingDealToken} displayAddress={true} />,
+				subText: <TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={true} />,
 			},
 			{
 				header: 'Vesting Cliff',
-				subText: deal.vestingCliff,
+				subText: formatTimeDifference(Number(deal?.vestingCliff ?? 0)),
 			},
 			{
 				header: 'Vesting Period',
-				subText: deal.vestingPeriod,
+				subText: formatTimeDifference(Number(deal?.vestingPeriod ?? 0)),
 			},
 			{
 				header: 'Total Underlying Claimed',
-				subText: 'some subText',
+				subText: claims.reduce(
+					(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
+					0
+				),
 			},
 		],
-		[]
+		[
+			claims,
+			deal?.name,
+			dealBalance,
+			deal?.underlyingDealTokenTotal,
+			deal?.purchaseTokenTotalForDeal,
+			deal?.underlyingDealToken,
+			deal?.vestingCliff,
+			deal?.vestingPeriod,
+		]
 	);
+
+	// TODO show vesting history
+	const handleSubmit = useCallback(async () => {
+		if (!walletAddress || !signer || !deal.id) return;
+		const contract = new ethers.Contract(deal.id, dealAbi, signer);
+		try {
+			const tx = await contract.claim({
+				gasLimit: 1000000,
+			});
+			if (tx) {
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+				});
+			}
+		} catch (e) {
+			setTxState(Transaction.FAILED);
+		}
+	}, [walletAddress, signer, monitorTransaction, deal.id, setTxState]);
+
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
 			<ActionBox
 				actionBoxType={ActionBoxType.VestingDeal}
-				onSubmit={(value) => {
-					console.log('vest:', value);
+				onSubmit={() => handleSubmit()}
+				input={{
+					placeholder: '0',
+					label: '',
+					maxValue: dealBalance ?? 0,
 				}}
-				input={{ placeholder: '0', label: 'Vested: 2000 USDC', maxValue: 2000 }}
+				txState={txState}
+				setTxState={setTxState}
 			/>
 		</FlexDiv>
 	);

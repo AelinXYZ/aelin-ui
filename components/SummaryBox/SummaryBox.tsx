@@ -1,7 +1,6 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { FormikProps } from 'formik';
 
-import Spinner from 'assets/svg/loader.svg';
 import styled from 'styled-components';
 import BaseModal from 'components/BaseModal';
 import Button from 'components/Button';
@@ -77,14 +76,21 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			))}
 		</SummaryBoxGrid>
 	);
+
+	useEffect(() => {
+		if (txState !== Transaction.PRESUBMIT) setShowTxModal(false);
+	}, [txState]);
+
+	const isPurchaseButtonEnabled = isValid && txState !== Transaction.WAITING;
+
 	return (
 		<Container>
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>
 			{summaryBoxGrid}
 			<PurchaseButton
-				isValidForm={isValid}
+				isValidForm={isPurchaseButtonEnabled}
 				onClick={() => {
-					if (isValid) {
+					if (isPurchaseButtonEnabled) {
 						setShowTxModal(true);
 					}
 				}}
@@ -96,23 +102,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				setIsModalOpen={setShowTxModal}
 				isModalOpen={showTxModal}
 			>
-				{/* TODO create new components for the transaction feedback here */}
-				{txState === Transaction.WAITING ? (
-					<ModalContainer>
-						<StyledSpinner src={Spinner} />
-					</ModalContainer>
-				) : null}
-				{txState === Transaction.SUCCESS ? (
-					<ModalContainer>
-						Your transaction was completed successfully.
-						<div>
-							{link != null ? (
-								<StyledExternalLink href={link}>Click to see on Etherscan</StyledExternalLink>
-							) : null}
-						</div>
-					</ModalContainer>
-				) : null}
-				{txType === CreateTxType.CreatePool && txState === Transaction.PRESUBMIT ? (
+				{txType === CreateTxType.CreatePool ? (
 					<ModalContainer>
 						{summaryBoxGrid}
 						<hr />
@@ -126,7 +116,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 						</SubmitButton>
 					</ModalContainer>
 				) : null}
-				{txType === CreateTxType.CreateDeal && txState === Transaction.PRESUBMIT ? (
+				{txType === CreateTxType.CreateDeal ? (
 					<ModalContainer>
 						{summaryBoxGrid}
 						<hr />

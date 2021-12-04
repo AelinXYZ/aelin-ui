@@ -126,8 +126,8 @@ const Create: FC = () => {
 				poolAddressesAmounts,
 				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
 			);
+			setTxState(Transaction.WAITING);
 			if (tx) {
-				setTxState(Transaction.WAITING);
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {

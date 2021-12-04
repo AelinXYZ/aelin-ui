@@ -12,6 +12,7 @@ import ContractsInterface from 'containers/ContractsInterface';
 import BlockExplorer from 'containers/BlockExplorer';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
+import NotificationContainer from 'components/NotificationContainer';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -26,6 +27,7 @@ const InnerApp: FC<AppProps> = ({ Component, pageProps }) => {
 		<GlobalLayout>
 			<AppLayout>
 				<Component {...pageProps} />
+				<NotificationContainer />
 			</AppLayout>
 			<div id="modal-root"></div>
 		</GlobalLayout>

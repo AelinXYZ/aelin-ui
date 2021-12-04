@@ -186,6 +186,146 @@ export const useGetAcceptDeals = <K extends keyof AcceptDealResult>(url: string,
         enabled: !!options && !!args,
     });
 };
+export type AelinTokenFilter = {
+    id?: string | null;
+    id_not?: string | null;
+    id_gt?: string | null;
+    id_lt?: string | null;
+    id_gte?: string | null;
+    id_lte?: string | null;
+    id_in?: string[];
+    id_not_in?: string[];
+    name?: string | null;
+    name_not?: string | null;
+    name_gt?: string | null;
+    name_lt?: string | null;
+    name_gte?: string | null;
+    name_lte?: string | null;
+    name_in?: string[];
+    name_not_in?: string[];
+    name_contains?: string | null;
+    name_not_contains?: string | null;
+    name_starts_with?: string | null;
+    name_not_starts_with?: string | null;
+    name_ends_with?: string | null;
+    name_not_ends_with?: string | null;
+    symbol?: string | null;
+    symbol_not?: string | null;
+    symbol_gt?: string | null;
+    symbol_lt?: string | null;
+    symbol_gte?: string | null;
+    symbol_lte?: string | null;
+    symbol_in?: string[];
+    symbol_not_in?: string[];
+    symbol_contains?: string | null;
+    symbol_not_contains?: string | null;
+    symbol_starts_with?: string | null;
+    symbol_not_starts_with?: string | null;
+    symbol_ends_with?: string | null;
+    symbol_not_ends_with?: string | null;
+    decimals?: number | null;
+    decimals_not?: number | null;
+    decimals_gt?: number | null;
+    decimals_lt?: number | null;
+    decimals_gte?: number | null;
+    decimals_lte?: number | null;
+    decimals_in?: number[];
+    decimals_not_in?: number[];
+};
+export type AelinTokenResult = {
+    id: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+};
+export type AelinTokenFields = {
+    id: true;
+    name: true;
+    symbol: true;
+    decimals: true;
+};
+export type AelinTokenArgs<K extends keyof AelinTokenResult> = {
+    [Property in keyof Pick<AelinTokenFields, K>]: AelinTokenFields[Property];
+};
+export const useGetAelinTokenById = <K extends keyof AelinTokenResult>(url: string, options?: SingleQueryOptions, args?: AelinTokenArgs<K>, queryOptions: UseQueryOptions<Pick<AelinTokenResult, K>> = {}) => {
+    const func = async function <K extends keyof AelinTokenResult>(url: string, options: SingleQueryOptions, args: AelinTokenArgs<K>): Promise<Pick<AelinTokenResult, K>> {
+        const res = await axios.post(url, {
+            query: generateGql("aelinToken", options, args)
+        });
+        const r = res.data as any;
+        if (r.errors && r.errors.length) {
+            throw new Error(r.errors[0].message);
+        }
+        const obj = (r.data[Object.keys(r.data)[0]] as any);
+        const formattedObj: any = {};
+        if (obj["id"])
+            formattedObj["id"] = obj["id"];
+        if (obj["name"])
+            formattedObj["name"] = obj["name"];
+        if (obj["symbol"])
+            formattedObj["symbol"] = obj["symbol"];
+        if (obj["decimals"])
+            formattedObj["decimals"] = obj["decimals"];
+        return formattedObj as Pick<AelinTokenResult, K>;
+    };
+    const enabled = options && args;
+    return useQuery(["codegen-graphql", enabled ? generateGql("AelinToken", options, args) : null], async () => func(url, options!, args!), {
+        ...queryOptions,
+        enabled: !!options && !!args,
+    });
+};
+export const useGetAelinTokens = <K extends keyof AelinTokenResult>(url: string, options?: MultiQueryOptions<AelinTokenFilter, AelinTokenResult>, args?: AelinTokenArgs<K>, queryOptions: UseQueryOptions<Pick<AelinTokenResult, K>[]> = {}) => {
+    const func = async function <K extends keyof AelinTokenResult>(url: string, options: MultiQueryOptions<AelinTokenFilter, AelinTokenResult>, args: AelinTokenArgs<K>): Promise<Pick<AelinTokenResult, K>[]> {
+        const paginatedOptions: Partial<MultiQueryOptions<AelinTokenFilter, AelinTokenResult>> = { ...options };
+        let paginationKey: keyof AelinTokenFilter | null = null;
+        let paginationValue = "";
+        if (options.first && options.first > MAX_PAGE) {
+            paginatedOptions.first = MAX_PAGE;
+            paginatedOptions.orderBy = options.orderBy || "id";
+            paginatedOptions.orderDirection = options.orderDirection || "asc";
+            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof AelinTokenFilter;
+            paginatedOptions.where = { ...options.where };
+        }
+        let results: Pick<AelinTokenResult, K>[] = [];
+        do {
+            if (paginationKey && paginationValue)
+                paginatedOptions.where![paginationKey] = paginationValue as any;
+            const res = await axios.post(url, {
+                query: generateGql("aelinTokens", paginatedOptions, args)
+            });
+            const r = res.data as any;
+            if (r.errors && r.errors.length) {
+                throw new Error(r.errors[0].message);
+            }
+            const rawResults = r.data[Object.keys(r.data)[0]] as any[];
+            const newResults = rawResults.map((obj) => {
+                const formattedObj: any = {};
+                if (obj["id"])
+                    formattedObj["id"] = obj["id"];
+                if (obj["name"])
+                    formattedObj["name"] = obj["name"];
+                if (obj["symbol"])
+                    formattedObj["symbol"] = obj["symbol"];
+                if (obj["decimals"])
+                    formattedObj["decimals"] = obj["decimals"];
+                return formattedObj as Pick<AelinTokenResult, K>;
+            });
+            results = results.concat(newResults);
+            if (newResults.length < 1000) {
+                break;
+            }
+            if (paginationKey) {
+                paginationValue = rawResults[rawResults.length - 1][paginatedOptions.orderBy!];
+            }
+        } while (paginationKey && (options.first && results.length < options.first));
+        return options.first ? results.slice(0, options.first) : results;
+    };
+    const enabled = options && args;
+    return useQuery(["codegen-graphql", enabled ? generateGql("AelinTokens", options, args) : null], async () => func(url, options!, args!), {
+        ...queryOptions,
+        enabled: !!options && !!args,
+    });
+};
 export type ClaimedUnderlyingDealTokensFilter = {
     id?: string | null;
     id_not?: string | null;
@@ -215,18 +355,26 @@ export type ClaimedUnderlyingDealTokensFilter = {
     underlyingDealTokensClaimed_lte?: WeiSource | null;
     underlyingDealTokensClaimed_in?: WeiSource[];
     underlyingDealTokensClaimed_not_in?: WeiSource[];
+    dealAddress?: string | null;
+    dealAddress_not?: string | null;
+    dealAddress_in?: string[];
+    dealAddress_not_in?: string[];
+    dealAddress_contains?: string | null;
+    dealAddress_not_contains?: string | null;
 };
 export type ClaimedUnderlyingDealTokensResult = {
     id: string;
     underlyingDealTokenAddress: string;
     recipient: string;
     underlyingDealTokensClaimed: Wei;
+    dealAddress: string;
 };
 export type ClaimedUnderlyingDealTokensFields = {
     id: true;
     underlyingDealTokenAddress: true;
     recipient: true;
     underlyingDealTokensClaimed: true;
+    dealAddress: true;
 };
 export type ClaimedUnderlyingDealTokensArgs<K extends keyof ClaimedUnderlyingDealTokensResult> = {
     [Property in keyof Pick<ClaimedUnderlyingDealTokensFields, K>]: ClaimedUnderlyingDealTokensFields[Property];
@@ -250,6 +398,8 @@ export const useGetClaimedUnderlyingDealTokensById = <K extends keyof ClaimedUnd
             formattedObj["recipient"] = obj["recipient"];
         if (obj["underlyingDealTokensClaimed"])
             formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
+        if (obj["dealAddress"])
+            formattedObj["dealAddress"] = obj["dealAddress"];
         return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
     };
     const enabled = options && args;
@@ -292,6 +442,8 @@ export const useGetClaimedUnderlyingDealTokenss = <K extends keyof ClaimedUnderl
                     formattedObj["recipient"] = obj["recipient"];
                 if (obj["underlyingDealTokensClaimed"])
                     formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
+                if (obj["dealAddress"])
+                    formattedObj["dealAddress"] = obj["dealAddress"];
                 return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
             });
             results = results.concat(newResults);
@@ -515,6 +667,14 @@ export type DealDetailsFilter = {
     proRataRedemptionPeriod_lte?: WeiSource | null;
     proRataRedemptionPeriod_in?: WeiSource[];
     proRataRedemptionPeriod_not_in?: WeiSource[];
+    proRataRedemptionPeriodStart?: WeiSource | null;
+    proRataRedemptionPeriodStart_not?: WeiSource | null;
+    proRataRedemptionPeriodStart_gt?: WeiSource | null;
+    proRataRedemptionPeriodStart_lt?: WeiSource | null;
+    proRataRedemptionPeriodStart_gte?: WeiSource | null;
+    proRataRedemptionPeriodStart_lte?: WeiSource | null;
+    proRataRedemptionPeriodStart_in?: WeiSource[];
+    proRataRedemptionPeriodStart_not_in?: WeiSource[];
     openRedemptionPeriod?: WeiSource | null;
     openRedemptionPeriod_not?: WeiSource | null;
     openRedemptionPeriod_gt?: WeiSource | null;
@@ -529,6 +689,10 @@ export type DealDetailsFilter = {
     holder_not_in?: string[];
     holder_contains?: string | null;
     holder_not_contains?: string | null;
+    isDealFunded?: boolean | null;
+    isDealFunded_not?: boolean | null;
+    isDealFunded_in?: boolean[];
+    isDealFunded_not_in?: boolean[];
     holderFundingExpiration?: WeiSource | null;
     holderFundingExpiration_not?: WeiSource | null;
     holderFundingExpiration_gt?: WeiSource | null;
@@ -554,8 +718,10 @@ export type DealDetailsResult = {
     vestingPeriod: Wei;
     vestingCliff: Wei;
     proRataRedemptionPeriod: Wei;
+    proRataRedemptionPeriodStart: Wei | null;
     openRedemptionPeriod: Wei;
     holder: string;
+    isDealFunded: boolean;
     holderFundingExpiration: Wei;
     holderFundingDuration: Wei;
 };
@@ -567,8 +733,10 @@ export type DealDetailsFields = {
     vestingPeriod: true;
     vestingCliff: true;
     proRataRedemptionPeriod: true;
+    proRataRedemptionPeriodStart: true;
     openRedemptionPeriod: true;
     holder: true;
+    isDealFunded: true;
     holderFundingExpiration: true;
     holderFundingDuration: true;
 };
@@ -600,10 +768,14 @@ export const useGetDealDetailsById = <K extends keyof DealDetailsResult>(url: st
             formattedObj["vestingCliff"] = wei(obj["vestingCliff"], 0);
         if (obj["proRataRedemptionPeriod"])
             formattedObj["proRataRedemptionPeriod"] = wei(obj["proRataRedemptionPeriod"], 0);
+        if (obj["proRataRedemptionPeriodStart"])
+            formattedObj["proRataRedemptionPeriodStart"] = wei(obj["proRataRedemptionPeriodStart"], 0);
         if (obj["openRedemptionPeriod"])
             formattedObj["openRedemptionPeriod"] = wei(obj["openRedemptionPeriod"], 0);
         if (obj["holder"])
             formattedObj["holder"] = obj["holder"];
+        if (obj["isDealFunded"])
+            formattedObj["isDealFunded"] = obj["isDealFunded"];
         if (obj["holderFundingExpiration"])
             formattedObj["holderFundingExpiration"] = wei(obj["holderFundingExpiration"], 0);
         if (obj["holderFundingDuration"])
@@ -656,10 +828,14 @@ export const useGetDealDetailss = <K extends keyof DealDetailsResult>(url: strin
                     formattedObj["vestingCliff"] = wei(obj["vestingCliff"], 0);
                 if (obj["proRataRedemptionPeriod"])
                     formattedObj["proRataRedemptionPeriod"] = wei(obj["proRataRedemptionPeriod"], 0);
+                if (obj["proRataRedemptionPeriodStart"])
+                    formattedObj["proRataRedemptionPeriodStart"] = wei(obj["proRataRedemptionPeriodStart"], 0);
                 if (obj["openRedemptionPeriod"])
                     formattedObj["openRedemptionPeriod"] = wei(obj["openRedemptionPeriod"], 0);
                 if (obj["holder"])
                     formattedObj["holder"] = obj["holder"];
+                if (obj["isDealFunded"])
+                    formattedObj["isDealFunded"] = obj["isDealFunded"];
                 if (obj["holderFundingExpiration"])
                     formattedObj["holderFundingExpiration"] = wei(obj["holderFundingExpiration"], 0);
                 if (obj["holderFundingDuration"])
@@ -1061,6 +1237,14 @@ export type PoolCreatedFilter = {
     purchaseExpiry_lte?: WeiSource | null;
     purchaseExpiry_in?: WeiSource[];
     purchaseExpiry_not_in?: WeiSource[];
+    purchaseTokenDecimals?: number | null;
+    purchaseTokenDecimals_not?: number | null;
+    purchaseTokenDecimals_gt?: number | null;
+    purchaseTokenDecimals_lt?: number | null;
+    purchaseTokenDecimals_gte?: number | null;
+    purchaseTokenDecimals_lte?: number | null;
+    purchaseTokenDecimals_in?: number[];
+    purchaseTokenDecimals_not_in?: number[];
     timestamp?: WeiSource | null;
     timestamp_not?: WeiSource | null;
     timestamp_gt?: WeiSource | null;
@@ -1103,6 +1287,7 @@ export type PoolCreatedResult = {
     sponsor: string;
     purchaseDuration: Wei;
     purchaseExpiry: Wei;
+    purchaseTokenDecimals: number | null;
     timestamp: Wei;
     hasAllowList: boolean;
     poolStatus: Partial<PoolStatusResult>;
@@ -1120,6 +1305,7 @@ export type PoolCreatedFields = {
     sponsor: true;
     purchaseDuration: true;
     purchaseExpiry: true;
+    purchaseTokenDecimals: true;
     timestamp: true;
     hasAllowList: true;
     poolStatus: PoolStatusFields;
@@ -1160,6 +1346,8 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: st
             formattedObj["purchaseDuration"] = wei(obj["purchaseDuration"], 0);
         if (obj["purchaseExpiry"])
             formattedObj["purchaseExpiry"] = wei(obj["purchaseExpiry"], 0);
+        if (obj["purchaseTokenDecimals"])
+            formattedObj["purchaseTokenDecimals"] = obj["purchaseTokenDecimals"];
         if (obj["timestamp"])
             formattedObj["timestamp"] = wei(obj["timestamp"], 0);
         if (obj["hasAllowList"])
@@ -1224,6 +1412,8 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: strin
                     formattedObj["purchaseDuration"] = wei(obj["purchaseDuration"], 0);
                 if (obj["purchaseExpiry"])
                     formattedObj["purchaseExpiry"] = wei(obj["purchaseExpiry"], 0);
+                if (obj["purchaseTokenDecimals"])
+                    formattedObj["purchaseTokenDecimals"] = obj["purchaseTokenDecimals"];
                 if (obj["timestamp"])
                     formattedObj["timestamp"] = wei(obj["timestamp"], 0);
                 if (obj["hasAllowList"])
@@ -1281,18 +1471,28 @@ export type PurchasePoolTokenFilter = {
     purchaseTokenAmount_lte?: WeiSource | null;
     purchaseTokenAmount_in?: WeiSource[];
     purchaseTokenAmount_not_in?: WeiSource[];
+    timestamp?: WeiSource | null;
+    timestamp_not?: WeiSource | null;
+    timestamp_gt?: WeiSource | null;
+    timestamp_lt?: WeiSource | null;
+    timestamp_gte?: WeiSource | null;
+    timestamp_lte?: WeiSource | null;
+    timestamp_in?: WeiSource[];
+    timestamp_not_in?: WeiSource[];
 };
 export type PurchasePoolTokenResult = {
     id: string;
     purchaser: string;
     poolAddress: string;
     purchaseTokenAmount: Wei;
+    timestamp: Wei;
 };
 export type PurchasePoolTokenFields = {
     id: true;
     purchaser: true;
     poolAddress: true;
     purchaseTokenAmount: true;
+    timestamp: true;
 };
 export type PurchasePoolTokenArgs<K extends keyof PurchasePoolTokenResult> = {
     [Property in keyof Pick<PurchasePoolTokenFields, K>]: PurchasePoolTokenFields[Property];
@@ -1316,6 +1516,8 @@ export const useGetPurchasePoolTokenById = <K extends keyof PurchasePoolTokenRes
             formattedObj["poolAddress"] = obj["poolAddress"];
         if (obj["purchaseTokenAmount"])
             formattedObj["purchaseTokenAmount"] = wei(obj["purchaseTokenAmount"], 0);
+        if (obj["timestamp"])
+            formattedObj["timestamp"] = wei(obj["timestamp"], 0);
         return formattedObj as Pick<PurchasePoolTokenResult, K>;
     };
     const enabled = options && args;
@@ -1358,6 +1560,8 @@ export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult
                     formattedObj["poolAddress"] = obj["poolAddress"];
                 if (obj["purchaseTokenAmount"])
                     formattedObj["purchaseTokenAmount"] = wei(obj["purchaseTokenAmount"], 0);
+                if (obj["timestamp"])
+                    formattedObj["timestamp"] = wei(obj["timestamp"], 0);
                 return formattedObj as Pick<PurchasePoolTokenResult, K>;
             });
             results = results.concat(newResults);
