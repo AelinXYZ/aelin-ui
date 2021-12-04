@@ -1,6 +1,8 @@
-import { ethers } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { ONE_YEAR_IN_SECS, ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants/time';
 import { convertToSeconds } from 'utils/time';
+
+import { Privacy } from 'constants/pool';
 
 export interface CreatePoolValues {
 	purchaseToken: string;
@@ -14,6 +16,8 @@ export interface CreatePoolValues {
 	purchaseDurationDays: number;
 	purchaseDurationHours: number;
 	purchaseDurationMinutes: number;
+	poolPrivacy: Privacy;
+	whitelist: { address: string, amount: number | null}[];
 }
 
 const validateCreatePool = (values: CreatePoolValues) => {
@@ -71,6 +75,16 @@ const validateCreatePool = (values: CreatePoolValues) => {
 		} else if (purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 30) {
 			errors.purchaseDurationMinutes = 'Min purchase expiry is 30 mins';
 		}
+	}
+
+	if (values.poolPrivacy === Privacy.PRIVATE) {
+		const hasError = values.whitelist.some((row) => {
+			if (!row.address.length) return false;
+			
+			return !utils.isAddress(row.address);
+		});
+
+		if (hasError) errors.whitelist = "Address format not valid";
 	}
 
 	return errors;

@@ -5,7 +5,7 @@ export type GridItem = {
 	header: string | JSX.Element;
 	subText: string | number | JSX.Element;
 	formField?: JSX.Element;
-	formError?: string | null | undefined;
+	formError?: string  | null | undefined | any[];
 };
 
 interface GridProps {

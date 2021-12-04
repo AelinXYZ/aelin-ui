@@ -1,28 +1,39 @@
 import { FC, useMemo, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
-import { utils } from 'ethers';
-import Wei, { wei } from '@synthetixio/wei';
+import { BigNumber, ethers, utils } from 'ethers';
+import { wei } from '@synthetixio/wei';
 
 import { PageLayout } from 'sections/Layout';
 import CreateForm from 'sections/shared/CreateForm';
-import { FlexDivRow } from 'components/common';
-import Connector from 'containers/Connector';
+
 import ContractsInterface from 'containers/ContractsInterface';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
-import TextInput from 'components/Input/TextInput';
+import Connector from 'containers/Connector';
+
+import Radio from 'components/Radio'
 import Input from 'components/Input/Input';
+import WhiteList from 'components/WhiteList';
+import { FlexDivRow } from 'components/common';
+import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
+import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+
 import { Transaction } from 'constants/transactions';
+import { Privacy } from 'constants/pool';
 
 import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
-import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { GasLimitEstimate } from 'constants/networks';
+
+import { erc20Abi } from 'contracts/erc20';
+
+
 
 const Create: FC = () => {
-	const { walletAddress } = Connector.useContainer();
+	const [isPoolPrivacyModalOpen, setPoolPrivacyModalOpen] = useState(false);
+
+	const { walletAddress, provider } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const {
@@ -36,7 +47,7 @@ const Create: FC = () => {
 		setTxState,
 	} = TransactionData.useContainer();
 
-	const createVariablesToCreatePool = () => {
+	const createVariablesToCreatePool = async () => {
 		const { formatBytes32String, parseEther } = utils;
 		const now = new Date();
 
@@ -44,14 +55,20 @@ const Create: FC = () => {
 			poolName,
 			poolSymbol,
 			poolCap,
+			whitelist,
 			sponsorFee,
+			poolPrivacy,
 			durationDays,
 			durationHours,
 			durationMinutes,
+			purchaseToken,
 			purchaseDurationDays,
 			purchaseDurationHours,
 			purchaseDurationMinutes,
 		} = formik.values;
+
+		const purchaseContract = new ethers.Contract(purchaseToken, erc20Abi, provider);
+		const purchaseTokenDecimals = await purchaseContract.decimals();
 
 		const duration = getDuration(now, durationDays, durationHours, durationMinutes);
 		const purchaseDuration = getDuration(
@@ -61,6 +78,31 @@ const Create: FC = () => {
 			purchaseDurationMinutes
 		);
 
+		const isPrivate = poolPrivacy === Privacy.PRIVATE;
+
+		let poolAddresses: string[] = [];
+		let poolAddressesAmounts: BigNumber[] = [];
+
+		if (isPrivate) {
+			const formattedWhiteList = whitelist.reduce((accum, curr) => {
+				const { address, amount } = curr;
+				
+				if (!address.length) return accum;
+	
+				accum.push({
+					address,
+					amount: amount
+						? utils.parseUnits(String(amount), purchaseTokenDecimals)
+						: ethers.constants.MaxUint256
+				});
+	
+				return accum;
+			}, [] as { address: string, amount: BigNumber }[]);
+
+			poolAddresses = formattedWhiteList.map(({ address }) => address);
+			poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
+		}
+
 		return {
 			...formik.values,
 			poolName: formatBytes32String(poolName),
@@ -69,6 +111,8 @@ const Create: FC = () => {
 			sponsorFee: sponsorFee.toString(),
 			duration,
 			purchaseDuration,
+			poolAddresses,
+			poolAddressesAmounts,
 		};
 	};
 
@@ -83,7 +127,10 @@ const Create: FC = () => {
 			// purchaseToken,
 			duration,
 			purchaseDuration,
-		} = createVariablesToCreatePool();
+			poolPrivacy,
+			poolAddresses,
+			poolAddressesAmounts,
+		} = await createVariablesToCreatePool();
 
 		try {
 			const tx = await contracts.AelinPoolFactory!.createPool(
@@ -97,8 +144,8 @@ const Create: FC = () => {
 				duration,
 				sponsorFee.toString(),
 				purchaseDuration,
-				[], // allow list
-				[], // allow list amounts
+				poolAddresses,
+				poolAddressesAmounts,
 				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
 			);
 			setTxState(Transaction.WAITING);
@@ -130,6 +177,13 @@ const Create: FC = () => {
 			purchaseDurationDays: 0,
 			purchaseDurationHours: 0,
 			purchaseDurationMinutes: 0,
+			poolPrivacy: Privacy.PUBLIC,
+			whitelist: new Array(5).fill(
+				{
+					address: '',
+					amount: null,
+				},
+			)
 		},
 		validate: validateCreatePool,
 		onSubmit: handleSubmit,
@@ -152,7 +206,9 @@ const Create: FC = () => {
 					// purchaseToken,
 					duration,
 					purchaseDuration,
-				} = createVariablesToCreatePool();
+					poolAddresses,
+					poolAddressesAmounts,
+				} = await createVariablesToCreatePool();
 
 				let gasEstimate = wei(
 					await contracts.AelinPoolFactory!.estimateGas.createPool(
@@ -166,8 +222,8 @@ const Create: FC = () => {
 						duration,
 						sponsorFee.toString(),
 						purchaseDuration,
-						[], // allow list
-						[] // allow list amounts
+						poolAddresses,
+						poolAddressesAmounts,
 					),
 					0
 				);
@@ -179,6 +235,12 @@ const Create: FC = () => {
 		};
 		getGasLimitEstimate();
 	}, [contracts, walletAddress, formik.values]);
+
+	useEffect(() => {
+		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
+			setPoolPrivacyModalOpen(true);
+		}
+	}, [formik.values.poolPrivacy])
 
 	const gridItems = useMemo(
 		() => [
@@ -338,8 +400,32 @@ const Create: FC = () => {
 				formError: formik.errors.purchaseDurationMinutes,
 			},
 			{
-				header: '',
-				subText: '',
+				header: 'Pool Privacy',
+				subText: 'Visibility of the pool',
+				formField: (
+					<FlexDivRow>
+						<>
+							<div role="group" aria-labelledby="pool-privacy">
+								<Radio
+									name="poolPrivacy"
+									value={Privacy.PUBLIC}
+									formik={formik}
+								/>
+								<Radio
+									name="poolPrivacy"
+									value={Privacy.PRIVATE}
+									formik={formik}
+								/>
+							</div>
+							<WhiteList
+								formik={formik}
+								setOpen={setPoolPrivacyModalOpen}
+								isOpen={isPoolPrivacyModalOpen}
+							/>
+						</>
+					</FlexDivRow>
+				),
+				formError: formik.errors.whitelist,
 			},
 			{
 				header: '',
@@ -396,7 +482,7 @@ const Create: FC = () => {
 	);
 
 	return (
-		<PageLayout title={<>CreatePool</>} subtitle="">
+		<PageLayout title={<>Create Pool</>} subtitle="">
 			<CreateForm
 				formik={formik}
 				gridItems={gridItems}
