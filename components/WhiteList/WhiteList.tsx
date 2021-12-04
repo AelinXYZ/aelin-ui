@@ -72,7 +72,7 @@ const WhiteList: FC<IWhiteListComponent> = ({ isOpen, setOpen, formik }) => {
         
         formik.values.whitelist.map((_: string, index: number) => {
           return (
-            <StyledRow>
+            <StyledRow key={`row-${index}`}>
               <StyledColumn>
                 <Input
                   type="text"
