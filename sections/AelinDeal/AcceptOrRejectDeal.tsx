@@ -11,8 +11,8 @@ import TransactionData from 'containers/TransactionData';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import usePoolBalances from 'hooks/usePoolBalances';
 import { PoolCreatedResult } from 'subgraph';
-import { formatNumber } from 'utils/numbers';
 import { getERC20Data } from 'utils/crypto';
+import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';
 
 interface AcceptOrRejectDealProps {
 	deal: any;
@@ -71,23 +71,46 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 			},
 			{
 				header: 'Vesting Period',
-				subText: <>{deal?.vestingPeriod.toString() ?? ''}</>,
+				subText: <>{formatTimeDifference(Number(deal?.vestingPeriod ?? 0))}</>,
 			},
 			{
 				header: 'Vesting Cliff',
-				subText: <>{deal?.vestingCliff.toString() ?? ''}</>,
+				subText: <>{formatTimeDifference(Number(deal?.vestingCliff ?? 0))}</>,
 			},
 			{
 				header: 'Status',
 				subText: Status.DealOpen,
 			},
 			{
-				header: 'Pro Rata Redemption Period',
-				subText: <>{deal?.proRataRedemptionPeriod.toString() ?? ''}</>,
+				header: deal?.isDealFunded ? 'Pro Rata Redemption Ends' : 'Pro Rata Redemption',
+				subText: (
+					<>
+						{deal?.proRataRedemptionPeriodStart != null && deal?.proRataRedemptionPeriod != null
+							? formatShortDateWithTime(
+									deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod
+							  )
+							: formatTimeDifference(deal?.proRataRedemptionPeriod ?? 0)}
+					</>
+				),
 			},
 			{
-				header: 'Open Redemption Period',
-				subText: <>{deal?.openRedemptionPeriod.toString() ?? ''}</>,
+				header: deal?.isDealFunded ? 'Open Redemption Ends' : 'Open Redemption',
+				subText: (
+					<>
+						{deal?.proRataRedemptionPeriodStart != null &&
+						deal?.proRataRedemptionPeriod != null &&
+						deal?.openRedemptionPeriod != null &&
+						deal?.openRedemptionPeriod > 0
+							? formatShortDateWithTime(
+									deal?.proRataRedemptionPeriodStart +
+										deal?.proRataRedemptionPeriod +
+										deal?.openRedemptionPeriod
+							  )
+							: deal?.openRedemptionPeriod > 0
+							? formatTimeDifference(deal?.openRedemptionPeriod)
+							: 'n/a'}
+					</>
+				),
 			},
 			{
 				header: 'Vesting Curve',
@@ -98,16 +121,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 	);
 
 	const handleSubmit = useCallback(
-		async ({
-			value,
-			txnType,
-			isMax,
-		}: {
-			value: number;
-			txnType: TransactionType;
-			isMax: boolean;
-		}) => {
-			// console.log('value', value, 'txnType', txnType, 'isMax', isMax);
+		async (value: number, txnType: TransactionType, isMax: boolean) => {
 			if (!walletAddress || !signer || !deal?.poolAddress || !purchaseTokenDecimals) return;
 			const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 			try {
@@ -158,9 +172,29 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({ deal, pool }) => {
 		]
 	);
 
+	const isPurchaseExpired = useMemo(() => {
+		const now = Date.now();
+		return deal?.proRataRedemptionPeriodStart != null
+			? now >
+					deal?.proRataRedemptionPeriodStart +
+						deal?.proRataRedemptionPeriod +
+						deal?.openRedemptionPeriod
+			: false;
+	}, [
+		deal?.proRataRedemptionPeriodStart,
+		deal?.proRataRedemptionPeriod,
+		deal?.openRedemptionPeriod,
+	]);
+
+	// no balance can't buy
+	// during the pro rata is ok
+	// after the pro rata period if not eligible for open period
+	// after the open and pro rata
+
 	return (
 		<SectionDetails
-			actionBoxType={ActionBoxType.PendingDeal}
+			isPurchaseExpired={isPurchaseExpired}
+			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}
 			input={{
 				placeholder: '0',

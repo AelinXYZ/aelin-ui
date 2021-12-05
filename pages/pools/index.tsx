@@ -11,9 +11,7 @@ import Table from 'components/Table';
 import { FlexDivStart } from 'components/common';
 
 import DealStatus, { Status } from 'components/DealStatus';
-import TimeLeft from 'components/TimeLeft';
 import Ens from 'components/Ens';
-import { truncateNumber } from 'utils/numbers';
 import { formatShortDateWithTime } from 'utils/time';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import TokenDisplay from 'components/TokenDisplay';
@@ -163,7 +161,7 @@ const Pools: FC = () => {
 			},
 			{
 				// TODO update this to be right
-				Header: 'time to purchase',
+				Header: 'Purchase ends',
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <>{formatShortDateWithTime(cellProps.value)}</>;

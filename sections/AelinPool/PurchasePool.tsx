@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useEffect, useCallback } from 'react';
+import { FC, useMemo, useState, useCallback } from 'react';
 
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -66,7 +66,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: userPoolBalance,
 			},
 			{
-				header: 'Contributions',
+				header: 'Total Contributions',
 				subText: ethers.utils
 					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
 					.toString(),
@@ -137,8 +137,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		}
 	}, [pool?.id, pool?.purchaseToken, monitorTransaction, walletAddress, signer]);
 
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
+
 	return (
 		<SectionDetails
+			isPurchaseExpired={isPurchaseExpired}
 			actionBoxType={ActionBoxType.FundPool}
 			gridItems={poolGridItems}
 			input={{

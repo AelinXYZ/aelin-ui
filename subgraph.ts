@@ -355,18 +355,26 @@ export type ClaimedUnderlyingDealTokensFilter = {
     underlyingDealTokensClaimed_lte?: WeiSource | null;
     underlyingDealTokensClaimed_in?: WeiSource[];
     underlyingDealTokensClaimed_not_in?: WeiSource[];
+    dealAddress?: string | null;
+    dealAddress_not?: string | null;
+    dealAddress_in?: string[];
+    dealAddress_not_in?: string[];
+    dealAddress_contains?: string | null;
+    dealAddress_not_contains?: string | null;
 };
 export type ClaimedUnderlyingDealTokensResult = {
     id: string;
     underlyingDealTokenAddress: string;
     recipient: string;
     underlyingDealTokensClaimed: Wei;
+    dealAddress: string;
 };
 export type ClaimedUnderlyingDealTokensFields = {
     id: true;
     underlyingDealTokenAddress: true;
     recipient: true;
     underlyingDealTokensClaimed: true;
+    dealAddress: true;
 };
 export type ClaimedUnderlyingDealTokensArgs<K extends keyof ClaimedUnderlyingDealTokensResult> = {
     [Property in keyof Pick<ClaimedUnderlyingDealTokensFields, K>]: ClaimedUnderlyingDealTokensFields[Property];
@@ -390,6 +398,8 @@ export const useGetClaimedUnderlyingDealTokensById = <K extends keyof ClaimedUnd
             formattedObj["recipient"] = obj["recipient"];
         if (obj["underlyingDealTokensClaimed"])
             formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
+        if (obj["dealAddress"])
+            formattedObj["dealAddress"] = obj["dealAddress"];
         return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
     };
     const enabled = options && args;
@@ -432,6 +442,8 @@ export const useGetClaimedUnderlyingDealTokenss = <K extends keyof ClaimedUnderl
                     formattedObj["recipient"] = obj["recipient"];
                 if (obj["underlyingDealTokensClaimed"])
                     formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
+                if (obj["dealAddress"])
+                    formattedObj["dealAddress"] = obj["dealAddress"];
                 return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
             });
             results = results.concat(newResults);
@@ -655,6 +667,14 @@ export type DealDetailsFilter = {
     proRataRedemptionPeriod_lte?: WeiSource | null;
     proRataRedemptionPeriod_in?: WeiSource[];
     proRataRedemptionPeriod_not_in?: WeiSource[];
+    proRataRedemptionPeriodStart?: WeiSource | null;
+    proRataRedemptionPeriodStart_not?: WeiSource | null;
+    proRataRedemptionPeriodStart_gt?: WeiSource | null;
+    proRataRedemptionPeriodStart_lt?: WeiSource | null;
+    proRataRedemptionPeriodStart_gte?: WeiSource | null;
+    proRataRedemptionPeriodStart_lte?: WeiSource | null;
+    proRataRedemptionPeriodStart_in?: WeiSource[];
+    proRataRedemptionPeriodStart_not_in?: WeiSource[];
     openRedemptionPeriod?: WeiSource | null;
     openRedemptionPeriod_not?: WeiSource | null;
     openRedemptionPeriod_gt?: WeiSource | null;
@@ -669,6 +689,10 @@ export type DealDetailsFilter = {
     holder_not_in?: string[];
     holder_contains?: string | null;
     holder_not_contains?: string | null;
+    isDealFunded?: boolean | null;
+    isDealFunded_not?: boolean | null;
+    isDealFunded_in?: boolean[];
+    isDealFunded_not_in?: boolean[];
     holderFundingExpiration?: WeiSource | null;
     holderFundingExpiration_not?: WeiSource | null;
     holderFundingExpiration_gt?: WeiSource | null;
@@ -694,8 +718,10 @@ export type DealDetailsResult = {
     vestingPeriod: Wei;
     vestingCliff: Wei;
     proRataRedemptionPeriod: Wei;
+    proRataRedemptionPeriodStart: Wei | null;
     openRedemptionPeriod: Wei;
     holder: string;
+    isDealFunded: boolean;
     holderFundingExpiration: Wei;
     holderFundingDuration: Wei;
 };
@@ -707,8 +733,10 @@ export type DealDetailsFields = {
     vestingPeriod: true;
     vestingCliff: true;
     proRataRedemptionPeriod: true;
+    proRataRedemptionPeriodStart: true;
     openRedemptionPeriod: true;
     holder: true;
+    isDealFunded: true;
     holderFundingExpiration: true;
     holderFundingDuration: true;
 };
@@ -740,10 +768,14 @@ export const useGetDealDetailsById = <K extends keyof DealDetailsResult>(url: st
             formattedObj["vestingCliff"] = wei(obj["vestingCliff"], 0);
         if (obj["proRataRedemptionPeriod"])
             formattedObj["proRataRedemptionPeriod"] = wei(obj["proRataRedemptionPeriod"], 0);
+        if (obj["proRataRedemptionPeriodStart"])
+            formattedObj["proRataRedemptionPeriodStart"] = wei(obj["proRataRedemptionPeriodStart"], 0);
         if (obj["openRedemptionPeriod"])
             formattedObj["openRedemptionPeriod"] = wei(obj["openRedemptionPeriod"], 0);
         if (obj["holder"])
             formattedObj["holder"] = obj["holder"];
+        if (obj["isDealFunded"])
+            formattedObj["isDealFunded"] = obj["isDealFunded"];
         if (obj["holderFundingExpiration"])
             formattedObj["holderFundingExpiration"] = wei(obj["holderFundingExpiration"], 0);
         if (obj["holderFundingDuration"])
@@ -796,10 +828,14 @@ export const useGetDealDetailss = <K extends keyof DealDetailsResult>(url: strin
                     formattedObj["vestingCliff"] = wei(obj["vestingCliff"], 0);
                 if (obj["proRataRedemptionPeriod"])
                     formattedObj["proRataRedemptionPeriod"] = wei(obj["proRataRedemptionPeriod"], 0);
+                if (obj["proRataRedemptionPeriodStart"])
+                    formattedObj["proRataRedemptionPeriodStart"] = wei(obj["proRataRedemptionPeriodStart"], 0);
                 if (obj["openRedemptionPeriod"])
                     formattedObj["openRedemptionPeriod"] = wei(obj["openRedemptionPeriod"], 0);
                 if (obj["holder"])
                     formattedObj["holder"] = obj["holder"];
+                if (obj["isDealFunded"])
+                    formattedObj["isDealFunded"] = obj["isDealFunded"];
                 if (obj["holderFundingExpiration"])
                     formattedObj["holderFundingExpiration"] = wei(obj["holderFundingExpiration"], 0);
                 if (obj["holderFundingDuration"])

@@ -1,12 +1,18 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
 import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
+import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
 import { PageLayout } from 'sections/Layout';
 import useGetDealDetailsByIdQuery, {
 	parseDealDetails,
 } from 'queries/deals/useGetDealDetailsByIdQuery';
 import useGetDealByIdQuery, { parseDeal } from 'queries/deals/useGetDealByIdQuery';
+import useGetClaimedUnderlyingDealTokensQuery, {
+	parseClaimedResult,
+} from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
 
 import SectionTitle from 'sections/shared/SectionTitle';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
@@ -24,7 +30,8 @@ interface ViewPoolProps {
 }
 
 const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
-	const { walletAddress } = Connector.useContainer();
+	const { walletAddress, provider } = Connector.useContainer();
+	const [dealBalance, setDealBalance] = useState<number | null>(null);
 	const dealDetailsQuery = useGetDealDetailsByIdQuery({ id: pool?.dealAddress ?? '' });
 	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '' });
 
@@ -35,7 +42,32 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		return { ...dealInfo, ...dealDetails };
 	}, [dealQuery?.data, dealDetailsQuery?.data]);
 
+	const claimedQuery = useGetClaimedUnderlyingDealTokensQuery({
+		dealAddress: deal?.id ?? '',
+		recipient: walletAddress ?? '',
+	});
+
+	const claims = useMemo(
+		() => (claimedQuery?.data ?? []).map(parseClaimedResult),
+		[claimedQuery?.data]
+	);
+
+	useEffect(() => {
+		async function getDealBalance() {
+			if (deal?.id != null && provider != null && walletAddress != null) {
+				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
+				const balance = await contract.balanceOf(walletAddress);
+				const decimals = await contract.decimals();
+				const formattedDealBalance = Number(ethers.utils.formatUnits(balance, decimals));
+				setDealBalance(formattedDealBalance);
+			}
+		}
+		getDealBalance();
+	}, [deal?.id, provider, walletAddress]);
+
 	const now = useMemo(() => Date.now(), []);
+
+	useEffect;
 
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
@@ -79,14 +111,15 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					<AcceptOrRejectDeal pool={pool} deal={deal} />
 				</SectionWrapper>
 			) : null}
-			{false && deal?.id != null ? (
+			{deal?.id != null &&
+			((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0) ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
 							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Vesting" />
 						</ContentTitle>
 					</ContentHeader>
-					<VestingDeal deal={deal} />
+					<VestingDeal deal={deal} dealBalance={dealBalance} claims={claims} />
 				</SectionWrapper>
 			) : null}
 		</PageLayout>

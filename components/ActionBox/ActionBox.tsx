@@ -21,7 +21,7 @@ export enum TransactionType {
 
 export enum ActionBoxType {
 	FundPool = 'FundPool',
-	PendingDeal = 'PENDING_DEAL',
+	AcceptOrRejectDeal = 'ACCEPT_OR_REJECT_DEAL',
 	VestingDeal = 'VESTING_DEAL',
 }
 
@@ -37,7 +37,7 @@ const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
 			return 'Purchase';
-		case ActionBoxType.PendingDeal:
+		case ActionBoxType.AcceptOrRejectDeal:
 			return 'Accept Deal';
 		case ActionBoxType.VestingDeal:
 			return 'Vest Deal';
@@ -49,33 +49,40 @@ const getActionButtonLabel = ({
 	isDealAccept,
 	allowance,
 	amount,
+	isPurchaseExpired,
 }: {
 	actionBoxType: ActionBoxType;
 	isDealAccept: boolean;
 	allowance: string;
 	amount: string | number;
+	isPurchaseExpired: boolean;
 }) => {
 	if (Number(allowance) < Number(amount)) {
 		return 'Approve';
 	}
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
-			return 'Purchase';
-		case ActionBoxType.PendingDeal:
-			return isDealAccept ? 'Accept Deal' : 'Withdraw from Pool';
+			return isPurchaseExpired ? 'Purchase Expired' : 'Purchase';
+		case ActionBoxType.AcceptOrRejectDeal:
+			return isDealAccept
+				? isPurchaseExpired
+					? 'Purchase Expired'
+					: 'Accept Deal'
+				: 'Withdraw from Pool';
 		case ActionBoxType.VestingDeal:
 			return 'Vest Deal';
 	}
 };
 
 interface ActionBoxProps {
-	onSubmit: (value: number | string, transactionType: TransactionType) => void;
+	onSubmit: (value: number | string, transactionType: TransactionType, isMax?: boolean) => void;
 	input: InputType;
 	actionBoxType: ActionBoxType;
 	allowance: string;
 	onApprove: () => void;
 	txState: Transaction;
 	setTxState: (tx: Transaction) => void;
+	isPurchaseExpired: boolean;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
@@ -86,17 +93,21 @@ const ActionBox: FC<ActionBoxProps> = ({
 	onApprove,
 	txState,
 	setTxState,
+	isPurchaseExpired,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
+	const [isMaxValue, setIsMaxValue] = useState(false);
 
 	const [inputValue, setInputValue] = useState(value || 0);
 	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
 	const isPool = actionBoxType === ActionBoxType.FundPool;
-	const canWithdraw = actionBoxType === ActionBoxType.PendingDeal;
+	const canWithdraw = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
+	const isWithdraw = canWithdraw && !isDealAccept;
+
 	return (
 		<Container>
 			{canWithdraw ? (
@@ -114,8 +125,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 							interactive
 							content={
 								<div>
-									If you max your pro rata contribution you will be eligible for the open redemption
-									period where all uncollected deal tokens are available for purchase
+									A max pro rata contribution makes you eligible for the open redemption period
+									where unredeemed deal tokens are available
 								</div>
 							}
 						>
@@ -151,10 +162,20 @@ const ActionBox: FC<ActionBoxProps> = ({
 								placeholder={placeholder}
 								value={inputValue}
 								onChange={(e) => {
+									setIsMaxValue(false);
 									setInputValue(parseFloat(e.target.value));
 								}}
 							/>
-							{maxValue && <ActionBoxMax onClick={() => setInputValue(maxValue)}>Max</ActionBoxMax>}
+							{maxValue && (
+								<ActionBoxMax
+									onClick={() => {
+										setIsMaxValue(true);
+										setInputValue(maxValue);
+									}}
+								>
+									Max
+								</ActionBoxMax>
+							)}
 						</InputContainer>
 					</>
 				)}
@@ -162,13 +183,14 @@ const ActionBox: FC<ActionBoxProps> = ({
 			<ActionButton
 				disabled={
 					!walletAddress ||
+					(!isWithdraw && isPurchaseExpired) ||
 					(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
 					(actionBoxType !== ActionBoxType.VestingDeal &&
 						(!inputValue || Number(inputValue) === 0)) ||
 					(actionBoxType !== ActionBoxType.VestingDeal &&
 						Number(maxValue ?? 0) < Number(inputValue ?? 0))
 				}
-				isWithdraw={actionBoxType === ActionBoxType.PendingDeal && !isDealAccept}
+				isWithdraw={isWithdraw}
 				onClick={(e) => {
 					const setCorrectTxnType = () => {
 						if (isPool && Number(allowance ?? 0) < Number(inputValue ?? 0)) {
@@ -177,10 +199,10 @@ const ActionBox: FC<ActionBoxProps> = ({
 						if (isPool) {
 							return setTxType(TransactionType.Purchase);
 						}
-						if (actionBoxType === ActionBoxType.PendingDeal && isDealAccept) {
+						if (actionBoxType === ActionBoxType.AcceptOrRejectDeal && isDealAccept) {
 							return setTxType(TransactionType.Accept);
 						}
-						if (actionBoxType === ActionBoxType.PendingDeal && !isDealAccept) {
+						if (isWithdraw) {
 							return setTxType(TransactionType.Withdraw);
 						}
 						if (actionBoxType === ActionBoxType.VestingDeal) {
@@ -191,7 +213,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 					setShowTxModal(true);
 				}}
 			>
-				{getActionButtonLabel({ actionBoxType, isDealAccept, allowance, amount: inputValue })}
+				{getActionButtonLabel({
+					isPurchaseExpired,
+					actionBoxType,
+					isDealAccept,
+					allowance,
+					amount: inputValue,
+				})}
 			</ActionButton>
 			{actionBoxType !== ActionBoxType.VestingDeal &&
 			Number(maxValue ?? 0) < Number(inputValue ?? 0) ? (
@@ -248,7 +276,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 							isWithdraw={false}
 							onClick={(e) => {
 								setTxState(Transaction.WAITING);
-								onSubmit(inputValue, txType);
+								onSubmit(inputValue, txType, isMaxValue);
 							}}
 						>
 							Confirm Accept
@@ -263,7 +291,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 							isWithdraw={true}
 							onClick={(e) => {
 								setTxState(Transaction.WAITING);
-								onSubmit(inputValue, txType);
+								onSubmit(inputValue, txType, isMaxValue);
 							}}
 						>
 							Confirm Withdraw
