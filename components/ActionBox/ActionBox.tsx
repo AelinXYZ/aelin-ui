@@ -238,8 +238,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 					</div>
 				) : null}
 				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
-				{txType === TransactionType.Allowance && txState === Transaction.PRESUBMIT ? (
-					<div>
+				{txType === TransactionType.Allowance ? (
+					<ModalContainer>
 						<div>{`Please approve ${symbol} usage by the pool contract`}</div>
 						<SubmitButton
 							variant={'text'}
@@ -251,7 +251,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 						>
 							Confirm Approval
 						</SubmitButton>
-					</div>
+					</ModalContainer>
 				) : null}
 				{txType === TransactionType.Purchase && txState === Transaction.PRESUBMIT ? (
 					<div>
@@ -454,6 +454,10 @@ const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	position: absolute;
 	bottom: 0;
 	border-radius: 0 0 8px 8px;
+`;
+
+const ModalContainer = styled.div`
+	text-align: center;
 `;
 
 export default ActionBox;

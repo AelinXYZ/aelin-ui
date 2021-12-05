@@ -11,7 +11,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
 
-import Radio from 'components/Radio'
+import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
 import WhiteList from 'components/WhiteList';
 import { FlexDivRow } from 'components/common';
@@ -27,8 +27,6 @@ import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 
 import { erc20Abi } from 'contracts/erc20';
-
-
 
 const Create: FC = () => {
 	const [isPoolPrivacyModalOpen, setPoolPrivacyModalOpen] = useState(false);
@@ -86,18 +84,18 @@ const Create: FC = () => {
 		if (isPrivate) {
 			const formattedWhiteList = whitelist.reduce((accum, curr) => {
 				const { address, amount } = curr;
-				
+
 				if (!address.length) return accum;
-	
+
 				accum.push({
 					address,
 					amount: amount
 						? utils.parseUnits(String(amount), purchaseTokenDecimals)
-						: ethers.constants.MaxUint256
+						: ethers.constants.MaxUint256,
 				});
-	
+
 				return accum;
-			}, [] as { address: string, amount: BigNumber }[]);
+			}, [] as { address: string; amount: BigNumber }[]);
 
 			poolAddresses = formattedWhiteList.map(({ address }) => address);
 			poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
@@ -178,12 +176,10 @@ const Create: FC = () => {
 			purchaseDurationHours: 0,
 			purchaseDurationMinutes: 0,
 			poolPrivacy: Privacy.PUBLIC,
-			whitelist: new Array(5).fill(
-				{
-					address: '',
-					amount: null,
-				},
-			)
+			whitelist: new Array(5).fill({
+				address: '',
+				amount: null,
+			}),
 		},
 		validate: validateCreatePool,
 		onSubmit: handleSubmit,
@@ -192,7 +188,7 @@ const Create: FC = () => {
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
-
+			console.log('here');
 			const errors = validateCreatePool(formik.values);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
@@ -223,13 +219,14 @@ const Create: FC = () => {
 						sponsorFee.toString(),
 						purchaseDuration,
 						poolAddresses,
-						poolAddressesAmounts,
+						poolAddressesAmounts
 					),
 					0
 				);
-
+				console.log(gasEstimate, 'yo');
 				setGasLimitEstimate(gasEstimate);
-			} catch (_) {
+			} catch (e) {
+				console.log(e);
 				setGasLimitEstimate(null);
 			}
 		};
@@ -240,7 +237,7 @@ const Create: FC = () => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
 			setPoolPrivacyModalOpen(true);
 		}
-	}, [formik.values.poolPrivacy])
+	}, [formik.values.poolPrivacy]);
 
 	const gridItems = useMemo(
 		() => [
@@ -406,16 +403,8 @@ const Create: FC = () => {
 					<FlexDivRow>
 						<>
 							<div role="group" aria-labelledby="pool-privacy">
-								<Radio
-									name="poolPrivacy"
-									value={Privacy.PUBLIC}
-									formik={formik}
-								/>
-								<Radio
-									name="poolPrivacy"
-									value={Privacy.PRIVATE}
-									formik={formik}
-								/>
+								<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
+								<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
 							</div>
 							<WhiteList
 								formik={formik}

@@ -6,10 +6,11 @@ type UseAelinTokenListReturn = {
 	tokensByAddress: { [address: string]: Token | undefined };
 };
 const useAelinTokenList = () => {
-	const synthetixList = useTokenListQuery(TokenListUrls.Synthetix);
+	// const synthetixList = useTokenListQuery(TokenListUrls.Synthetix);
 	const oneInchList = useTokenListQuery(TokenListUrls.OneInch);
-	if (synthetixList.isLoading || oneInchList.isLoading) return undefined;
-	const allTokens = synthetixList.data?.concat(oneInchList.data ?? []) || [];
+	if (oneInchList.isLoading) return undefined;
+	// const allTokens = synthetixList.data?.concat(oneInchList.data ?? []) || []
+	const allTokens = oneInchList?.data ?? [];
 	// remove duplicates, lowercase address and create tokensByAddress
 	const { tokensByAddress, tokens } = allTokens.reduce(
 		(acc: UseAelinTokenListReturn, token) => {
