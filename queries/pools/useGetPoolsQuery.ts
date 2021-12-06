@@ -61,7 +61,7 @@ export const parsePool = ({
 	sponsor,
 	contributions,
 	purchaseDuration,
-	sponsorFee: Number(sponsorFee) / 100,
+	sponsorFee,
 	poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
 	dealAddress,
 });

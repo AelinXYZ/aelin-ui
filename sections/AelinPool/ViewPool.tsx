@@ -67,8 +67,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	const now = useMemo(() => Date.now(), []);
 
-	useEffect;
-
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />

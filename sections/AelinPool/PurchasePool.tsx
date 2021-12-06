@@ -30,6 +30,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		purchaseTokenAllowance,
 		userPurchaseBalance,
 		userPoolBalance,
+		isPrivatePool,
+		privatePoolAmount,
 	} = usePoolBalances({
 		poolAddress: pool?.id ?? null,
 		purchaseToken: pool?.purchaseToken ?? null,
@@ -73,7 +75,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Sponsor Fee',
-				subText: pool?.sponsorFee || 0,
+				subText: `${
+					pool?.sponsorFee.toString() != null
+						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
+						: 0
+				}%`,
 			},
 			{
 				header: 'Purchase Expiration',
@@ -144,6 +150,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 
 	return (
 		<SectionDetails
+			privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
 			isPurchaseExpired={isPurchaseExpired}
 			actionBoxType={ActionBoxType.FundPool}
 			gridItems={poolGridItems}

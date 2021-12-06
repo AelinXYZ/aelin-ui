@@ -183,7 +183,7 @@ const Pools: FC = () => {
 				Header: 'fee',
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${cellProps.value * 100}%`;
+					return `${Number(ethers.utils.formatEther(cellProps.value.toString()))}%`;
 				},
 				width: 75,
 			},
