@@ -29,7 +29,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { txState, setTxState } = TransactionData.useContainer();
-	console.log('claims', claims);
 
 	const dealVestingGridItems = useMemo(
 		() => [
@@ -69,11 +68,10 @@ const VestingDeal: FC<VestingDealProps> = ({
 			claims,
 			deal?.name,
 			dealBalance,
-			deal?.underlyingDealTokenTotal,
-			deal?.purchaseTokenTotalForDeal,
 			deal?.underlyingDealToken,
 			deal?.vestingCliff,
 			deal?.vestingPeriod,
+			underlyingPerDealExchangeRate,
 		]
 	);
 
@@ -82,7 +80,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 		if (!walletAddress || !signer || !deal.id) return;
 		const contract = new ethers.Contract(deal.id, dealAbi, signer);
 		try {
-			console.log('calling claim');
 			const tx = await contract.claim({
 				gasLimit: 1000000,
 			});
