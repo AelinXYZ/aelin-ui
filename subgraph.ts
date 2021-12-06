@@ -326,7 +326,7 @@ export const useGetAelinTokens = <K extends keyof AelinTokenResult>(url: string,
         enabled: !!options && !!args,
     });
 };
-export type ClaimedUnderlyingDealTokensFilter = {
+export type ClaimedUnderlyingDealTokenFilter = {
     id?: string | null;
     id_not?: string | null;
     id_gt?: string | null;
@@ -362,27 +362,27 @@ export type ClaimedUnderlyingDealTokensFilter = {
     dealAddress_contains?: string | null;
     dealAddress_not_contains?: string | null;
 };
-export type ClaimedUnderlyingDealTokensResult = {
+export type ClaimedUnderlyingDealTokenResult = {
     id: string;
     underlyingDealTokenAddress: string;
     recipient: string;
     underlyingDealTokensClaimed: Wei;
     dealAddress: string;
 };
-export type ClaimedUnderlyingDealTokensFields = {
+export type ClaimedUnderlyingDealTokenFields = {
     id: true;
     underlyingDealTokenAddress: true;
     recipient: true;
     underlyingDealTokensClaimed: true;
     dealAddress: true;
 };
-export type ClaimedUnderlyingDealTokensArgs<K extends keyof ClaimedUnderlyingDealTokensResult> = {
-    [Property in keyof Pick<ClaimedUnderlyingDealTokensFields, K>]: ClaimedUnderlyingDealTokensFields[Property];
+export type ClaimedUnderlyingDealTokenArgs<K extends keyof ClaimedUnderlyingDealTokenResult> = {
+    [Property in keyof Pick<ClaimedUnderlyingDealTokenFields, K>]: ClaimedUnderlyingDealTokenFields[Property];
 };
-export const useGetClaimedUnderlyingDealTokensById = <K extends keyof ClaimedUnderlyingDealTokensResult>(url: string, options?: SingleQueryOptions, args?: ClaimedUnderlyingDealTokensArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokensResult, K>> = {}) => {
-    const func = async function <K extends keyof ClaimedUnderlyingDealTokensResult>(url: string, options: SingleQueryOptions, args: ClaimedUnderlyingDealTokensArgs<K>): Promise<Pick<ClaimedUnderlyingDealTokensResult, K>> {
+export const useGetClaimedUnderlyingDealTokenById = <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options?: SingleQueryOptions, args?: ClaimedUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>> = {}) => {
+    const func = async function <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options: SingleQueryOptions, args: ClaimedUnderlyingDealTokenArgs<K>): Promise<Pick<ClaimedUnderlyingDealTokenResult, K>> {
         const res = await axios.post(url, {
-            query: generateGql("claimedUnderlyingDealTokens", options, args)
+            query: generateGql("claimedUnderlyingDealToken", options, args)
         });
         const r = res.data as any;
         if (r.errors && r.errors.length) {
@@ -400,32 +400,32 @@ export const useGetClaimedUnderlyingDealTokensById = <K extends keyof ClaimedUnd
             formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
         if (obj["dealAddress"])
             formattedObj["dealAddress"] = obj["dealAddress"];
-        return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
+        return formattedObj as Pick<ClaimedUnderlyingDealTokenResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealTokens", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealToken", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
 };
-export const useGetClaimedUnderlyingDealTokenss = <K extends keyof ClaimedUnderlyingDealTokensResult>(url: string, options?: MultiQueryOptions<ClaimedUnderlyingDealTokensFilter, ClaimedUnderlyingDealTokensResult>, args?: ClaimedUnderlyingDealTokensArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokensResult, K>[]> = {}) => {
-    const func = async function <K extends keyof ClaimedUnderlyingDealTokensResult>(url: string, options: MultiQueryOptions<ClaimedUnderlyingDealTokensFilter, ClaimedUnderlyingDealTokensResult>, args: ClaimedUnderlyingDealTokensArgs<K>): Promise<Pick<ClaimedUnderlyingDealTokensResult, K>[]> {
-        const paginatedOptions: Partial<MultiQueryOptions<ClaimedUnderlyingDealTokensFilter, ClaimedUnderlyingDealTokensResult>> = { ...options };
-        let paginationKey: keyof ClaimedUnderlyingDealTokensFilter | null = null;
+export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options?: MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>, args?: ClaimedUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>[]> = {}) => {
+    const func = async function <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options: MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>, args: ClaimedUnderlyingDealTokenArgs<K>): Promise<Pick<ClaimedUnderlyingDealTokenResult, K>[]> {
+        const paginatedOptions: Partial<MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>> = { ...options };
+        let paginationKey: keyof ClaimedUnderlyingDealTokenFilter | null = null;
         let paginationValue = "";
         if (options.first && options.first > MAX_PAGE) {
             paginatedOptions.first = MAX_PAGE;
             paginatedOptions.orderBy = options.orderBy || "id";
             paginatedOptions.orderDirection = options.orderDirection || "asc";
-            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof ClaimedUnderlyingDealTokensFilter;
+            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof ClaimedUnderlyingDealTokenFilter;
             paginatedOptions.where = { ...options.where };
         }
-        let results: Pick<ClaimedUnderlyingDealTokensResult, K>[] = [];
+        let results: Pick<ClaimedUnderlyingDealTokenResult, K>[] = [];
         do {
             if (paginationKey && paginationValue)
                 paginatedOptions.where![paginationKey] = paginationValue as any;
             const res = await axios.post(url, {
-                query: generateGql("claimedUnderlyingDealTokenss", paginatedOptions, args)
+                query: generateGql("claimedUnderlyingDealTokens", paginatedOptions, args)
             });
             const r = res.data as any;
             if (r.errors && r.errors.length) {
@@ -444,7 +444,7 @@ export const useGetClaimedUnderlyingDealTokenss = <K extends keyof ClaimedUnderl
                     formattedObj["underlyingDealTokensClaimed"] = wei(obj["underlyingDealTokensClaimed"], 0);
                 if (obj["dealAddress"])
                     formattedObj["dealAddress"] = obj["dealAddress"];
-                return formattedObj as Pick<ClaimedUnderlyingDealTokensResult, K>;
+                return formattedObj as Pick<ClaimedUnderlyingDealTokenResult, K>;
             });
             results = results.concat(newResults);
             if (newResults.length < 1000) {
@@ -457,7 +457,7 @@ export const useGetClaimedUnderlyingDealTokenss = <K extends keyof ClaimedUnderl
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealTokenss", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealTokens", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -612,7 +612,7 @@ export const useGetDealCreateds = <K extends keyof DealCreatedResult>(url: strin
         enabled: !!options && !!args,
     });
 };
-export type DealDetailsFilter = {
+export type DealDetailFilter = {
     id?: string | null;
     id_not?: string | null;
     id_gt?: string | null;
@@ -710,7 +710,7 @@ export type DealDetailsFilter = {
     holderFundingDuration_in?: WeiSource[];
     holderFundingDuration_not_in?: WeiSource[];
 };
-export type DealDetailsResult = {
+export type DealDetailResult = {
     id: string;
     underlyingDealToken: string;
     purchaseTokenTotalForDeal: Wei;
@@ -725,7 +725,7 @@ export type DealDetailsResult = {
     holderFundingExpiration: Wei;
     holderFundingDuration: Wei;
 };
-export type DealDetailsFields = {
+export type DealDetailFields = {
     id: true;
     underlyingDealToken: true;
     purchaseTokenTotalForDeal: true;
@@ -740,13 +740,13 @@ export type DealDetailsFields = {
     holderFundingExpiration: true;
     holderFundingDuration: true;
 };
-export type DealDetailsArgs<K extends keyof DealDetailsResult> = {
-    [Property in keyof Pick<DealDetailsFields, K>]: DealDetailsFields[Property];
+export type DealDetailArgs<K extends keyof DealDetailResult> = {
+    [Property in keyof Pick<DealDetailFields, K>]: DealDetailFields[Property];
 };
-export const useGetDealDetailsById = <K extends keyof DealDetailsResult>(url: string, options?: SingleQueryOptions, args?: DealDetailsArgs<K>, queryOptions: UseQueryOptions<Pick<DealDetailsResult, K>> = {}) => {
-    const func = async function <K extends keyof DealDetailsResult>(url: string, options: SingleQueryOptions, args: DealDetailsArgs<K>): Promise<Pick<DealDetailsResult, K>> {
+export const useGetDealDetailById = <K extends keyof DealDetailResult>(url: string, options?: SingleQueryOptions, args?: DealDetailArgs<K>, queryOptions: UseQueryOptions<Pick<DealDetailResult, K>> = {}) => {
+    const func = async function <K extends keyof DealDetailResult>(url: string, options: SingleQueryOptions, args: DealDetailArgs<K>): Promise<Pick<DealDetailResult, K>> {
         const res = await axios.post(url, {
-            query: generateGql("dealDetails", options, args)
+            query: generateGql("dealDetail", options, args)
         });
         const r = res.data as any;
         if (r.errors && r.errors.length) {
@@ -780,32 +780,32 @@ export const useGetDealDetailsById = <K extends keyof DealDetailsResult>(url: st
             formattedObj["holderFundingExpiration"] = wei(obj["holderFundingExpiration"], 0);
         if (obj["holderFundingDuration"])
             formattedObj["holderFundingDuration"] = wei(obj["holderFundingDuration"], 0);
-        return formattedObj as Pick<DealDetailsResult, K>;
+        return formattedObj as Pick<DealDetailResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("DealDetails", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("DealDetail", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
 };
-export const useGetDealDetailss = <K extends keyof DealDetailsResult>(url: string, options?: MultiQueryOptions<DealDetailsFilter, DealDetailsResult>, args?: DealDetailsArgs<K>, queryOptions: UseQueryOptions<Pick<DealDetailsResult, K>[]> = {}) => {
-    const func = async function <K extends keyof DealDetailsResult>(url: string, options: MultiQueryOptions<DealDetailsFilter, DealDetailsResult>, args: DealDetailsArgs<K>): Promise<Pick<DealDetailsResult, K>[]> {
-        const paginatedOptions: Partial<MultiQueryOptions<DealDetailsFilter, DealDetailsResult>> = { ...options };
-        let paginationKey: keyof DealDetailsFilter | null = null;
+export const useGetDealDetails = <K extends keyof DealDetailResult>(url: string, options?: MultiQueryOptions<DealDetailFilter, DealDetailResult>, args?: DealDetailArgs<K>, queryOptions: UseQueryOptions<Pick<DealDetailResult, K>[]> = {}) => {
+    const func = async function <K extends keyof DealDetailResult>(url: string, options: MultiQueryOptions<DealDetailFilter, DealDetailResult>, args: DealDetailArgs<K>): Promise<Pick<DealDetailResult, K>[]> {
+        const paginatedOptions: Partial<MultiQueryOptions<DealDetailFilter, DealDetailResult>> = { ...options };
+        let paginationKey: keyof DealDetailFilter | null = null;
         let paginationValue = "";
         if (options.first && options.first > MAX_PAGE) {
             paginatedOptions.first = MAX_PAGE;
             paginatedOptions.orderBy = options.orderBy || "id";
             paginatedOptions.orderDirection = options.orderDirection || "asc";
-            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof DealDetailsFilter;
+            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof DealDetailFilter;
             paginatedOptions.where = { ...options.where };
         }
-        let results: Pick<DealDetailsResult, K>[] = [];
+        let results: Pick<DealDetailResult, K>[] = [];
         do {
             if (paginationKey && paginationValue)
                 paginatedOptions.where![paginationKey] = paginationValue as any;
             const res = await axios.post(url, {
-                query: generateGql("dealDetailss", paginatedOptions, args)
+                query: generateGql("dealDetails", paginatedOptions, args)
             });
             const r = res.data as any;
             if (r.errors && r.errors.length) {
@@ -840,7 +840,7 @@ export const useGetDealDetailss = <K extends keyof DealDetailsResult>(url: strin
                     formattedObj["holderFundingExpiration"] = wei(obj["holderFundingExpiration"], 0);
                 if (obj["holderFundingDuration"])
                     formattedObj["holderFundingDuration"] = wei(obj["holderFundingDuration"], 0);
-                return formattedObj as Pick<DealDetailsResult, K>;
+                return formattedObj as Pick<DealDetailResult, K>;
             });
             results = results.concat(newResults);
             if (newResults.length < 1000) {
@@ -853,7 +853,7 @@ export const useGetDealDetailss = <K extends keyof DealDetailsResult>(url: strin
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("DealDetailss", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("DealDetails", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -1012,7 +1012,7 @@ export const useGetDealFullyFundeds = <K extends keyof DealFullyFundedResult>(ur
         enabled: !!options && !!args,
     });
 };
-export type DepositDealTokensFilter = {
+export type DepositDealTokenFilter = {
     id?: string | null;
     id_not?: string | null;
     id_gt?: string | null;
@@ -1048,27 +1048,27 @@ export type DepositDealTokensFilter = {
     underlyingDealTokenAmount_in?: WeiSource[];
     underlyingDealTokenAmount_not_in?: WeiSource[];
 };
-export type DepositDealTokensResult = {
+export type DepositDealTokenResult = {
     id: string;
     underlyingDealTokenAddress: string;
     depositor: string;
     dealContract: string;
     underlyingDealTokenAmount: Wei;
 };
-export type DepositDealTokensFields = {
+export type DepositDealTokenFields = {
     id: true;
     underlyingDealTokenAddress: true;
     depositor: true;
     dealContract: true;
     underlyingDealTokenAmount: true;
 };
-export type DepositDealTokensArgs<K extends keyof DepositDealTokensResult> = {
-    [Property in keyof Pick<DepositDealTokensFields, K>]: DepositDealTokensFields[Property];
+export type DepositDealTokenArgs<K extends keyof DepositDealTokenResult> = {
+    [Property in keyof Pick<DepositDealTokenFields, K>]: DepositDealTokenFields[Property];
 };
-export const useGetDepositDealTokensById = <K extends keyof DepositDealTokensResult>(url: string, options?: SingleQueryOptions, args?: DepositDealTokensArgs<K>, queryOptions: UseQueryOptions<Pick<DepositDealTokensResult, K>> = {}) => {
-    const func = async function <K extends keyof DepositDealTokensResult>(url: string, options: SingleQueryOptions, args: DepositDealTokensArgs<K>): Promise<Pick<DepositDealTokensResult, K>> {
+export const useGetDepositDealTokenById = <K extends keyof DepositDealTokenResult>(url: string, options?: SingleQueryOptions, args?: DepositDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<DepositDealTokenResult, K>> = {}) => {
+    const func = async function <K extends keyof DepositDealTokenResult>(url: string, options: SingleQueryOptions, args: DepositDealTokenArgs<K>): Promise<Pick<DepositDealTokenResult, K>> {
         const res = await axios.post(url, {
-            query: generateGql("depositDealTokens", options, args)
+            query: generateGql("depositDealToken", options, args)
         });
         const r = res.data as any;
         if (r.errors && r.errors.length) {
@@ -1086,32 +1086,32 @@ export const useGetDepositDealTokensById = <K extends keyof DepositDealTokensRes
             formattedObj["dealContract"] = obj["dealContract"];
         if (obj["underlyingDealTokenAmount"])
             formattedObj["underlyingDealTokenAmount"] = wei(obj["underlyingDealTokenAmount"], 0);
-        return formattedObj as Pick<DepositDealTokensResult, K>;
+        return formattedObj as Pick<DepositDealTokenResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("DepositDealTokens", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("DepositDealToken", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
 };
-export const useGetDepositDealTokenss = <K extends keyof DepositDealTokensResult>(url: string, options?: MultiQueryOptions<DepositDealTokensFilter, DepositDealTokensResult>, args?: DepositDealTokensArgs<K>, queryOptions: UseQueryOptions<Pick<DepositDealTokensResult, K>[]> = {}) => {
-    const func = async function <K extends keyof DepositDealTokensResult>(url: string, options: MultiQueryOptions<DepositDealTokensFilter, DepositDealTokensResult>, args: DepositDealTokensArgs<K>): Promise<Pick<DepositDealTokensResult, K>[]> {
-        const paginatedOptions: Partial<MultiQueryOptions<DepositDealTokensFilter, DepositDealTokensResult>> = { ...options };
-        let paginationKey: keyof DepositDealTokensFilter | null = null;
+export const useGetDepositDealTokens = <K extends keyof DepositDealTokenResult>(url: string, options?: MultiQueryOptions<DepositDealTokenFilter, DepositDealTokenResult>, args?: DepositDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<DepositDealTokenResult, K>[]> = {}) => {
+    const func = async function <K extends keyof DepositDealTokenResult>(url: string, options: MultiQueryOptions<DepositDealTokenFilter, DepositDealTokenResult>, args: DepositDealTokenArgs<K>): Promise<Pick<DepositDealTokenResult, K>[]> {
+        const paginatedOptions: Partial<MultiQueryOptions<DepositDealTokenFilter, DepositDealTokenResult>> = { ...options };
+        let paginationKey: keyof DepositDealTokenFilter | null = null;
         let paginationValue = "";
         if (options.first && options.first > MAX_PAGE) {
             paginatedOptions.first = MAX_PAGE;
             paginatedOptions.orderBy = options.orderBy || "id";
             paginatedOptions.orderDirection = options.orderDirection || "asc";
-            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof DepositDealTokensFilter;
+            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof DepositDealTokenFilter;
             paginatedOptions.where = { ...options.where };
         }
-        let results: Pick<DepositDealTokensResult, K>[] = [];
+        let results: Pick<DepositDealTokenResult, K>[] = [];
         do {
             if (paginationKey && paginationValue)
                 paginatedOptions.where![paginationKey] = paginationValue as any;
             const res = await axios.post(url, {
-                query: generateGql("depositDealTokenss", paginatedOptions, args)
+                query: generateGql("depositDealTokens", paginatedOptions, args)
             });
             const r = res.data as any;
             if (r.errors && r.errors.length) {
@@ -1130,7 +1130,7 @@ export const useGetDepositDealTokenss = <K extends keyof DepositDealTokensResult
                     formattedObj["dealContract"] = obj["dealContract"];
                 if (obj["underlyingDealTokenAmount"])
                     formattedObj["underlyingDealTokenAmount"] = wei(obj["underlyingDealTokenAmount"], 0);
-                return formattedObj as Pick<DepositDealTokensResult, K>;
+                return formattedObj as Pick<DepositDealTokenResult, K>;
             });
             results = results.concat(newResults);
             if (newResults.length < 1000) {
@@ -1143,7 +1143,7 @@ export const useGetDepositDealTokenss = <K extends keyof DepositDealTokensResult
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("DepositDealTokenss", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("DepositDealTokens", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -2124,7 +2124,7 @@ export const useGetWithdrawFromPools = <K extends keyof WithdrawFromPoolResult>(
         enabled: !!options && !!args,
     });
 };
-export type WithdrawUnderlyingDealTokensFilter = {
+export type WithdrawUnderlyingDealTokenFilter = {
     id?: string | null;
     id_not?: string | null;
     id_gt?: string | null;
@@ -2160,27 +2160,27 @@ export type WithdrawUnderlyingDealTokensFilter = {
     underlyingDealTokenAmount_in?: WeiSource[];
     underlyingDealTokenAmount_not_in?: WeiSource[];
 };
-export type WithdrawUnderlyingDealTokensResult = {
+export type WithdrawUnderlyingDealTokenResult = {
     id: string;
     underlyingDealTokenAddress: string;
     depositor: string;
     dealContract: string;
     underlyingDealTokenAmount: Wei;
 };
-export type WithdrawUnderlyingDealTokensFields = {
+export type WithdrawUnderlyingDealTokenFields = {
     id: true;
     underlyingDealTokenAddress: true;
     depositor: true;
     dealContract: true;
     underlyingDealTokenAmount: true;
 };
-export type WithdrawUnderlyingDealTokensArgs<K extends keyof WithdrawUnderlyingDealTokensResult> = {
-    [Property in keyof Pick<WithdrawUnderlyingDealTokensFields, K>]: WithdrawUnderlyingDealTokensFields[Property];
+export type WithdrawUnderlyingDealTokenArgs<K extends keyof WithdrawUnderlyingDealTokenResult> = {
+    [Property in keyof Pick<WithdrawUnderlyingDealTokenFields, K>]: WithdrawUnderlyingDealTokenFields[Property];
 };
-export const useGetWithdrawUnderlyingDealTokensById = <K extends keyof WithdrawUnderlyingDealTokensResult>(url: string, options?: SingleQueryOptions, args?: WithdrawUnderlyingDealTokensArgs<K>, queryOptions: UseQueryOptions<Pick<WithdrawUnderlyingDealTokensResult, K>> = {}) => {
-    const func = async function <K extends keyof WithdrawUnderlyingDealTokensResult>(url: string, options: SingleQueryOptions, args: WithdrawUnderlyingDealTokensArgs<K>): Promise<Pick<WithdrawUnderlyingDealTokensResult, K>> {
+export const useGetWithdrawUnderlyingDealTokenById = <K extends keyof WithdrawUnderlyingDealTokenResult>(url: string, options?: SingleQueryOptions, args?: WithdrawUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<WithdrawUnderlyingDealTokenResult, K>> = {}) => {
+    const func = async function <K extends keyof WithdrawUnderlyingDealTokenResult>(url: string, options: SingleQueryOptions, args: WithdrawUnderlyingDealTokenArgs<K>): Promise<Pick<WithdrawUnderlyingDealTokenResult, K>> {
         const res = await axios.post(url, {
-            query: generateGql("withdrawUnderlyingDealTokens", options, args)
+            query: generateGql("withdrawUnderlyingDealToken", options, args)
         });
         const r = res.data as any;
         if (r.errors && r.errors.length) {
@@ -2198,32 +2198,32 @@ export const useGetWithdrawUnderlyingDealTokensById = <K extends keyof WithdrawU
             formattedObj["dealContract"] = obj["dealContract"];
         if (obj["underlyingDealTokenAmount"])
             formattedObj["underlyingDealTokenAmount"] = wei(obj["underlyingDealTokenAmount"], 0);
-        return formattedObj as Pick<WithdrawUnderlyingDealTokensResult, K>;
+        return formattedObj as Pick<WithdrawUnderlyingDealTokenResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("WithdrawUnderlyingDealTokens", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("WithdrawUnderlyingDealToken", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
 };
-export const useGetWithdrawUnderlyingDealTokenss = <K extends keyof WithdrawUnderlyingDealTokensResult>(url: string, options?: MultiQueryOptions<WithdrawUnderlyingDealTokensFilter, WithdrawUnderlyingDealTokensResult>, args?: WithdrawUnderlyingDealTokensArgs<K>, queryOptions: UseQueryOptions<Pick<WithdrawUnderlyingDealTokensResult, K>[]> = {}) => {
-    const func = async function <K extends keyof WithdrawUnderlyingDealTokensResult>(url: string, options: MultiQueryOptions<WithdrawUnderlyingDealTokensFilter, WithdrawUnderlyingDealTokensResult>, args: WithdrawUnderlyingDealTokensArgs<K>): Promise<Pick<WithdrawUnderlyingDealTokensResult, K>[]> {
-        const paginatedOptions: Partial<MultiQueryOptions<WithdrawUnderlyingDealTokensFilter, WithdrawUnderlyingDealTokensResult>> = { ...options };
-        let paginationKey: keyof WithdrawUnderlyingDealTokensFilter | null = null;
+export const useGetWithdrawUnderlyingDealTokens = <K extends keyof WithdrawUnderlyingDealTokenResult>(url: string, options?: MultiQueryOptions<WithdrawUnderlyingDealTokenFilter, WithdrawUnderlyingDealTokenResult>, args?: WithdrawUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<WithdrawUnderlyingDealTokenResult, K>[]> = {}) => {
+    const func = async function <K extends keyof WithdrawUnderlyingDealTokenResult>(url: string, options: MultiQueryOptions<WithdrawUnderlyingDealTokenFilter, WithdrawUnderlyingDealTokenResult>, args: WithdrawUnderlyingDealTokenArgs<K>): Promise<Pick<WithdrawUnderlyingDealTokenResult, K>[]> {
+        const paginatedOptions: Partial<MultiQueryOptions<WithdrawUnderlyingDealTokenFilter, WithdrawUnderlyingDealTokenResult>> = { ...options };
+        let paginationKey: keyof WithdrawUnderlyingDealTokenFilter | null = null;
         let paginationValue = "";
         if (options.first && options.first > MAX_PAGE) {
             paginatedOptions.first = MAX_PAGE;
             paginatedOptions.orderBy = options.orderBy || "id";
             paginatedOptions.orderDirection = options.orderDirection || "asc";
-            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof WithdrawUnderlyingDealTokensFilter;
+            paginationKey = paginatedOptions.orderBy + (paginatedOptions.orderDirection === "asc" ? "_gt" : "_lt") as keyof WithdrawUnderlyingDealTokenFilter;
             paginatedOptions.where = { ...options.where };
         }
-        let results: Pick<WithdrawUnderlyingDealTokensResult, K>[] = [];
+        let results: Pick<WithdrawUnderlyingDealTokenResult, K>[] = [];
         do {
             if (paginationKey && paginationValue)
                 paginatedOptions.where![paginationKey] = paginationValue as any;
             const res = await axios.post(url, {
-                query: generateGql("withdrawUnderlyingDealTokenss", paginatedOptions, args)
+                query: generateGql("withdrawUnderlyingDealTokens", paginatedOptions, args)
             });
             const r = res.data as any;
             if (r.errors && r.errors.length) {
@@ -2242,7 +2242,7 @@ export const useGetWithdrawUnderlyingDealTokenss = <K extends keyof WithdrawUnde
                     formattedObj["dealContract"] = obj["dealContract"];
                 if (obj["underlyingDealTokenAmount"])
                     formattedObj["underlyingDealTokenAmount"] = wei(obj["underlyingDealTokenAmount"], 0);
-                return formattedObj as Pick<WithdrawUnderlyingDealTokensResult, K>;
+                return formattedObj as Pick<WithdrawUnderlyingDealTokenResult, K>;
             });
             results = results.concat(newResults);
             if (newResults.length < 1000) {
@@ -2255,7 +2255,7 @@ export const useGetWithdrawUnderlyingDealTokenss = <K extends keyof WithdrawUnde
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("WithdrawUnderlyingDealTokenss", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("WithdrawUnderlyingDealTokens", options, args) : null], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });

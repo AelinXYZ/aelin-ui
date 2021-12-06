@@ -170,7 +170,7 @@ const Pools: FC = () => {
 			},
 			{
 				// TODO update this to be right
-				Header: 'Pool ends',
+				Header: 'Pool unlocks',
 				accessor: 'duration',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (

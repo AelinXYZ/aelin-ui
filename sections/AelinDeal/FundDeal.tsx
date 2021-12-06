@@ -223,14 +223,14 @@ const FundDeal: FC<FundDealProps> = ({
 			>
 				{/* TODO merge this with the new tx components when we refactor the action box */}
 				{txState === Transaction.SUCCESS ? (
-					<div>
+					<InnerContainer>
 						<div>Your transaction has been submitted successfully</div>
-					</div>
+					</InnerContainer>
 				) : null}
 				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
 				{isAllowance && txState === Transaction.PRESUBMIT ? (
-					<div>
-						<div>{`Please approve ${visibleAmount} of ${symbol} usage by the deal contract`}</div>
+					<InnerContainer>
+						<div>{`Please approve ${visibleAmount} ${symbol} for usage by the deal contract`}</div>
 						<SubmitButton
 							variant={'text'}
 							onClick={(e) => {
@@ -240,10 +240,10 @@ const FundDeal: FC<FundDealProps> = ({
 						>
 							Confirm Approval
 						</SubmitButton>
-					</div>
+					</InnerContainer>
 				) : null}
 				{!isAllowance && txState === Transaction.PRESUBMIT ? (
-					<div>
+					<InnerContainer>
 						<div>{`You are going to finalize the depositing ${visibleAmount} of ${symbol}`}</div>
 						<SubmitButton
 							variant={'text'}
@@ -254,7 +254,7 @@ const FundDeal: FC<FundDealProps> = ({
 						>
 							Confirm Purchase
 						</SubmitButton>
-					</div>
+					</InnerContainer>
 				) : null}
 			</BaseModal>
 		</FlexDiv>
@@ -264,6 +264,14 @@ const FundDeal: FC<FundDealProps> = ({
 const SubmitButton = styled(Button)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
+	width: 150px;
+	margin-top: 20px;
+`;
+
+const InnerContainer = styled.div`
+	height: 350px;
+	width: 100%;
+	text-align: center;
 `;
 
 const StyledButton = styled(Button)`
