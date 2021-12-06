@@ -76,7 +76,6 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	}, [txState]);
 
 	const isPurchaseButtonEnabled = isValid && txState !== Transaction.WAITING;
-	console.log(gasLimitEstimate);
 	return (
 		<Container>
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>

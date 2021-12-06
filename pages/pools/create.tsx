@@ -223,7 +223,6 @@ const Create: FC = () => {
 					),
 					0
 				);
-				console.log(gasEstimate, 'yo');
 				setGasLimitEstimate(gasEstimate);
 			} catch (e) {
 				console.log(e);

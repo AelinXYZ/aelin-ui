@@ -24,7 +24,6 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 	gasLimitEstimate,
 	onSubmit,
 }) => {
-	console.log(gasLimitEstimate, 'fff');
 	return (
 		<BaseModal title={title} setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}>
 			<ModalContainer>
@@ -35,7 +34,12 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 					setGasPrice={setGasPrice}
 					gasLimitEstimate={gasLimitEstimate}
 				/>
-				<SubmitButton variant="text" type="submit" onClick={() => onSubmit()}>
+				<SubmitButton
+					disabled={!gasLimitEstimate}
+					variant="text"
+					type="submit"
+					onClick={() => onSubmit()}
+				>
 					Submit
 				</SubmitButton>
 			</ModalContainer>
