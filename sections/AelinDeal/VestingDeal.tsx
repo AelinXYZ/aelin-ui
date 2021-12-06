@@ -1,4 +1,4 @@
-import { FC, useMemo, useCallback } from 'react';
+import { FC, useMemo, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { FlexDiv } from 'components/common';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
@@ -15,12 +15,22 @@ interface VestingDealProps {
 	deal: any;
 	dealBalance: number | null;
 	claims: any[];
+	underlyingPerDealExchangeRate: number | null;
+	claimableUnderlyingTokens: number | null;
 }
 
-const VestingDeal: FC<VestingDealProps> = ({ deal, dealBalance, claims }) => {
+const VestingDeal: FC<VestingDealProps> = ({
+	deal,
+	dealBalance,
+	claims,
+	underlyingPerDealExchangeRate,
+	claimableUnderlyingTokens,
+}) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { txState, setTxState } = TransactionData.useContainer();
+	console.log('claims', claims);
+
 	const dealVestingGridItems = useMemo(
 		() => [
 			{
@@ -33,7 +43,7 @@ const VestingDeal: FC<VestingDealProps> = ({ deal, dealBalance, claims }) => {
 			},
 			{
 				header: 'Exchange rate',
-				subText: deal.underlyingDealTokenTotal.div(deal.purchaseTokenTotalForDeal).toString(),
+				subText: underlyingPerDealExchangeRate,
 			},
 			{
 				header: 'Underlying Deal Token',
@@ -72,6 +82,7 @@ const VestingDeal: FC<VestingDealProps> = ({ deal, dealBalance, claims }) => {
 		if (!walletAddress || !signer || !deal.id) return;
 		const contract = new ethers.Contract(deal.id, dealAbi, signer);
 		try {
+			console.log('calling claim');
 			const tx = await contract.claim({
 				gasLimit: 1000000,
 			});
@@ -95,7 +106,7 @@ const VestingDeal: FC<VestingDealProps> = ({ deal, dealBalance, claims }) => {
 				input={{
 					placeholder: '0',
 					label: '',
-					maxValue: dealBalance ?? 0,
+					maxValue: claimableUnderlyingTokens ?? 0,
 				}}
 				txState={txState}
 				setTxState={setTxState}

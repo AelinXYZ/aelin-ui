@@ -1,6 +1,6 @@
 const contract = {
 	42: {
-		address: '0x37C1803e1D63515f0a9806030e887b55A6A344b3',
+		address: '0x8659F2b2ae99395d15D65ae512b656651305826f',
 		abi: [
 			{
 				inputs: [

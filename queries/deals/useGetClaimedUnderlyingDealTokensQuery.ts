@@ -1,8 +1,8 @@
 import { wei } from '@synthetixio/wei';
 import { GRAPH_ENDPOINT } from 'constants/endpoints';
 import {
-	ClaimedUnderlyingDealTokensResult,
-	useGetClaimedUnderlyingDealTokenss,
+	ClaimedUnderlyingDealTokenResult,
+	useGetClaimedUnderlyingDealTokens,
 } from '../../subgraph';
 
 const useGetClaimedUnderlyingDealTokensQuery = ({
@@ -12,7 +12,7 @@ const useGetClaimedUnderlyingDealTokensQuery = ({
 	dealAddress: string;
 	recipient: string;
 }) =>
-	useGetClaimedUnderlyingDealTokenss(
+	useGetClaimedUnderlyingDealTokens(
 		GRAPH_ENDPOINT,
 		{
 			where: { dealAddress, recipient },
@@ -26,7 +26,7 @@ const useGetClaimedUnderlyingDealTokensQuery = ({
 		}
 	);
 
-export const parseClaimedResult = (claimedResult: ClaimedUnderlyingDealTokensResult) => ({
+export const parseClaimedResult = (claimedResult: ClaimedUnderlyingDealTokenResult) => ({
 	...claimedResult,
 	underlyingDealTokensClaimed: wei(claimedResult.underlyingDealTokensClaimed.toString()),
 });

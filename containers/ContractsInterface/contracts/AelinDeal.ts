@@ -76,7 +76,7 @@ const dealAbi = [
 				type: 'uint256',
 			},
 		],
-		name: 'ClaimedUnderlyingDealTokens',
+		name: 'ClaimedUnderlyingDealToken',
 		type: 'event',
 	},
 	{
@@ -138,7 +138,7 @@ const dealAbi = [
 				type: 'uint256',
 			},
 		],
-		name: 'DepositDealTokens',
+		name: 'DepositDealToken',
 		type: 'event',
 	},
 	{
@@ -201,7 +201,7 @@ const dealAbi = [
 				type: 'uint256',
 			},
 		],
-		name: 'WithdrawUnderlyingDealTokens',
+		name: 'WithdrawUnderlyingDealToken',
 		type: 'event',
 	},
 	{
@@ -918,5 +918,4 @@ const dealAbi = [
 		type: 'function',
 	},
 ];
-
 export default dealAbi;
