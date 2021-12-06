@@ -19,6 +19,7 @@ interface SectionDetailsProps {
 	isPurchaseExpired: boolean;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
+	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
 }
 
 const SectionDetails: FC<SectionDetailsProps> = ({
@@ -33,6 +34,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	isPurchaseExpired,
 	setGasPrice,
 	gasLimitEstimate,
+	privatePoolDetails,
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
@@ -47,6 +49,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			isPurchaseExpired={isPurchaseExpired}
 			setGasPrice={setGasPrice}
 			gasLimitEstimate={gasLimitEstimate}
+			privatePoolDetails={privatePoolDetails}
 		/>
 	</FlexDiv>
 );

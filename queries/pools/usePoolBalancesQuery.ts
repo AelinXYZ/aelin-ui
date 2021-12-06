@@ -11,6 +11,8 @@ type PoolBalances = {
 	purchaseTokenAllowance: string;
 	userPurchaseBalance: string;
 	userPoolBalance: string;
+	isPrivatePool: boolean;
+	privatePoolAmount: number;
 };
 
 const usePoolBalancesQuery = ({
@@ -26,12 +28,22 @@ const usePoolBalancesQuery = ({
 		async () => {
 			const poolContract = new ethers.Contract(poolAddress!, poolAbi, provider);
 			const tokenContract = new ethers.Contract(purchaseToken!, erc20Abi, provider);
-			const [poolBalance, balance, decimals, symbol, allowance] = await Promise.all([
+			const [
+				poolBalance,
+				balance,
+				decimals,
+				symbol,
+				allowance,
+				hasAllowList,
+				unformattedAllowListAmount,
+			] = await Promise.all([
 				poolContract.balanceOf(walletAddress),
 				tokenContract.balanceOf(walletAddress),
 				tokenContract.decimals(),
 				tokenContract.symbol(),
 				tokenContract.allowance(walletAddress, poolAddress),
+				poolContract.hasAllowList(),
+				poolContract.allowList(walletAddress),
 			]);
 			return {
 				purchaseTokenDecimals: decimals,
@@ -39,6 +51,8 @@ const usePoolBalancesQuery = ({
 				purchaseTokenAllowance: ethers.utils.formatUnits(allowance, decimals).toString(),
 				userPurchaseBalance: ethers.utils.formatUnits(balance, decimals).toString(),
 				userPoolBalance: ethers.utils.formatUnits(poolBalance, decimals).toString(),
+				isPrivatePool: hasAllowList,
+				privatePoolAmount: Number(ethers.utils.formatUnits(unformattedAllowListAmount, decimals)),
 			};
 		},
 		{

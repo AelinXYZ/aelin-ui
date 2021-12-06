@@ -106,7 +106,7 @@ const Create: FC = () => {
 			poolName: formatBytes32String(poolName),
 			poolSymbol: formatBytes32String(poolSymbol),
 			poolCap: parseEther(poolCap.toString()),
-			sponsorFee: sponsorFee.toString(),
+			sponsorFee: parseEther(sponsorFee.toString()),
 			duration,
 			purchaseDuration,
 			poolAddresses,
@@ -140,7 +140,7 @@ const Create: FC = () => {
 				// https://faucet.paradigm.xyz/ will give you this token on kovan
 				'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
 				duration,
-				sponsorFee.toString(),
+				sponsorFee,
 				purchaseDuration,
 				poolAddresses,
 				poolAddressesAmounts,
@@ -216,7 +216,7 @@ const Create: FC = () => {
 						// https://faucet.paradigm.xyz/ will give you this token on kovan
 						'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
 						duration,
-						sponsorFee.toString(),
+						sponsorFee,
 						purchaseDuration,
 						poolAddresses,
 						poolAddressesAmounts

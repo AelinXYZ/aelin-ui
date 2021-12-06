@@ -186,7 +186,7 @@ const poolAbi = [
 				type: 'uint256',
 			},
 		],
-		name: 'DealDetails',
+		name: 'DealDetail',
 		type: 'event',
 	},
 	{

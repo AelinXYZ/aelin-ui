@@ -46,33 +46,35 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const purchaseTokenAllowance = poolBalances?.purchaseTokenAllowance ?? null;
 	const userPurchaseBalance = poolBalances?.userPurchaseBalance ?? null;
 	const userPoolBalance = poolBalances?.userPoolBalance ?? null;
+	const isPrivatePool = poolBalances?.isPrivatePool ?? null;
+	const privatePoolAmount = poolBalances?.privatePoolAmount ?? null;
 
-	const contract = useMemo(() => {
+	const tokenContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
 		return new ethers.Contract(pool.purchaseToken, erc20Abi, signer);
 	}, [pool, signer]);
 
+	const poolContract = useMemo(() => {
+		if (!pool || !pool.purchaseToken || !signer) return null;
+		return new ethers.Contract(pool.id, poolAbi, signer);
+	}, [pool, signer]);
+
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!contract || !pool || !pool.id) return;
+			if (!poolContract || !tokenContract || !pool || !pool.id) return;
 			try {
 				if (!Number(purchaseTokenAllowance)) {
 					setGasLimitEstimate(
-						wei(await contract.estimateGas.approve(pool.id, ethers.constants.MaxUint256), 0)
-					);
-					console.log(
-						'approve',
-						(await contract.estimateGas.approve(pool.id, ethers.constants.MaxUint256)).toString()
+						wei(await tokenContract.estimateGas.approve(pool.id, ethers.constants.MaxUint256), 0)
 					);
 				} else {
 					if (!purchaseTokenDecimals) return;
-					console.log('not approve');
 					setGasLimitEstimate(
 						wei(
-							await contract.purchasePoolTokens(
-								ethers.utils.parseUnits('1', purchaseTokenDecimals),
-								0
-							)
+							await poolContract.estimateGas.purchasePoolTokens(
+								ethers.utils.parseUnits('1', purchaseTokenDecimals)
+							),
+							0
 						)
 					);
 				}
@@ -82,7 +84,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [contract, pool, purchaseTokenAllowance, purchaseTokenDecimals]);
+	}, [poolContract, pool, purchaseTokenAllowance, purchaseTokenDecimals, tokenContract]);
 
 	const poolGridItems = useMemo(
 		() => [
@@ -122,7 +124,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Sponsor Fee',
-				subText: pool?.sponsorFee || 0,
+				subText: `${
+					pool?.sponsorFee.toString() != null
+						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
+						: 0
+				}%`,
 			},
 			{
 				header: 'Purchase Expiration',
@@ -140,23 +146,30 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 
 	const handleSubmit = useCallback(
 		async (value: number) => {
-			if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals) return;
-			const contract = new ethers.Contract(pool.id, poolAbi, signer);
+			if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
 			try {
-				const tx = await contract.purchasePoolTokens(
+				const tx = await poolContract.purchasePoolTokens(
 					ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
 					{
-						gasLimit: gasLimitEstimate,
-						gasPrice,
+						gasLimit: gasLimitEstimate?.toBN(),
+						gasPrice: gasPrice.toBN(),
 					}
 				);
+				setTxState(Transaction.WAITING);
 				if (tx) {
 					monitorTransaction({
 						txHash: tx.hash,
-						onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+						onTxConfirmed: () => {
+							setTimeout(() => {
+								poolBalancesQuery.refetch();
+								console.log('refetch');
+							}, 5 * 1000);
+							setTxState(Transaction.SUCCESS);
+						},
 					});
 				}
 			} catch (e) {
+				console.log(e);
 				setTxState(Transaction.FAILED);
 			}
 		},
@@ -164,17 +177,13 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	);
 
 	const handleApprove = useCallback(async () => {
-		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken) return;
-		const contract = new ethers.Contract(pool.purchaseToken, erc20Abi, signer);
+		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken || !tokenContract) return;
 		try {
-			const tx = await contract.approve(
-				pool.id,
-				ethers.constants.MaxUint256,
-				// TODO update gasPrice and gasLimit
-				{
-					gasLimit: 1000000,
-				}
-			);
+			const tx = await tokenContract.approve(pool.id, ethers.constants.MaxUint256, {
+				gasLimit: gasLimitEstimate?.toBN(),
+				gasPrice: gasPrice.toBN(),
+			});
+			setTxState(Transaction.WAITING);
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
@@ -188,6 +197,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				});
 			}
 		} catch (e) {
+			console.log(e);
 			setTxState(Transaction.FAILED);
 		}
 	}, [pool?.id, pool?.purchaseToken, monitorTransaction, walletAddress, signer]);
@@ -198,6 +208,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 
 	return (
 		<SectionDetails
+			privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
 			isPurchaseExpired={isPurchaseExpired}
 			actionBoxType={ActionBoxType.FundPool}
 			gridItems={poolGridItems}

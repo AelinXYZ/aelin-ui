@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from 'react';
+import { FC, useState, useMemo, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import Spinner from 'assets/svg/loader.svg';
 import Info from 'assets/svg/info.svg';
@@ -33,10 +33,16 @@ export type InputType = {
 	symbol?: string;
 };
 
-const actionBoxTypeToTitle = (actionBoxType: ActionBoxType) => {
+const actionBoxTypeToTitle = (
+	actionBoxType: ActionBoxType,
+	isPrivatePool: boolean,
+	privatePoolAmount: string
+) => {
+	const privatePoolText = `Private pool. You may purchase up to ${privatePoolAmount}`;
+	const publicPoolText = 'Public pool';
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
-			return 'Purchase';
+			return isPrivatePool ? privatePoolText : publicPoolText;
 		case ActionBoxType.AcceptOrRejectDeal:
 			return 'Accept Deal';
 		case ActionBoxType.VestingDeal:
@@ -89,6 +95,7 @@ interface ActionBoxProps {
 	isPurchaseExpired: boolean;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
+	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
@@ -102,6 +109,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	isPurchaseExpired,
 	setGasPrice,
 	gasLimitEstimate,
+	privatePoolDetails,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
@@ -115,6 +123,10 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const canWithdraw = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = canWithdraw && !isDealAccept;
+
+	useEffect(() => {
+		if (txState !== Transaction.PRESUBMIT) setShowTxModal(false);
+	}, [txState]);
 
 	const modalContent = useMemo(
 		() => ({
@@ -170,7 +182,11 @@ const ActionBox: FC<ActionBoxProps> = ({
 			) : null}
 			<FlexDivRow>
 				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-					{actionBoxTypeToTitle(actionBoxType)}
+					{actionBoxTypeToTitle(
+						actionBoxType,
+						privatePoolDetails?.isPrivatePool ?? false,
+						privatePoolDetails?.privatePoolAmount ?? '0'
+					)}
 				</ActionBoxHeader>
 				{canWithdraw ? (
 					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>
@@ -198,7 +214,14 @@ const ActionBox: FC<ActionBoxProps> = ({
 								<ActionBoxMax
 									onClick={() => {
 										setIsMaxValue(true);
-										setInputValue(maxValue);
+										setInputValue(
+											privatePoolDetails?.isPrivatePool
+												? Math.min(
+														Number(privatePoolDetails?.privatePoolAmount ?? 0),
+														Number(maxValue)
+												  )
+												: maxValue
+										);
 									}}
 								>
 									Max
