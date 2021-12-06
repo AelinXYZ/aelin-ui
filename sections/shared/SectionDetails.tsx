@@ -5,6 +5,7 @@ import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox'
 import { GridItem } from 'components/Grid/Grid';
 import { InputType } from 'components/ActionBox/ActionBox';
 import { Transaction } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
 
 interface SectionDetailsProps {
 	gridItems: GridItem[];
@@ -16,6 +17,8 @@ interface SectionDetailsProps {
 	txState: Transaction;
 	setTxState: (tx: Transaction) => void;
 	isPurchaseExpired: boolean;
+	setGasPrice: Function;
+	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
 }
 
@@ -29,6 +32,8 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	txState,
 	setTxState,
 	isPurchaseExpired,
+	setGasPrice,
+	gasLimitEstimate,
 	privatePoolDetails,
 }) => (
 	<FlexDiv>
@@ -42,6 +47,8 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			txState={txState}
 			setTxState={setTxState}
 			isPurchaseExpired={isPurchaseExpired}
+			setGasPrice={setGasPrice}
+			gasLimitEstimate={gasLimitEstimate}
 			privatePoolDetails={privatePoolDetails}
 		/>
 	</FlexDiv>

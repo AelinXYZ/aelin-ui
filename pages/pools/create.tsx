@@ -188,7 +188,7 @@ const Create: FC = () => {
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
-
+			console.log('here');
 			const errors = validateCreatePool(formik.values);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
@@ -223,9 +223,9 @@ const Create: FC = () => {
 					),
 					0
 				);
-
 				setGasLimitEstimate(gasEstimate);
-			} catch (_) {
+			} catch (e) {
+				console.log(e);
 				setGasLimitEstimate(null);
 			}
 		};

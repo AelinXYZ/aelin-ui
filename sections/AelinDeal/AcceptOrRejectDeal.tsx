@@ -9,7 +9,7 @@ import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
-import usePoolBalances from 'hooks/usePoolBalances';
+import usePoolBalances from 'queries/pools/usePoolBalancesQuery';
 import { PoolCreatedResult } from 'subgraph';
 
 import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';

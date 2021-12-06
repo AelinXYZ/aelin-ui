@@ -2,11 +2,9 @@ import { FC, useState, useEffect } from 'react';
 import { FormikProps } from 'formik';
 
 import styled from 'styled-components';
-import BaseModal from 'components/BaseModal';
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import Button from 'components/Button';
 import GasSelector from 'components/GasSelector';
-import Etherscan from 'containers/BlockExplorer';
-import { ExternalLink, StyledSpinner } from 'components/common';
 import Connector from 'containers/Connector';
 import { GasLimitEstimate } from 'constants/networks';
 import { Transaction } from 'constants/transactions';
@@ -27,7 +25,6 @@ interface SummaryBoxProps {
 	isValidForm: boolean;
 	formik: FormikProps<any>;
 	txState: Transaction;
-	txHash: string | null;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 }
@@ -56,16 +53,13 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	summaryItems,
 	txType,
 	isValidForm,
-	txHash,
 	setGasPrice,
 	gasLimitEstimate,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
-	const { blockExplorerInstance } = Etherscan.useContainer();
 	const isValid = isValidForm && walletAddress ? true : false;
-	const link =
-		blockExplorerInstance != null && txHash != null ? blockExplorerInstance.txLink(txHash) : null;
+
 	const summaryBoxGrid = (
 		<SummaryBoxGrid>
 			{(summaryItems ?? []).map(({ label, text }, index) => (
@@ -82,7 +76,6 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	}, [txState]);
 
 	const isPurchaseButtonEnabled = isValid && txState !== Transaction.WAITING;
-
 	return (
 		<Container>
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>
@@ -97,40 +90,16 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			>
 				{txTypeToTitle(txType)}
 			</PurchaseButton>
-			<BaseModal
+			<ConfirmTransactionModal
 				title={`Confirm ${txTypeToTitle(txType)}`}
 				setIsModalOpen={setShowTxModal}
 				isModalOpen={showTxModal}
+				setGasPrice={setGasPrice}
+				gasLimitEstimate={gasLimitEstimate}
+				onSubmit={formik.handleSubmit}
 			>
-				{txType === CreateTxType.CreatePool ? (
-					<ModalContainer>
-						{summaryBoxGrid}
-						<hr />
-						<GasSelector
-							initialGasSpeed="fast"
-							setGasPrice={setGasPrice}
-							gasLimitEstimate={gasLimitEstimate}
-						/>
-						<SubmitButton variant="text" type="submit" onClick={() => formik.handleSubmit()}>
-							Submit
-						</SubmitButton>
-					</ModalContainer>
-				) : null}
-				{txType === CreateTxType.CreateDeal ? (
-					<ModalContainer>
-						{summaryBoxGrid}
-						<hr />
-						<GasSelector
-							initialGasSpeed="fast"
-							setGasPrice={setGasPrice}
-							gasLimitEstimate={gasLimitEstimate}
-						/>
-						<SubmitButton variant="text" type="submit" onClick={() => formik.handleSubmit()}>
-							Submit
-						</SubmitButton>
-					</ModalContainer>
-				) : null}
-			</BaseModal>
+				{summaryBoxGrid}
+			</ConfirmTransactionModal>
 		</Container>
 	);
 };
@@ -143,25 +112,10 @@ const Container = styled.div`
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
 
-const ModalContainer = styled.div`
-	text-align: center;
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 120px;
-	margin: 10px auto 0 auto;
-`;
-
 const SummaryBoxHeader = styled.div`
 	padding: 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 12px;
-`;
-
-const StyledExternalLink = styled(ExternalLink)`
-	color: ${(props) => props.theme.colors.statusBlue};
 `;
 
 const SummaryBoxGrid = styled.div`

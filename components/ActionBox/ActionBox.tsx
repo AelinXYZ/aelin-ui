@@ -1,15 +1,15 @@
-import { FC, useState } from 'react';
+import { FC, useState, useMemo, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import Spinner from 'assets/svg/loader.svg';
 import Info from 'assets/svg/info.svg';
 import Image from 'next/image';
 
-import BaseModal from '../BaseModal';
-import OutsideClickHandler from 'react-outside-click-handler';
-import { FlexDivRow, FlexDivRowCentered, StyledSpinner, Tooltip } from '../common';
+import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 import Button from 'components/Button';
 import { Transaction } from 'constants/transactions';
 import Connector from 'containers/Connector';
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+import { GasLimitEstimate } from 'constants/networks';
 
 export enum TransactionType {
 	Allowance = 'ALLOWANCE',
@@ -81,7 +81,11 @@ const getActionButtonLabel = ({
 };
 
 interface ActionBoxProps {
-	onSubmit: (value: number | string, transactionType: TransactionType, isMax?: boolean) => void;
+	onSubmit: (
+		value: number | string | undefined,
+		transactionType: TransactionType,
+		isMax?: boolean
+	) => void;
 	input: InputType;
 	actionBoxType: ActionBoxType;
 	allowance: string;
@@ -89,6 +93,8 @@ interface ActionBoxProps {
 	txState: Transaction;
 	setTxState: (tx: Transaction) => void;
 	isPurchaseExpired: boolean;
+	setGasPrice: Function;
+	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
 }
 
@@ -101,6 +107,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 	txState,
 	setTxState,
 	isPurchaseExpired,
+	setGasPrice,
+	gasLimitEstimate,
 	privatePoolDetails,
 }) => {
 	const { walletAddress } = Connector.useContainer();
@@ -116,36 +124,60 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = canWithdraw && !isDealAccept;
 
+	useEffect(() => {
+		if (txState !== Transaction.PRESUBMIT) setShowTxModal(false);
+	}, [txState]);
+
+	const modalContent = useMemo(
+		() => ({
+			[TransactionType.Allowance]: {
+				heading: 'Confirm Approval',
+				onSubmit: onApprove,
+			},
+			[TransactionType.Purchase]: {
+				heading: `You are going to purchase for ${inputValue}`,
+				onSubmit: () => onSubmit(inputValue, txType),
+			},
+			[TransactionType.Accept]: {
+				heading: `You are accepting ${inputValue} tokens`,
+				onSubmit: () => onSubmit(inputValue, txType, isMaxValue),
+			},
+			[TransactionType.Withdraw]: {
+				heading: `You are withdrawing ${inputValue} tokens`,
+				onSubmit: () => onSubmit(inputValue, txType, isMaxValue),
+			},
+			[TransactionType.Vest]: {
+				heading: `You are vesting ${maxValue}`,
+				onSubmit: () => onSubmit(maxValue, txType),
+			},
+		}),
+		[inputValue, txType, maxValue, isMaxValue, onApprove, onSubmit]
+	);
+
 	return (
 		<Container>
 			{canWithdraw ? (
 				<RedemptionHeader>
-					<OutsideClickHandler
-						onOutsideClick={() => {
-							setShowTooltip(false);
-						}}
+					<RedemptionPeriodTooltip
+						visible={showTooltip}
+						appendTo="parent"
+						trigger="click"
+						allowHTML
+						interactive
+						content={
+							<div>
+								A max pro rata contribution makes you eligible for the open redemption period where
+								unredeemed deal tokens are available
+							</div>
+						}
 					>
-						<RedemptionPeriodTooltip
-							visible={showTooltip}
-							appendTo="parent"
-							trigger="click"
-							allowHTML
-							interactive
-							content={
-								<div>
-									A max pro rata contribution makes you eligible for the open redemption period
-									where unredeemed deal tokens are available
-								</div>
-							}
-						>
-							<FlexDivRowCentered>
-								{`Redemption Period: Pro Rata`}
-								<InfoClick onClick={() => setShowTooltip(!showTooltip)}>
-									<Image src={Info} alt="" />
-								</InfoClick>
-							</FlexDivRowCentered>
-						</RedemptionPeriodTooltip>
-					</OutsideClickHandler>
+						<FlexDivRowCentered>
+							{`Redemption Period: Pro Rata`}
+							<InfoClick onClick={() => setShowTooltip(!showTooltip)}>
+								<Image src={Info} alt="" />
+							</InfoClick>
+						</FlexDivRowCentered>
+					</RedemptionPeriodTooltip>
 				</RedemptionHeader>
 			) : null}
 			<FlexDivRow>
@@ -244,95 +276,16 @@ const ActionBox: FC<ActionBoxProps> = ({
 			Number(maxValue ?? 0) < Number(inputValue ?? 0) ? (
 				<ErrorNote>Max balance exceeded</ErrorNote>
 			) : null}
-			<BaseModal
+			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
 				isModalOpen={showTxModal}
-				onClose={() => setTxState(Transaction.PRESUBMIT)}
+				setGasPrice={setGasPrice}
+				gasLimitEstimate={gasLimitEstimate}
+				onSubmit={modalContent[txType].onSubmit}
 			>
-				{/* TODO create new components for the transaction feedback here */}
-				{txState === Transaction.SUCCESS ? (
-					<div>
-						<div>Your transaction has been submitted successfully</div>
-					</div>
-				) : null}
-				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
-				{txType === TransactionType.Allowance && txState === Transaction.PRESUBMIT ? (
-					<div>
-						<div>{`Please approve ${symbol} usage by the pool contract`}</div>
-						<SubmitButton
-							variant={'text'}
-							isWithdraw={false}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								onApprove();
-							}}
-						>
-							Confirm Approval
-						</SubmitButton>
-					</div>
-				) : null}
-				{txType === TransactionType.Purchase && txState === Transaction.PRESUBMIT ? (
-					<div>
-						<div>You are going to purchase for {inputValue}</div>
-						<SubmitButton
-							variant={'text'}
-							isWithdraw={false}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								onSubmit(inputValue, txType);
-							}}
-						>
-							Confirm Purchase
-						</SubmitButton>
-					</div>
-				) : null}
-				{txType === TransactionType.Accept && txState === Transaction.PRESUBMIT ? (
-					<div>
-						<div>You are accepting {inputValue} tokens</div>
-						<SubmitButton
-							variant={'text'}
-							isWithdraw={false}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								onSubmit(inputValue, txType, isMaxValue);
-							}}
-						>
-							Confirm Accept
-						</SubmitButton>
-					</div>
-				) : null}
-				{txType === TransactionType.Withdraw && txState === Transaction.PRESUBMIT ? (
-					<div>
-						<div>You are withdrawing {inputValue} tokens</div>
-						<SubmitButton
-							variant={'text'}
-							isWithdraw={true}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								onSubmit(inputValue, txType, isMaxValue);
-							}}
-						>
-							Confirm Withdraw
-						</SubmitButton>
-					</div>
-				) : null}
-				{txType === TransactionType.Vest && txState === Transaction.PRESUBMIT && maxValue ? (
-					<div>
-						<div>You are vesting {maxValue}</div>
-						<SubmitButton
-							variant={'text'}
-							isWithdraw={true}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								onSubmit(maxValue, txType);
-							}}
-						>
-							Confirm Vesting
-						</SubmitButton>
-					</div>
-				) : null}
-			</BaseModal>
+				{modalContent[txType].heading}
+			</ConfirmTransactionModal>
 		</Container>
 	);
 };
@@ -473,6 +426,14 @@ const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	position: absolute;
 	bottom: 0;
 	border-radius: 0 0 8px 8px;
+`;
+
+const ModalContainer = styled.div`
+	text-align: center;
+`;
+
+const ModalContent = styled.div`
+	margin: 5px 0 20px 0;
 `;
 
 export default ActionBox;
