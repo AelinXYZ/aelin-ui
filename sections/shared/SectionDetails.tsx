@@ -16,6 +16,7 @@ interface SectionDetailsProps {
 	txState: Transaction;
 	setTxState: (tx: Transaction) => void;
 	isPurchaseExpired: boolean;
+	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
 }
 
 const SectionDetails: FC<SectionDetailsProps> = ({
@@ -28,6 +29,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	txState,
 	setTxState,
 	isPurchaseExpired,
+	privatePoolDetails,
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
@@ -40,6 +42,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			txState={txState}
 			setTxState={setTxState}
 			isPurchaseExpired={isPurchaseExpired}
+			privatePoolDetails={privatePoolDetails}
 		/>
 	</FlexDiv>
 );
