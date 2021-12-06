@@ -72,7 +72,7 @@ const getActionButtonLabel = ({
 		case ActionBoxType.AcceptOrRejectDeal:
 			return isDealAccept
 				? isPurchaseExpired
-					? 'Purchase Expired'
+					? 'Redeem Expired'
 					: 'Accept Deal'
 				: 'Withdraw from Pool';
 		case ActionBoxType.VestingDeal:

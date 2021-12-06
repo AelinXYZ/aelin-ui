@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import { ActionBoxType, TransactionType } from 'components/ActionBox';
 import SectionDetails from 'sections/shared/SectionDetails';
 import { Status } from 'components/DealStatus';
+import { statusToText } from 'constants/pool';
 import TokenDisplay from 'components/TokenDisplay';
 import { Transaction } from 'constants/transactions';
 import Connector from 'containers/Connector';
@@ -89,7 +90,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			},
 			{
 				header: 'Status',
-				subText: Status.DealOpen,
+				subText: statusToText(Status.ProRataRedemption),
 			},
 			{
 				header: deal?.isDealFunded ? 'Pro Rata Redemption Ends' : 'Pro Rata Redemption',
@@ -208,11 +209,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		deal?.proRataRedemptionPeriod,
 		deal?.openRedemptionPeriod,
 	]);
-
-	// no balance can't buy
-	// during the pro rata is ok
-	// after the pro rata period if not eligible for open period
-	// after the open and pro rata
 
 	return (
 		<SectionDetails
