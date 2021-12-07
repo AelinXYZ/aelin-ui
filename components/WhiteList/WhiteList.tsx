@@ -154,7 +154,7 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
                     >
                       <Input
                         type="number"
-                        placeholder="00000"
+                        placeholder="Max allocation"
                         disabled={formik.values.whitelist[index].isSaved} 
                         name={`whitelist.${index}.amount`}
                         value={formik.values.whitelist[index].amount}
