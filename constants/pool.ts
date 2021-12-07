@@ -28,7 +28,8 @@ export const initialWhitelistValues = [
 	...new Array(5).fill(
 		{
 			address: '',
-			amount: null
+			amount: null,
+			isSaved: false,
 		}
 	)
 ];

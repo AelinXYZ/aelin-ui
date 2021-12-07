@@ -44,7 +44,7 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
        {() => (
          <Button
           size='lg'
-          variant='solid'
+          variant='round'
           onClick={handleOpenDialog}
         >
           Upload CSV

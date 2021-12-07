@@ -17,7 +17,11 @@ export interface CreatePoolValues {
 	purchaseDurationHours: number;
 	purchaseDurationMinutes: number;
 	poolPrivacy: Privacy;
-	whitelist: { address: string, amount: number | null}[];
+	whitelist: {
+		address: string,
+		amount: number | null,
+		isSaved: boolean
+	}[];
 }
 
 const validateCreatePool = (values: CreatePoolValues) => {
@@ -78,13 +82,23 @@ const validateCreatePool = (values: CreatePoolValues) => {
 	}
 
 	if (values.poolPrivacy === Privacy.PRIVATE) {
-		const hasError = values.whitelist.some((row) => {
+		const hasAddressError = values.whitelist.some((row) => {
 			if (!row.address.length) return false;
 			
 			return !utils.isAddress(row.address);
 		});
-
-		if (hasError) errors.whitelist = "Address format not valid";
+	
+		if (hasAddressError) {
+			errors.whitelist = "Address format not valid";
+		}	else {
+			const isSaved = values.whitelist.every((row) => {
+				if (!row.address.length) return false;
+				
+				return row.isSaved;
+			});
+	
+			if (!isSaved) errors.whitelist = "Must save the values";
+		}
 	}
 
 	return errors;

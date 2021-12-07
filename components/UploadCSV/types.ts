@@ -9,4 +9,5 @@ export interface ICSVResponse {
 export interface IWhitelist {
   address: string;
   amount: number | null;
+  isSaved: boolean;
 };

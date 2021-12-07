@@ -25,12 +25,11 @@ import { Transaction } from 'constants/transactions';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 import validateCreatePool from 'utils/validate/create-pool';
+import { scrollToBottom } from 'utils/window';
 
 import { erc20Abi } from 'contracts/erc20';
 
 const Create: FC = () => {
-	const [isPoolPrivacyModalOpen, setPoolPrivacyModalOpen] = useState(false);
-
 	const { walletAddress, provider } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -185,7 +184,7 @@ const Create: FC = () => {
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
-			console.log('here');
+
 			const errors = validateCreatePool(formik.values);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
@@ -231,7 +230,7 @@ const Create: FC = () => {
 
 	useEffect(() => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
-			setPoolPrivacyModalOpen(true);
+			scrollToBottom();
 		} else {
 			formik.setFieldValue("whitelist", initialWhitelistValues);
 		}
@@ -404,11 +403,6 @@ const Create: FC = () => {
 								<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
 								<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
 							</div>
-							<Whitelist
-								formik={formik}
-								setOpen={setPoolPrivacyModalOpen}
-								isOpen={isPoolPrivacyModalOpen}
-							/>
 						</>
 					</FlexDivCol>
 				),
@@ -468,18 +462,27 @@ const Create: FC = () => {
 		[walletAddress, formik]
 	);
 
+	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
+
 	return (
 		<PageLayout title={<>Create Pool</>} subtitle="">
-			<CreateForm
-				formik={formik}
-				gridItems={gridItems}
-				summaryItems={summaryItems}
-				txType={CreateTxType.CreatePool}
-				txState={txState}
-				txHash={txHash}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-			/>
+			<>
+				<CreateForm
+					formik={formik}
+					gridItems={gridItems}
+					summaryItems={summaryItems}
+					txType={CreateTxType.CreatePool}
+					txState={txState}
+					txHash={txHash}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+				/>
+				{ isPrivate && (
+					<Whitelist
+						formik={formik}
+					/>
+				)}
+			</>
 		</PageLayout>
 	);
 };

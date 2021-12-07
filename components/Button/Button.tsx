@@ -4,7 +4,7 @@ import Color from 'color';
 
 type ButtonProps = {
 	size?: 'sm' | 'md' | 'lg' | 'xl';
-	variant: 'primary' | 'secondary' | 'tertiary' | 'solid' | 'outline' | 'text';
+	variant: 'primary' | 'secondary' | 'tertiary' | 'solid' | 'outline' | 'text' | 'round';
 	isActive?: boolean;
 	isRounded?: boolean;
 };
@@ -16,6 +16,7 @@ const Button = styled.button<ButtonProps>`
 	font-size: 12px;
 	padding: 0 12px;
 	border: none;
+	margin: 0 10px;
 	border-radius: ${(props) => (props.isRounded ? '100px' : '4px')};
 	white-space: nowrap;
 	cursor: pointer;
@@ -59,8 +60,20 @@ const Button = styled.button<ButtonProps>`
 			height: 48px;
 			line-height: 48px;
 		`}
+		${(props) =>		
+			props.variant === 'round' &&
+			css`
+				color: ${(props) => props.theme.colors.white};
+				background-color: ${(props) => props.theme.colors.forestGreen};
+				border-radius: 30px;
+				&:hover {
+					&:not(:disabled) {
+						cursor: pointer;
+					}
+				}
+		`}
 
-	${(props) =>
+	${(props) =>		
 		props.variant === 'primary' &&
 		css`
 			color: ${(props) => props.theme.colors.black};
@@ -79,7 +92,7 @@ const Button = styled.button<ButtonProps>`
 		${(props) =>
 		props.variant === 'secondary' &&
 		css`
-			color: ${(props) => props.theme.colors.textGret};
+			color: ${(props) => props.theme.colors.textGrey};
 			background: ${(props) => props.theme.colors.grey};
 			box-shadow: 0px 0px 10px rgba(0, 209, 255, 0.9);
 			border: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -145,10 +158,10 @@ const Button = styled.button<ButtonProps>`
 		props.variant === 'text' &&
 		css`
 			${resetButtonCSS};
-			color: ${(props) => props.theme.colors.white};
+			color: ${(props) => props.theme.colors.forestGreen};
 			&:hover {
 				&:not(:disabled) {
-					color: ${(props) => props.theme.colors.grey};
+					color: ${(props) => props.theme.colors.forestGreen};
 				}
 			}
 		`}
