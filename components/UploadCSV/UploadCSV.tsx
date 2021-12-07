@@ -42,13 +42,13 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
       noClick
     >
        {() => (
-         <StyledButton
+         <Button
           size='lg'
           variant='solid'
           onClick={handleOpenDialog}
         >
           Upload CSV
-        </StyledButton>
+        </Button>
        )}
     </CSVReader>
   );

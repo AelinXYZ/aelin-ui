@@ -1,5 +1,7 @@
-export interface IWhiteListComponent {
-  formik: any;
+import { FormikProps } from "formik";
+
+export interface IWhitelistComponent {
+  formik: FormikProps<any>;
   isOpen: boolean;
   setOpen: Function;
 }
