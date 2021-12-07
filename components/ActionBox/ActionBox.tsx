@@ -207,7 +207,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 									setInputValue(parseFloat(e.target.value));
 								}}
 							/>
-							{maxValue && (
+							{maxValue ? (
 								<ActionBoxMax
 									onClick={() => {
 										let max = maxValue;
@@ -234,7 +234,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 								>
 									Max
 								</ActionBoxMax>
-							)}
+							) : null}
 						</InputContainer>
 					</>
 				)}

@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 
 import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
-import NotificationCenter from 'components/NotificationCenter';
 import WalletWidget from 'components/WalletWidget';
 import Connector from 'containers/Connector';
 
@@ -48,7 +47,6 @@ const Header: FC = () => {
 				))}
 			</Links>
 			<HeaderBlock>
-				<NotificationCenter />
 				<WalletWidget />
 			</HeaderBlock>
 		</Container>

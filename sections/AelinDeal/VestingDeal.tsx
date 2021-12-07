@@ -1,11 +1,11 @@
-import { FC, useMemo, useCallback, useEffect } from 'react';
+import { FC, useMemo, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { FlexDiv } from 'components/common';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
 import ActionBox, { ActionBoxType } from 'components/ActionBox';
-import { formatTimeDifference } from 'utils/time';
+import { formatShortDateWithTime } from 'utils/time';
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -43,7 +43,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: deal?.name ?? '',
 			},
 			{
-				header: 'Amount of Deal Tokens',
+				header: 'My Deal Token Balance',
 				subText: dealBalance ?? '',
 			},
 			{
@@ -55,12 +55,23 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: <TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={true} />,
 			},
 			{
-				header: 'Vesting Cliff',
-				subText: formatTimeDifference(Number(deal?.vestingCliff ?? 0)),
+				header: 'Vesting Cliff Ends',
+				subText: formatShortDateWithTime(
+					Number(deal?.proRataRedemptionPeriodStart ?? 0) +
+						Number(deal?.proRataRedemptionPeriod ?? 0) +
+						Number(deal?.openRedemptionPeriod ?? 0) +
+						Number(deal?.vestingCliff ?? 0)
+				),
 			},
 			{
-				header: 'Vesting Period',
-				subText: formatTimeDifference(Number(deal?.vestingPeriod ?? 0)),
+				header: 'Vesting Period Ends',
+				subText: formatShortDateWithTime(
+					Number(deal?.proRataRedemptionPeriodStart ?? 0) +
+						Number(deal?.proRataRedemptionPeriod ?? 0) +
+						Number(deal?.openRedemptionPeriod ?? 0) +
+						Number(deal?.vestingCliff ?? 0) +
+						Number(deal?.vestingPeriod ?? 0)
+				),
 			},
 			{
 				header: 'Total Underlying Claimed',
@@ -78,6 +89,9 @@ const VestingDeal: FC<VestingDealProps> = ({
 		deal?.vestingPeriod,
 		underlyingPerDealExchangeRate,
 		underlyingDealTokenDecimals,
+		deal?.proRataRedemptionPeriodStart,
+		deal?.proRataRedemptionPeriod,
+		deal?.openRedemptionPeriod,
 	]);
 
 	// TODO show vesting history
