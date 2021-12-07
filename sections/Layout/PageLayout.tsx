@@ -26,11 +26,11 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 	);
 };
 
-const Container = styled.div`
+export const Container = styled.div`
 	padding: 32px 42px 112px 42px;
 `;
 
-const Content = styled.div`
+export const Content = styled.div`
 	margin-top: 116px;
 	display: flex;
 `;
@@ -48,16 +48,16 @@ export const ContentTitle = styled.h1`
 	margin: 0;
 `;
 
-const ContentSubtitle = styled.p`
+export const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGrey};
 	font-size: 15px;
 `;
 
-const ContentBody = styled.div``;
+export const ContentBody = styled.div``;
 
-const ColCenter = styled.div`
-	width: 1150px;
+export const ColCenter = styled.div`
+	width: 100%;
 `;
 
 export default PageLayout;

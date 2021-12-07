@@ -1,36 +1,35 @@
-import { FC, useMemo, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
-import { BigNumber, ethers, utils } from 'ethers';
 import { wei } from '@synthetixio/wei';
+import { BigNumber, ethers, utils } from 'ethers';
+import { FC, useMemo, useState, useEffect } from 'react';
 
 import { PageLayout } from 'sections/Layout';
 import CreateForm from 'sections/shared/CreateForm';
 
+import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 import ContractsInterface from 'containers/ContractsInterface';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import TransactionData from 'containers/TransactionData';
-import Connector from 'containers/Connector';
 
 import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
-import WhiteList from 'components/WhiteList';
-import { FlexDivRow } from 'components/common';
+import Whitelist from 'components/Whitelist';
+import { FlexDivRow, FlexDivCol } from 'components/common';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 
+import { Privacy, initialWhitelistValues } from 'constants/pool';
 import { Transaction } from 'constants/transactions';
-import { Privacy } from 'constants/pool';
 
-import validateCreatePool from 'utils/validate/create-pool';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
+import validateCreatePool from 'utils/validate/create-pool';
+import { scrollToBottom } from 'utils/window';
 
 import { erc20Abi } from 'contracts/erc20';
 
 const Create: FC = () => {
-	const [isPoolPrivacyModalOpen, setPoolPrivacyModalOpen] = useState(false);
-
 	const { walletAddress, provider } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -176,10 +175,7 @@ const Create: FC = () => {
 			purchaseDurationHours: 0,
 			purchaseDurationMinutes: 0,
 			poolPrivacy: Privacy.PUBLIC,
-			whitelist: new Array(5).fill({
-				address: '',
-				amount: null,
-			}),
+			whitelist: initialWhitelistValues,
 		},
 		validate: validateCreatePool,
 		onSubmit: handleSubmit,
@@ -188,7 +184,7 @@ const Create: FC = () => {
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
-			console.log('here');
+
 			const errors = validateCreatePool(formik.values);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
@@ -234,7 +230,9 @@ const Create: FC = () => {
 
 	useEffect(() => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
-			setPoolPrivacyModalOpen(true);
+			scrollToBottom();
+		} else {
+			formik.setFieldValue("whitelist", initialWhitelistValues);
 		}
 	}, [formik.values.poolPrivacy]);
 
@@ -399,19 +397,14 @@ const Create: FC = () => {
 				header: 'Pool Privacy',
 				subText: 'Visibility of the pool',
 				formField: (
-					<FlexDivRow>
+					<FlexDivCol>
 						<>
 							<div role="group" aria-labelledby="pool-privacy">
 								<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
 								<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
 							</div>
-							<WhiteList
-								formik={formik}
-								setOpen={setPoolPrivacyModalOpen}
-								isOpen={isPoolPrivacyModalOpen}
-							/>
 						</>
-					</FlexDivRow>
+					</FlexDivCol>
 				),
 				formError: formik.errors.whitelist,
 			},
@@ -469,18 +462,27 @@ const Create: FC = () => {
 		[walletAddress, formik]
 	);
 
+	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
+
 	return (
 		<PageLayout title={<>Create Pool</>} subtitle="">
-			<CreateForm
-				formik={formik}
-				gridItems={gridItems}
-				summaryItems={summaryItems}
-				txType={CreateTxType.CreatePool}
-				txState={txState}
-				txHash={txHash}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-			/>
+			<>
+				<CreateForm
+					formik={formik}
+					gridItems={gridItems}
+					summaryItems={summaryItems}
+					txType={CreateTxType.CreatePool}
+					txState={txState}
+					txHash={txHash}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+				/>
+				{ isPrivate && (
+					<Whitelist
+						formik={formik}
+					/>
+				)}
+			</>
 		</PageLayout>
 	);
 };

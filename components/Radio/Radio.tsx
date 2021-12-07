@@ -1,37 +1,40 @@
-import {FC} from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
-
-
+import { FormikProps } from "formik";
 interface IRadio {
   name: string;
   value: string;
-  formik: any;
+  formik: FormikProps<any>;
 }
 
 const Radio: FC<IRadio> = ({ name, value, formik }) => (
-  <StyledLabel htmlFor={value}>
-    <StyledRadio
+  <>
+    <RadioButton
       type="radio"
+      id={value}
       name={name}
       value={value}
       checked={formik.values.poolPrivacy === value}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
     />
+    <Label htmlFor={value}>
     { value }
-  </StyledLabel>
+  </Label>
+  </>
 );
 
-const StyledLabel = styled.label`
+const Label = styled.label`
   position: relative;
   margin: 7.5px;
   cursor: pointer;
   text-transform: capitalize;
+  color: #252626;
+  font-size: 14px;
 `;
 
-const StyledRadio = styled.input`
+const RadioButton = styled.input`
   position: relative;
-  margin: 0 14px 0 0;
   cursor: pointer;
 
   &:before {

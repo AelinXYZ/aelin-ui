@@ -23,3 +23,14 @@ export const statusToText = (status: Status): string => {
 			return 'Closed';
 	}
 };
+
+export const initialWhitelistValues = [
+	...new Array(5).fill(
+		{
+			address: '',
+			amount: null,
+			isSaved: false,
+		}
+	)
+];
+

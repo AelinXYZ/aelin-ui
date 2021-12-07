@@ -14,7 +14,7 @@ export const Input = styled.input<{ width?: string }>`
 	color: ${(props) => props.theme.colors.black};
 	::placeholder {
 		font-display: ${(props) => props.theme.fonts.agrandir};
-		color: ${(props) => props.theme.colors.forestGreen};
+		color: ${(props) => props.theme.colors.textGrey};
 	}
 	&:focus {
 		box-shadow: 0px 0px 2px ${(props) => props.theme.colors.forestGreen};
