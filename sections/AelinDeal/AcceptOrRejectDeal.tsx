@@ -1,4 +1,4 @@
-import { FC, useMemo, useCallback } from 'react';
+import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { ActionBoxType, TransactionType } from 'components/ActionBox';
 import SectionDetails from 'sections/shared/SectionDetails';
@@ -10,7 +10,7 @@ import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
-import usePoolBalances from 'queries/pools/usePoolBalancesQuery';
+import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 import { PoolCreatedResult } from 'subgraph';
 
 import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';
@@ -28,12 +28,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState } = TransactionData.useContainer();
+	const { txState, setTxState, setGasPrice } = TransactionData.useContainer();
 
-	const { purchaseTokenDecimals, userPoolBalance } = usePoolBalances({
+	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
 		purchaseToken: pool?.purchaseToken ?? null,
 	});
+
+	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
 
 	const dealGridItems = useMemo(
 		() => [
@@ -76,7 +78,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					Number(
 						ethers.utils.formatUnits(
 							deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-							purchaseTokenDecimals ?? 0
+							poolBalances?.purchaseTokenDecimals ?? 0
 						)
 					),
 			},
@@ -141,12 +143,28 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 		],
-		[deal]
+		[
+			deal?.symbol,
+			deal?.name,
+			deal?.underlyingDealTokenTotal,
+			deal?.purchaseTokenTotalForDeal,
+			deal?.vestingPeriod,
+			deal?.vestingCliff,
+			deal?.underlyingDealToken,
+			deal?.proRataRedemptionPeriodStart,
+			deal?.proRataRedemptionPeriod,
+			deal?.openRedemptionPeriod,
+			deal?.isDealFunded,
+			underlyingDealTokenDecimals,
+			pool?.sponsorFee,
+			poolBalances?.purchaseTokenDecimals,
+		]
 	);
 
 	const handleSubmit = useCallback(
 		async (value: number, txnType: TransactionType, isMax: boolean) => {
-			if (!walletAddress || !signer || !deal?.poolAddress || !purchaseTokenDecimals) return;
+			if (!walletAddress || !signer || !deal?.poolAddress || !poolBalances?.purchaseTokenDecimals)
+				return;
 			const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 			try {
 				let tx: ethers.ContractTransaction;
@@ -156,7 +174,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					});
 				} else if (txnType === TransactionType.Withdraw) {
 					tx = await contract.withdrawFromPool(
-						ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
+						ethers.utils.parseUnits(value.toString(), poolBalances?.purchaseTokenDecimals),
 						// TODO update gasPrice and gasLimit
 						{
 							gasLimit: 1000000,
@@ -168,7 +186,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					});
 				} else if (txnType === TransactionType.Accept) {
 					tx = await contract.acceptDealTokens(
-						ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
+						ethers.utils.parseUnits(value.toString(), poolBalances?.purchaseTokenDecimals),
 						{
 							gasLimit: 1000000,
 						}
@@ -192,18 +210,23 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			walletAddress,
 			signer,
 			monitorTransaction,
-			purchaseTokenDecimals,
+			poolBalances?.purchaseTokenDecimals,
 		]
 	);
 
-	const isPurchaseExpired = useMemo(() => {
+	const dealRedemptionData = useMemo(() => {
 		const now = Date.now();
-		return deal?.proRataRedemptionPeriodStart != null
-			? now >
-					deal?.proRataRedemptionPeriodStart +
-						deal?.proRataRedemptionPeriod +
-						deal?.openRedemptionPeriod
-			: false;
+		if (
+			now >
+			deal?.proRataRedemptionPeriodStart +
+				deal?.proRataRedemptionPeriod +
+				deal?.openRedemptionPeriod
+		) {
+			return Status.Closed;
+		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
+			return Status.OpenRedemption;
+		}
+		return Status.ProRataRedemption;
 	}, [
 		deal?.proRataRedemptionPeriodStart,
 		deal?.proRataRedemptionPeriod,
@@ -212,19 +235,24 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 	return (
 		<SectionDetails
-			isPurchaseExpired={isPurchaseExpired}
+			dealRedemptionData={{
+				status: dealRedemptionData,
+				maxProRata: poolBalances?.maxProRata ?? 0,
+				isOpenEligible: poolBalances?.isOpenEligible ?? false,
+			}}
 			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}
 			input={{
 				placeholder: '0',
-				label: `Balance ${userPoolBalance} Pool Tokens`,
+				label: `Balance ${poolBalances?.userPoolBalance} Pool Tokens`,
 				value: '0',
-				maxValue: userPoolBalance,
+				maxValue: poolBalances?.userPoolBalance,
 				symbol: pool?.symbol,
 			}}
 			txState={txState}
 			setTxState={setTxState}
 			onSubmit={handleSubmit}
+			setGasPrice={setGasPrice}
 		/>
 	);
 };

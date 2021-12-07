@@ -256,7 +256,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					),
 					0
 				);
-
+				console.log('gasEstimate', gasEstimate);
 				setGasLimitEstimate(gasEstimate);
 			} catch (e) {
 				console.log('caught an error estimating', e);
