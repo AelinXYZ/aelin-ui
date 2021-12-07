@@ -16,6 +16,7 @@ interface VestingDealProps {
 	dealBalance: number | null;
 	claims: any[];
 	underlyingPerDealExchangeRate: number | null;
+	underlyingDealTokenDecimals: number | null;
 	claimableUnderlyingTokens: number | null;
 }
 
@@ -24,14 +25,19 @@ const VestingDeal: FC<VestingDealProps> = ({
 	dealBalance,
 	claims,
 	underlyingPerDealExchangeRate,
+	underlyingDealTokenDecimals,
 	claimableUnderlyingTokens,
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { txState, setTxState } = TransactionData.useContainer();
 
-	const dealVestingGridItems = useMemo(
-		() => [
+	const dealVestingGridItems = useMemo(() => {
+		const claimedAmount = claims.reduce(
+			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
+			0
+		);
+		return [
 			{
 				header: 'Name',
 				subText: deal?.name ?? '',
@@ -58,22 +64,21 @@ const VestingDeal: FC<VestingDealProps> = ({
 			},
 			{
 				header: 'Total Underlying Claimed',
-				subText: claims.reduce(
-					(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
-					0
+				subText: Number(
+					ethers.utils.formatUnits(claimedAmount.toString(), underlyingDealTokenDecimals ?? 0)
 				),
 			},
-		],
-		[
-			claims,
-			deal?.name,
-			dealBalance,
-			deal?.underlyingDealToken,
-			deal?.vestingCliff,
-			deal?.vestingPeriod,
-			underlyingPerDealExchangeRate,
-		]
-	);
+		];
+	}, [
+		claims,
+		deal?.name,
+		dealBalance,
+		deal?.underlyingDealToken,
+		deal?.vestingCliff,
+		deal?.vestingPeriod,
+		underlyingPerDealExchangeRate,
+		underlyingDealTokenDecimals,
+	]);
 
 	// TODO show vesting history
 	const handleSubmit = useCallback(async () => {

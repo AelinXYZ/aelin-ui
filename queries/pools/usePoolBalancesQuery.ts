@@ -13,6 +13,8 @@ type PoolBalances = {
 	userPoolBalance: string;
 	isPrivatePool: boolean;
 	privatePoolAmount: number;
+	isOpenEligible: boolean;
+	maxProRata: number;
 };
 
 const usePoolBalancesQuery = ({
@@ -36,6 +38,8 @@ const usePoolBalancesQuery = ({
 				allowance,
 				hasAllowList,
 				unformattedAllowListAmount,
+				unformattedMaxProRata,
+				isOpenEligible,
 			] = await Promise.all([
 				poolContract.balanceOf(walletAddress),
 				tokenContract.balanceOf(walletAddress),
@@ -44,6 +48,8 @@ const usePoolBalancesQuery = ({
 				tokenContract.allowance(walletAddress, poolAddress),
 				poolContract.hasAllowList(),
 				poolContract.allowList(walletAddress),
+				poolContract.maxProRataAvail(walletAddress),
+				poolContract.openPeriodEligible(walletAddress),
 			]);
 			return {
 				purchaseTokenDecimals: decimals,
@@ -53,6 +59,8 @@ const usePoolBalancesQuery = ({
 				userPoolBalance: ethers.utils.formatUnits(poolBalance, decimals).toString(),
 				isPrivatePool: hasAllowList,
 				privatePoolAmount: Number(ethers.utils.formatUnits(unformattedAllowListAmount, decimals)),
+				maxProRata: Number(ethers.utils.formatUnits(unformattedMaxProRata, decimals)),
+				isOpenEligible,
 			};
 		},
 		{

@@ -2,6 +2,7 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import colors from 'styles/theme/colors';
+import { statusToText } from 'constants/pool';
 
 // POOL OPEN (when the current time is less than the purchase expiry - track this in the client and show a timer)
 // SEEKING DEAL (when the current time is more than the purchase expiry but no deal has been presented yet)
@@ -22,24 +23,11 @@ export enum Status {
 	PoolOpen = 'PoolOpen',
 	SeekingDeal = 'SeekingDeal',
 	FundingDeal = 'FundingDeal',
+	ProRataRedemption = 'ProRataRedemption',
+	OpenRedemption = 'OpenRedemption',
 	DealOpen = 'DealOpen',
 	Closed = 'Closed',
 }
-
-const statusToText = (status: Status): string => {
-	switch (status) {
-		case Status.PoolOpen:
-			return 'Pool Open';
-		case Status.DealOpen:
-			return 'Deal Open';
-		case Status.SeekingDeal:
-			return 'Seeking Deal';
-		case Status.FundingDeal:
-			return 'Funding Deal';
-		case Status.Closed:
-			return 'Closed';
-	}
-};
 
 type DealStatusProps = {
 	status: Status;

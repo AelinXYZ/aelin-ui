@@ -1,6 +1,5 @@
 import { FC, useState, useMemo, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import Spinner from 'assets/svg/loader.svg';
 import Info from 'assets/svg/info.svg';
 import Image from 'next/image';
 
@@ -10,6 +9,8 @@ import { Transaction } from 'constants/transactions';
 import Connector from 'containers/Connector';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import { GasLimitEstimate } from 'constants/networks';
+import { Status } from 'components/DealStatus';
+import { statusToText } from 'constants/pool';
 
 export enum TransactionType {
 	Allowance = 'ALLOWANCE',
@@ -61,7 +62,7 @@ const getActionButtonLabel = ({
 	isDealAccept: boolean;
 	allowance: string;
 	amount: string | number;
-	isPurchaseExpired: boolean;
+	isPurchaseExpired: boolean | undefined;
 }) => {
 	if (Number(allowance) < Number(amount)) {
 		return 'Approve';
@@ -70,11 +71,7 @@ const getActionButtonLabel = ({
 		case ActionBoxType.FundPool:
 			return isPurchaseExpired ? 'Purchase Expired' : 'Purchase';
 		case ActionBoxType.AcceptOrRejectDeal:
-			return isDealAccept
-				? isPurchaseExpired
-					? 'Purchase Expired'
-					: 'Accept Deal'
-				: 'Withdraw from Pool';
+			return isDealAccept ? 'Accept Deal' : 'Withdraw from Pool';
 		case ActionBoxType.VestingDeal:
 			return 'Vest Deal';
 	}
@@ -91,25 +88,25 @@ interface ActionBoxProps {
 	allowance: string;
 	onApprove: () => void;
 	txState: Transaction;
-	setTxState: (tx: Transaction) => void;
-	isPurchaseExpired: boolean;
+	isPurchaseExpired?: boolean;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
+	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
 	onSubmit,
-	input: { placeholder, label, value, maxValue, symbol },
+	input: { placeholder, label, value, maxValue },
 	actionBoxType,
 	allowance,
 	onApprove,
 	txState,
-	setTxState,
 	isPurchaseExpired,
 	setGasPrice,
 	gasLimitEstimate,
 	privatePoolDetails,
+	dealRedemptionData,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
@@ -120,9 +117,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const [inputValue, setInputValue] = useState(value || 0);
 	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
 	const isPool = actionBoxType === ActionBoxType.FundPool;
-	const canWithdraw = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
+	const isAcceptOrReject = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
-	const isWithdraw = canWithdraw && !isDealAccept;
+	const isWithdraw = isAcceptOrReject && !isDealAccept;
 
 	useEffect(() => {
 		if (txState !== Transaction.PRESUBMIT) setShowTxModal(false);
@@ -156,7 +153,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 
 	return (
 		<Container>
-			{canWithdraw ? (
+			{isAcceptOrReject && dealRedemptionData?.status != null ? (
 				<RedemptionHeader>
 					<RedemptionPeriodTooltip
 						visible={showTooltip}
@@ -172,7 +169,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 						}
 					>
 						<FlexDivRowCentered>
-							{`Redemption Period: Pro Rata`}
+							{statusToText(dealRedemptionData.status)}
 							<InfoClick onClick={() => setShowTooltip(!showTooltip)}>
 								<Image src={Info} alt="" />
 							</InfoClick>
@@ -188,7 +185,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 						privatePoolDetails?.privatePoolAmount ?? '0'
 					)}
 				</ActionBoxHeader>
-				{canWithdraw ? (
+				{isAcceptOrReject ? (
 					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>
 						Withdraw
 					</ActionBoxHeader>
@@ -213,15 +210,26 @@ const ActionBox: FC<ActionBoxProps> = ({
 							{maxValue && (
 								<ActionBoxMax
 									onClick={() => {
+										let max = maxValue;
+										if (privatePoolDetails?.isPrivatePool && !isWithdraw) {
+											max = Math.min(
+												Number(privatePoolDetails?.privatePoolAmount ?? 0),
+												Number(maxValue)
+											);
+										}
+										if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
+											max = Math.min(Number(max), Number(dealRedemptionData.maxProRata ?? 0));
+										}
+										if (
+											(dealRedemptionData?.status === Status.Closed ||
+												(dealRedemptionData?.status === Status.OpenRedemption &&
+													!dealRedemptionData.isOpenEligible)) &&
+											!isWithdraw
+										) {
+											max = 0;
+										}
 										setIsMaxValue(true);
-										setInputValue(
-											privatePoolDetails?.isPrivatePool
-												? Math.min(
-														Number(privatePoolDetails?.privatePoolAmount ?? 0),
-														Number(maxValue)
-												  )
-												: maxValue
-										);
+										setInputValue(max);
 									}}
 								>
 									Max
@@ -275,6 +283,25 @@ const ActionBox: FC<ActionBoxProps> = ({
 			{actionBoxType !== ActionBoxType.VestingDeal &&
 			Number(maxValue ?? 0) < Number(inputValue ?? 0) ? (
 				<ErrorNote>Max balance exceeded</ErrorNote>
+			) : null}
+			{actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
+			dealRedemptionData?.status === Status.ProRataRedemption &&
+			!isWithdraw &&
+			Number(dealRedemptionData.maxProRata ?? 0) < Number(inputValue ?? 0) ? (
+				<ErrorNote>More than pro rata amount</ErrorNote>
+			) : null}
+			{actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
+			dealRedemptionData?.status === Status.Closed &&
+			!isWithdraw &&
+			Number(inputValue ?? 0) > 0 ? (
+				<ErrorNote>Redemption period is closed</ErrorNote>
+			) : null}
+			{actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
+			dealRedemptionData?.status === Status.OpenRedemption &&
+			!dealRedemptionData.isOpenEligible &&
+			!isWithdraw &&
+			Number(inputValue ?? 0) > 0 ? (
+				<ErrorNote>You are not eligible for open redemption period</ErrorNote>
 			) : null}
 			<ConfirmTransactionModal
 				title="Confirm Transaction"

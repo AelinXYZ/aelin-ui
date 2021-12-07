@@ -6,6 +6,7 @@ import { GridItem } from 'components/Grid/Grid';
 import { InputType } from 'components/ActionBox/ActionBox';
 import { Transaction } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
+import { Status } from 'components/DealStatus';
 
 interface SectionDetailsProps {
 	gridItems: GridItem[];
@@ -16,7 +17,8 @@ interface SectionDetailsProps {
 	onApprove: () => void;
 	txState: Transaction;
 	setTxState: (tx: Transaction) => void;
-	isPurchaseExpired: boolean;
+	isPurchaseExpired?: boolean;
+	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
@@ -35,6 +37,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	setGasPrice,
 	gasLimitEstimate,
 	privatePoolDetails,
+	dealRedemptionData,
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
@@ -43,6 +46,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			onApprove={onApprove}
 			allowance={allowance}
 			onSubmit={onSubmit}
+			dealRedemptionData={dealRedemptionData}
 			input={input}
 			txState={txState}
 			setTxState={setTxState}
