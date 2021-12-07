@@ -11,6 +11,7 @@ import {
 } from 'components/Select/components';
 
 import { Status } from 'components/DealStatus';
+import { statusToText } from 'constants/pool';
 
 type Option = { labesl: Status; value: Status };
 type StatusDropdownProps = Props<Option, false> & {
@@ -21,13 +22,17 @@ type StatusDropdownProps = Props<Option, false> & {
 
 const statusToOption = (status: Status | string) => ({
 	value: status,
-	label: status,
+	label: statusToText(status as Status),
 });
 
 const StatusDropdown: FC<StatusDropdownProps> = (props) => {
 	const computedStyles = useSelectStyles(props);
 
-	const options = (Object.keys(Status) as Array<keyof typeof Status>).map(statusToOption);
+	const options = (Object.keys(Status) as Array<keyof typeof Status>)
+		.filter((key) => key !== 'Closed' && key !== 'OpenRedemption' && key !== 'ProRataRedemption')
+		.map(statusToOption);
+
+	options.push({ label: 'Reset', value: null });
 
 	return (
 		<Container>

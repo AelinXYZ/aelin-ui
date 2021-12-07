@@ -227,18 +227,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				} = await createVariablesToCreateDeal();
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 
-				const test = await poolContract!.estimateGas.createDeal(
-					underlyingDealToken,
-					ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-					ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
-					vestingPeriodDuration,
-					vestingCliffDuration,
-					proRataRedemptionDuration,
-					openRedemptionDuration,
-					holder,
-					holderFundingDuration
-				);
-
 				let gasEstimate = wei(
 					await poolContract!.estimateGas.createDeal(
 						underlyingDealToken,
@@ -258,7 +246,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				);
 				setGasLimitEstimate(gasEstimate);
 			} catch (e) {
-				console.log('caught an error estimating', e);
+				console.log('create deal caught an error estimating', e);
 				setGasLimitEstimate(null);
 			}
 		};

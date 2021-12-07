@@ -1,8 +1,9 @@
 import { FC, useEffect, useState, useCallback, useMemo } from 'react';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
+import { wei } from '@synthetixio/wei';
 
-import Spinner from 'assets/svg/loader.svg';
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import { erc20Abi } from 'contracts/erc20';
 import Connector from 'containers/Connector';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
@@ -11,9 +12,8 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import { Transaction } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import Grid from 'components/Grid';
-import { FlexDiv, StyledSpinner } from 'components/common';
+import { FlexDiv } from 'components/common';
 import Button from 'components/Button';
-import BaseModal from 'components/BaseModal';
 import { formatShortDateWithTime } from 'utils/time';
 
 interface FundDealProps {
@@ -36,7 +36,8 @@ const FundDeal: FC<FundDealProps> = ({
 	holderFundingExpiration,
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
-	const { txState, setTxState } = TransactionData.useContainer();
+	const { setTxState, setGasPrice, gasLimitEstimate, gasPrice, setGasLimitEstimate } =
+		TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -87,13 +88,10 @@ const FundDeal: FC<FundDealProps> = ({
 		if (!walletAddress || !signer || !dealAddress || !decimals || !amount) return;
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 		try {
-			const tx = await contract.depositUnderlying(
-				amount.toString(),
-				// TODO update gasPrice and gasLimit
-				{
-					gasLimit: 1000000,
-				}
-			);
+			const tx = await contract.depositUnderlying(amount.toString(), {
+				gasLimit: gasLimitEstimate?.toBN(),
+				gasPrice: gasPrice?.toBN(),
+			});
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
@@ -101,37 +99,90 @@ const FundDeal: FC<FundDealProps> = ({
 				});
 			}
 		} catch (e) {
+			console.log('error submitting tx e', e);
 			setTxState(Transaction.FAILED);
 		}
-	}, [walletAddress, signer, monitorTransaction, dealAddress, decimals, setTxState, amount]);
-
-	const handleApprove = useCallback(async () => {
-		if (!walletAddress || !signer || !dealAddress || !token) return;
-		const contract = new ethers.Contract(token, erc20Abi, signer);
-		try {
-			const tx = await contract.approve(
-				dealAddress,
-				amount.toString(),
-				// TODO update gasPrice and gasLimit
-				{
-					gasLimit: 1000000,
-				}
-			);
-			if (tx) {
-				monitorTransaction({
-					txHash: tx.hash,
-					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
-				});
-			}
-		} catch (e) {
-			setTxState(Transaction.FAILED);
-		}
-	}, [dealAddress, token, monitorTransaction, setTxState, walletAddress, signer, amount]);
+	}, [
+		walletAddress,
+		signer,
+		monitorTransaction,
+		dealAddress,
+		decimals,
+		setTxState,
+		amount,
+		gasLimitEstimate,
+		gasPrice,
+	]);
 
 	const visibleAmount = useMemo(
 		() => ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 0),
 		[amount, decimals]
 	);
+
+	const handleApprove = useCallback(async () => {
+		if (!walletAddress || !signer || !dealAddress || !token) return;
+		const contract = new ethers.Contract(token, erc20Abi, signer);
+		try {
+			const tx = await contract.approve(dealAddress, amount.toString(), {
+				gasLimit: gasLimitEstimate?.toBN(),
+				gasPrice: gasPrice?.toBN(),
+			});
+			if (tx) {
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => {
+						setTxState(Transaction.SUCCESS);
+						setTimeout(() => {
+							setAllowance(Number(visibleAmount.toString()));
+						}, 5 * 1000);
+					},
+				});
+			}
+		} catch (e) {
+			console.log(' error submitting approve tx e', e);
+			setTxState(Transaction.FAILED);
+		}
+	}, [
+		dealAddress,
+		token,
+		monitorTransaction,
+		setTxState,
+		walletAddress,
+		signer,
+		amount,
+		gasLimitEstimate,
+		gasPrice,
+		visibleAmount,
+	]);
+
+	const isAllowance = useMemo(
+		() => Number(allowance ?? 0) < Number((visibleAmount ?? 0).toString()),
+		[visibleAmount, allowance]
+	);
+
+	useEffect(() => {
+		const getGasLimitEstimate = async () => {
+			if (!token || !signer || !dealAddress) return;
+			try {
+				if (isAllowance) {
+					const contract = new ethers.Contract(token, erc20Abi, signer);
+					setGasLimitEstimate(
+						wei(await contract.estimateGas.approve(dealAddress, amount.toString()), 0)
+					);
+				} else {
+					if (!purchaseTokenDecimals) return;
+					const contract = new ethers.Contract(dealAddress, dealAbi, signer);
+					setGasLimitEstimate(
+						wei(await contract.estimateGas.depositUnderlying(amount.toString()), 0)
+					);
+				}
+			} catch (e) {
+				console.log('gas estimate error', e);
+				setGasLimitEstimate(null);
+			}
+		};
+		getGasLimitEstimate();
+	}, [isAllowance, dealAddress, setGasLimitEstimate, purchaseTokenDecimals, amount, token, signer]);
 
 	const gridItems = useMemo(
 		() => [
@@ -186,11 +237,6 @@ const FundDeal: FC<FundDealProps> = ({
 		]
 	);
 
-	const isAllowance = useMemo(
-		() => Number(allowance ?? 0) < Number((visibleAmount ?? 0).toString()),
-		[visibleAmount, allowance]
-	);
-
 	const isEnough = useMemo(
 		() => Number((balance ?? -1).toString()) >= Number(visibleAmount.toString()),
 		[balance, visibleAmount]
@@ -215,64 +261,21 @@ const FundDeal: FC<FundDealProps> = ({
 						: `Deposit ${visibleAmount} ${symbol}`}
 				</StyledButton>
 			</Container>
-			<BaseModal
+			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
 				isModalOpen={showTxModal}
-				onClose={() => setTxState(Transaction.PRESUBMIT)}
+				setGasPrice={setGasPrice}
+				gasLimitEstimate={gasLimitEstimate}
+				onSubmit={isAllowance ? handleApprove : handleSubmit}
 			>
-				{/* TODO merge this with the new tx components when we refactor the action box */}
-				{txState === Transaction.SUCCESS ? (
-					<InnerContainer>
-						<div>Your transaction has been submitted successfully</div>
-					</InnerContainer>
-				) : null}
-				{txState === Transaction.WAITING ? <StyledSpinner src={Spinner} /> : null}
-				{isAllowance && txState === Transaction.PRESUBMIT ? (
-					<InnerContainer>
-						<div>{`Please approve ${visibleAmount} ${symbol} for usage by the deal contract`}</div>
-						<SubmitButton
-							variant={'text'}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								handleApprove();
-							}}
-						>
-							Confirm Approval
-						</SubmitButton>
-					</InnerContainer>
-				) : null}
-				{!isAllowance && txState === Transaction.PRESUBMIT ? (
-					<InnerContainer>
-						<div>{`You are going to finalize the depositing ${visibleAmount} of ${symbol}`}</div>
-						<SubmitButton
-							variant={'text'}
-							onClick={(e) => {
-								setTxState(Transaction.WAITING);
-								handleSubmit();
-							}}
-						>
-							Confirm Purchase
-						</SubmitButton>
-					</InnerContainer>
-				) : null}
-			</BaseModal>
+				{isAllowance
+					? `Confirm Approval of ${visibleAmount.toString()} ${symbol}`
+					: `Confirm Funding of ${visibleAmount.toString()} ${symbol}`}
+			</ConfirmTransactionModal>
 		</FlexDiv>
 	);
 };
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 150px;
-	margin-top: 20px;
-`;
-
-const InnerContainer = styled.div`
-	height: 350px;
-	width: 100%;
-	text-align: center;
-`;
 
 const StyledButton = styled(Button)`
 	position: absolute;

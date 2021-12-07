@@ -10,7 +10,7 @@ export const statusToText = (status: Status): string => {
 		case Status.PoolOpen:
 			return 'Pool Open';
 		case Status.DealOpen:
-			return 'Deal Open';
+			return 'Deal';
 		case Status.SeekingDeal:
 			return 'Seeking Deal';
 		case Status.ProRataRedemption:

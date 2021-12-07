@@ -15,6 +15,7 @@ import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 import { formatShortDateWithTime } from 'utils/time';
 import TransactionData from 'containers/TransactionData';
 import { wei } from '@synthetixio/wei';
+import { Status } from 'components/DealStatus';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -24,16 +25,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		gasLimitEstimate,
-		setGasLimitEstimate,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const { gasPrice, setGasPrice, gasLimitEstimate, setGasLimitEstimate, txState, setTxState } =
+		TransactionData.useContainer();
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -59,9 +52,30 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		return new ethers.Contract(pool.id, poolAbi, signer);
 	}, [pool, signer]);
 
+	const maxValue = useMemo(() => {
+		const contributions = Number(
+			ethers.utils
+				.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+				.toString()
+		);
+		const purchaseCap = Number(
+			ethers.utils
+				.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+				.toString()
+		);
+		return Math.min(Number(userPurchaseBalance), Math.max(purchaseCap - contributions, 0));
+	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
+
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!poolContract || !tokenContract || !pool || !pool.id) return;
+			if (
+				!poolContract ||
+				!tokenContract ||
+				!pool ||
+				!pool.id ||
+				(pool?.status ?? Status.PoolOpen) !== Status.PoolOpen
+			)
+				return;
 			try {
 				if (!Number(purchaseTokenAllowance)) {
 					setGasLimitEstimate(
@@ -72,7 +86,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					setGasLimitEstimate(
 						wei(
 							await poolContract.estimateGas.purchasePoolTokens(
-								ethers.utils.parseUnits('1', purchaseTokenDecimals)
+								ethers.utils.parseUnits(maxValue.toString(), purchaseTokenDecimals)
 							),
 							0
 						)
@@ -84,7 +98,15 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [poolContract, pool, purchaseTokenAllowance, purchaseTokenDecimals, tokenContract]);
+	}, [
+		poolContract,
+		pool,
+		purchaseTokenAllowance,
+		purchaseTokenDecimals,
+		tokenContract,
+		setGasLimitEstimate,
+		maxValue,
+	]);
 
 	const poolGridItems = useMemo(
 		() => [
@@ -98,9 +120,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			},
 			{
 				header: 'Purchase Token Cap',
-				subText: ethers.utils
-					.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-					.toString(),
+				subText: Number(
+					ethers.utils
+						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+						.toString()
+				),
 			},
 			{
 				header: 'Purchase Token',
@@ -162,7 +186,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						onTxConfirmed: () => {
 							setTimeout(() => {
 								poolBalancesQuery.refetch();
-								console.log('refetch');
 							}, 5 * 1000);
 							setTxState(Transaction.SUCCESS);
 						},
@@ -191,7 +214,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						setTxState(Transaction.SUCCESS);
 						setTimeout(() => {
 							poolBalancesQuery.refetch();
-							console.log('refetch');
 						}, 5 * 1000);
 					},
 				});
@@ -200,11 +222,23 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			console.log(e);
 			setTxState(Transaction.FAILED);
 		}
-	}, [pool?.id, pool?.purchaseToken, monitorTransaction, walletAddress, signer]);
-
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
+	}, [
+		pool?.id,
+		pool?.purchaseToken,
+		monitorTransaction,
+		gasLimitEstimate,
+		poolBalancesQuery,
+		gasPrice,
+		setTxState,
+		tokenContract,
+		walletAddress,
+		signer,
 	]);
+
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<SectionDetails
@@ -216,7 +250,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				placeholder: '0',
 				label: `Balance ${userPurchaseBalance} ${purchaseTokenSymbol}`,
 				value: '0',
-				maxValue: userPurchaseBalance,
+				maxValue,
 				symbol: purchaseTokenSymbol,
 			}}
 			allowance={purchaseTokenAllowance}

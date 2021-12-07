@@ -22,7 +22,6 @@ const Pools: FC = () => {
 	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
-	// TODO implement dropdown
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
@@ -69,7 +68,7 @@ const Pools: FC = () => {
 				sponsor,
 				name,
 				id,
-				purchaseToken, // TODO get symbol
+				purchaseToken,
 				contributions,
 				cap: purchaseTokenCap,
 				purchaseTokenDecimals,
@@ -77,7 +76,7 @@ const Pools: FC = () => {
 				fee: sponsorFee,
 				purchaseExpiry,
 				timestamp,
-				poolStatus, // TODO get status
+				poolStatus,
 			})
 		);
 
