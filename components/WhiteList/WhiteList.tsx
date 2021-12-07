@@ -25,12 +25,15 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
   const [isClearDisabled, setIsClearDisabled] = useState<boolean>(true);
 
   useEffect(() => {
-    const isSaved = formik.values.whitelist.every((row: IWhitelist) => {
-			if (!row.address.length) return false;
-			
-			return row.isSaved;
-		});
+    const whitelist = [...formik.values.whitelist];
+    const filteredWhitelist = whitelist.filter((row: IWhitelist) => row.address.length);
 
+    if (!filteredWhitelist.length) {
+      setIsSaveDisabled(false);
+      return;
+    }
+
+    const isSaved = filteredWhitelist.every((row: IWhitelist) => row.isSaved);
     setIsSaveDisabled(isSaved)
   }, [formik.values.whitelist]);
 
@@ -60,6 +63,8 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
       ...initialWhitelistValues,
     ];
 
+    setIsSaveDisabled(false);
+
     formik.setFieldValue("whitelist", whitelist);
   };
 
@@ -75,21 +80,24 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
 
   const handleClear = () => {
     clearAddresses();
+    setIsSaveDisabled(false);
     formik.setFieldValue("poolPrivacy", Privacy.PUBLIC);
   };
 
   const handleSave = (): void  => {
     const whitelist = [...formik.values.whitelist];
 
-    const filteredWhitelist = formik.values.whitelist.filter((row: IWhitelist) => row.address.length);
+    const filteredWhitelist = whitelist.filter((row: IWhitelist) => row.address.length);
     
     if (!filteredWhitelist.length) return;
 
-    whitelist.forEach((row: IWhitelist) => {
+    filteredWhitelist.forEach((row: IWhitelist) => {
       row.isSaved = true;
     })
 
-    formik.setFieldValue("whitelist", whitelist);
+    setIsSaveDisabled(true);
+
+    formik.setFieldValue("whitelist", filteredWhitelist);
   };
 
   return (	
