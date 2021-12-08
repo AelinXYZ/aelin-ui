@@ -9,7 +9,7 @@ import Connector from 'containers/Connector';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
@@ -97,12 +97,12 @@ const FundDeal: FC<FundDealProps> = ({
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
-					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+					onTxConfirmed: () => setTxState(TransactionStatus.SUCCESS),
 				});
 			}
 		} catch (e) {
 			console.log('error submitting tx e', e);
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
 		walletAddress,
@@ -133,7 +133,7 @@ const FundDeal: FC<FundDealProps> = ({
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {
-						setTxState(Transaction.SUCCESS);
+						setTxState(TransactionStatus.SUCCESS);
 						setTimeout(() => {
 							setAllowance(Number(visibleAmount.toString()));
 						}, 5 * 1000);
@@ -142,7 +142,7 @@ const FundDeal: FC<FundDealProps> = ({
 			}
 		} catch (e) {
 			console.log(' error submitting approve tx e', e);
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
 		dealAddress,

@@ -4,21 +4,12 @@ import Info from 'assets/svg/info.svg';
 import Image from 'next/image';
 
 import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
-import Button from 'components/Button';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
 import Connector from 'containers/Connector';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import { GasLimitEstimate } from 'constants/networks';
 import { Status } from 'components/DealStatus';
 import { statusToText } from 'constants/pool';
-
-export enum TransactionType {
-	Allowance = 'ALLOWANCE',
-	Purchase = 'PURCHASE',
-	Accept = 'ACCEPT',
-	Withdraw = 'WITHDRAW',
-	Vest = 'Vest',
-}
 
 export enum ActionBoxType {
 	FundPool = 'FundPool',
@@ -29,7 +20,6 @@ export enum ActionBoxType {
 export type InputType = {
 	placeholder: string;
 	label: string;
-	value?: string | number;
 	maxValue?: string | number;
 	symbol?: string;
 };
@@ -60,11 +50,11 @@ const getActionButtonLabel = ({
 }: {
 	actionBoxType: ActionBoxType;
 	isDealAccept: boolean;
-	allowance: string;
+	allowance?: string;
 	amount: string | number;
 	isPurchaseExpired: boolean | undefined;
 }) => {
-	if (Number(allowance) < Number(amount)) {
+	if (Number(allowance ?? '0') < Number(amount)) {
 		return 'Approve';
 	}
 	switch (actionBoxType) {
@@ -78,26 +68,27 @@ const getActionButtonLabel = ({
 };
 
 interface ActionBoxProps {
-	onSubmit: (
-		value: number | string | undefined,
-		transactionType: TransactionType,
-		isMax?: boolean
-	) => void;
+	onSubmit: () => void;
 	input: InputType;
 	actionBoxType: ActionBoxType;
-	allowance: string;
-	onApprove: () => void;
-	txState: Transaction;
+	allowance?: string;
+	onApprove?: () => void;
+	txState: TransactionStatus;
 	isPurchaseExpired?: boolean;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
 	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
+	setTxType: (txnType: TransactionType) => void;
+	txType: TransactionType;
+	setIsMaxValue: (isMax: boolean) => void;
+	inputValue: number;
+	setInputValue: (num: number) => void;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
 	onSubmit,
-	input: { placeholder, label, value, maxValue },
+	input: { placeholder, label, maxValue },
 	actionBoxType,
 	allowance,
 	onApprove,
@@ -107,22 +98,24 @@ const ActionBox: FC<ActionBoxProps> = ({
 	gasLimitEstimate,
 	privatePoolDetails,
 	dealRedemptionData,
+	setTxType,
+	txType,
+	setIsMaxValue,
+	inputValue,
+	setInputValue,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
-	const [isMaxValue, setIsMaxValue] = useState(false);
 
-	const [inputValue, setInputValue] = useState(value || 0);
-	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
 	const isPool = actionBoxType === ActionBoxType.FundPool;
 	const isAcceptOrReject = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = isAcceptOrReject && !isDealAccept;
 
 	useEffect(() => {
-		if (txState !== Transaction.PRESUBMIT) setShowTxModal(false);
+		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
 
 	const modalContent = useMemo(
@@ -132,23 +125,23 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit: onApprove,
 			},
 			[TransactionType.Purchase]: {
-				heading: `You are going to purchase for ${inputValue}`,
-				onSubmit: () => onSubmit(inputValue, txType),
+				heading: `You are purchasing ${inputValue}`,
+				onSubmit,
 			},
 			[TransactionType.Accept]: {
 				heading: `You are accepting ${inputValue} tokens`,
-				onSubmit: () => onSubmit(inputValue, txType, isMaxValue),
+				onSubmit,
 			},
 			[TransactionType.Withdraw]: {
 				heading: `You are withdrawing ${inputValue} tokens`,
-				onSubmit: () => onSubmit(inputValue, txType, isMaxValue),
+				onSubmit,
 			},
 			[TransactionType.Vest]: {
 				heading: `You are vesting ${maxValue}`,
-				onSubmit: () => onSubmit(maxValue, txType),
+				onSubmit,
 			},
 		}),
-		[inputValue, txType, maxValue, isMaxValue, onApprove, onSubmit]
+		[inputValue, maxValue, onApprove, onSubmit]
 	);
 
 	return (
@@ -229,7 +222,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 											max = 0;
 										}
 										setIsMaxValue(true);
-										setInputValue(max);
+										setInputValue(Number(max));
 									}}
 								>
 									Max
@@ -351,12 +344,6 @@ const RedemptionHeader = styled.div`
 	border-radius: 4px 4px 0 0;
 `;
 
-const SubmitButton = styled(Button)<{ isWithdraw: boolean }>`
-	background-color: ${(props) =>
-		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-`;
-
 const RedemptionPeriodTooltip = styled(Tooltip)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 `;
@@ -453,14 +440,6 @@ const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	position: absolute;
 	bottom: 0;
 	border-radius: 0 0 8px 8px;
-`;
-
-const ModalContainer = styled.div`
-	text-align: center;
-`;
-
-const ModalContent = styled.div`
-	margin: 5px 0 20px 0;
 `;
 
 export default ActionBox;

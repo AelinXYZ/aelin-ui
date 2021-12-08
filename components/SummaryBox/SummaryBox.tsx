@@ -3,11 +3,9 @@ import { FormikProps } from 'formik';
 
 import styled from 'styled-components';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-import Button from 'components/Button';
-import GasSelector from 'components/GasSelector';
 import Connector from 'containers/Connector';
 import { GasLimitEstimate } from 'constants/networks';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 
 export type SummaryItem = {
 	label: string;
@@ -24,7 +22,7 @@ interface SummaryBoxProps {
 	txType: CreateTxType;
 	isValidForm: boolean;
 	formik: FormikProps<any>;
-	txState: Transaction;
+	txState: TransactionStatus;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 }
@@ -72,10 +70,10 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	);
 
 	useEffect(() => {
-		if (txState !== Transaction.PRESUBMIT) setShowTxModal(false);
+		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
 
-	const isPurchaseButtonEnabled = isValid && txState !== Transaction.WAITING;
+	const isPurchaseButtonEnabled = isValid && txState !== TransactionStatus.WAITING;
 	return (
 		<Container>
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>

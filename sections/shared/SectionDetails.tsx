@@ -1,10 +1,10 @@
-import { FC, MouseEventHandler } from 'react';
+import { FC } from 'react';
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
-import ActionBox, { ActionBoxType, TransactionType } from 'components/ActionBox';
+import ActionBox, { ActionBoxType } from 'components/ActionBox';
 import { GridItem } from 'components/Grid/Grid';
 import { InputType } from 'components/ActionBox/ActionBox';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 import { Status } from 'components/DealStatus';
 
@@ -15,13 +15,18 @@ interface SectionDetailsProps {
 	input: InputType;
 	allowance: string;
 	onApprove: () => void;
-	txState: Transaction;
-	setTxState: (tx: Transaction) => void;
+	txState: TransactionStatus;
+	setTxState: (tx: TransactionStatus) => void;
 	isPurchaseExpired?: boolean;
 	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
+	setTxType: (txnType: TransactionType) => void;
+	txType: TransactionType;
+	setIsMaxValue: (isMax: boolean) => void;
+	inputValue: number;
+	setInputValue: (num: number) => void;
 }
 
 const SectionDetails: FC<SectionDetailsProps> = ({
@@ -30,7 +35,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	onSubmit,
 	onApprove,
 	allowance,
-	input = { placeholder: '0', label: 'Balance: 2000 USDC', maxValue: 2000, symbol: 'USDC' },
+	input = { placeholder: '0', label: '', maxValue: 0, symbol: '' },
 	txState,
 	setTxState,
 	isPurchaseExpired,
@@ -38,6 +43,11 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	gasLimitEstimate,
 	privatePoolDetails,
 	dealRedemptionData,
+	txType,
+	setTxType,
+	setIsMaxValue,
+	inputValue,
+	setInputValue,
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
@@ -54,6 +64,11 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			setGasPrice={setGasPrice}
 			gasLimitEstimate={gasLimitEstimate}
 			privatePoolDetails={privatePoolDetails}
+			txType={txType}
+			setTxType={setTxType}
+			setIsMaxValue={setIsMaxValue}
+			inputValue={inputValue}
+			setInputValue={setInputValue}
 		/>
 	</FlexDiv>
 );
