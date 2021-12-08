@@ -1,12 +1,13 @@
-import { FC, useEffect, useState } from 'react';
-import styled from 'styled-components';
-import CopyIcon from 'assets/svg/copy.svg';
-import CheckIcon from 'assets/svg/check.svg';
-import MetamaskIcon from 'assets/svg/metamask.svg';
+import { FC } from 'react';
 import Image from 'next/image';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { truncateAddress } from 'utils/crypto';
+import styled from 'styled-components';
+
 import { FlexDivCenterAligned } from 'components/common';
+import CopyToClipboard from 'components/CopyToClipboard';
+
+import MetamaskIcon from 'assets/svg/metamask.svg';
+
+import { truncateAddress } from 'utils/crypto';
 
 interface SectionTitleProps {
 	address: string | null;
@@ -15,29 +16,13 @@ interface SectionTitleProps {
 }
 
 const SectionTitle: FC<SectionTitleProps> = ({ address, title, addToMetamask }) => {
-	const [copiedAddress, setCopiedAddress] = useState(false);
-	useEffect(() => {
-		if (copiedAddress) {
-			const timer1 = setInterval(() => {
-				setCopiedAddress(false);
-			}, 3000); // 3s
-			return () => clearInterval(timer1);
-		}
-	}, [copiedAddress]);
-
 	return (
 		<FlexDivCenterAligned>
 			{title}
 			{address != null ? (
 				<>
 					<AddressWidget>{truncateAddress(address)}</AddressWidget>
-					<CopyToClipboard text={address} onCopy={() => setCopiedAddress(true)}>
-						{copiedAddress ? (
-							<Image src={CheckIcon} alt="copied" />
-						) : (
-							<Image src={CopyIcon} alt={address} />
-						)}
-					</CopyToClipboard>
+					<CopyToClipboard text={address} />
 					{addToMetamask && typeof window !== 'undefined' && window.ethereum && (
 						<Image
 							width={20}

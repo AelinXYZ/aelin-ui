@@ -1,21 +1,32 @@
-import { FC, useMemo, useState, useCallback, useEffect } from 'react';
+import { ethers } from 'ethers';
+import { wei } from '@synthetixio/wei';
+import { PoolCreatedResult } from 'subgraph';
+import { FC, useMemo, useCallback, useEffect } from 'react';
 
 import Connector from 'containers/Connector';
-import TransactionNotifier from 'containers/TransactionNotifier';
-import SectionDetails from 'sections/shared/SectionDetails';
-import { ActionBoxType } from 'components/ActionBox';
-import Ens from 'components/Ens';
-import { PoolCreatedResult } from 'subgraph';
-import { ethers } from 'ethers';
-import { erc20Abi } from 'contracts/erc20';
-import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
-import { Transaction } from 'constants/transactions';
-import TokenDisplay from 'components/TokenDisplay';
-import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
-import { formatShortDateWithTime } from 'utils/time';
 import TransactionData from 'containers/TransactionData';
-import { wei } from '@synthetixio/wei';
+import TransactionNotifier from 'containers/TransactionNotifier';
+import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
+
+import SectionDetails from 'sections/shared/SectionDetails';
+
+import Ens from 'components/Ens';
 import { Status } from 'components/DealStatus';
+import { FlexDivStart } from 'components/common';
+import TokenDisplay from 'components/TokenDisplay';
+import { ActionBoxType } from 'components/ActionBox';
+import CopyToClipboard from 'components/CopyToClipboard';
+
+import { erc20Abi } from 'contracts/erc20';
+
+import { Transaction } from 'constants/transactions';
+
+import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
+
+import { formatShortDateWithTime } from 'utils/time';
+
+import TransactionData from 'containers/TransactionData';
+
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
@@ -114,7 +125,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		() => [
 			{
 				header: 'Sponsor',
-				subText: <Ens address={pool?.sponsor ?? ''} />,
+				subText: (
+					<FlexDivStart>
+						<Ens address={pool?.sponsor ?? ""} />
+						{pool?.sponsor && (
+							<CopyToClipboard text={pool?.sponsor} />
+						)}
+					</FlexDivStart>
+				),
 			},
 			{
 				header: `My ${purchaseTokenSymbol} Balance`,
