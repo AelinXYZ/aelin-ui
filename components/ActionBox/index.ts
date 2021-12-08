@@ -1,1 +1,1 @@
-export { default, TransactionType, ActionBoxType } from './ActionBox';
+export { default, ActionBoxType } from './ActionBox';

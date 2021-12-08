@@ -94,8 +94,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />
-			{(pool?.poolStatus === Status.FundingDeal && (deal?.holderFundingExpiration ?? 0) <= now) ||
-			(pool?.poolStatus === Status.SeekingDeal && walletAddress === pool?.sponsor) ? (
+			{((pool?.poolStatus === Status.PoolOpen &&
+				Number(pool.contributions.toString()) === Number(pool.purchaseTokenCap.toString())) ||
+				(pool?.poolStatus === Status.FundingDeal &&
+					(deal?.holderFundingExpiration ?? now + 1) <= now) ||
+				pool?.poolStatus === Status.SeekingDeal) &&
+			walletAddress === pool?.sponsor ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>

@@ -1,5 +1,6 @@
-import { FC, useMemo, useCallback } from 'react';
+import { FC, useMemo, useCallback, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { wei } from '@synthetixio/wei';
 import { FlexDiv } from 'components/common';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import Grid from 'components/Grid';
@@ -9,7 +10,9 @@ import { formatShortDateWithTime } from 'utils/time';
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 interface VestingDealProps {
 	deal: any;
@@ -30,7 +33,11 @@ const VestingDeal: FC<VestingDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState } = TransactionData.useContainer();
+	const { txState, setTxState, gasPrice, setGasPrice, setTxType, txType } =
+		TransactionData.useContainer();
+	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
+	const [inputValue, setInputValue] = useState(0);
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const dealVestingGridItems = useMemo(() => {
 		const claimedAmount = claims.reduce(
@@ -94,24 +101,39 @@ const VestingDeal: FC<VestingDealProps> = ({
 		deal?.openRedemptionPeriod,
 	]);
 
-	// TODO show vesting history
 	const handleSubmit = useCallback(async () => {
 		if (!walletAddress || !signer || !deal.id) return;
 		const contract = new ethers.Contract(deal.id, dealAbi, signer);
 		try {
 			const tx = await contract.claim({
-				gasLimit: 1000000,
+				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+				gasPrice: gasPrice.toBN(),
 			});
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
-					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+					onTxConfirmed: () => setTxState(TransactionStatus.SUCCESS),
 				});
 			}
 		} catch (e) {
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
-	}, [walletAddress, signer, monitorTransaction, deal.id, setTxState]);
+	}, [walletAddress, signer, monitorTransaction, deal.id, setTxState, gasLimitEstimate, gasPrice]);
+
+	useEffect(() => {
+		const getGasLimitEstimate = async () => {
+			if (!deal.id || !signer) return setGasLimitEstimate(null);
+			const contract = new ethers.Contract(deal.id, dealAbi, signer);
+			try {
+				let gasEstimate = wei(await contract.estimateGas.claim(), 0);
+				setGasLimitEstimate(gasEstimate);
+			} catch (e) {
+				console.log(e);
+				setGasLimitEstimate(null);
+			}
+		};
+		getGasLimitEstimate();
+	}, [deal.id, signer]);
 
 	return (
 		<FlexDiv>
@@ -124,8 +146,14 @@ const VestingDeal: FC<VestingDealProps> = ({
 					label: '',
 					maxValue: claimableUnderlyingTokens ?? 0,
 				}}
+				inputValue={inputValue}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
 				txState={txState}
-				setTxState={setTxState}
+				setGasPrice={setGasPrice}
+				gasLimitEstimate={gasLimitEstimate}
+				txType={txType}
+				setTxType={setTxType}
 			/>
 		</FlexDiv>
 	);
