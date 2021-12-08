@@ -56,6 +56,12 @@ const SubmitButton = styled(Button)`
 	color: ${(props) => props.theme.colors.white};
 	width: 120px;
 	margin: 10px auto 0 auto;
+	&:hover {
+		&:not(:disabled) {
+			color: ${(props) => props.theme.colors.white};
+			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
+		}
+	}
 `;
 
 export default ConfirmTransactionModal;

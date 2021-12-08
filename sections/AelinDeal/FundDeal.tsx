@@ -9,12 +9,14 @@ import Connector from 'containers/Connector';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 import TokenDisplay from 'components/TokenDisplay';
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
 import Button from 'components/Button';
 import { formatShortDateWithTime } from 'utils/time';
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 interface FundDealProps {
 	token: string;
@@ -36,8 +38,8 @@ const FundDeal: FC<FundDealProps> = ({
 	holderFundingExpiration,
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
-	const { setTxState, setGasPrice, gasLimitEstimate, gasPrice, setGasLimitEstimate } =
-		TransactionData.useContainer();
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const { setTxState, setGasPrice, gasPrice } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -89,18 +91,18 @@ const FundDeal: FC<FundDealProps> = ({
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 		try {
 			const tx = await contract.depositUnderlying(amount.toString(), {
-				gasLimit: gasLimitEstimate?.toBN(),
+				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice?.toBN(),
 			});
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
-					onTxConfirmed: () => setTxState(Transaction.SUCCESS),
+					onTxConfirmed: () => setTxState(TransactionStatus.SUCCESS),
 				});
 			}
 		} catch (e) {
 			console.log('error submitting tx e', e);
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
 		walletAddress,
@@ -131,7 +133,7 @@ const FundDeal: FC<FundDealProps> = ({
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {
-						setTxState(Transaction.SUCCESS);
+						setTxState(TransactionStatus.SUCCESS);
 						setTimeout(() => {
 							setAllowance(Number(visibleAmount.toString()));
 						}, 5 * 1000);
@@ -140,7 +142,7 @@ const FundDeal: FC<FundDealProps> = ({
 			}
 		} catch (e) {
 			console.log(' error submitting approve tx e', e);
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
 		dealAddress,

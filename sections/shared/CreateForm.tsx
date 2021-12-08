@@ -6,7 +6,7 @@ import { GridItem } from 'components/Grid/Grid';
 import SummaryBox from 'components/SummaryBox';
 import { SummaryItem, CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { FlexDiv } from 'components/common';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 
 export interface CreateFormProps {
@@ -14,7 +14,7 @@ export interface CreateFormProps {
 	gridItems: GridItem[];
 	summaryItems: SummaryItem[];
 	txType: CreateTxType;
-	txState: Transaction;
+	txState: TransactionStatus;
 	txHash: string | null;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
@@ -28,7 +28,7 @@ const CreateForm: FC<CreateFormProps> = ({
 	summaryItems,
 	txType,
 	setGasPrice,
-	gasLimitEstimate
+	gasLimitEstimate,
 }) => {
 	const isValidForm = useMemo(
 		() => Object.keys(formik?.errors ?? {}).length === 0,

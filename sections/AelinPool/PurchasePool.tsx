@@ -1,10 +1,9 @@
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
-import { FC, useMemo, useCallback, useEffect } from 'react';
+import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
-import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
@@ -19,11 +18,16 @@ import CopyToClipboard from 'components/CopyToClipboard';
 
 import { erc20Abi } from 'contracts/erc20';
 
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { formatShortDateWithTime } from 'utils/time';
+
+import TransactionData from 'containers/TransactionData';
+
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -32,9 +36,12 @@ interface PurchasePoolProps {
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, gasLimitEstimate, setGasLimitEstimate, txState, setTxState } =
+	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
 		TransactionData.useContainer();
+	const [, setIsMaxValue] = useState<boolean>(false);
+	const [inputValue, setInputValue] = useState(0);
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -71,7 +78,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
 				.toString()
 		);
-		return Math.min(Number(userPurchaseBalance), Math.max(purchaseCap - contributions, 0));
+		return purchaseCap > 0
+			? Math.min(Number(userPurchaseBalance), Math.max(purchaseCap - contributions, 0))
+			: Number(userPurchaseBalance);
 	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
 
 	useEffect(() => {
@@ -94,7 +103,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					setGasLimitEstimate(
 						wei(
 							await poolContract.estimateGas.purchasePoolTokens(
-								ethers.utils.parseUnits(maxValue.toString(), purchaseTokenDecimals)
+								ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals)
 							),
 							0
 						)
@@ -113,7 +122,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		purchaseTokenDecimals,
 		tokenContract,
 		setGasLimitEstimate,
-		maxValue,
+		inputValue,
 	]);
 
 	const poolGridItems = useMemo(
@@ -122,10 +131,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				header: 'Sponsor',
 				subText: (
 					<FlexDivStart>
-						<Ens address={pool?.sponsor ?? ""} />
-						{pool?.sponsor && (
-							<CopyToClipboard text={pool?.sponsor} />
-						)}
+						<Ens address={pool?.sponsor ?? ''} />
+						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
 					</FlexDivStart>
 				),
 			},
@@ -183,36 +190,45 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]
 	);
 
-	const handleSubmit = useCallback(
-		async (value: number) => {
-			if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
-			try {
-				const tx = await poolContract.purchasePoolTokens(
-					ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
-					{
-						gasLimit: gasLimitEstimate?.toBN(),
-						gasPrice: gasPrice.toBN(),
-					}
-				);
-				setTxState(Transaction.WAITING);
-				if (tx) {
-					monitorTransaction({
-						txHash: tx.hash,
-						onTxConfirmed: () => {
-							setTimeout(() => {
-								poolBalancesQuery.refetch();
-							}, 5 * 1000);
-							setTxState(Transaction.SUCCESS);
-						},
-					});
+	const handleSubmit = useCallback(async () => {
+		if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
+		try {
+			const tx = await poolContract.purchasePoolTokens(
+				ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals),
+				{
+					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+					gasPrice: gasPrice.toBN(),
 				}
-			} catch (e) {
-				console.log(e);
-				setTxState(Transaction.FAILED);
+			);
+			setTxState(TransactionStatus.WAITING);
+			if (tx) {
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => {
+						setTimeout(() => {
+							poolBalancesQuery.refetch();
+						}, 5 * 1000);
+						setTxState(TransactionStatus.SUCCESS);
+					},
+				});
 			}
-		},
-		[walletAddress, signer, monitorTransaction, pool?.id, purchaseTokenDecimals]
-	);
+		} catch (e) {
+			console.log(e);
+			setTxState(TransactionStatus.FAILED);
+		}
+	}, [
+		walletAddress,
+		signer,
+		monitorTransaction,
+		pool?.id,
+		purchaseTokenDecimals,
+		gasLimitEstimate,
+		gasPrice,
+		poolBalancesQuery,
+		poolContract,
+		setTxState,
+		inputValue,
+	]);
 
 	const handleApprove = useCallback(async () => {
 		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken || !tokenContract) return;
@@ -221,12 +237,12 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				gasLimit: gasLimitEstimate?.toBN(),
 				gasPrice: gasPrice.toBN(),
 			});
-			setTxState(Transaction.WAITING);
+			setTxState(TransactionStatus.WAITING);
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {
-						setTxState(Transaction.SUCCESS);
+						setTxState(TransactionStatus.SUCCESS);
 						setTimeout(() => {
 							poolBalancesQuery.refetch();
 						}, 5 * 1000);
@@ -235,7 +251,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			}
 		} catch (e) {
 			console.log(e);
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
 		pool?.id,
@@ -275,6 +291,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			setTxState={setTxState}
 			setGasPrice={setGasPrice}
 			gasLimitEstimate={gasLimitEstimate}
+			txType={txType}
+			setTxType={setTxType}
+			setIsMaxValue={setIsMaxValue}
+			inputValue={inputValue}
+			setInputValue={setInputValue}
 		/>
 	);
 };

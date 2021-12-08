@@ -20,12 +20,14 @@ import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
-import { Transaction } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 import validateCreatePool from 'utils/validate/create-pool';
 import { scrollToBottom } from 'utils/window';
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { erc20Abi } from 'contracts/erc20';
 
@@ -33,16 +35,9 @@ const Create: FC = () => {
 	const { walletAddress, provider } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		gasLimitEstimate,
-		setGasLimitEstimate,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
+		TransactionData.useContainer();
 
 	const createVariablesToCreatePool = async () => {
 		const { formatBytes32String, parseEther } = utils;
@@ -143,21 +138,21 @@ const Create: FC = () => {
 				purchaseDuration,
 				poolAddresses,
 				poolAddressesAmounts,
-				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
+				{ gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(), gasPrice: gasPrice.toBN() }
 			);
-			setTxState(Transaction.WAITING);
+			setTxState(TransactionStatus.WAITING);
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {
 						setTxHash(tx.hash);
-						setTxState(Transaction.SUCCESS);
+						setTxState(TransactionStatus.SUCCESS);
 					},
 				});
 			}
 		} catch (e) {
 			console.log('e', e);
-			setTxState(Transaction.FAILED);
+			setTxState(TransactionStatus.FAILED);
 		}
 	};
 
@@ -232,7 +227,7 @@ const Create: FC = () => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
 			scrollToBottom();
 		} else {
-			formik.setFieldValue("whitelist", initialWhitelistValues);
+			formik.setFieldValue('whitelist', initialWhitelistValues);
 		}
 	}, [formik.values.poolPrivacy]);
 
@@ -477,11 +472,7 @@ const Create: FC = () => {
 					setGasPrice={setGasPrice}
 					gasLimitEstimate={gasLimitEstimate}
 				/>
-				{ isPrivate && (
-					<Whitelist
-						formik={formik}
-					/>
-				)}
+				{isPrivate && <Whitelist formik={formik} />}
 			</>
 		</PageLayout>
 	);
