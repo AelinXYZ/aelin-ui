@@ -1,10 +1,9 @@
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
-import { FC, useMemo, useCallback, useEffect } from 'react';
+import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
-import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
@@ -127,10 +126,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				header: 'Sponsor',
 				subText: (
 					<FlexDivStart>
-						<Ens address={pool?.sponsor ?? ""} />
-						{pool?.sponsor && (
-							<CopyToClipboard text={pool?.sponsor} />
-						)}
+						<Ens address={pool?.sponsor ?? ''} />
+						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
 					</FlexDivStart>
 				),
 			},
@@ -255,9 +252,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
-	]);
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<SectionDetails
