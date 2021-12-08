@@ -21,6 +21,8 @@ import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { Transaction } from 'constants/transactions';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 interface CreateDealProps {
 	poolAddress: string;
@@ -29,13 +31,12 @@ interface CreateDealProps {
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
 	const { walletAddress, signer, provider } = Connector.useContainer();
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const {
 		txHash,
 		setTxHash,
 		gasPrice,
 		setGasPrice,
-		gasLimitEstimate,
-		setGasLimitEstimate,
 		txState,
 		setTxState,
 	} = TransactionData.useContainer();
@@ -73,7 +74,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				openRedemptionDuration,
 				holder,
 				holderFundingDuration,
-				{ gasLimit: gasLimitEstimate?.toBN(), gasPrice: gasPrice.toBN() }
+				{ gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(), gasPrice: gasPrice.toBN() }
 			);
 
 			if (tx) {
