@@ -1,9 +1,16 @@
-import { FC, useState, useEffect } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { ExternalLink, Tooltip, FlexDiv, FlexDivCol, FlexDivCentered } from 'components/common';
+
+import {
+	ExternalLink,
+	Tooltip,
+	FlexDiv,
+	FlexDivCol,
+	FlexDivCentered
+} from 'components/common';
 import Button from 'components/Button';
+import CopyToClipboard from 'components/CopyToClipboard'
 
 import BrowserWalletIcon from 'assets/wallet-icons/browserWallet.svg';
 import LedgerIcon from 'assets/wallet-icons/ledger.svg';
@@ -18,14 +25,11 @@ import StatusIcon from 'assets/wallet-icons/status.svg';
 import AuthereumIcon from 'assets/wallet-icons/authereum.png';
 import ImTokenIcon from 'assets/wallet-icons/imtoken.svg';
 
-import CopyIcon from 'assets/svg/copy.svg';
-import CheckIcon from 'assets/svg/check.svg';
 import LinkIcon from 'assets/svg/link.svg';
 import WalletIcon from 'assets/svg/wallet.svg';
 import ArrowsChangeIcon from 'assets/svg/arrows-change.svg';
 import ExitIcon from 'assets/svg/exit.svg';
 
-import { FlexDivColCentered } from 'components/common';
 import Connector from 'containers/Connector';
 import Etherscan from 'containers/BlockExplorer';
 import { truncateAddress } from 'utils/crypto';
@@ -75,16 +79,8 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 		switchAccounts,
 		disconnectWallet,
 	} = Connector.useContainer();
-	const [copiedAddress, setCopiedAddress] = useState<boolean>(false);
-	const { blockExplorerInstance } = Etherscan.useContainer();
 
-	useEffect(() => {
-		if (copiedAddress) {
-			setInterval(() => {
-				setCopiedAddress(false);
-			}, 3000); // 3s
-		}
-	}, [copiedAddress]);
+	const { blockExplorerInstance } = Etherscan.useContainer();
 
 	return (
 		<>
@@ -94,22 +90,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 						<SelectedWallet>{getWalletIcon(selectedWallet?.toLowerCase())}</SelectedWallet>
 						<WalletAddress>{truncateAddress(walletAddress)}</WalletAddress>
 						<ActionIcons>
-							<Tooltip
-								hideOnClick={false}
-								arrow={true}
-								placement="top"
-								content={copiedAddress ? 'Copied' : 'Copy'}
-							>
-								<CopyClipboardContainer>
-									<CopyToClipboard text={walletAddress!} onCopy={() => setCopiedAddress(true)}>
-										{copiedAddress ? (
-											<Image src={CheckIcon} alt="copied" />
-										) : (
-											<Image src={CopyIcon} alt={walletAddress} />
-										)}
-									</CopyToClipboard>
-								</CopyClipboardContainer>
-							</Tooltip>
+							<CopyToClipboard  text={walletAddress} />
 							<Tooltip hideOnClick={false} arrow={true} placement="top" content="etherscan">
 								<LinkContainer>
 									<WrappedExternalLink href={blockExplorerInstance?.addressLink(walletAddress!)}>
@@ -215,17 +196,6 @@ const WalletAddress = styled.div`
 
 const ActionIcons = styled(FlexDivCentered)`
 	justify-content: center;
-`;
-
-const CopyClipboardContainer = styled(FlexDiv)`
-	color: ${(props) => props.theme.colors.black};
-	cursor: pointer;
-	margin-right: 2px;
-	&:hover {
-		svg {
-			color: ${(props) => props.theme.colors.forestGreen};
-		}
-	}
 `;
 
 const WrappedExternalLink = styled(ExternalLink)`

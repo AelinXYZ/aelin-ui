@@ -1,21 +1,24 @@
-/* eslint-disable react/display-name */
-import { CellProps } from 'react-table';
-import { FC, useMemo, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 
-import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
+/* eslint-disable react/display-name */
+import { ethers } from 'ethers';
+import { CellProps } from 'react-table';
+import { useRouter } from 'next/router';
+import { FC, useMemo, useState, useEffect } from 'react';
+
 import { PageLayout } from 'sections/Layout';
 import FilterPool from 'sections/AelinPool/FilterPool';
 
+import Ens from 'components/Ens';
 import Table from 'components/Table';
 import { FlexDivStart } from 'components/common';
-
-import DealStatus, { Status } from 'components/DealStatus';
-import Ens from 'components/Ens';
-import { formatShortDateWithTime } from 'utils/time';
-import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import TokenDisplay from 'components/TokenDisplay';
-import { ethers } from 'ethers';
+import DealStatus, { Status } from 'components/DealStatus';
+
+import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
+
+import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+
+import { formatShortDateWithTime } from 'utils/time';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -107,7 +110,11 @@ const Pools: FC = () => {
 				Header: 'sponsor',
 				accessor: 'sponsor',
 				Cell: (cellProps: CellProps<any, string>) => {
-					return <Ens address={cellProps.value} />;
+					return (
+						<FlexDivStart>
+							<Ens address={cellProps.value} />
+						</FlexDivStart>
+					);
 				},
 			},
 			{ Header: 'name', accessor: 'name', width: 100 },
