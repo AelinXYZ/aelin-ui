@@ -1,10 +1,27 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import { PageLayout } from 'sections/Layout';
+import TransactionData from 'containers/TransactionData';
 import Button from 'components/Button';
 import ActionBox, { ActionBoxType } from 'components/ActionBox';
+import { GasLimitEstimate } from 'constants/networks';
 
 const Stake = () => {
+	const [allowance, setAllowance] = useState<string | null>(null);
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const [maxValue, setMaxValue] = useState<string>('0');
+	const {
+		txState,
+		setTxState,
+		gasPrice,
+		setGasPrice,
+		setTxType,
+		txType,
+	} = TransactionData.useContainer();
+	const handleApprove = () => {
+		console.log('approve');
+	};
 	const handleSubmit = () => {
 		console.log('submit');
 	};
@@ -12,26 +29,34 @@ const Stake = () => {
 	return (
 		<PageLayout title={<>Stake Your Balancer LP tokens</>} subtitle="">
 			<Layout>
-				<Section>
+				<Section style={{ textAlign: 'center' }}>
 					<Header>Provide liquidity into the DEFI pool on Balancer to earn AELIN</Header>
-					<SubmitButton variant="text">Go to Balancer</SubmitButton>
+					<SubmitButton
+						onClick={() => window.open('https://app.balancer.fi/', 'blank')}
+						variant="text"
+					>
+						Go to Balancer
+					</SubmitButton>
 				</Section>
-				<Section>
-					<ActionBox
-						actionBoxType={actionBoxType}
-						onApprove={onApprove}
-						allowance={allowance}
-						onSubmit={onSubmit}
-						dealRedemptionData={dealRedemptionData}
-						input={input}
-						txState={txState}
-						setTxState={setTxState}
-						isPurchaseExpired={isPurchaseExpired}
-						setGasPrice={setGasPrice}
-						gasLimitEstimate={gasLimitEstimate}
-						privatePoolDetails={privatePoolDetails}
-					/>
-				</Section>
+				<ActionBox
+					onSubmit={handleSubmit}
+					actionBoxType={ActionBoxType.Stake}
+					onApprove={handleApprove}
+					allowance={allowance}
+					input={{
+						placeholder: '0',
+						label: `Balance 0 Balancer LP`,
+
+						maxValue,
+						symbol: 'Balancer LP',
+					}}
+					txState={txState}
+					setTxState={setTxState}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+					txType={txType}
+					setTxType={setTxType}
+				/>
 			</Layout>
 		</PageLayout>
 	);
@@ -51,7 +76,14 @@ const Layout = styled.div`
 	display: flex;
 `;
 
-const Section = styled.div``;
+const Section = styled.div`
+	margin-right: 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 300px;
+`;
 
 const SubmitButton = styled(Button)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
