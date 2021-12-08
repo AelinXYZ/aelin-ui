@@ -16,7 +16,6 @@ const Button = styled.button<ButtonProps>`
 	font-size: 12px;
 	padding: 0 12px;
 	border: none;
-	margin: 0 10px;
 	border-radius: ${(props) => (props.isRounded ? '100px' : '4px')};
 	white-space: nowrap;
 	cursor: pointer;
@@ -60,20 +59,20 @@ const Button = styled.button<ButtonProps>`
 			height: 48px;
 			line-height: 48px;
 		`}
-		${(props) =>		
-			props.variant === 'round' &&
-			css`
-				color: ${(props) => props.theme.colors.white};
-				background-color: ${(props) => props.theme.colors.forestGreen};
-				border-radius: 30px;
-				&:hover {
-					&:not(:disabled) {
-						cursor: pointer;
-					}
+		${(props) =>
+		props.variant === 'round' &&
+		css`
+			color: ${(props) => props.theme.colors.white};
+			background-color: ${(props) => props.theme.colors.forestGreen};
+			border-radius: 30px;
+			&:hover {
+				&:not(:disabled) {
+					cursor: pointer;
 				}
+			}
 		`}
 
-	${(props) =>		
+	${(props) =>
 		props.variant === 'primary' &&
 		css`
 			color: ${(props) => props.theme.colors.black};

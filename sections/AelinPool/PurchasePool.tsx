@@ -38,18 +38,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const {
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-		txType,
-		setTxType,
-		setInputValue,
-		inputValue,
-		setIsMaxValue,
-		isMaxValue,
-	} = TransactionData.useContainer();
+	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
+		TransactionData.useContainer();
+	const [, setIsMaxValue] = useState<boolean>(false);
+	const [inputValue, setInputValue] = useState(0);
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -111,7 +103,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					setGasLimitEstimate(
 						wei(
 							await poolContract.estimateGas.purchasePoolTokens(
-								ethers.utils.parseUnits(inputValue.toString(), purchaseTokenDecimals)
+								ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals)
 							),
 							0
 						)
@@ -202,7 +194,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
 		try {
 			const tx = await poolContract.purchasePoolTokens(
-				ethers.utils.parseUnits(inputValue.toString(), purchaseTokenDecimals),
+				ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals),
 				{
 					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 					gasPrice: gasPrice.toBN(),

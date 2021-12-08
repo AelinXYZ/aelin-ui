@@ -9,8 +9,6 @@ const useTransactionData = () => {
 	const [txState, setTxState] = useState<TransactionStatus>(TransactionStatus.PRESUBMIT);
 	const [txHash, setTxHash] = useState<string | null>(null);
 	const [txType, setTxType] = useState<TransactionType>(TransactionType.Purchase);
-	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
 
 	return {
 		txHash,
@@ -21,10 +19,6 @@ const useTransactionData = () => {
 		setTxState,
 		txType,
 		setTxType,
-		isMaxValue,
-		setIsMaxValue,
-		inputValue,
-		setInputValue,
 	};
 };
 

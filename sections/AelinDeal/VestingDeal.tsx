@@ -33,17 +33,10 @@ const VestingDeal: FC<VestingDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const {
-		txState,
-		setTxState,
-		gasPrice,
-		setGasPrice,
-		setTxType,
-		txType,
-		inputValue,
-		setInputValue,
-		setIsMaxValue,
-	} = TransactionData.useContainer();
+	const { txState, setTxState, gasPrice, setGasPrice, setTxType, txType } =
+		TransactionData.useContainer();
+	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
+	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const dealVestingGridItems = useMemo(() => {

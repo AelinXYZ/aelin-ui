@@ -54,7 +54,7 @@ const getActionButtonLabel = ({
 	amount: string | number;
 	isPurchaseExpired: boolean | undefined;
 }) => {
-	if (Number(allowance ?? '0') < Number(amount)) {
+	if (actionBoxType === ActionBoxType.FundPool && Number(allowance ?? '0') < Number(amount)) {
 		return 'Approve';
 	}
 	switch (actionBoxType) {
@@ -401,7 +401,7 @@ const ActionBoxMax = styled.div`
 	position: absolute;
 	width: 33px;
 	height: 21px;
-	left: 215px;
+	left: 210px;
 	text-align: center;
 	padding-top: 4px;
 	padding-left: 2px;
