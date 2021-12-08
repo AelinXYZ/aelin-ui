@@ -15,6 +15,8 @@ import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
 import Button from 'components/Button';
 import { formatShortDateWithTime } from 'utils/time';
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 interface FundDealProps {
 	token: string;
@@ -36,8 +38,8 @@ const FundDeal: FC<FundDealProps> = ({
 	holderFundingExpiration,
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
-	const { setTxState, setGasPrice, gasLimitEstimate, gasPrice, setGasLimitEstimate } =
-		TransactionData.useContainer();
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const { setTxState, setGasPrice, gasPrice } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -89,7 +91,7 @@ const FundDeal: FC<FundDealProps> = ({
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 		try {
 			const tx = await contract.depositUnderlying(amount.toString(), {
-				gasLimit: gasLimitEstimate?.toBN(),
+				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice?.toBN(),
 			});
 			if (tx) {

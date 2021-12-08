@@ -25,6 +25,11 @@ import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { formatShortDateWithTime } from 'utils/time';
 
+import TransactionData from 'containers/TransactionData';
+
+import { GasLimitEstimate } from 'constants/networks';
+import { getGasEstimateWithBuffer } from 'utils/network';
+
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
 }
@@ -32,9 +37,9 @@ interface PurchasePoolProps {
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, gasLimitEstimate, setGasLimitEstimate, txState, setTxState } =
-		TransactionData.useContainer();
+	const { gasPrice, setGasPrice, txState, setTxState } = TransactionData.useContainer();
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -190,7 +195,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				const tx = await poolContract.purchasePoolTokens(
 					ethers.utils.parseUnits(value.toString(), purchaseTokenDecimals),
 					{
-						gasLimit: gasLimitEstimate?.toBN(),
+						gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 						gasPrice: gasPrice.toBN(),
 					}
 				);
@@ -250,10 +255,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(
-		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
-		[pool?.purchaseExpiry]
-	);
+	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
+		pool?.purchaseExpiry,
+	]);
 
 	return (
 		<SectionDetails
