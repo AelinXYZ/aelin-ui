@@ -15,6 +15,7 @@ export enum ActionBoxType {
 	FundPool = 'FundPool',
 	AcceptOrRejectDeal = 'ACCEPT_OR_REJECT_DEAL',
 	VestingDeal = 'VESTING_DEAL',
+	Stake = 'STAKE',
 }
 
 export type InputType = {
@@ -38,6 +39,8 @@ const actionBoxTypeToTitle = (
 			return 'Accept Deal';
 		case ActionBoxType.VestingDeal:
 			return 'Vest Deal';
+		case ActionBoxType.Stake:
+			return 'Stake';
 	}
 };
 
@@ -64,6 +67,8 @@ const getActionButtonLabel = ({
 			return isDealAccept ? 'Accept Deal' : 'Withdraw from Pool';
 		case ActionBoxType.VestingDeal:
 			return 'Vest Deal';
+		case ActionBoxType.Stake:
+			return 'Stake';
 	}
 };
 
@@ -138,6 +143,10 @@ const ActionBox: FC<ActionBoxProps> = ({
 			},
 			[TransactionType.Vest]: {
 				heading: `You are vesting ${maxValue}`,
+				onSubmit,
+			},
+			[TransactionType.Stake]: {
+				heading: `You are staking ${inputValue}`,
 				onSubmit,
 			},
 		}),
@@ -259,6 +268,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 						}
 						if (actionBoxType === ActionBoxType.VestingDeal) {
 							return setTxType(TransactionType.Vest);
+						}
+						if (actionBoxType === ActionBoxType.Stake) {
+							return setTxType(TransactionType.Stake);
 						}
 					};
 					setCorrectTxnType();

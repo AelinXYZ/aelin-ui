@@ -11,4 +11,5 @@ export enum TransactionType {
 	Accept = 'ACCEPT',
 	Withdraw = 'WITHDRAW',
 	Vest = 'Vest',
+	Stake = 'STAKE',
 }

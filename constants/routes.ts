@@ -1,5 +1,6 @@
 const ROUTES = {
 	Home: '/',
+	Stake: '/stake',
 	Pools: {
 		Home: '/pools',
 		Create: '/pools/create',

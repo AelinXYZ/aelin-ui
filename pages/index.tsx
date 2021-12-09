@@ -21,6 +21,7 @@ const Home: FC<NextPage> = () => {
 					<ButtonRow>
 						<Button onClick={() => router.push(ROUTES.Pools.Home)}>Join Pool</Button>
 						<Button onClick={() => router.push(ROUTES.Pools.Create)}>Create Pool</Button>
+						<Button onClick={() => router.push(ROUTES.Stake)}>Stake</Button>
 						<Button>Learn More</Button>
 					</ButtonRow>
 					<Emoji>🧝‍♀️</Emoji>
@@ -50,7 +51,7 @@ const Content = styled.div`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 390px;
+	width: 500px;
 	margin: 0 auto;
 	height: 100%;
 	text-align: center;
