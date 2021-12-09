@@ -102,12 +102,15 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 const GridItemHeader = styled.div`
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 `;
 
 const GridItemSubText = styled.div`
 	color: ${(props) => props.theme.colors.black};
 	font-size: 12px;
-	margin-bottom: 15px;
+	margin: 5px 0;
 `;
 
 const ErrorField = styled.div`

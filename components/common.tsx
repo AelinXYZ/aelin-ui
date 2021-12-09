@@ -90,3 +90,20 @@ export const StyledSpinner = styled(Image)`
 	display: block;
 	margin: 30px auto;
 `;
+
+export const QuestionMark = styled.span`
+	width: 20px;
+	height: 20px;
+	margin: 0 5px;
+	font-size: 10px;
+	font-weight: bold;
+	border-radius: 50%;
+	line-height: 20px;
+	margin-right: 5px;
+	text-align: center;
+	display: inline-block;
+	cursor: pointer;
+	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	color: ${(props) => props.theme.colors.textGrey};
+	background: ${(props) => props.theme.colors.grey};
+`;
