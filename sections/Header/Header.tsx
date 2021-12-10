@@ -24,6 +24,8 @@ const Header: FC = () => {
 						query: { sponsorFilter: walletAddress },
 					},
 					{ label: 'Create Pool', pathname: ROUTES.Pools.Create },
+					{ label: 'Stake', pathname: ROUTES.Stake },
+					{ label: 'Airdrop', pathname: ROUTES.Airdrop },
 			  ]
 			: links;
 	}, [walletAddress]);
