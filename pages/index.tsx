@@ -22,6 +22,7 @@ const Home: FC<NextPage> = () => {
 						<Button onClick={() => router.push(ROUTES.Pools.Home)}>Join Pool</Button>
 						<Button onClick={() => router.push(ROUTES.Pools.Create)}>Create Pool</Button>
 						<Button onClick={() => router.push(ROUTES.Stake)}>Stake</Button>
+						<Button onClick={() => router.push(ROUTES.Airdrop)}>Airdrop</Button>
 						<Button>Learn More</Button>
 					</ButtonRow>
 					<Emoji>🧝‍♀️</Emoji>
