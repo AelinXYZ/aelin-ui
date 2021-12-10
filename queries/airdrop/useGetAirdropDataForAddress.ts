@@ -6,12 +6,14 @@ import Wei, { wei } from '@synthetixio/wei';
 type AirdropRecord = {
 	address: string;
 	balance: Wei;
+	index: number;
+	proof: string[];
 };
 
 const useGetAirdropDataForAddress = () => {
 	const { walletAddress } = Connector.useContainer();
 	return useQuery<AirdropRecord | null>(
-		['airdropRecord'],
+		['airdrop', 'data'],
 		async () => {
 			const request = await fetch('/data/airdrop.json');
 			const airdropSource = await request.json();
@@ -23,6 +25,8 @@ const useGetAirdropDataForAddress = () => {
 				? {
 						address: match.address,
 						balance: wei(BigNumber.from(match.balance)),
+						index: Number(match.index),
+						proof: match.proof,
 				  }
 				: null;
 		},
