@@ -92,13 +92,13 @@ export const StyledSpinner = styled(Image)`
 `;
 
 export const QuestionMark = styled.span`
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 	margin: 0 5px;
-	font-size: 10px;
+	font-size: 9px;
 	font-weight: bold;
 	border-radius: 50%;
-	line-height: 20px;
+	line-height: 18px;
 	margin-right: 5px;
 	text-align: center;
 	display: inline-block;
