@@ -14,10 +14,11 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
 import Whitelist from 'components/Whitelist';
+import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { FlexDivRow, FlexDivCol, Tooltip, QuestionMark } from 'components/common';
+import { FlexDivRow, FlexDivCol, Tooltip } from 'components/common';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 import { TransactionStatus } from 'constants/transactions';
@@ -36,8 +37,6 @@ const Create: FC = () => {
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const [isDurationTooltipOpen, setIsDurationTooltipOpen] = useState<boolean>(false);
-	const [isParchuseDurationTooltipOpen, setParchuseIsDurationTooltipOpen] = useState<boolean>(false);
 	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
 		TransactionData.useContainer();
 
@@ -272,24 +271,9 @@ const Create: FC = () => {
 				header: (
 					<>
 						<label htmlFor="duration">Duration</label>
-						<Tooltip
-							visible={isDurationTooltipOpen}
-							appendTo="parent"
-							allowHTML
-							interactive
-							content={
-								<div>
-									The amount of time funds are locked in the pool after the purchase duration expires
-								</div>
-							}
-						>
-							<QuestionMark
-								onMouseEnter={() => setIsDurationTooltipOpen(true)}
-								onMouseLeave={() => setIsDurationTooltipOpen(false)}
-							>
-								?
-							</QuestionMark>
-						</Tooltip>
+						<QuestionMark
+							text={`The amount of time funds are locked in the pool after the purchase duration expires`}
+						/>
 					</>
 				),
 				subText: 'Input days - hours - minutes',
@@ -375,25 +359,10 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-					<label htmlFor="purchaseDuration">Purchase Duration</label>
-					<Tooltip
-							visible={isParchuseDurationTooltipOpen}
-							appendTo="parent"
-							allowHTML
-							interactive
-							content={
-								<div>
-									The amount of time purchasers have to enter the pool
-								</div>
-							}
-						>
-							<QuestionMark
-								onMouseEnter={() => setParchuseIsDurationTooltipOpen(true)}
-								onMouseLeave={() => setParchuseIsDurationTooltipOpen(false)}
-							>
-								?
-							</QuestionMark>
-						</Tooltip>
+						<label htmlFor="purchaseDuration">Purchase Duration</label>
+						<QuestionMark
+							text={`The amount of time purchasers have to enter the pool`}
+						/>
 					</>
 				),
 				subText: 'Time to purchase deal tokens',
