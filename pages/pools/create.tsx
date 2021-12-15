@@ -14,10 +14,11 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
 import Whitelist from 'components/Whitelist';
-import { FlexDivRow, FlexDivCol } from 'components/common';
+import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+import { FlexDivRow, FlexDivCol, Tooltip } from 'components/common';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 import { TransactionStatus } from 'constants/transactions';
@@ -119,7 +120,6 @@ const Create: FC = () => {
 			// purchaseToken,
 			duration,
 			purchaseDuration,
-			poolPrivacy,
 			poolAddresses,
 			poolAddressesAmounts,
 		} = await createVariablesToCreatePool();
@@ -268,7 +268,14 @@ const Create: FC = () => {
 				formError: formik.errors.poolCap,
 			},
 			{
-				header: <label htmlFor="duration">Duration</label>,
+				header: (
+					<>
+						<label htmlFor="duration">Duration</label>
+						<QuestionMark
+							text={`The amount of time funds are locked in the pool after the purchase duration expires`}
+						/>
+					</>
+				),
 				subText: 'Input days - hours - minutes',
 				formField: (
 					<FlexDivRow>
@@ -350,7 +357,14 @@ const Create: FC = () => {
 				formError: formik.errors.poolSymbol,
 			},
 			{
-				header: <label htmlFor="purchaseDuration">Purchase Duration</label>,
+				header: (
+					<>
+						<label htmlFor="purchaseDuration">Purchase Duration</label>
+						<QuestionMark
+							text={`The amount of time purchasers have to enter the pool`}
+						/>
+					</>
+				),
 				subText: 'Time to purchase deal tokens',
 				formField: (
 					<FlexDivRow>
