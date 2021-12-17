@@ -22,12 +22,14 @@ interface AcceptOrRejectDealProps {
 	deal: any;
 	pool: PoolCreatedResult | null;
 	underlyingDealTokenDecimals: number | null;
+	underlyingDealTokenSymbol: string | null
 }
 
 const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	deal,
 	pool,
 	underlyingDealTokenDecimals,
+	underlyingDealTokenSymbol
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -43,8 +45,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	});
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
-	
-	const purchaseTokenSymbol = poolBalances?.purchaseTokenSymbol ?? null;
+
 
 	const dealGridItems = useMemo(
 		() => [
@@ -60,7 +61,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				header: 'Underlying Deal Token',
 				subText: (
 					<TokenDisplay
-						symbol={purchaseTokenSymbol}
+						symbol={underlyingDealTokenSymbol}
 						address={deal?.underlyingDealToken}
 						displayAddress={true}
 					/>
