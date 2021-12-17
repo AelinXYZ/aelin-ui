@@ -43,6 +43,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	});
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
+	
+	const purchaseTokenSymbol = poolBalances?.purchaseTokenSymbol ?? null;
 
 	const dealGridItems = useMemo(
 		() => [
@@ -58,7 +60,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				header: 'Underlying Deal Token',
 				subText: (
 					<TokenDisplay
-						symbol={deal?.symbol}
+						symbol={purchaseTokenSymbol}
 						address={deal?.underlyingDealToken}
 						displayAddress={true}
 					/>
