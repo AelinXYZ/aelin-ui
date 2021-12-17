@@ -6,7 +6,7 @@ import { Tooltip } from 'components/common';
 
 interface QuestionMarkProps {
   text: string;
-}
+};
 
 const QuestionMark: FC<QuestionMarkProps> = ({ text }) => {
 	const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const QuestionMark: FC<QuestionMarkProps> = ({ text }) => {
         ?
       </StyledQuestionMark>
     </Tooltip>
-    )
+  );
 };
 
 const StyledQuestionMark = styled.span`

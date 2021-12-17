@@ -40,6 +40,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const [underlyingDealTokenDecimals, setUnderlyingDealTokenDecimals] = useState<number | null>(
 		null
 	);
+	const [underlyingDealTokenSymbol, setUnderlyingDealTokenSymbol] = useState<string | null>(null);
 	const dealDetailsQuery = useGetDealDetailByIdQuery({ id: pool?.dealAddress ?? '' });
 	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '' });
 
@@ -70,10 +71,13 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				const claimable = await contract.claimableTokens(walletAddress);
 				const formattedDealBalance = Number(ethers.utils.formatUnits(balance, decimals));
 				setDealBalance(formattedDealBalance);
-				const { decimals: underlyingDecimals } = await getERC20Data({
+				const { decimals: underlyingDecimals, symbol: underlyingSymbol } = await getERC20Data({
 					address: deal?.underlyingDealToken,
 					provider,
 				});
+
+				
+
 				const claimableTokens = Number(
 					ethers.utils.formatUnits(claimable.underlyingClaimable.toString(), underlyingDecimals)
 				);
@@ -84,6 +88,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						ethers.utils.formatUnits(underlyingExchangeRate.toString(), underlyingDecimals ?? 0)
 					)
 				);
+				setUnderlyingDealTokenSymbol(underlyingSymbol);
 			}
 		}
 		getDealInfo();
@@ -138,6 +143,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						pool={pool}
 						deal={deal}
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+						underlyingDealTokenSymbol={underlyingDealTokenSymbol}
 					/>
 				</SectionWrapper>
 			) : null}
