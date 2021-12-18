@@ -97,17 +97,29 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		getDealInfo();
 	}, [deal?.id, provider, walletAddress, deal?.underlyingDealToken]);
 
-	const now = useMemo(() => Date.now(), []);
+	const now = Date.now();
+	const showCreateDealSection = useMemo(() => {
+		if (!pool || !now || !deal || walletAddress) return false;
+		// If the connected wallet is not the sponsor, then we don't display the createDeal section
+		if (walletAddress !== pool.sponsor) return false;
+		// If the Pool status is Open and PurchaseTokenCap is not null and is reached
+		if (
+			pool.poolStatus === Status.PoolOpen &&
+			pool.purchaseTokenCap.gt(0) &&
+			pool.contributions.eq(pool.purchaseTokenCap)
+		)
+			return true;
+		// If the Pool status is SeekingDeal
+		if (pool.poolStatus === Status.Status.SeekingDeal) return true;
+		// If the Pool status is FundingDeal and HolderFundingExpiration is reached
+		if (pool.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) return true;
+		return false;
+	}, [deal, now, pool, walletAddress]);
 
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePool pool={pool} />
-			{((pool?.poolStatus === Status.PoolOpen &&
-				Number(pool.contributions.toString()) === Number(pool.purchaseTokenCap.toString())) ||
-				(pool?.poolStatus === Status.FundingDeal &&
-					(deal?.holderFundingExpiration ?? now + 1) <= now) ||
-				pool?.poolStatus === Status.SeekingDeal) &&
-			walletAddress === pool?.sponsor ? (
+			{showCreateDealSection ? (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
