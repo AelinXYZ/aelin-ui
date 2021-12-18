@@ -89,6 +89,7 @@ const FundDeal: FC<FundDealProps> = ({
 	const handleSubmit = useCallback(async () => {
 		if (!walletAddress || !signer || !dealAddress || !decimals || !amount) return;
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
+		setShowTxModal(false);
 		try {
 			const tx = await contract.depositUnderlying(amount.toString(), {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -124,6 +125,7 @@ const FundDeal: FC<FundDealProps> = ({
 	const handleApprove = useCallback(async () => {
 		if (!walletAddress || !signer || !dealAddress || !token) return;
 		const contract = new ethers.Contract(token, erc20Abi, signer);
+		setShowTxModal(false);
 		try {
 			const tx = await contract.approve(dealAddress, amount.toString(), {
 				gasLimit: gasLimitEstimate?.toBN(),
