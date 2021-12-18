@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import {
@@ -44,8 +45,10 @@ const useConnector = () => {
 		LOCAL_STORAGE_KEYS.SELECTED_WALLET,
 		''
 	);
-	const [transactionNotifier, setTransactionNotifier] =
-		useState<TransactionNotifierInterface | null>(null);
+	const [
+		transactionNotifier,
+		setTransactionNotifier,
+	] = useState<TransactionNotifierInterface | null>(null);
 
 	useEffect(() => {
 		const init = async () => {

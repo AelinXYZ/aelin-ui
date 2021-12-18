@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC } from 'react';
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';

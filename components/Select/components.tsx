@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react';
 import { components, IndicatorProps } from 'react-select';
 import Image from 'next/image';

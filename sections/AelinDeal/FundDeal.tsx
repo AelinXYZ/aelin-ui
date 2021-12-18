@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC, useEffect, useState, useCallback, useMemo } from 'react';
 import { ethers } from 'ethers';
 import styled from 'styled-components';

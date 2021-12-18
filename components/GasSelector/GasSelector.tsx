@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import Wei, { wei } from "@synthetixio/wei";
+import Wei, { wei } from '@synthetixio/wei';
 
 import { Tooltip } from 'components/common';
 import Connector from 'containers/Connector';
@@ -15,7 +15,11 @@ import { GWEI_PRECISION } from 'constants/networks';
 
 import { IGasSelector, GasSpeed, GasPrices } from './types';
 
-const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, initialGasSpeed = 'fast' }) => {
+const GasSelector: React.FC<IGasSelector> = ({
+	setGasPrice,
+	gasLimitEstimate,
+	initialGasSpeed = 'fast',
+}) => {
 	const [customGasPrice, setCustomGasPrice] = useState<string>('');
 	const [gasSpeed, setGasSpeed] = useState<GasSpeed>(initialGasSpeed);
 	const [isOpen, setIsOpen] = useState(false);
@@ -25,9 +29,11 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 	const exchangeRatesQuery = useExchangeRatesQuery(network);
 	const ethGasStationQuery = useEthGasPriceQuery({ networkId: network.id, provider });
 
-	const gasPrices = ethGasStationQuery.data ?? ({} as GasPrices);
+	const gasPrices = useMemo(() => ethGasStationQuery.data ?? ({} as GasPrices), [
+		ethGasStationQuery.data,
+	]);
 	const exchangeRates = exchangeRatesQuery.data ?? null;
-	
+
 	const gasPrice: Wei | null = useMemo(() => {
 		try {
 			return wei(customGasPrice, GWEI_PRECISION);
@@ -38,12 +44,8 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 		}
 	}, [customGasPrice, ethGasStationQuery.data, gasSpeed]);
 
-	const ethPriceRate = getExchangeRatesForCurrencies(
-		exchangeRates,
-		'sETH',
-		'sUSD'
-	);
-	
+	const ethPriceRate = getExchangeRatesForCurrencies(exchangeRates, 'sETH', 'sUSD');
+
 	const transactionFee = useMemo(
 		() => getTransactionPrice(gasPrice, gasLimitEstimate, ethPriceRate) ?? 0,
 		[gasPrice, gasLimitEstimate, ethPriceRate]
@@ -53,14 +55,14 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 		const nGasPrice = Number(gasPrices[gasSpeed] ?? 0);
 		const nCustomGasPrice = Number(customGasPrice);
 
-		if(!nCustomGasPrice) {
+		if (!nCustomGasPrice) {
 			if (!Number.isInteger(nGasPrice)) return nGasPrice.toFixed(2);
-			return nGasPrice
+			return nGasPrice;
 		}
 
 		if (!Number.isInteger(nCustomGasPrice)) return nCustomGasPrice.toFixed(2);
 		return nCustomGasPrice;
-	}, [customGasPrice, gasPrices[gasSpeed]]);
+	}, [customGasPrice, gasPrices, gasSpeed]);
 
 	useEffect(() => {
 		try {
@@ -73,13 +75,9 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 
 	return (
 		<StyledContainer>
-			<StyledGasDescription>
-				{`GAS PRICE (GWEI): `} 
-			</StyledGasDescription>
+			<StyledGasDescription>{`GAS PRICE (GWEI): `}</StyledGasDescription>
 			<span>
-				<StyledGasPrice>
-					{`≈${formattedGasPrice} ($${transactionFee})`}
-				</StyledGasPrice>
+				<StyledGasPrice>{`≈${formattedGasPrice} ($${transactionFee})`}</StyledGasPrice>
 				<EditGasEstimateTooltip
 					visible={isOpen}
 					appendTo="parent"
@@ -98,7 +96,7 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 									}}
 									onKeyDown={(e) => {
 										if (e.key === 'Enter') {
-											setIsOpen(!isOpen)
+											setIsOpen(!isOpen);
 										}
 									}}
 								/>
@@ -110,7 +108,8 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 										setCustomGasPrice('');
 										setGasSpeed(gasSpeed);
 										setIsOpen(!isOpen);
-									}}>
+									}}
+								>
 									<StyledSpeed>{gasSpeed}</StyledSpeed>
 									<span>{Number(gasPrices[gasSpeed]).toFixed(2)}</span>
 								</StyledLi>
@@ -118,10 +117,7 @@ const GasSelector: React.FC<IGasSelector> = ({ setGasPrice, gasLimitEstimate, in
 						</StyledUl>
 					}
 				>
-					<StyledEditButton
-						type="button"
-						onClick={()=> setIsOpen(!isOpen)}
-					>
+					<StyledEditButton type="button" onClick={() => setIsOpen(!isOpen)}>
 						Edit
 					</StyledEditButton>
 				</EditGasEstimateTooltip>
@@ -138,7 +134,7 @@ const StyledContainer = styled.div`
 `;
 
 const StyledGasDescription = styled.span`
-	color: #5B5B5B;
+	color: #5b5b5b;
 	font-size: 14px;
 `;
 
@@ -151,13 +147,13 @@ const StyledInput = styled.input`
 	width: 120px;
 	min-width: 0;
 	font-family: Agrandir-Regular;
-	background-color: #DBDBDB;
+	background-color: #dbdbdb;
 	height: 32px;
-  padding: 0 8px;
+	padding: 0 8px;
 	font-size: 14px;
 	border: 0;
 	border-radius: 4px;
-	border: 1px solid #C4C4C4;
+	border: 1px solid #c4c4c4;
 	color: #252626;
 	caret-color: #477830;
 	outline: none;
@@ -206,7 +202,7 @@ const StyledLi = styled.li`
 
 const StyledSpeed = styled.span`
 	&::first-letter {
-    text-transform: uppercase;
+		text-transform: uppercase;
 	}
 `;
 
@@ -216,8 +212,8 @@ const StyledEditButton = styled.button`
 	cursor: pointer;
 	padding: 5px 15px;
 	color: ${(props) => props.theme.colors.white};
-	background-color: #5B5B5B;
+	background-color: #5b5b5b;
 `;
 
-export { GasSelector }
+export { GasSelector };
 export default GasSelector;

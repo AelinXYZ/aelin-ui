@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC, useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
@@ -56,14 +57,18 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		recipient: walletAddress ?? '',
 	});
 
-	const claims = useMemo(
-		() => (claimedQuery?.data ?? []).map(parseClaimedResult),
-		[claimedQuery?.data]
-	);
+	const claims = useMemo(() => (claimedQuery?.data ?? []).map(parseClaimedResult), [
+		claimedQuery?.data,
+	]);
 
 	useEffect(() => {
 		async function getDealInfo() {
-			if (deal?.id != null && deal?.underlyingDealToken && provider != null && walletAddress != null) {
+			if (
+				deal?.id != null &&
+				deal?.underlyingDealToken &&
+				provider != null &&
+				walletAddress != null
+			) {
 				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
 				const balance = await contract.balanceOf(walletAddress);
 				const decimals = await contract.decimals();

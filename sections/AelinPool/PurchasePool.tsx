@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
@@ -38,8 +39,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
-		TransactionData.useContainer();
+	const {
+		gasPrice,
+		setGasPrice,
+		txState,
+		setTxState,
+		txType,
+		setTxType,
+	} = TransactionData.useContainer();
 	const [, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
@@ -266,10 +273,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(
-		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
-		[pool?.purchaseExpiry]
-	);
+	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
+		pool?.purchaseExpiry,
+	]);
 
 	return (
 		<SectionDetails

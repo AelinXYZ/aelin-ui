@@ -1,63 +1,59 @@
+//@ts-nocheck
 import { utils } from 'ethers';
 import React, { FC, useRef } from 'react';
 import { CSVReader } from 'react-papaparse';
 import styled from 'styled-components';
 
-import Button from "components/Button";
+import Button from 'components/Button';
 
-import {IUploadCSV, ICSVResponse, IWhitelist} from './types';
+import { IUploadCSV, ICSVResponse, IWhitelist } from './types';
 
 const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
-  const buttonRef = useRef();
+	const buttonRef = useRef();
 
-  const handleOnDrop = (csv: ICSVResponse[]) => {
-    const whitelist = csv.reduce((accum, curr: ICSVResponse) => {
-      const [address, amount] = curr.data;
+	const handleOnDrop = (csv: ICSVResponse[]) => {
+		const whitelist = csv.reduce((accum, curr: ICSVResponse) => {
+			const [address, amount] = curr.data;
 
-      if (!utils.isAddress(address)) return accum;
+			if (!utils.isAddress(address)) return accum;
 
-      accum.push({
-        address,
-        amount: amount.length ? Number(amount): null,
-      });
+			accum.push({
+				address,
+				amount: amount.length ? Number(amount) : null,
+			});
 
-      return accum;
-    }, [] as IWhitelist[]);
+			return accum;
+		}, [] as IWhitelist[]);
 
-    onUploadCSV(whitelist);
-  };
+		onUploadCSV(whitelist);
+	};
 
-  const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (buttonRef.current) {
-      buttonRef.current.open(e);
-    }
-  };
+	const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
+		if (buttonRef.current) {
+			buttonRef.current.open(e);
+		}
+	};
 
-  return (
-    <CSVReader
-      // @ts-ignore: missing type
-      ref={buttonRef}
-      onFileLoad={handleOnDrop}
-      noDrag
-      noClick
-    >
-       {() => (
-         <Button
-          size='lg'
-          variant='round'
-          onClick={handleOpenDialog}
-        >
-          Upload CSV
-        </Button>
-       )}
-    </CSVReader>
-  );
+	return (
+		<CSVReader
+			// @ts-ignore: missing type
+			ref={buttonRef}
+			onFileLoad={handleOnDrop}
+			noDrag
+			noClick
+		>
+			{() => (
+				<Button size="lg" variant="round" onClick={handleOpenDialog}>
+					Upload CSV
+				</Button>
+			)}
+		</CSVReader>
+	);
 };
 
 const StyledButton = styled(Button)`
-  background: #9e9e9e;
+	background: #9e9e9e;
 `;
 
-
 export default UploadCSV;
-export { UploadCSV }
+export { UploadCSV };

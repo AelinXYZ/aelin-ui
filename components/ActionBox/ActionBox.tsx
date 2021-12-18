@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC, useState, useMemo, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import Info from 'assets/svg/info.svg';

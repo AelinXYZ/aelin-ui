@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { wei } from '@synthetixio/wei';
 
 import { GRAPH_ENDPOINT } from 'constants/endpoints';

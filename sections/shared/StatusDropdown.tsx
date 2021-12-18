@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC, Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 import { Props } from 'react-select';
@@ -9,7 +10,6 @@ import {
 	DropdownIndicator,
 	MultiValueRemove,
 } from 'components/Select/components';
-
 import { Status } from 'components/DealStatus';
 import { statusToText } from 'constants/pool';
 

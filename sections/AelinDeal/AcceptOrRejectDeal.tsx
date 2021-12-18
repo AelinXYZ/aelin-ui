@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
@@ -22,19 +23,25 @@ interface AcceptOrRejectDealProps {
 	deal: any;
 	pool: PoolCreatedResult | null;
 	underlyingDealTokenDecimals: number | null;
-	underlyingDealTokenSymbol: string | null
+	underlyingDealTokenSymbol: string | null;
 }
 
 const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	deal,
 	pool,
 	underlyingDealTokenDecimals,
-	underlyingDealTokenSymbol
+	underlyingDealTokenSymbol,
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
-		TransactionData.useContainer();
+	const {
+		txState,
+		setTxState,
+		setGasPrice,
+		gasPrice,
+		txType,
+		setTxType,
+	} = TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -45,7 +52,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	});
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
-
 
 	const dealGridItems = useMemo(
 		() => [
@@ -168,6 +174,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			underlyingDealTokenDecimals,
 			pool?.sponsorFee,
 			poolBalances?.purchaseTokenDecimals,
+			underlyingDealTokenSymbol,
 		]
 	);
 
