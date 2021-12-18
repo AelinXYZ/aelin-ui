@@ -63,7 +63,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	useEffect(() => {
 		async function getDealInfo() {
-			if (deal?.id != null && provider != null && walletAddress != null) {
+			if (deal?.id != null && deal?.underlyingDealToken && provider != null && walletAddress != null) {
 				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
 				const balance = await contract.balanceOf(walletAddress);
 				const decimals = await contract.decimals();
@@ -75,8 +75,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					address: deal?.underlyingDealToken,
 					provider,
 				});
-
-				
 
 				const claimableTokens = Number(
 					ethers.utils.formatUnits(claimable.underlyingClaimable.toString(), underlyingDecimals)
