@@ -21,13 +21,12 @@ const Home: FC<NextPage> = () => {
 					<ButtonRow>
 						<Button onClick={() => router.push(ROUTES.Pools.Home)}>Join Pool</Button>
 						<Button onClick={() => router.push(ROUTES.Pools.Create)}>Create Pool</Button>
-						<Button onClick={() => router.push(ROUTES.Stake)}>Stake</Button>
+						{/* <Button onClick={() => router.push(ROUTES.Stake)}>Stake</Button> */}
 						<Button onClick={() => router.push(ROUTES.Airdrop)}>Airdrop</Button>
-						<Button>Learn More</Button>
+						{/* <Button>Learn More</Button> */}
 					</ButtonRow>
 					<Emoji>🧝‍♀️</Emoji>
 					<Heading>Looking for your pools?</Heading>
-					<ButtonWallet>Connect your wallet</ButtonWallet>
 				</Content>
 			</Background>
 		</Container>
@@ -88,17 +87,6 @@ const Heading = styled.h1`
 	font-family: ${(props) => props.theme.fonts.sometimes};
 	font-weight: 100;
 	font-size: 40px;
-`;
-
-const ButtonWallet = styled.button`
-	outline: none;
-	border: none;
-	color: ${(props) => props.theme.colors.textGrey};
-	font-family: ${(props) => props.theme.fonts.agrandir};
-	background: none;
-	font-size: 15px;
-	text-decoration: underline;
-	cursor: pointer;
 `;
 
 export default Home;

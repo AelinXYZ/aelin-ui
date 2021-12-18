@@ -237,7 +237,9 @@ const Create: FC = () => {
 		} else {
 			formik.setFieldValue('whitelist', initialWhitelistValues);
 		}
-	}, [formik.values.poolPrivacy, formik]);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [formik.values.poolPrivacy]);
 
 	const gridItems = useMemo(
 		() => [

@@ -196,7 +196,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 			</FlexDivRow>
 			<ContentContainer>
 				{isVesting ? (
-					<Paragraph>{maxValue || 0} tokens vested</Paragraph>
+					<Paragraph>{maxValue || 0} tokens to vest</Paragraph>
 				) : (
 					<>
 						<ActionBoxInputLabel>{label}</ActionBoxInputLabel>

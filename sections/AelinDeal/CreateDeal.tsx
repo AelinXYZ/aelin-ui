@@ -32,8 +32,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
 	const { walletAddress, signer, provider } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
-		TransactionData.useContainer();
+	const {
+		txHash,
+		setTxHash,
+		gasPrice,
+		setGasPrice,
+		txState,
+		setTxState,
+	} = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const handleSubmit = async () => {
@@ -523,7 +529,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const summaryItems = useMemo(
 		() => [
 			{
-				label: 'Underlyign deal token',
+				label: 'Underlying deal token',
 				text: formik.values.underlyingDealToken
 					? truncateAddress(formik.values.underlyingDealToken)
 					: '',
