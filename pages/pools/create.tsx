@@ -1,3 +1,5 @@
+//@ts-nocheck
+import { useCallback } from 'react';
 import { useFormik } from 'formik';
 import { wei } from '@synthetixio/wei';
 import { BigNumber, ethers, utils } from 'ethers';
@@ -13,7 +15,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 
 import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
-import Whitelist from 'components/Whitelist';
+import Whitelist from 'components/WhiteList';
 import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
@@ -37,77 +39,14 @@ const Create: FC = () => {
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
-		TransactionData.useContainer();
-
-	const createVariablesToCreatePool = async () => {
-		const { formatBytes32String, parseEther } = utils;
-		const now = new Date();
-
-		const {
-			poolName,
-			poolSymbol,
-			poolCap,
-			whitelist,
-			sponsorFee,
-			poolPrivacy,
-			durationDays,
-			durationHours,
-			durationMinutes,
-			purchaseToken,
-			purchaseDurationDays,
-			purchaseDurationHours,
-			purchaseDurationMinutes,
-		} = formik.values;
-
-		const purchaseContract = new ethers.Contract(purchaseToken, erc20Abi, provider);
-		const purchaseTokenDecimals = await purchaseContract.decimals();
-
-		const duration = getDuration(now, durationDays, durationHours, durationMinutes);
-		const purchaseDuration = getDuration(
-			now,
-			purchaseDurationDays,
-			purchaseDurationHours,
-			purchaseDurationMinutes
-		);
-
-		const isPrivate = poolPrivacy === Privacy.PRIVATE;
-
-		let poolAddresses: string[] = [];
-		let poolAddressesAmounts: BigNumber[] = [];
-
-		if (isPrivate) {
-			const formattedWhiteList = whitelist.reduce((accum, curr) => {
-				const { address, amount } = curr;
-
-				if (!address.length) return accum;
-
-				accum.push({
-					address,
-					amount: amount
-						? utils.parseUnits(String(amount), purchaseTokenDecimals)
-						: ethers.constants.MaxUint256,
-				});
-
-				return accum;
-			}, [] as { address: string; amount: BigNumber }[]);
-
-			poolAddresses = formattedWhiteList.map(({ address }) => address);
-			poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
-		}
-
-		return {
-			...formik.values,
-			poolName: formatBytes32String(poolName),
-			poolSymbol: formatBytes32String(poolSymbol),
-			poolCap: parseEther(poolCap.toString()),
-			sponsorFee: parseEther(sponsorFee.toString()),
-			duration,
-			purchaseDuration,
-			poolAddresses,
-			poolAddressesAmounts,
-		};
-	};
+	const {
+		txHash,
+		setTxHash,
+		gasPrice,
+		setGasPrice,
+		txState,
+		setTxState,
+	} = TransactionData.useContainer();
 
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;
@@ -176,6 +115,75 @@ const Create: FC = () => {
 		onSubmit: handleSubmit,
 	});
 
+	const createVariablesToCreatePool = useCallback(async () => {
+		const { formatBytes32String, parseEther } = utils;
+		const now = new Date();
+
+		const {
+			poolName,
+			poolSymbol,
+			poolCap,
+			whitelist,
+			sponsorFee,
+			poolPrivacy,
+			durationDays,
+			durationHours,
+			durationMinutes,
+			purchaseToken,
+			purchaseDurationDays,
+			purchaseDurationHours,
+			purchaseDurationMinutes,
+		} = formik.values;
+
+		const purchaseContract = new ethers.Contract(purchaseToken, erc20Abi, provider);
+		const purchaseTokenDecimals = await purchaseContract.decimals();
+
+		const duration = getDuration(now, durationDays, durationHours, durationMinutes);
+		const purchaseDuration = getDuration(
+			now,
+			purchaseDurationDays,
+			purchaseDurationHours,
+			purchaseDurationMinutes
+		);
+
+		const isPrivate = poolPrivacy === Privacy.PRIVATE;
+
+		let poolAddresses: string[] = [];
+		let poolAddressesAmounts: BigNumber[] = [];
+
+		if (isPrivate) {
+			const formattedWhiteList = whitelist.reduce((accum, curr) => {
+				const { address, amount } = curr;
+
+				if (!address.length) return accum;
+
+				accum.push({
+					address,
+					amount: amount
+						? utils.parseUnits(String(amount), purchaseTokenDecimals)
+						: ethers.constants.MaxUint256,
+				});
+
+				return accum;
+			}, [] as { address: string; amount: BigNumber }[]);
+
+			poolAddresses = formattedWhiteList.map(({ address }) => address);
+			poolAddressesAmounts = formattedWhiteList.map(({ amount }) => amount);
+		}
+
+		return {
+			...formik.values,
+			poolName: formatBytes32String(poolName),
+			poolSymbol: formatBytes32String(poolSymbol),
+			poolCap: parseEther(poolCap.toString()),
+			sponsorFee: parseEther(sponsorFee.toString()),
+			duration,
+			purchaseDuration,
+			poolAddresses,
+			poolAddressesAmounts,
+		};
+	}, [provider, formik.values]);
+
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
@@ -221,7 +229,7 @@ const Create: FC = () => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [contracts, walletAddress, formik.values]);
+	}, [contracts, walletAddress, formik.values, createVariablesToCreatePool]);
 
 	useEffect(() => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
@@ -229,7 +237,7 @@ const Create: FC = () => {
 		} else {
 			formik.setFieldValue('whitelist', initialWhitelistValues);
 		}
-	}, [formik.values.poolPrivacy]);
+	}, [formik.values.poolPrivacy, formik]);
 
 	const gridItems = useMemo(
 		() => [
@@ -360,9 +368,7 @@ const Create: FC = () => {
 				header: (
 					<>
 						<label htmlFor="purchaseDuration">Purchase Duration</label>
-						<QuestionMark
-							text={`The amount of time purchasers have to enter the pool`}
-						/>
+						<QuestionMark text={`The amount of time purchasers have to enter the pool`} />
 					</>
 				),
 				subText: 'Time to purchase deal tokens',

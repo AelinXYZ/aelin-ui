@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { FC } from 'react';
 import styled, { css } from 'styled-components';
 import Link from 'next/link';

@@ -1,16 +1,11 @@
+//@ts-nocheck
 import { FC } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
-import {
-	ExternalLink,
-	Tooltip,
-	FlexDiv,
-	FlexDivCol,
-	FlexDivCentered
-} from 'components/common';
+import { ExternalLink, Tooltip, FlexDiv, FlexDivCol, FlexDivCentered } from 'components/common';
 import Button from 'components/Button';
-import CopyToClipboard from 'components/CopyToClipboard'
+import CopyToClipboard from 'components/CopyToClipboard';
 
 import BrowserWalletIcon from 'assets/wallet-icons/browserWallet.svg';
 import LedgerIcon from 'assets/wallet-icons/ledger.svg';
@@ -90,7 +85,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 						<SelectedWallet>{getWalletIcon(selectedWallet?.toLowerCase())}</SelectedWallet>
 						<WalletAddress>{truncateAddress(walletAddress)}</WalletAddress>
 						<ActionIcons>
-							<CopyToClipboard  text={walletAddress} />
+							<CopyToClipboard text={walletAddress} />
 							<Tooltip hideOnClick={false} arrow={true} placement="top" content="etherscan">
 								<LinkContainer>
 									<WrappedExternalLink href={blockExplorerInstance?.addressLink(walletAddress!)}>

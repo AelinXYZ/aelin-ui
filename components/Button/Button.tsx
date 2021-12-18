@@ -1,3 +1,4 @@
+//@ts-nocheck
 import styled, { css } from 'styled-components';
 import { resetButtonCSS } from 'components/common';
 import Color from 'color';

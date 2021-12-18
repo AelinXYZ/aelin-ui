@@ -1,4 +1,5 @@
-import _ from 'lodash';
+//@ts-nocheck
+import { isEqual } from 'lodash';
 import Image from 'next/image';
 import styled from 'styled-components';
 import { FC, useEffect, useState } from 'react';
@@ -34,7 +35,7 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
 	}, [formik.values.whitelist]);
 
 	useEffect(() => {
-		if (_.isEqual(formik.values.whitelist, initialWhitelistValues)) {
+		if (isEqual(formik.values.whitelist, initialWhitelistValues)) {
 			setIsClearDisabled(true);
 		} else {
 			setIsClearDisabled(false);

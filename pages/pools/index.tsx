@@ -1,4 +1,4 @@
-
+//@ts-nocheck
 /* eslint-disable react/display-name */
 import { ethers } from 'ethers';
 import { CellProps } from 'react-table';

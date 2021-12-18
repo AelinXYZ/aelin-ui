@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ViewPool from 'sections/AelinPool/ViewPool';
