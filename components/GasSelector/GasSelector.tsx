@@ -62,7 +62,7 @@ const GasSelector: React.FC<IGasSelector> = ({
 
 		if (!Number.isInteger(nCustomGasPrice)) return nCustomGasPrice.toFixed(2);
 		return nCustomGasPrice;
-	}, [customGasPrice, , gasPrices, gasSpeed]);
+	}, [customGasPrice, gasPrices, gasSpeed]);
 
 	useEffect(() => {
 		try {
