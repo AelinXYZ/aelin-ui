@@ -31,7 +31,6 @@ export const useAddressToEns = (address: string) => {
 				: undefined;
 			const validEnsName =
 				resolvedAddress?.toLowerCase() === address.toLowerCase() ? resolvedEnsName : address;
-			console.log({ resolvedEnsName, resolvedAddress, validEnsName });
 			setEnsName(validEnsName || address);
 		};
 		getEnsName();

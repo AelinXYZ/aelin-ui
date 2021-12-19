@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
 import WalletWidget from 'components/WalletWidget';
+import NetworkWidget from 'components/NetworkWidget';
 import Connector from 'containers/Connector';
 
 const Header: FC = () => {
@@ -50,6 +51,7 @@ const Header: FC = () => {
 				))}
 			</Links>
 			<HeaderBlock>
+				<NetworkWidget />
 				<WalletWidget />
 			</HeaderBlock>
 		</Container>
@@ -81,6 +83,9 @@ const Links = styled.div`
 const HeaderBlock = styled.div`
 	display: flex;
 	align-items: center;
+	& > div:not(:first-child) {
+		margin-left: 12px;
+	}
 `;
 
 const StyledLink = styled(Link)`
