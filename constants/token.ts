@@ -2,8 +2,8 @@ import { ethers } from 'ethers';
 import { getERC20Data } from 'utils/crypto';
 
 export const TokenListUrls = {
-	Synthetix: 'https://synths.snx.eth.link',
 	OneInch: 'https://gateway.ipfs.io/ipns/tokens.1inch.eth',
+	Optimism: 'https://static.optimism.io/optimism.tokenlist.json',
 };
 
 export type Token = {
@@ -36,6 +36,26 @@ export const ether = {
 	symbol: 'ETH',
 	tags: [],
 };
+
+export const TestnetTokens = {
+	Optimism: {
+		address: '0xaA5068dC2B3AADE533d3e52C6eeaadC6a8154c57',
+		chainId: 69,
+		decimals: 18,
+		logoURI: 'https://tokens.1inch.io/0x57ab1ec28d129707052df4df418d58a2d46d5f51.png',
+		name: 'sUSD',
+		symbol: 'sUSD',
+	},
+	Ethereum: {
+		address: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+		chainId: 42,
+		decimals: 18,
+		logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+		name: 'DAI',
+		symbol: 'DAI',
+	},
+};
+
 type ValidateErc20AddressReturn =
 	| { result: 'success'; token: Token }
 	| { result: 'failure'; errorMessage: string };

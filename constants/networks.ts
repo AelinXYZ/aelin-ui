@@ -29,3 +29,6 @@ export const chainIdMapping = {
 export const GWEI_PRECISION = 9;
 export const GWEI_UNIT = 1000000000;
 export type GasLimitEstimate = Wei | null;
+
+export const isMainnet = (networkId: NetworkId) =>
+	[NetworkId.Mainnet, NetworkId['Optimism-Mainnet']].includes(networkId);

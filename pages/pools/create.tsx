@@ -56,7 +56,7 @@ const Create: FC = () => {
 			poolSymbol,
 			poolCap,
 			sponsorFee,
-			// purchaseToken,
+			purchaseToken,
 			duration,
 			purchaseDuration,
 			poolAddresses,
@@ -68,10 +68,7 @@ const Create: FC = () => {
 				poolName,
 				poolSymbol,
 				poolCap,
-				// purchaseToken,
-				// we need a kovan address for now to make it work
-				// https://faucet.paradigm.xyz/ will give you this token on kovan
-				'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+				purchaseToken,
 				duration,
 				sponsorFee,
 				purchaseDuration,
@@ -198,7 +195,7 @@ const Create: FC = () => {
 					poolSymbol,
 					poolCap,
 					sponsorFee,
-					// purchaseToken,
+					purchaseToken,
 					duration,
 					purchaseDuration,
 					poolAddresses,
@@ -210,10 +207,7 @@ const Create: FC = () => {
 						poolName,
 						poolSymbol,
 						poolCap,
-						// purchaseToken,
-						// we need a kovan address for now to make it work
-						// https://faucet.paradigm.xyz/ will give you this token on kovan
-						'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+						purchaseToken,
 						duration,
 						sponsorFee,
 						purchaseDuration,

@@ -1,12 +1,27 @@
-import { ether, Token, TokenListResponse } from 'constants/token';
+import { Token, TokenListResponse } from 'constants/token';
 import { UseQueryOptions, useQuery } from 'react-query';
+import Connector from 'containers/Connector';
+import { isMainnet } from 'constants/networks';
+import { TokenListUrls, TestnetTokens } from 'constants/token';
 
-const useTokenListQuery = (tokenListUrl: string, options?: UseQueryOptions<Token[]>) => {
+const getTokenList = (isMainnet: boolean, isOVM: boolean) => {
+	if (isMainnet) {
+		return fetch(isOVM ? TokenListUrls.Optimism : TokenListUrls.OneInch).then((x) => x.json());
+	} else {
+		return new Promise((resolve) =>
+			resolve({ tokens: [isOVM ? TestnetTokens.Optimism : TestnetTokens.Ethereum] })
+		);
+	}
+};
+
+const useTokenListQuery = (options?: UseQueryOptions<Token[]>) => {
+	const { isOVM, network } = Connector.useContainer();
+	const isMainnetNetwork = isMainnet(network?.id);
 	return useQuery<Token[]>(
-		[tokenListUrl],
+		['tokenList', network?.id, isMainnetNetwork, isOVM],
 		async () => {
-			const response: TokenListResponse = await fetch(tokenListUrl).then((x) => x.json());
-			return [ether, ...response.tokens];
+			const response: TokenListResponse = await getTokenList(isMainnetNetwork, isOVM);
+			return response.tokens;
 		},
 		{
 			refetchInterval: false,
