@@ -39,14 +39,8 @@ const Create: FC = () => {
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
+		TransactionData.useContainer();
 
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;
@@ -257,7 +251,7 @@ const Create: FC = () => {
 				formError: formik.errors.purchaseToken,
 			},
 			{
-				header: <label htmlFor="poolCap">Pool Cap (Purchase Tokens)</label>,
+				header: <label htmlFor="poolCap">Purchase Token Cap</label>,
 				subText: 'Uncapped if left blank or 0',
 				formField: (
 					<Input
@@ -274,7 +268,51 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="duration">Duration</label>
+						<label htmlFor="purchaseDuration">Phase 1: Enter the Pool Duration</label>
+						<QuestionMark text={`The amount of time purchasers have to enter the pool`} />
+					</>
+				),
+				subText: 'Time to purchase deal tokens',
+				formField: (
+					<FlexDivRow>
+						<Input
+							width="50px"
+							id="purchaseDurationDays"
+							name="purchaseDurationDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseDurationDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="purchaseDurationHours"
+							name="purchaseDurationHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseDurationHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="purchaseDurationMinutes"
+							name="purchaseDurationMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseDurationMinutes || ''}
+						/>
+					</FlexDivRow>
+				),
+				formError: formik.errors.purchaseDurationMinutes,
+			},
+			{
+				header: (
+					<>
+						<label htmlFor="duration">Phase 2: Pool Locked Duration</label>
 						<QuestionMark
 							text={`The amount of time funds are locked in the pool after the purchase duration expires`}
 						/>
@@ -359,50 +397,6 @@ const Create: FC = () => {
 					/>
 				),
 				formError: formik.errors.poolSymbol,
-			},
-			{
-				header: (
-					<>
-						<label htmlFor="purchaseDuration">Purchase Duration</label>
-						<QuestionMark text={`The amount of time purchasers have to enter the pool`} />
-					</>
-				),
-				subText: 'Time to purchase deal tokens',
-				formField: (
-					<FlexDivRow>
-						<Input
-							width="50px"
-							id="purchaseDurationDays"
-							name="purchaseDurationDays"
-							type="number"
-							placeholder="days"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.purchaseDurationDays || ''}
-						/>
-						<Input
-							width="55px"
-							id="purchaseDurationHours"
-							name="purchaseDurationHours"
-							type="number"
-							placeholder="hours"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.purchaseDurationHours || ''}
-						/>
-						<Input
-							width="50px"
-							id="purchaseDurationMinutes"
-							name="purchaseDurationMinutes"
-							type="number"
-							placeholder="mins"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.purchaseDurationMinutes || ''}
-						/>
-					</FlexDivRow>
-				),
-				formError: formik.errors.purchaseDurationMinutes,
 			},
 			{
 				header: 'Pool Privacy',
