@@ -21,36 +21,27 @@ const LOGOS = [
 
 const Footer: FC = () => {
 	const { asPath } = useRouter();
-	console.log('asPath: ', asPath);
 
 	return (
 		<Container>
 			{asPath === '/home' ? (
 				// TODO: Define which one will stay here
 				<NavColumn>
-					<div>
-						<Link href="/home" passHref>
-							<StyledA>HOME. </StyledA>
-						</Link>
-						<Link href="/?" passHref>
-							<StyledA>KNOWLEDGEBASE. </StyledA>
-						</Link>
-						<Link href="/about" passHref>
-							<StyledA>ABOUT. </StyledA>
-						</Link>
-						<Link href="/pools" passHref>
-							<StyledA>JOIN POOL. </StyledA>
-						</Link>
-						<Link href="/pools/create" passHref>
-							<StyledA>CREATE POOL. </StyledA>
-						</Link>
-					</div>
-					<div>
-						<StyledP>
-							©COPYRIGHT AELIN 2021. ALL RIGHTS RESERVED.{' '}
-							<StyledNews>SIGN UP FOR AELIN NEWS</StyledNews>
-						</StyledP>
-					</div>
+					<Link href="/home" passHref>
+						<StyledA>HOME. </StyledA>
+					</Link>
+					<Link href="/?" passHref>
+						<StyledA>KNOWLEDGEBASE. </StyledA>
+					</Link>
+					<Link href="/about" passHref>
+						<StyledA>ABOUT. </StyledA>
+					</Link>
+					<Link href="/pools" passHref>
+						<StyledA>JOIN POOL. </StyledA>
+					</Link>
+					<Link href="/pools/create" passHref>
+						<StyledA>CREATE POOL. </StyledA>
+					</Link>
 				</NavColumn>
 			) : (
 				<SocialRow>
@@ -95,11 +86,6 @@ const StyledP = styled.p`
 	color: #ffffff;
 	font-size: 12px;
 	letter-spacing: 0.62px;
-`;
-
-const StyledNews = styled.a`
-	color: #36a3a3;
-	cursor: pointer;
 `;
 
 export default Footer;
