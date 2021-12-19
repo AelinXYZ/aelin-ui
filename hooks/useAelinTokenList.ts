@@ -1,4 +1,4 @@
-import { Token, TokenListUrls } from 'constants/token';
+import { Token } from 'constants/token';
 import useTokenListQuery from './useTokenListQuery';
 
 type UseAelinTokenListReturn = {
@@ -6,12 +6,9 @@ type UseAelinTokenListReturn = {
 	tokensByAddress: { [address: string]: Token | undefined };
 };
 const useAelinTokenList = () => {
-	// const synthetixList = useTokenListQuery(TokenListUrls.Synthetix);
-	const oneInchList = useTokenListQuery(TokenListUrls.OneInch);
-	if (oneInchList.isLoading) return undefined;
-	// const allTokens = synthetixList.data?.concat(oneInchList.data ?? []) || []
-	const allTokens = oneInchList?.data ?? [];
-	// remove duplicates, lowercase address and create tokensByAddress
+	const tokenList = useTokenListQuery();
+	if (tokenList.isLoading) return undefined;
+	const allTokens = tokenList?.data ?? [];
 	const { tokensByAddress, tokens } = allTokens.reduce(
 		(acc: UseAelinTokenListReturn, token) => {
 			const address = token.address.toLowerCase();

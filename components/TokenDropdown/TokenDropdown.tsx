@@ -19,7 +19,7 @@ const tokenToOption = (token: Token) => ({
 	value: token,
 	label: token.symbol,
 });
-const noSearchTermTokens = ['ETH', 'USDC', 'USDT', 'SNX'];
+const noSearchTermTokens = ['USDC', 'USDT', 'SNX', 'DAI', 'sUSD'];
 
 type Option = { label: string; value: Token };
 type TokenDropdownProps = Props<Option, false> & {
