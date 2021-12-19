@@ -27,21 +27,23 @@ const Footer: FC = () => {
 			{asPath === '/home' ? (
 				// TODO: Define which one will stay here
 				<NavColumn>
-					<Link href="/home" passHref>
-						<StyledA>HOME. </StyledA>
-					</Link>
-					<Link href="/?" passHref>
-						<StyledA>KNOWLEDGEBASE. </StyledA>
-					</Link>
-					<Link href="/about" passHref>
-						<StyledA>ABOUT. </StyledA>
-					</Link>
-					<Link href="/pools" passHref>
-						<StyledA>JOIN POOL. </StyledA>
-					</Link>
-					<Link href="/pools/create" passHref>
-						<StyledA>CREATE POOL. </StyledA>
-					</Link>
+					<div>
+						<Link href="/home" passHref>
+							<StyledA>HOME. </StyledA>
+						</Link>
+						<Link href="/?" passHref>
+							<StyledA>KNOWLEDGEBASE. </StyledA>
+						</Link>
+						<Link href="/about" passHref>
+							<StyledA>ABOUT. </StyledA>
+						</Link>
+						<Link href="/pools" passHref>
+							<StyledA>JOIN POOL. </StyledA>
+						</Link>
+						<Link href="/pools/create" passHref>
+							<StyledA>CREATE POOL. </StyledA>
+						</Link>
+					</div>
 				</NavColumn>
 			) : (
 				<SocialRow>
@@ -80,12 +82,6 @@ const StyledA = styled.a`
 	font-size: 12px;
 	letter-spacing: 0.62px;
 	margin: 0 3px;
-`;
-
-const StyledP = styled.p`
-	color: #ffffff;
-	font-size: 12px;
-	letter-spacing: 0.62px;
 `;
 
 export default Footer;
