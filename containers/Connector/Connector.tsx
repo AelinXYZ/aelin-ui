@@ -7,6 +7,7 @@ import {
 } from '@synthetixio/transaction-notifier';
 import { detectEthereumProvider } from 'utils/metmask-detect-provider';
 import { loadProvider } from '@synthetixio/providers';
+import { OPTIMISM_NETWORKS } from '@synthetixio/optimism-networks';
 import { ethers } from 'ethers';
 
 import { Wallet as OnboardWallet } from 'bnc-onboard/dist/src/interfaces';
@@ -32,6 +33,7 @@ export async function getDefaultNetworkId(): Promise<NetworkId> {
 }
 
 const useConnector = () => {
+	const [isOVM, setIsOVM] = useState<boolean>(false);
 	const [network, setNetwork] = useState<NetworkType>({
 		id: NetworkId.Mainnet,
 		name: NetworkName.Mainnet,
@@ -50,15 +52,23 @@ const useConnector = () => {
 		setTransactionNotifier,
 	] = useState<TransactionNotifierInterface | null>(null);
 
+	const verifyIfOptimism = (networkId: NetworkId | null) => {
+		if (networkId) {
+			setIsOVM(!!OPTIMISM_NETWORKS[networkId]);
+		}
+	};
+
 	useEffect(() => {
 		const init = async () => {
 			const networkId = await getDefaultNetworkId();
-
 			const provider = loadProvider({
 				networkId,
 				infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
 				provider: window.ethereum,
 			});
+
+			verifyIfOptimism(networkId);
+
 			// @ts-ignore
 			setNetwork({ id: networkId, name: chainIdMapping[networkId] });
 			setProvider(provider);
@@ -97,6 +107,7 @@ const useConnector = () => {
 							// @ts-ignore
 							name: chainIdMapping[networkId] as NetworkName,
 						});
+						verifyIfOptimism(networkId);
 					}
 				},
 				wallet: async (wallet: OnboardWallet) => {
@@ -194,6 +205,7 @@ const useConnector = () => {
 		isHardwareWallet,
 		transactionNotifier,
 		selectedWallet,
+		isOVM,
 	};
 };
 
