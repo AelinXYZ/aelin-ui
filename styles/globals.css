@@ -54,3 +54,19 @@ input[type='number'] {
 	font-display: swap;
 	src: url('../public/fonts/ASM-Regular.otf') format('opentype');
 }
+
+@font-face {
+	font-family: 'SourceCodePro-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/SourceCodePro-Regular.ttf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Space-Age-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/Space-Age.ttf') format('opentype');
+}
