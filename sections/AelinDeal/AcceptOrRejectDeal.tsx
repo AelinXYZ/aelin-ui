@@ -7,6 +7,7 @@ import SectionDetails from 'sections/shared/SectionDetails';
 import { Status } from 'components/DealStatus';
 import { statusToText } from 'constants/pool';
 import TokenDisplay from 'components/TokenDisplay';
+import QuestionMark from 'components/QuestionMark';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -34,14 +35,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const {
-		txState,
-		setTxState,
-		setGasPrice,
-		gasPrice,
-		txType,
-		setTxType,
-	} = TransactionData.useContainer();
+	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
+		TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -64,7 +59,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: <>{deal?.symbol ?? ''}</>,
 			},
 			{
-				header: 'Underlying Deal Token',
+				header: (
+					<>
+						<>{`Underlying Deal Token`}</>
+						<QuestionMark
+							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
+						/>
+					</>
+				),
 				subText: (
 					<TokenDisplay
 						symbol={underlyingDealTokenSymbol}
@@ -74,7 +76,12 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header: 'Underlying Total',
+				header: (
+					<>
+						<>{`Underlying Total`}</>
+						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
+					</>
+				),
 				subText: Number(
 					ethers.utils.formatUnits(
 						deal?.underlyingDealTokenTotal?.toString() ?? '0',
@@ -83,7 +90,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header: 'Exchange rate',
+				header: (
+					<>
+						<>{`Exchange Rate`}</>
+						<QuestionMark
+							text={`The number of underlying deal tokens a purchasers will get in exchange for a purchase token`}
+						/>
+					</>
+				),
 				subText:
 					Number(
 						ethers.utils.formatUnits(
@@ -99,19 +113,45 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					),
 			},
 			{
-				header: 'Vesting Period',
+				header: (
+					<>
+						<>{`Vesting Period`}</>
+						<QuestionMark
+							text={`After the vesting cliff, a linear vesting period where you may claim your underlying deal tokens`}
+						/>
+					</>
+				),
 				subText: <>{formatTimeDifference(Number(deal?.vestingPeriod ?? 0))}</>,
 			},
 			{
-				header: 'Vesting Cliff',
+				header: (
+					<>
+						<>{`Vesting Cliff`}</>
+						<QuestionMark
+							text={`After the deal has been finalized, a period where no tokens are vesting`}
+						/>
+					</>
+				),
 				subText: <>{formatTimeDifference(Number(deal?.vestingCliff ?? 0))}</>,
 			},
 			{
-				header: 'Status',
+				header: (
+					<>
+						<>{`Status`}</>
+						<QuestionMark text={`The current status of the deal`} />
+					</>
+				),
 				subText: statusToText(Status.ProRataRedemption),
 			},
 			{
-				header: deal?.isDealFunded ? 'Pro Rata Redemption Ends' : 'Pro Rata Redemption',
+				header: (
+					<>
+						<>{deal?.isDealFunded ? 'Pro Rata Redemption Ends' : 'Pro Rata Redemption'}</>
+						<QuestionMark
+							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
+						/>
+					</>
+				),
 				subText: (
 					<>
 						{deal?.proRataRedemptionPeriodStart != null && deal?.proRataRedemptionPeriod != null
@@ -123,7 +163,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header: deal?.isDealFunded ? 'Open Redemption Ends' : 'Open Redemption',
+				header: (
+					<>
+						<>{deal?.isDealFunded ? 'Open Redemption Ends' : 'Open Redemption'}</>
+						<QuestionMark
+							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
+						/>
+					</>
+				),
 				subText: (
 					<>
 						{deal?.proRataRedemptionPeriodStart != null &&
@@ -146,7 +193,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: 'linear',
 			},
 			{
-				header: 'Fees charged on accept',
+				header: (
+					<>
+						<>{`Fees Charged on Accept`}</>
+						<QuestionMark
+							text={`the fees a purchaser will be charged if they choose to accept the deal. Withdrawing incurs no fees`}
+						/>
+					</>
+				),
 				subText: (
 					<div>
 						<div>{`Sponsor Fee: ${

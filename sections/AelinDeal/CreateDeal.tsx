@@ -17,6 +17,7 @@ import { erc20Abi } from 'contracts/erc20';
 import validateCreateDeal, { CreateDealValues } from 'utils/validate/create-deal';
 import CreateForm from 'sections/shared/CreateForm';
 import TokenDropdown from 'components/TokenDropdown';
+import QuestionMark from 'components/QuestionMark';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { TransactionStatus } from 'constants/transactions';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -32,14 +33,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
 	const { walletAddress, signer, provider } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
+		TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const handleSubmit = async () => {
@@ -263,7 +258,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const gridItems = useMemo(
 		() => [
 			{
-				header: <label htmlFor="underlyingDealToken">Underlying Deal Token</label>,
+				header: (
+					<>
+						<label htmlFor="underlyingDealToken">Underlying Deal Token</label>
+						<QuestionMark
+							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
+						/>
+					</>
+				),
 				subText: 'address',
 				formField: (
 					<TokenDropdown
@@ -282,7 +284,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.underlyingDealToken,
 			},
 			{
-				header: <label htmlFor="purchaseTokenTotal">Total Purchase Tokens (XXX)</label>,
+				header: (
+					<>
+						<label htmlFor="purchaseTokenTotal">Total Purchase Tokens</label>
+						<QuestionMark
+							text={`The total amount of purchase tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
+						/>
+					</>
+				),
 				subText: 'amount',
 				formField: (
 					<Input
@@ -297,7 +306,12 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.purchaseTokenTotal,
 			},
 			{
-				header: <label htmlFor="underlyingDealTokenTotal">underlying Deal Token Total</label>,
+				header: (
+					<>
+						<label htmlFor="underlyingDealTokenTotal">underlying Deal Token Total</label>
+						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
+					</>
+				),
 				subText: 'amount',
 				formField: (
 					<Input
@@ -312,7 +326,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.underlyingDealTokenTotal,
 			},
 			{
-				header: <label htmlFor="vestingPeriod">Vesting Period</label>,
+				header: (
+					<>
+						<label htmlFor="vestingPeriod">Vesting Period (linear)</label>
+						<QuestionMark
+							text={`The amount of time it takes to vest all underlying deal tokens after the vesting cliff`}
+						/>
+					</>
+				),
 				subText: 'time to vest after the cliff',
 				formField: (
 					<FlexDivRow>
