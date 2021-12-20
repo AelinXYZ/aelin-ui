@@ -21,9 +21,8 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-	max-width: 1440px;
+	max-width: 100vw;
 	min-height: 100vh;
-	margin: 0 auto;
 `;
 
 export default AppLayout;
