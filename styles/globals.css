@@ -54,3 +54,19 @@ input[type='number'] {
 	font-display: swap;
 	src: url('../public/fonts/ASM-Regular.otf') format('opentype');
 }
+
+@font-face {
+	font-family: 'SourceCodePro-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/SourceCodePro-Regular.ttf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Planetnv2-Regular';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../public/fonts/Planetnv2.ttf') format('opentype');
+}
