@@ -64,9 +64,9 @@ input[type='number'] {
 }
 
 @font-face {
-	font-family: 'Space-Age-Regular';
+	font-family: 'Planetnv2-Regular';
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url('../public/fonts/Space-Age.ttf') format('opentype');
+	src: url('../public/fonts/Planetnv2.ttf') format('opentype');
 }

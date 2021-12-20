@@ -103,14 +103,14 @@ const CreatePoolContainer = styled.div`
 `;
 
 const ActionText = styled.span`
-	font-family: Space-Age-Regular;
+	font-family: Planetnv2-Regular;
 	color: #36a3a3;
 	font-size: 22px;
 	position: relative;
 `;
 
 const ConnectWallet = styled.button`
-	font-family: Space-Age-Regular;
+	font-family: Planetnv2-Regular;
 	color: #36a3a3;
 	margin-top: 40px;
 	font-size: 22px;
@@ -131,7 +131,7 @@ const Row = styled.div`
 `;
 
 const Subtitle = styled.h4`
-	font-family: Space-Age-Regular;
+	font-family: Planetnv2-Regular;
 	letter-spacing: 2px;
 	color: #ffffff;
 	font-size: 28px;
