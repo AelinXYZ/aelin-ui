@@ -8,6 +8,8 @@ import TwitterLogo from 'assets/svg/twitter-logo.svg';
 import DiscordLogo from 'assets/svg/discord-logo.svg';
 import GithubLogo from 'assets/svg/github-logo.svg';
 
+import ROUTES from 'constants/routes';
+
 const LOGOS = [
 	{
 		name: 'twitter',
@@ -24,24 +26,21 @@ const Footer: FC = () => {
 
 	return (
 		<Container>
-			{asPath === '/home' ? (
+			{asPath === ROUTES.Home ? (
 				// TODO: Define which one will stay here
 				<NavColumn>
 					<div>
-						<Link href="/home" passHref>
+						<Link href={ROUTES.Home} passHref>
 							<StyledA>HOME. </StyledA>
 						</Link>
-						<Link href="/?" passHref>
-							<StyledA>KNOWLEDGEBASE. </StyledA>
-						</Link>
-						<Link href="/about" passHref>
-							<StyledA>ABOUT. </StyledA>
-						</Link>
-						<Link href="/pools" passHref>
+						<Link href={ROUTES.Pools.Home} passHref>
 							<StyledA>JOIN POOL. </StyledA>
 						</Link>
-						<Link href="/pools/create" passHref>
+						<Link href={ROUTES.Pools.Create} passHref>
 							<StyledA>CREATE POOL. </StyledA>
+						</Link>
+						<Link href={ROUTES.Airdrop} passHref>
+							<StyledA>AIRDROP. </StyledA>
 						</Link>
 					</div>
 				</NavColumn>

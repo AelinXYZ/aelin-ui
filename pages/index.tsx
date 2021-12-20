@@ -10,6 +10,8 @@ import JoinPoolImage from 'assets/svg/homepage/join-pool.svg';
 
 import Connector from 'containers/Connector';
 
+import ROUTES from 'constants/routes';
+
 const HomePage = () => {
 	const { walletAddress, connectWallet, disconnectWallet } = Connector.useContainer();
 
@@ -25,7 +27,7 @@ const HomePage = () => {
 
 			<CenterContainer>
 				<Row>
-					<Link href="/pools">
+					<Link href={ROUTES.Pools.Home}>
 						<a>
 							<CreatePoolContainer>
 								<Image
@@ -42,7 +44,7 @@ const HomePage = () => {
 
 					<Image src={Main} layout="intrinsic" width={400} height={360} alt="Main image" />
 
-					<Link href="/pools/create">
+					<Link href={ROUTES.Pools.Create}>
 						<a>
 							<CreatePoolContainer>
 								<Image
