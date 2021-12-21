@@ -22,7 +22,9 @@ const useGetDealDetailByIdQuery = ({ id, networkId }: { id: string; networkId?: 
 			holderFundingDuration: true,
 			holderFundingExpiration: true,
 			isDealFunded: true,
-		}
+		},
+		{},
+		networkId ? networkId : NetworkId.Mainnet
 	);
 
 export const parseDealDetail = (dealDetail: DealDetailResult) => ({

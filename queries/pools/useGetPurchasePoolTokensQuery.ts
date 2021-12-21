@@ -25,7 +25,9 @@ const useGetPurchasePoolTokensQuery = ({
 			purchaseTokenAmount: true,
 			purchaser: true,
 			timestamp: true,
-		}
+		},
+		{},
+		networkId
 	);
 };
 

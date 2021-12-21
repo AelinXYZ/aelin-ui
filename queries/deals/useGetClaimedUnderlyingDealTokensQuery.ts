@@ -26,7 +26,9 @@ const useGetClaimedUnderlyingDealTokensQuery = ({
 			underlyingDealTokensClaimed: true,
 			underlyingDealTokenAddress: true,
 			dealAddress: true,
-		}
+		},
+		{},
+		networkId ? networkId : NetworkId.Mainnet
 	);
 
 export const parseClaimedResult = (claimedResult: ClaimedUnderlyingDealTokenResult) => ({

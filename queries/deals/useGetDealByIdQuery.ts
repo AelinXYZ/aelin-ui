@@ -15,7 +15,9 @@ const useGetDealByIdQuery = ({ id, networkId }: { id: string; networkId?: Networ
 			symbol: true,
 			sponsor: true,
 			poolAddress: true,
-		}
+		},
+		{},
+		networkId ? networkId : NetworkId.Mainnet
 	);
 
 export const parseDeal = (deal: DealCreatedResult) => ({

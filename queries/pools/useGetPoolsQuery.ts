@@ -28,7 +28,9 @@ const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
 			purchaseDuration: true,
 			contributions: true,
 			dealAddress: true,
-		}
+		},
+		{},
+		networkId ? networkId : NetworkId.Mainnet
 	);
 };
 
