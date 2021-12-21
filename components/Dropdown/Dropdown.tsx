@@ -1,6 +1,6 @@
 import { useState, FC, ReactNode } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { zIndex } from 'constants/ui';
 import { FlexDivColCentered } from 'components/common';
@@ -10,11 +10,18 @@ type DropdownProps = {
 	content: ReactNode;
 	isModalOpen: boolean;
 	setIsModalOpen: Function;
+	isEnabled?: boolean;
 };
 
-const Dropdown: FC<DropdownProps> = ({ children, content, isModalOpen, setIsModalOpen }) => {
+const Dropdown: FC<DropdownProps> = ({
+	children,
+	content,
+	isModalOpen,
+	setIsModalOpen,
+	isEnabled = true,
+}) => {
 	return (
-		<Container onClick={() => setIsModalOpen(!isModalOpen)}>
+		<Container isEnabled={isEnabled} onClick={() => setIsModalOpen(!isModalOpen)}>
 			<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
 				<Inner>{children}</Inner>
 				{isModalOpen && <Content>{content}</Content>}
@@ -23,7 +30,7 @@ const Dropdown: FC<DropdownProps> = ({ children, content, isModalOpen, setIsModa
 	);
 };
 
-const Container = styled.div`
+const Container = styled.div<{ isEnabled: boolean }>`
 	width: 160px;
 	height: 32px;
 	position: relative;
@@ -36,6 +43,11 @@ const Container = styled.div`
 		z-index: ${zIndex.DROPDOWN};
 		width: inherit;
 	}
+	${(props) =>
+		!props.isEnabled &&
+		css`
+			pointer-events: none;
+		`}
 `;
 
 const Inner = styled.div`
