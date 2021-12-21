@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { AppProps } from 'next/app';
 import { ThemeProvider } from 'styled-components';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 import '../styles/globals.css';
 import theme from 'styles/theme';
@@ -13,7 +14,6 @@ import BlockExplorer from 'containers/BlockExplorer';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import NotificationContainer from 'components/NotificationContainer';
-
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
@@ -49,6 +49,7 @@ const App = (props: AppProps) => {
 						</BlockExplorer.Provider>
 					</ContractsInterface.Provider>
 				</Connector.Provider>
+				<ReactQueryDevtools />
 			</QueryClientProvider>
 		</ThemeProvider>
 	);
