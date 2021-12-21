@@ -1,6 +1,7 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { ethers, BigNumber } from 'ethers';
 
 import Dropdown from 'components/Dropdown';
 import { FlexDivCentered } from 'components/common';
@@ -10,7 +11,8 @@ import Connector from 'containers/Connector';
 import OptimismLogo from 'assets/svg/optimism-logo.svg';
 import EthereumLogo from 'assets/svg/ethereum-logo.svg';
 
-import { switchToL1, switchToL2, OPTIMISM_NETWORKS } from '@synthetixio/optimism-networks';
+import { L2_TO_L1_NETWORK_MAPPER, L1_TO_L2_NETWORK_MAPPER } from '@synthetixio/optimism-networks';
+import { NetworkId } from 'constants/networks';
 
 const CHAINS = [
 	{
@@ -28,9 +30,17 @@ type Chain = {
 	img: string;
 };
 
+const getCorrespondingNetwork = (networkId: NetworkId, isOVM: boolean) => {
+	if (isOVM) {
+		return L2_TO_L1_NETWORK_MAPPER[networkId] || L2_TO_L1_NETWORK_MAPPER[NetworkId['Mainnet-ovm']];
+	} else {
+		return L1_TO_L2_NETWORK_MAPPER[networkId] || L1_TO_L2_NETWORK_MAPPER[NetworkId.Mainnet];
+	}
+};
+
 const NetworkWidget: FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const { isOVM } = Connector.useContainer();
+	const { isOVM, provider, network, walletAddress } = Connector.useContainer();
 	const [chain, setChain] = useState<Chain>(CHAINS[0]);
 
 	useEffect(() => {
@@ -38,16 +48,29 @@ const NetworkWidget: FC = () => {
 		setChain(chain);
 	}, [isOVM]);
 
-	const switchChain = useCallback(async () => {
-		if (!window.ethereum) return;
-		const switchChainFunc = isOVM ? switchToL1 : switchToL2;
-		await switchChainFunc({ ethereum: window.ethereum });
-	}, [isOVM]);
+	const handleSwitchChain = useCallback(async () => {
+		if (!provider || !network?.id || !walletAddress) return;
+		const web3Provider = provider as ethers.providers.Web3Provider;
+		if (!web3Provider.provider || !web3Provider.provider.request) return;
+		const newNetworkId = getCorrespondingNetwork(network?.id, isOVM);
+		const formattedChainId = ethers.utils.hexStripZeros(BigNumber.from(newNetworkId).toHexString());
+		await web3Provider.provider.request({
+			method: 'wallet_switchEthereumChain',
+			params: [{ chainId: formattedChainId }],
+		});
+	}, [isOVM, provider, network?.id, walletAddress]);
 
 	const ChainList = (
 		<List>
 			{CHAINS.map((chain: Chain, i: Number) => (
-				<ListElement key={`listElement-${i}`} onClick={switchChain}>
+				<ListElement
+					key={`listElement-${i}`}
+					onClick={() => {
+						if ((isOVM && chain.label !== 'Optimism') || (!isOVM && chain.label !== 'Ethereum')) {
+							handleSwitchChain();
+						}
+					}}
+				>
 					<ChainElement>
 						<StyledImage src={chain.img} />
 						<ChainLabel>{chain.label}</ChainLabel>
@@ -57,7 +80,12 @@ const NetworkWidget: FC = () => {
 		</List>
 	);
 	return (
-		<Dropdown isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} content={ChainList}>
+		<Dropdown
+			isEnabled={!!walletAddress}
+			isModalOpen={isModalOpen}
+			setIsModalOpen={setIsModalOpen}
+			content={ChainList}
+		>
 			<FlexDivCentered>
 				<ChainElement>
 					<StyledImage src={chain.img} />
