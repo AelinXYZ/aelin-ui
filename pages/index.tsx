@@ -2,11 +2,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styled from 'styled-components';
 
-import HomeBackground from 'assets/images/home_bg.jpeg';
-import Main from 'assets/svg/homepage/main.svg';
-import AelinLogo from 'assets/svg/homepage/logo.svg';
-import CreatePoolImage from 'assets/svg/homepage/create-pool.svg';
-import JoinPoolImage from 'assets/svg/homepage/join-pool.svg';
+import HomeBackground from 'assets/images/home-bg-light-theme.jpg';
+import Main from 'assets/svg/homepage/main-light-theme.svg';
+import AelinLogo from 'assets/svg/homepage/logo-light-theme.svg';
+import CreatePoolImage from 'assets/svg/homepage/create-pool-light-theme.svg';
+import JoinPoolImage from 'assets/svg/homepage/join-pool-light-theme.svg';
 
 import Connector from 'containers/Connector';
 
@@ -21,8 +21,6 @@ const HomePage = () => {
 
 			<LogoContainer>
 				<Image src={AelinLogo} layout="fixed" width={220} height={80} alt="Create pool image" />
-
-				<Subtitle>New interface launching soon!</Subtitle>
 			</LogoContainer>
 
 			<CenterContainer>
@@ -88,7 +86,7 @@ const CenterContainer = styled.div`
 
 const LogoContainer = styled.div`
 	width: 100%;
-	margin-top: 20px;
+	margin-top: 60px;
 	display: flex;
 	position: absolute;
 	align-items: center;
@@ -104,14 +102,14 @@ const CreatePoolContainer = styled.div`
 
 const ActionText = styled.span`
 	font-family: Planetnv2-Regular;
-	color: #36a3a3;
+	color: #5b8847;
 	font-size: 22px;
 	position: relative;
 `;
 
 const ConnectWallet = styled.button`
 	font-family: Planetnv2-Regular;
-	color: #36a3a3;
+	color: #5b8847;
 	margin-top: 40px;
 	font-size: 22px;
 	z-index: 2;
@@ -128,15 +126,6 @@ const Row = styled.div`
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-`;
-
-const Subtitle = styled.h4`
-	font-family: Planetnv2-Regular;
-	letter-spacing: 2px;
-	color: #ffffff;
-	font-size: 28px;
-	text-align: center;
-	margin-top: 20px;
 `;
 
 export default HomePage;

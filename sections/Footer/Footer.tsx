@@ -27,9 +27,8 @@ const Footer: FC = () => {
 	return (
 		<Container>
 			{asPath === ROUTES.Home ? (
-				// TODO: Define which one will stay here
-				<NavColumn>
-					<div>
+				<NavRow>
+					<>
 						<Link href={ROUTES.Home} passHref>
 							<StyledA>HOME. </StyledA>
 						</Link>
@@ -42,8 +41,8 @@ const Footer: FC = () => {
 						<Link href={ROUTES.Airdrop} passHref>
 							<StyledA>AIRDROP. </StyledA>
 						</Link>
-					</div>
-				</NavColumn>
+					</>
+				</NavRow>
 			) : (
 				<SocialRow>
 					{LOGOS.map(({ name, logo, url }) => (
@@ -71,13 +70,18 @@ const SocialRow = styled.div`
 	justify-content: space-between;
 `;
 
-const NavColumn = styled.div`
+const NavRow = styled.div`
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 60px;
+	background-color: rgba(255, 255, 255, 0.16);
 `;
 
 const StyledA = styled.a`
-	color: #ffffff;
+	color: #000000;
 	font-size: 12px;
 	letter-spacing: 0.62px;
 	margin: 0 3px;
