@@ -9,8 +9,7 @@ export const getTransactionPrice = (
 	ethPrice: Wei | null
 ) => {
 	if (!gasPrice || !gasLimit || !ethPrice) return null;
-
-	return gasPrice.mul(ethPrice).mul(gasLimit).div(GWEI_UNIT).toNumber().toFixed(2);
+	return gasPrice.mul(ethPrice).mul(gasLimit).div(GWEI_UNIT).toNumber().toFixed(4);
 };
 
 export const getGasEstimateWithBuffer = (gasEstimate: GasLimitEstimate) => {

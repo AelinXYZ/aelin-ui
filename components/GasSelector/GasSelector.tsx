@@ -24,11 +24,10 @@ const GasSelector: React.FC<IGasSelector> = ({
 	const [gasSpeed, setGasSpeed] = useState<GasSpeed>(initialGasSpeed);
 	const [isOpen, setIsOpen] = useState(false);
 
-	const { network, provider } = Connector.useContainer();
+	const { network, provider, isOVM } = Connector.useContainer();
 
 	const exchangeRatesQuery = useExchangeRatesQuery(network);
 	const ethGasStationQuery = useEthGasPriceQuery({ networkId: network.id, provider });
-
 	const gasPrices = useMemo(() => ethGasStationQuery.data ?? ({} as GasPrices), [
 		ethGasStationQuery.data,
 	]);
@@ -56,13 +55,13 @@ const GasSelector: React.FC<IGasSelector> = ({
 		const nCustomGasPrice = Number(customGasPrice);
 
 		if (!nCustomGasPrice) {
-			if (!Number.isInteger(nGasPrice)) return nGasPrice.toFixed(2);
+			if (!Number.isInteger(nGasPrice)) return nGasPrice.toFixed(isOVM ? 3 : 2);
 			return nGasPrice;
 		}
 
-		if (!Number.isInteger(nCustomGasPrice)) return nCustomGasPrice.toFixed(2);
+		if (!Number.isInteger(nCustomGasPrice)) return nCustomGasPrice.toFixed(isOVM ? 3 : 2);
 		return nCustomGasPrice;
-	}, [customGasPrice, gasPrices, gasSpeed]);
+	}, [customGasPrice, gasPrices, gasSpeed, isOVM]);
 
 	useEffect(() => {
 		try {
@@ -111,7 +110,7 @@ const GasSelector: React.FC<IGasSelector> = ({
 									}}
 								>
 									<StyledSpeed>{gasSpeed}</StyledSpeed>
-									<span>{Number(gasPrices[gasSpeed]).toFixed(2)}</span>
+									<span>{Number(gasPrices[gasSpeed]).toFixed(isOVM ? 3 : 2)}</span>
 								</StyledLi>
 							))}
 						</StyledUl>
