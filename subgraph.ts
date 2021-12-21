@@ -3,6 +3,7 @@ import { useQuery, UseQueryOptions } from 'react-query';
 import Wei, { WeiSource, wei } from '@synthetixio/wei';
 import axios from 'codegen-graph-ts/build/src/lib/axios';
 import generateGql from 'codegen-graph-ts/build/src/lib/gql';
+import { NetworkId, Network } from 'constants/networks';
 export type SingleQueryOptions = {
 	id: string;
 	block?:
@@ -430,7 +431,8 @@ export const useGetClaimedUnderlyingDealTokenById = <
 	url: string,
 	options?: SingleQueryOptions,
 	args?: ClaimedUnderlyingDealTokenArgs<K>,
-	queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>> = {}
+	queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof ClaimedUnderlyingDealTokenResult>(
 		url: string,
@@ -457,7 +459,11 @@ export const useGetClaimedUnderlyingDealTokenById = <
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('ClaimedUnderlyingDealToken', options, args) : null],
+		[
+			'codegen-graphql',
+			enabled ? generateGql('ClaimedUnderlyingDealToken', options, args) : null,
+			networkId,
+		],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,
@@ -469,7 +475,8 @@ export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderly
 	url: string,
 	options?: MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>,
 	args?: ClaimedUnderlyingDealTokenArgs<K>,
-	queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>[]> = {}
+	queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>[]> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof ClaimedUnderlyingDealTokenResult>(
 		url: string,
@@ -527,7 +534,11 @@ export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderly
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('ClaimedUnderlyingDealTokens', options, args) : null],
+		[
+			'codegen-graphql',
+			enabled ? generateGql('ClaimedUnderlyingDealTokens', options, args) : null,
+			networkId,
+		],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,
@@ -606,7 +617,8 @@ export const useGetDealCreatedById = <K extends keyof DealCreatedResult>(
 	url: string,
 	options?: SingleQueryOptions,
 	args?: DealCreatedArgs<K>,
-	queryOptions: UseQueryOptions<Pick<DealCreatedResult, K>> = {}
+	queryOptions: UseQueryOptions<Pick<DealCreatedResult, K>> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof DealCreatedResult>(
 		url: string,
@@ -631,7 +643,7 @@ export const useGetDealCreatedById = <K extends keyof DealCreatedResult>(
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('DealCreated', options, args) : null],
+		['codegen-graphql', enabled ? generateGql('DealCreated', options, args) : null, networkId],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,
@@ -839,7 +851,8 @@ export const useGetDealDetailById = <K extends keyof DealDetailResult>(
 	url: string,
 	options?: SingleQueryOptions,
 	args?: DealDetailArgs<K>,
-	queryOptions: UseQueryOptions<Pick<DealDetailResult, K>> = {}
+	queryOptions: UseQueryOptions<Pick<DealDetailResult, K>> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof DealDetailResult>(
 		url: string,
@@ -880,7 +893,7 @@ export const useGetDealDetailById = <K extends keyof DealDetailResult>(
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('DealDetail', options, args) : null],
+		['codegen-graphql', enabled ? generateGql('DealDetail', options, args) : null, networkId],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,
@@ -1485,7 +1498,8 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(
 	url: string,
 	options?: SingleQueryOptions,
 	args?: PoolCreatedArgs<K>,
-	queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>> = {}
+	queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof PoolCreatedResult>(
 		url: string,
@@ -1522,7 +1536,7 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('PoolCreated', options, args) : null],
+		['codegen-graphql', enabled ? generateGql('PoolCreated', options, args) : null, networkId],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,
@@ -1534,7 +1548,8 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(
 	url: string,
 	options?: MultiQueryOptions<PoolCreatedFilter, PoolCreatedResult>,
 	args?: PoolCreatedArgs<K>,
-	queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>[]> = {}
+	queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>[]> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof PoolCreatedResult>(
 		url: string,
@@ -1601,7 +1616,7 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('PoolCreateds', options, args) : null],
+		['codegen-graphql', enabled ? generateGql('PoolCreateds', options, args) : null, networkId],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,
@@ -1706,7 +1721,8 @@ export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult
 	url: string,
 	options?: MultiQueryOptions<PurchasePoolTokenFilter, PurchasePoolTokenResult>,
 	args?: PurchasePoolTokenArgs<K>,
-	queryOptions: UseQueryOptions<Pick<PurchasePoolTokenResult, K>[]> = {}
+	queryOptions: UseQueryOptions<Pick<PurchasePoolTokenResult, K>[]> = {},
+	networkId: NetworkId
 ) => {
 	const func = async function <K extends keyof PurchasePoolTokenResult>(
 		url: string,
@@ -1763,7 +1779,11 @@ export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult
 	};
 	const enabled = options && args;
 	return useQuery(
-		['codegen-graphql', enabled ? generateGql('PurchasePoolTokens', options, args) : null],
+		[
+			'codegen-graphql',
+			enabled ? generateGql('PurchasePoolTokens', options, args) : null,
+			networkId,
+		],
 		async () => func(url, options!, args!),
 		{
 			...queryOptions,

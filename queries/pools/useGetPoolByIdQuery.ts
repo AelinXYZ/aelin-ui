@@ -24,7 +24,9 @@ const useGetPoolByIdQuery = ({ id, networkId }: { id: string; networkId?: Networ
 			purchaseDuration: true,
 			contributions: true,
 			dealAddress: true,
-		}
+		},
+		{},
+		networkId ? networkId : NetworkId.Mainnet
 	);
 
 export default useGetPoolByIdQuery;
