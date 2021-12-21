@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
-import _ from 'lodash';
-import { NetworkId, NetworkType } from 'constants/networks';
+import { keys } from 'lodash';
+import { OPTIMISM_NETWORKS } from '@synthetixio/optimism-networks';
 
+import { NetworkId, NetworkType } from 'constants/networks';
 import Connector from 'containers/Connector';
 
 type BlockExplorerInstance = {
@@ -13,8 +14,13 @@ type BlockExplorerInstance = {
 	messageRelayer: (txId: string) => string;
 };
 
-const getBaseUrl = (network: NetworkType) => {
-	if (network.id === NetworkId.Mainnet) {
+const getBaseUrl = (network: NetworkType, isOVM: boolean) => {
+	if (isOVM) {
+		return (
+			OPTIMISM_NETWORKS[network.id]?.blockExplorerUrls[0] ??
+			OPTIMISM_NETWORKS[keys(OPTIMISM_NETWORKS)[0] as any].blockExplorerUrls[0]
+		);
+	} else if (network.id === NetworkId.Mainnet) {
 		return 'https://etherscan.io';
 	}
 	return `https://${network.name}.etherscan.io`;
@@ -31,7 +37,7 @@ const generateExplorerFunctions = (baseUrl: string) => {
 };
 
 const useBlockExplorer = () => {
-	const { network } = Connector.useContainer();
+	const { network, isOVM } = Connector.useContainer();
 
 	const [blockExplorerInstance, setBlockExplorerInstance] = useState<BlockExplorerInstance | null>(
 		null
@@ -39,10 +45,10 @@ const useBlockExplorer = () => {
 
 	useEffect(() => {
 		if (network) {
-			const baseUrl = getBaseUrl(network);
+			const baseUrl = getBaseUrl(network, isOVM);
 			setBlockExplorerInstance(generateExplorerFunctions(baseUrl));
 		}
-	}, [network]);
+	}, [network, isOVM]);
 
 	return {
 		blockExplorerInstance,

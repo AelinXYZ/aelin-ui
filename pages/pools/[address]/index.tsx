@@ -5,13 +5,15 @@ import ViewPool from 'sections/AelinPool/ViewPool';
 
 import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
 import { parsePool } from 'queries/pools/useGetPoolsQuery';
+import Connector from 'containers/Connector';
 
 const Pool: FC = () => {
 	const router = useRouter();
+	const { network } = Connector.useContainer();
 	const { address } = router.query;
 	const poolAddress = (address ?? '') as string;
 
-	const poolQuery = useGetPoolByIdQuery({ id: poolAddress });
+	const poolQuery = useGetPoolByIdQuery({ id: poolAddress, networkId: network.id });
 
 	const pool = useMemo(
 		// @ts-ignore

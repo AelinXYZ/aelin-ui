@@ -1,9 +1,10 @@
-import { GRAPH_ENDPOINT } from 'constants/endpoints';
+import { getGraphEndpoint } from 'constants/endpoints';
+import { NetworkId } from 'constants/networks';
 import { useGetPoolCreatedById } from '../../subgraph';
 
-const useGetPoolByIdQuery = ({ id }: { id: string }) =>
+const useGetPoolByIdQuery = ({ id, networkId }: { id: string; networkId?: NetworkId }) =>
 	useGetPoolCreatedById(
-		GRAPH_ENDPOINT,
+		getGraphEndpoint(networkId),
 		{
 			id,
 		},

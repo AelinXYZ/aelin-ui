@@ -1,9 +1,10 @@
-import { GRAPH_ENDPOINT } from 'constants/endpoints';
+import { getGraphEndpoint } from 'constants/endpoints';
+import { NetworkId } from 'constants/networks';
 import { DealDetailResult, useGetDealDetailById } from '../../subgraph';
 
-const useGetDealDetailByIdQuery = ({ id }: { id: string }) =>
+const useGetDealDetailByIdQuery = ({ id, networkId }: { id: string; networkId?: NetworkId }) =>
 	useGetDealDetailById(
-		GRAPH_ENDPOINT,
+		getGraphEndpoint(networkId),
 		{
 			id,
 		},

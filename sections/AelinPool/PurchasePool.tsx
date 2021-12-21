@@ -16,6 +16,7 @@ import { FlexDivStart } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import { ActionBoxType } from 'components/ActionBox';
 import CopyToClipboard from 'components/CopyToClipboard';
+import QuestionMark from 'components/QuestionMark';
 
 import { erc20Abi } from 'contracts/erc20';
 
@@ -39,14 +40,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const {
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-		txType,
-		setTxType,
-	} = TransactionData.useContainer();
+	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
+		TransactionData.useContainer();
 	const [, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
@@ -135,7 +130,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const poolGridItems = useMemo(
 		() => [
 			{
-				header: 'Sponsor',
+				header: (
+					<>
+						<>{`Sponsor`}</>
+						<QuestionMark
+							text={`The sponsor will seek a deal on behalf of purchasers entering this pool`}
+						/>
+					</>
+				),
 				subText: (
 					<FlexDivStart>
 						<Ens address={pool?.sponsor ?? ''} />
@@ -148,7 +150,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: userPurchaseBalance,
 			},
 			{
-				header: 'Purchase Token Cap',
+				header: (
+					<>
+						<>{`Purchase Token Cap`}</>
+						<QuestionMark
+							text={`The maximum amount of purchase tokens which can be deposited in the pool`}
+						/>
+					</>
+				),
 				subText: Number(
 					ethers.utils
 						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
@@ -156,7 +165,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 			},
 			{
-				header: 'Purchase Token',
+				header: (
+					<>
+						<>{`Purchase Token`}</>
+						<QuestionMark
+							text={`The token purchasers deposit in the pool for a chance to accept a deal from the sponsor`}
+						/>
+					</>
+				),
 				subText: (
 					<TokenDisplay
 						displayAddress={true}
@@ -166,17 +182,34 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 			},
 			{
-				header: 'My Pool Balance',
+				header: (
+					<>
+						<>{`My pool balance`}</>
+						<QuestionMark text={`The number of purchase tokens you have deposited`} />
+					</>
+				),
 				subText: userPoolBalance,
 			},
 			{
-				header: 'Total Contributions',
+				header: (
+					<>
+						<>{`Total Contributions`}</>
+						<QuestionMark text={`The number of purchase tokens all purchasers have deposited`} />
+					</>
+				),
 				subText: ethers.utils
 					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
 					.toString(),
 			},
 			{
-				header: 'Sponsor Fee',
+				header: (
+					<>
+						<>{`Sponsor Fee`}</>
+						<QuestionMark
+							text={`A fee charged to purchasers only if they accept a deal found by the sponsor`}
+						/>
+					</>
+				),
 				subText: `${
 					pool?.sponsorFee.toString() != null
 						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
@@ -184,11 +217,25 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				}%`,
 			},
 			{
-				header: 'Purchase Expiration',
+				header: (
+					<>
+						<>{`Purchase Expiration`}</>
+						<QuestionMark
+							text={`The deadline for entering into the pool by depositing purchase tokens`}
+						/>
+					</>
+				),
 				subText: <>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>,
 			},
 			{
-				header: 'Pool Duration',
+				header: (
+					<>
+						<>{`Pool Locked Duration`}</>
+						<QuestionMark
+							text={`The amount of time funds are locked so the sponsor has proof of funds while seeking a deal`}
+						/>
+					</>
+				),
 				subText: (
 					<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 				),
@@ -273,9 +320,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
-	]);
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<SectionDetails

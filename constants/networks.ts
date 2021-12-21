@@ -2,18 +2,16 @@ import Wei from '@synthetixio/wei';
 
 export enum Network {
 	Mainnet = 'mainnet',
-	Ropsten = 'ropsten',
-	Rinkeby = 'rinkeby',
-	Goerli = 'goerli',
 	Kovan = 'kovan',
+	'Mainnet-ovm' = 'mainnet-ovm',
+	'Optimism-Kovan' = 'optimism-kovan',
 }
 
 export enum NetworkId {
 	Mainnet = 1,
-	Ropsten = 3,
-	Rinkeby = 4,
-	Goerli = 5,
 	Kovan = 42,
+	'Mainnet-ovm' = 10,
+	'Optimism-Kovan' = 69,
 }
 
 export type NetworkType = {
@@ -23,12 +21,14 @@ export type NetworkType = {
 
 export const chainIdMapping = {
 	[NetworkId.Mainnet]: Network.Mainnet,
-	[NetworkId.Goerli]: Network.Goerli,
 	[NetworkId.Kovan]: Network.Kovan,
-	[NetworkId.Rinkeby]: Network.Rinkeby,
-	[NetworkId.Ropsten]: Network.Kovan,
+	[NetworkId['Mainnet-ovm']]: Network['Mainnet-ovm'],
+	[NetworkId['Optimism-Kovan']]: Network['Optimism-Kovan'],
 };
 
 export const GWEI_PRECISION = 9;
 export const GWEI_UNIT = 1000000000;
 export type GasLimitEstimate = Wei | null;
+
+export const isMainnet = (networkId: NetworkId) =>
+	[NetworkId.Mainnet, NetworkId['Mainnet-ovm']].includes(networkId);

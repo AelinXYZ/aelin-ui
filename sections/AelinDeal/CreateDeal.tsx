@@ -17,6 +17,7 @@ import { erc20Abi } from 'contracts/erc20';
 import validateCreateDeal, { CreateDealValues } from 'utils/validate/create-deal';
 import CreateForm from 'sections/shared/CreateForm';
 import TokenDropdown from 'components/TokenDropdown';
+import QuestionMark from 'components/QuestionMark';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { TransactionStatus } from 'constants/transactions';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -32,14 +33,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
 	const { walletAddress, signer, provider } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
+		TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const handleSubmit = async () => {
@@ -63,9 +58,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 
 			const tx = await poolContract!.createDeal(
-				// underlyingDealToken,
-				// using DAI as the kovan underlying deal token for tests
-				'0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+				underlyingDealToken,
 				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
 				ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
 				vestingPeriodDuration,
@@ -265,7 +258,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const gridItems = useMemo(
 		() => [
 			{
-				header: <label htmlFor="underlyingDealToken">Underlying Deal Token</label>,
+				header: (
+					<>
+						<label htmlFor="underlyingDealToken">Underlying Deal Token</label>
+						<QuestionMark
+							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
+						/>
+					</>
+				),
 				subText: 'address',
 				formField: (
 					<TokenDropdown
@@ -284,7 +284,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.underlyingDealToken,
 			},
 			{
-				header: <label htmlFor="purchaseTokenTotal">Total Purchase Tokens (XXX)</label>,
+				header: (
+					<>
+						<label htmlFor="purchaseTokenTotal">Total Purchase Tokens</label>
+						<QuestionMark
+							text={`The total amount of purchase tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
+						/>
+					</>
+				),
 				subText: 'amount',
 				formField: (
 					<Input
@@ -299,7 +306,12 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.purchaseTokenTotal,
 			},
 			{
-				header: <label htmlFor="underlyingDealTokenTotal">underlying Deal Token Total</label>,
+				header: (
+					<>
+						<label htmlFor="underlyingDealTokenTotal">underlying Deal Token Total</label>
+						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
+					</>
+				),
 				subText: 'amount',
 				formField: (
 					<Input
@@ -314,7 +326,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.underlyingDealTokenTotal,
 			},
 			{
-				header: <label htmlFor="vestingPeriod">Vesting Period</label>,
+				header: (
+					<>
+						<label htmlFor="vestingPeriod">Vesting Period (linear)</label>
+						<QuestionMark
+							text={`The amount of time it takes to vest all underlying deal tokens after the vesting cliff`}
+						/>
+					</>
+				),
 				subText: 'time to vest after the cliff',
 				formField: (
 					<FlexDivRow>
@@ -353,7 +372,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.vestingPeriodMinutes,
 			},
 			{
-				header: <label htmlFor="vestingCliff">Vesting Cliff</label>,
+				header: (
+					<>
+						<label htmlFor="vestingCliff">Vesting Cliff</label>
+						<QuestionMark
+							text={`After the deal has been finalized, a period where no tokens are vesting`}
+						/>
+					</>
+				),
 				subText: 'time until vesting starts',
 				formField: (
 					<FlexDivRow>
@@ -392,7 +418,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.vestingCliffMinutes,
 			},
 			{
-				header: <label htmlFor="proRataRedemption">Pro Rata Period</label>,
+				header: (
+					<>
+						<label htmlFor="proRataRedemption">Pro Rata Period</label>
+						<QuestionMark
+							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
+						/>
+					</>
+				),
 				subText: 'the first period to accept',
 				formField: (
 					<FlexDivRow>
@@ -431,7 +464,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.proRataRedemptionMinutes,
 			},
 			{
-				header: <label htmlFor="openRedemption">Open Period</label>,
+				header: (
+					<>
+						<label htmlFor="openRedemption">Open Period</label>
+						<QuestionMark
+							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
+						/>
+					</>
+				),
 				subText: 'The second period to accept',
 				formField: (
 					<FlexDivRow>
@@ -470,7 +510,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.openRedemptionMinutes,
 			},
 			{
-				header: <label htmlFor="holderFundingExpiry">Holder funding period</label>,
+				header: (
+					<>
+						<label htmlFor="holderFundingExpiry">Holder funding period</label>
+						<QuestionMark
+							text={`the amount of time a holder has to finalize the deal by depositing funds. If the deadline passes the sponsor can create a new deal with a different holder.`}
+						/>
+					</>
+				),
 				subText: 'holder time limit to fund',
 				formField: (
 					<FlexDivRow>
@@ -509,7 +556,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.holderFundingExpiryMinutes,
 			},
 			{
-				header: <label htmlFor="holder">Holder address</label>,
+				header: (
+					<>
+						<label htmlFor="holder">Holder address</label>
+						<QuestionMark
+							text={`the address of the deal counterparty depositing the underlying deal tokens in exchange for purchase tokens`}
+						/>
+					</>
+				),
 				subText: 'address',
 				formField: (
 					<TextInput

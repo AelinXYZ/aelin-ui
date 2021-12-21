@@ -32,7 +32,7 @@ interface ViewPoolProps {
 }
 
 const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
-	const { walletAddress, provider } = Connector.useContainer();
+	const { walletAddress, provider, network } = Connector.useContainer();
 	const [dealBalance, setDealBalance] = useState<number | null>(null);
 	const [claimableUnderlyingTokens, setClaimableUnderlyingTokens] = useState<number | null>(null);
 	const [underlyingPerDealExchangeRate, setUnderlyingPerDealExchangeRate] = useState<number | null>(
@@ -42,8 +42,11 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		null
 	);
 	const [underlyingDealTokenSymbol, setUnderlyingDealTokenSymbol] = useState<string | null>(null);
-	const dealDetailsQuery = useGetDealDetailByIdQuery({ id: pool?.dealAddress ?? '' });
-	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '' });
+	const dealDetailsQuery = useGetDealDetailByIdQuery({
+		id: pool?.dealAddress ?? '',
+		networkId: network.id,
+	});
+	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '', networkId: network.id });
 
 	const deal = useMemo(() => {
 		const dealDetails =
@@ -55,11 +58,13 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const claimedQuery = useGetClaimedUnderlyingDealTokensQuery({
 		dealAddress: deal?.id ?? '',
 		recipient: walletAddress ?? '',
+		networkId: network.id,
 	});
 
-	const claims = useMemo(() => (claimedQuery?.data ?? []).map(parseClaimedResult), [
-		claimedQuery?.data,
-	]);
+	const claims = useMemo(
+		() => (claimedQuery?.data ?? []).map(parseClaimedResult),
+		[claimedQuery?.data]
+	);
 
 	useEffect(() => {
 		async function getDealInfo() {
