@@ -1,17 +1,18 @@
 import Wei, { wei } from '@synthetixio/wei';
 import { BigNumberish, ethers } from 'ethers';
 import { useQuery, UseQueryOptions } from 'react-query';
-import  synthetix, { CurrencyKey } from '@synthetixio/contracts-interface';
+import synthetix, { CurrencyKey } from '@synthetixio/contracts-interface';
 import { iStandardSynth, synthToAsset } from 'utils/currencies';
 
-import { NetworkType } from 'constants/networks';
+import { Network, NetworkId, NetworkType } from 'constants/networks';
 
 type Rates = Record<string, Wei>;
 type CurrencyRate = BigNumberish;
 type SynthRatesTuple = [string[], CurrencyRate[]];
 
 const useExchangeRatesQuery = (network: NetworkType, options?: UseQueryOptions<Rates>) => {
-  const snxjs = synthetix({ network: network.name });
+	// @ts-ignore
+	const snxjs = synthetix({ network: Network.Mainnet });
 
 	return useQuery<Rates>(
 		['rates', 'exchangeRates', network.id],

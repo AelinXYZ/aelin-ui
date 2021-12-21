@@ -19,16 +19,18 @@ import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 import { formatShortDateWithTime } from 'utils/time';
+import Connector from 'containers/Connector';
 
 const Pools: FC = () => {
 	const router = useRouter();
+	const { network } = Connector.useContainer();
 	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
-	const poolsQuery = useGetPoolsQuery();
+	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
 
 	useEffect(() => {
 		setSponsorFilter((router.query?.sponsorFilter ?? null) as string | null);

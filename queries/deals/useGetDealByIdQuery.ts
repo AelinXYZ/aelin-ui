@@ -1,10 +1,11 @@
 import { ethers } from 'ethers';
-import { GRAPH_ENDPOINT } from 'constants/endpoints';
+import { getGraphEndpoint } from 'constants/endpoints';
 import { DealCreatedResult, useGetDealCreatedById } from '../../subgraph';
+import { NetworkId } from 'constants/networks';
 
-const useGetDealByIdQuery = ({ id }: { id: string }) =>
+const useGetDealByIdQuery = ({ id, networkId }: { id: string; networkId?: NetworkId }) =>
 	useGetDealCreatedById(
-		GRAPH_ENDPOINT,
+		getGraphEndpoint(networkId),
 		{
 			id,
 		},

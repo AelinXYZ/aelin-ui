@@ -1,12 +1,19 @@
 //@ts-nocheck
 import { wei } from '@synthetixio/wei';
 
-import { GRAPH_ENDPOINT } from 'constants/endpoints';
+import { getGraphEndpoint } from 'constants/endpoints';
+import { NetworkId } from 'constants/networks';
 import { useGetPurchasePoolTokens, PurchasePoolTokenResult } from '../../subgraph';
 
-const useGetPurchasePoolTokensQuery = ({ purchaser }: { purchaser: string }) => {
+const useGetPurchasePoolTokensQuery = ({
+	purchaser,
+	networkId,
+}: {
+	purchaser: string;
+	networkId?: NetworkId;
+}) => {
 	return useGetPurchasePoolTokens(
-		GRAPH_ENDPOINT,
+		getGraphEndpoint(networkId),
 		{
 			purchaser,
 			orderBy: 'timestamp',

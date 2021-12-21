@@ -1,5 +1,6 @@
 import { wei } from '@synthetixio/wei';
-import { GRAPH_ENDPOINT } from 'constants/endpoints';
+import { getGraphEndpoint } from 'constants/endpoints';
+import { NetworkId } from 'constants/networks';
 import {
 	ClaimedUnderlyingDealTokenResult,
 	useGetClaimedUnderlyingDealTokens,
@@ -8,12 +9,14 @@ import {
 const useGetClaimedUnderlyingDealTokensQuery = ({
 	dealAddress,
 	recipient,
+	networkId,
 }: {
 	dealAddress: string;
 	recipient: string;
+	networkId?: NetworkId;
 }) =>
 	useGetClaimedUnderlyingDealTokens(
-		GRAPH_ENDPOINT,
+		getGraphEndpoint(networkId),
 		{
 			where: { dealAddress, recipient },
 		},

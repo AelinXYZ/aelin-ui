@@ -4,16 +4,13 @@ import { createContainer } from 'unstated-next';
 
 import Connector from 'containers/Connector';
 import PoolFactoryContract from './contracts/AelinPoolFactory';
-import DistributionContract from './contracts/AelinDistribution';
 
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
+import { getKeyValue } from 'utils/helpers';
 
 type AelinContracts = {
 	AelinPoolFactory: Contract | null;
-	AelinDistribution: Contract | null;
 };
-
-const getKeyValue = <T extends object, U extends keyof T>(obj: T) => (key: U) => obj[key];
 
 const useContractsInterface = () => {
 	const { walletAddress, network, signer } = Connector.useContainer();
@@ -27,19 +24,10 @@ const useContractsInterface = () => {
 				network?.id ?? DEFAULT_NETWORK_ID
 			);
 
-			const distributionContract = (getKeyValue(DistributionContract) as any)(
-				network?.id ?? DEFAULT_NETWORK_ID
-			);
-
 			setContracts({
 				AelinPoolFactory: new Contract(
 					poolFactoryContract.address,
 					poolFactoryContract.abi,
-					signer
-				),
-				AelinDistribution: new Contract(
-					distributionContract.address,
-					distributionContract.abi,
 					signer
 				),
 			});
