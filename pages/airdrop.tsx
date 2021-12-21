@@ -86,13 +86,15 @@ const Airdrop = () => {
 
 	const isSubmitButtonDisabled = !airdropBalance || airdropBalance.eq(wei(0)) || !canClaim;
 	return (
-		<PageLayout title={<>Aelin Airdrop</>} subtitle="">
+		<PageLayout title={<>vAelin Airdrop</>} subtitle="">
 			<Row>
 				<P>
-					If you are a SNX staker on either L1 or L2, you might be eligible for the AELIN Airdrop.
-					This screen will allow you to check your allocation and claim your AELIN.
+					If you are a SNX staker on either L1 or L2, you might be eligible for the vAELIN Airdrop.
+					This screen will allow you to check your allocation and claim your vAELIN. vAELIN may be
+					redeemed for AELIN soon. You will lose 2% of your vAELIN tokens when converting them to
+					AELIN tokens. This is accounted for in the airdrop amount
 				</P>
-				<Header>{`Allocation: ${airdropBalance?.toString(4) ?? 0} AELIN`}</Header>
+				<Header>{`Allocation: ${airdropBalance?.toString(4) ?? 0} vAELIN`}</Header>
 				<SubmitButton
 					disabled={isSubmitButtonDisabled}
 					onClick={() => setShowTxModal(true)}
@@ -109,7 +111,7 @@ const Airdrop = () => {
 				gasLimitEstimate={gasLimitEstimate}
 				onSubmit={handleClaim}
 			>
-				{`You are claiming ${airdropBalance?.toString(4) ?? 0} AELIN`}
+				{`You are claiming ${airdropBalance?.toString(4) ?? 0} vAELIN`}
 			</ConfirmTransactionModal>
 		</PageLayout>
 	);

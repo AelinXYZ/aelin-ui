@@ -1,13 +1,13 @@
 import { utils } from 'ethers';
-import { wei } from '@synthetixio/wei';
 
-import { GRAPH_ENDPOINT } from 'constants/endpoints';
+import { getGraphEndpoint } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 import { calculateStatus } from 'utils/time';
+import { NetworkId } from 'constants/networks';
 
-const useGetPoolsQuery = () => {
+const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
 	return useGetPoolCreateds(
-		GRAPH_ENDPOINT,
+		getGraphEndpoint(networkId),
 		{
 			orderBy: 'timestamp',
 			orderDirection: 'desc',
