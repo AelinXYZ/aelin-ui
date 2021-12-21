@@ -46,7 +46,6 @@ const useBlockExplorer = () => {
 	useEffect(() => {
 		if (network) {
 			const baseUrl = getBaseUrl(network, isOVM);
-			console.log('base url', baseUrl);
 			setBlockExplorerInstance(generateExplorerFunctions(baseUrl));
 		}
 	}, [network, isOVM]);
