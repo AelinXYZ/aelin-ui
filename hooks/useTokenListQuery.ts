@@ -1,7 +1,7 @@
 import { Token, TokenListResponse } from 'constants/token';
 import { UseQueryOptions, useQuery } from 'react-query';
 import Connector from 'containers/Connector';
-import { isMainnet } from 'constants/networks';
+import { isMainnet, NetworkId } from 'constants/networks';
 import { TokenListUrls, TestnetTokens } from 'constants/token';
 
 const getTokenList = (isMainnet: boolean, isOVM: boolean) => {
@@ -21,7 +21,13 @@ const useTokenListQuery = (options?: UseQueryOptions<Token[]>) => {
 		['tokenList', network?.id, isMainnetNetwork, isOVM],
 		async () => {
 			const response: TokenListResponse = await getTokenList(isMainnetNetwork, isOVM);
-			return response.tokens;
+			let tokens: Token[] = response.tokens;
+			if (isOVM) {
+				tokens = response.tokens.filter(
+					({ chainId }) => Number(chainId) === Number(NetworkId['Mainnet-ovm'])
+				);
+			}
+			return tokens;
 		},
 		{
 			refetchInterval: false,
