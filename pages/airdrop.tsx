@@ -1,26 +1,30 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
 
+import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import useGetAirdropDataForAddress from 'queries/airdrop/useGetAirdropDataForAddress';
 import useGetCanClaimForAddress from 'queries/airdrop/useGetCanClaimForAddress';
 import { PageLayout } from 'sections/Layout';
-import { FlexDivRowCentered, FlexDivColCentered } from 'components/common';
+import { FlexDivColCentered } from 'components/common';
 import Button from 'components/Button';
 import { wei } from '@synthetixio/wei';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-import { GasLimitEstimate } from 'constants/networks';
+import { GasLimitEstimate, NetworkId } from 'constants/networks';
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
 import ContractsInterface from 'containers/ContractsInterface';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import TransactionNotifier from 'containers/TransactionNotifier';
+import DistributionContract from 'containers/ContractsInterface/contracts/AelinDistribution';
+import { getKeyValue } from 'utils/helpers';
 
 const Airdrop = () => {
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const { gasPrice, setGasPrice, txState, setTxState } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { walletAddress } = Connector.useContainer();
+	const { walletAddress, network } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const airdropDataQuery = useGetAirdropDataForAddress();
 	const airdropBalance = airdropDataQuery?.data?.balance ?? null;
@@ -32,9 +36,16 @@ const Airdrop = () => {
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!walletAddress || !contracts?.AelinDistribution || !airdropBalance || !canClaim) return;
+			if (!walletAddress || !airdropBalance || !canClaim) return;
 			try {
-				const gasEstimate = await contracts.AelinDistribution.estimateGas.claim(
+				const distributionContract = (getKeyValue(DistributionContract) as any)(
+					network?.id ?? DEFAULT_NETWORK_ID
+				);
+				const aelinDistribution = new ethers.Contract(
+					distributionContract.address,
+					distributionContract.abi
+				);
+				const gasEstimate = await aelinDistribution.estimateGas.claim(
 					wei(airdropIndex)!.toBN(),
 					airdropBalance.toBN(),
 					airdropProof
@@ -46,20 +57,19 @@ const Airdrop = () => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [
-		airdropBalance,
-		walletAddress,
-		contracts?.AelinDistribution,
-		airdropIndex,
-		airdropProof,
-		canClaim,
-	]);
+	}, [airdropBalance, walletAddress, network?.id, airdropIndex, airdropProof, canClaim]);
 
 	const handleClaim = async () => {
 		try {
-			if (!contracts || !contracts.AelinDistribution) return;
 			setShowTxModal(false);
-			const tx = await contracts.AelinDistribution.claim(
+			const distributionContract = (getKeyValue(DistributionContract) as any)(
+				network?.id ?? DEFAULT_NETWORK_ID
+			);
+			const aelinDistribution = new ethers.Contract(
+				distributionContract.address,
+				distributionContract.abi
+			);
+			const tx = await aelinDistribution.claim(
 				wei(airdropIndex).toBN(),
 				airdropBalance!.toBN(),
 				airdropProof,
@@ -89,10 +99,12 @@ const Airdrop = () => {
 		<PageLayout title={<>vAelin Airdrop</>} subtitle="">
 			<Row>
 				<P>
-					If you are a SNX staker on either L1 or L2, you might be eligible for the vAELIN Airdrop.
+					{network.id !== NetworkId['Mainnet-ovm']
+						? 'Please switch to the Optimism Network by clicking the network tab in the top right'
+						: `If you are a SNX staker on either L1 or L2, you might be eligible for the vAELIN Airdrop.
 					This screen will allow you to check your allocation and claim your vAELIN. vAELIN may be
 					redeemed for AELIN soon. You will lose 2% of your vAELIN tokens when converting them to
-					AELIN tokens. This is accounted for in the airdrop amount
+					AELIN tokens. This is accounted for in the airdrop amount`}
 				</P>
 				<Header>{`Allocation: ${airdropBalance?.toString(4) ?? 0} vAELIN`}</Header>
 				<SubmitButton
@@ -124,8 +136,13 @@ const Row = styled(FlexDivColCentered)`
 `;
 
 const P = styled.p`
-	text-align: center;
+	text-align: left;
 	width: 500px;
+	background-color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
+	padding: 20px;
+	font-size: 18px;
+	font-weight: bold;
 `;
 
 const Header = styled.h3`

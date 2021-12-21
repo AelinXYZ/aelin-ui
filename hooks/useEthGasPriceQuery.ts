@@ -3,9 +3,9 @@ import { useQuery, UseQueryOptions } from 'react-query';
 
 import { NetworkId } from 'constants/networks';
 import { formatGwei } from 'utils/crypto';
-import { ETH_GAS_STATION_API_URL, GAS_NOW_API_URL } from 'constants/endpoints'
+import { ETH_GAS_STATION_API_URL, GAS_NOW_API_URL } from 'constants/endpoints';
 
-import {GasSpeed, GasPrices} from 'components/GasSelector/types'
+import { GasSpeed, GasPrices } from 'components/GasSelector/types';
 
 export const GAS_SPEEDS: GasSpeed[] = ['average', 'fast', 'fastest'];
 
@@ -36,12 +36,12 @@ type GasNowResponse = {
 };
 
 type Network = {
-  networkId: number;
-  provider: any;
-}
+	networkId: number;
+	provider: any;
+};
 
 const useEthGasPriceQuery = (network: Network, options?: UseQueryOptions<GasPrices, Error>) => {
-  const { networkId, provider } = network;
+	const { networkId, provider } = network;
 
 	return useQuery<GasPrices, Error>(
 		['network', 'gasPrice', networkId],
