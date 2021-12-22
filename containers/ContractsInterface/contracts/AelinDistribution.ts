@@ -296,7 +296,7 @@ const contract = {
 		abi,
 	},
 	10: {
-		address: '0x24Fa2b48178f4aCD577230B3aC30b935195dCaf3',
+		address: '0x1fa677ca369b97Ab30707373531cB050b1c3a7c6',
 		abi,
 	},
 };
