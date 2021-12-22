@@ -110,7 +110,7 @@ const Airdrop = () => {
 	]);
 
 	return (
-		<PageLayout title={<>vAelin Airdrop</>} subtitle="">
+		<PageLayout title={<>vAelin Distribution</>} subtitle="">
 			<Row>
 				<P>
 					{network.id !== NetworkId['Mainnet-ovm']
