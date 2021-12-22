@@ -337,7 +337,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			gridItems={poolGridItems}
 			input={{
 				placeholder: '0',
-				label: `Balance ${userPurchaseBalance} ${purchaseTokenSymbol}`,
+				label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
 				value: '0',
 				maxValue,
 				symbol: purchaseTokenSymbol,
