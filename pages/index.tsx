@@ -95,7 +95,7 @@ const CenterContainer = styled.div`
 
 const LogoContainer = styled.div`
 	width: 100%;
-	margin-top: 60px;
+	margin-top: 5%;
 	display: flex;
 	position: absolute;
 	align-items: center;
