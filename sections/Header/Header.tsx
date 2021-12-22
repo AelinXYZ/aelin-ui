@@ -9,12 +9,10 @@ import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
 import WalletWidget from 'components/WalletWidget';
 import NetworkWidget from 'components/NetworkWidget';
-import Connector from 'containers/Connector';
+import { FlexDiv } from 'components/common';
 
 const Header: FC = () => {
 	const router = useRouter();
-	const { walletAddress } = Connector.useContainer();
-
 	const LINKS = useMemo(
 		() => [
 			{ label: 'Pools', pathname: ROUTES.Pools.Home },
@@ -26,13 +24,17 @@ const Header: FC = () => {
 	);
 	return (
 		<Container>
-			<StyledImage
-				onClick={() => router.push(ROUTES.Home)}
-				src={AelinLogo}
-				alt="aelin logo"
-				width={98}
-				height={22}
-			/>
+			<ImageContainer>
+				<StyledImage
+					onClick={() => router.push(ROUTES.Home)}
+					src={AelinLogo}
+					alt="aelin logo"
+					width={98}
+					height={22}
+				/>
+				<BetaLabel>[alpha]</BetaLabel>
+			</ImageContainer>
+
 			<Links>
 				{LINKS.map(({ label, pathname, query, isDisabled, newTab }) => (
 					<StyledLink
@@ -92,6 +94,15 @@ const HeaderBlock = styled.div`
 
 const StyledLink = styled(Link)`
 	font-size: 14px;
+`;
+
+const ImageContainer = styled(FlexDiv)`
+	align-items: flex-end;
+`;
+
+const BetaLabel = styled.span`
+	font-size: 14px;
+	font-style: italic;
 `;
 
 export default Header;
