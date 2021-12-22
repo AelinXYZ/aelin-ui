@@ -39,8 +39,14 @@ const Create: FC = () => {
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
-		TransactionData.useContainer();
+	const {
+		txHash,
+		setTxHash,
+		gasPrice,
+		setGasPrice,
+		txState,
+		setTxState,
+	} = TransactionData.useContainer();
 
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;

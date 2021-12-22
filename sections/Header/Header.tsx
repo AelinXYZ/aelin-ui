@@ -15,22 +15,15 @@ const Header: FC = () => {
 	const router = useRouter();
 	const { walletAddress } = Connector.useContainer();
 
-	const LINKS = useMemo(() => {
-		const links = [{ label: 'All Pools', pathname: ROUTES.Pools.Home }];
-		return walletAddress != null
-			? [
-					...links,
-					{
-						label: 'My Sponsorships',
-						pathname: ROUTES.Pools.Home,
-						query: { sponsorFilter: walletAddress },
-					},
-					{ label: 'Create Pool', pathname: ROUTES.Pools.Create },
-					// { label: 'Stake', pathname: ROUTES.Stake },
-					{ label: 'Airdrop', pathname: ROUTES.Airdrop },
-			  ]
-			: links;
-	}, [walletAddress]);
+	const LINKS = useMemo(
+		() => [
+			{ label: 'Pools', pathname: ROUTES.Pools.Home },
+			{ label: 'Claim Tokens', pathname: ROUTES.ClaimTokens },
+			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true },
+			{ label: 'Stake (coming soon)', pathname: ROUTES.Stake, isDisabled: true },
+		],
+		[]
+	);
 	return (
 		<Container>
 			<StyledImage
@@ -41,12 +34,15 @@ const Header: FC = () => {
 				height={22}
 			/>
 			<Links>
-				{LINKS.map(({ label, pathname, query }) => (
+				{LINKS.map(({ label, pathname, query, isDisabled, newTab }) => (
 					<StyledLink
 						href={query != null ? { pathname, query } : { pathname }}
 						key={`link-${label}`}
+						passHref
 					>
-						{label}
+						<a className={isDisabled ? 'is-disabled' : ''} target={newTab ? '_blank' : '_self'}>
+							{label}
+						</a>
 					</StyledLink>
 				))}
 			</Links>
@@ -71,12 +67,18 @@ const StyledImage = styled(Image)`
 
 const Links = styled.div`
 	display: flex;
-	width: 620px;
+	width: 400px;
 	justify-content: space-between;
 	a {
 		&:hover {
 			color: ${(props) => props.theme.colors.headerGreen};
+			text-decoration: underline;
 		}
+	}
+	a.is-disabled {
+		text-decoration: none;
+		pointer-events: none;
+		opacity: 0.5;
 	}
 `;
 

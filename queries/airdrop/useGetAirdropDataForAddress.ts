@@ -2,6 +2,7 @@ import { utils, BigNumber } from 'ethers';
 import Connector from 'containers/Connector';
 import { useQuery } from 'react-query';
 import Wei, { wei } from '@synthetixio/wei';
+import { isMainnet, NetworkId } from 'constants/networks';
 
 type AirdropRecord = {
 	address: string;
@@ -11,9 +12,11 @@ type AirdropRecord = {
 };
 
 const useGetAirdropDataForAddress = () => {
-	const { walletAddress } = Connector.useContainer();
+	const { walletAddress, isOVM, network } = Connector.useContainer();
+	const isOnMainnet = isMainnet(network?.id ?? NetworkId.Mainnet);
+
 	return useQuery<AirdropRecord | null>(
-		['airdrop', 'data'],
+		['airdrop', 'data', walletAddress, network?.id],
 		async () => {
 			const request = await fetch('/data/airdrop.json');
 			const airdropSource = await request.json();
@@ -31,7 +34,7 @@ const useGetAirdropDataForAddress = () => {
 				: null;
 		},
 		{
-			enabled: !!walletAddress,
+			enabled: !!walletAddress && isOVM && isOnMainnet,
 		}
 	);
 };

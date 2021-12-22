@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 
@@ -13,7 +13,6 @@ import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import { GasLimitEstimate, NetworkId } from 'constants/networks';
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
-import ContractsInterface from 'containers/ContractsInterface';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import DistributionContract from 'containers/ContractsInterface/contracts/AelinDistribution';
@@ -24,8 +23,7 @@ const Airdrop = () => {
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const { gasPrice, setGasPrice, txState, setTxState } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { walletAddress, network } = Connector.useContainer();
-	const { contracts } = ContractsInterface.useContainer();
+	const { walletAddress, network, signer } = Connector.useContainer();
 	const airdropDataQuery = useGetAirdropDataForAddress();
 	const airdropBalance = airdropDataQuery?.data?.balance ?? null;
 	const airdropIndex = airdropDataQuery?.data?.index ?? null;
@@ -34,18 +32,20 @@ const Airdrop = () => {
 	const canClaimAirdropQuery = useGetCanClaimForAddress(airdropIndex);
 	const canClaim = canClaimAirdropQuery?.data ?? false;
 
+	const aelinDistributionContract = useMemo(() => {
+		if (!signer || !network?.id) return null;
+		const distributionContract = (getKeyValue(DistributionContract) as any)(
+			network?.id ?? DEFAULT_NETWORK_ID
+		);
+		if (!distributionContract) return null;
+		return new ethers.Contract(distributionContract.address, distributionContract.abi, signer);
+	}, [signer, network?.id]);
+
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!walletAddress || !airdropBalance || !canClaim) return;
+			if (!walletAddress || !airdropBalance || !canClaim || !aelinDistributionContract) return;
 			try {
-				const distributionContract = (getKeyValue(DistributionContract) as any)(
-					network?.id ?? DEFAULT_NETWORK_ID
-				);
-				const aelinDistribution = new ethers.Contract(
-					distributionContract.address,
-					distributionContract.abi
-				);
-				const gasEstimate = await aelinDistribution.estimateGas.claim(
+				const gasEstimate = await aelinDistributionContract.estimateGas.claim(
 					wei(airdropIndex)!.toBN(),
 					airdropBalance.toBN(),
 					airdropProof
@@ -57,19 +57,24 @@ const Airdrop = () => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [airdropBalance, walletAddress, network?.id, airdropIndex, airdropProof, canClaim]);
+	}, [
+		airdropBalance,
+		walletAddress,
+		network?.id,
+		airdropIndex,
+		airdropProof,
+		canClaim,
+		aelinDistributionContract,
+	]);
 
-	const handleClaim = async () => {
+	const isSubmitButtonDisabled = !airdropBalance || airdropBalance.eq(wei(0)) || !canClaim;
+
+	const handleClaim = useCallback(async () => {
+		if (isSubmitButtonDisabled || !gasLimitEstimate || !aelinDistributionContract) return;
 		try {
 			setShowTxModal(false);
-			const distributionContract = (getKeyValue(DistributionContract) as any)(
-				network?.id ?? DEFAULT_NETWORK_ID
-			);
-			const aelinDistribution = new ethers.Contract(
-				distributionContract.address,
-				distributionContract.abi
-			);
-			const tx = await aelinDistribution.claim(
+
+			const tx = await aelinDistributionContract.claim(
 				wei(airdropIndex).toBN(),
 				airdropBalance!.toBN(),
 				airdropProof,
@@ -92,9 +97,18 @@ const Airdrop = () => {
 			console.log(e);
 			setGasLimitEstimate(null);
 		}
-	};
+	}, [
+		aelinDistributionContract,
+		airdropBalance,
+		airdropIndex,
+		airdropProof,
+		canClaimAirdropQuery,
+		gasLimitEstimate,
+		gasPrice,
+		monitorTransaction,
+		isSubmitButtonDisabled,
+	]);
 
-	const isSubmitButtonDisabled = !airdropBalance || airdropBalance.eq(wei(0)) || !canClaim;
 	return (
 		<PageLayout title={<>vAelin Airdrop</>} subtitle="">
 			<Row>
@@ -112,7 +126,7 @@ const Airdrop = () => {
 					onClick={() => setShowTxModal(true)}
 					variant="text"
 				>
-					{canClaim ? 'Claim' : 'Already Claimed'}
+					{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
 				</SubmitButton>
 			</Row>
 			<ConfirmTransactionModal
@@ -154,7 +168,7 @@ const Header = styled.h3`
 const SubmitButton = styled(Button)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
-	width: 120px;
+	width: 140px;
 	margin: 10px auto 0 auto;
 	&:disabled {
 		background-color: ${(props) => props.theme.colors.forestGreen};
