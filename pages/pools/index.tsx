@@ -121,7 +121,7 @@ const Pools: FC = () => {
 			},
 			{ Header: 'name', accessor: 'name', width: 100 },
 			{
-				Header: 'purchase token',
+				Header: 'purchase currency',
 				accessor: 'purchaseToken',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
@@ -132,7 +132,7 @@ const Pools: FC = () => {
 				},
 			},
 			{
-				Header: 'contributions',
+				Header: 'amount funded',
 				accessor: 'contributions',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (

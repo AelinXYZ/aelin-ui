@@ -99,8 +99,7 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
 			<ColCenter>
 				<HeaderRow>
 					<Column width="70">
-						<ContentTitle>Whitelist Address</ContentTitle>
-						<ContentSubtitle>Add Addresses</ContentSubtitle>
+						<ContentTitle>Allowlist</ContentTitle>
 					</Column>
 					<Column width="30" justify="center" align="flex-end">
 						<UploadCSV onUploadCSV={handleUploadCSV} />
@@ -109,12 +108,10 @@ const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
 				<ContentBody>
 					<Row>
 						<Column width="60">
-							<Title>Add address</Title>
-							<Subtitle>Whitelisted recipient address</Subtitle>
+							<Title>Address</Title>
 						</Column>
 						<Column width="30">
-							<Title>Add Amount</Title>
-							<Subtitle>Add recipient amount</Subtitle>
+							<Title>Amount</Title>
 						</Column>
 					</Row>
 					<Row>
