@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -38,8 +38,14 @@ const Footer: FC = () => {
 						<Link href={ROUTES.Pools.Create} passHref>
 							<StyledA>CREATE POOL. </StyledA>
 						</Link>
-						<Link href={ROUTES.Airdrop} passHref>
-							<StyledA>AIRDROP. </StyledA>
+						<Link href={ROUTES.ClaimTokens} passHref>
+							<StyledA>CLAIM TOKENS. </StyledA>
+						</Link>
+						<Link href={ROUTES.Docs} passHref>
+							<StyledA target="_blank">DOCS. </StyledA>
+						</Link>
+						<Link href={ROUTES.Stake} passHref>
+							<StyledA isDisabled>STAKE (COMING SOON). </StyledA>
 						</Link>
 					</>
 				</NavRow>
@@ -80,11 +86,16 @@ const NavRow = styled.div`
 	background-color: rgba(255, 255, 255, 0.16);
 `;
 
-const StyledA = styled.a`
+const StyledA = styled.a<{ isDisabled?: boolean }>`
 	color: #000000;
 	font-size: 12px;
 	letter-spacing: 0.62px;
 	margin: 0 3px;
+	${(props) =>
+		props.isDisabled &&
+		css`
+			pointer-events: none;
+		`}
 `;
 
 export default Footer;

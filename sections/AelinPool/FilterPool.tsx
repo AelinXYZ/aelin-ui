@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { FC, useState } from 'react';
 import styled from 'styled-components';
+import Link from 'next/link';
 
 import { FlexDivRow, FlexDiv } from 'components/common';
 import { Status } from 'components/DealStatus';
@@ -8,6 +9,7 @@ import TextInput from 'components/Input/TextInput';
 import PlusIcon from 'assets/svg/plus.svg';
 import Image from 'next/image';
 import StatusDropdown from 'sections/shared/StatusDropdown';
+import ROUTES from 'constants/routes';
 
 interface FilterPoolProps {
 	setSponsor: (sponsor: string) => void;
@@ -28,8 +30,15 @@ const FilterPool: FC<FilterPoolProps> = ({
 	return (
 		<Container>
 			<HeaderSection>
-				<Header>Filters</Header>
-				<StyledImage onClick={() => setIsVisible(!isVisible)} src={PlusIcon} alt="" />
+				<FlexDiv>
+					<Header>Filters</Header>
+					<StyledImage onClick={() => setIsVisible(!isVisible)} src={PlusIcon} alt="" />
+				</FlexDiv>
+				<FlexDiv>
+					<Link href={ROUTES.Pools.Create} passHref>
+						<StyledAnchor>Create Pool</StyledAnchor>
+					</Link>
+				</FlexDiv>
 			</HeaderSection>
 			{isVisible ? (
 				<FlexDivRow>
@@ -82,6 +91,21 @@ const StyledImage = styled(Image)`
 const HeaderSection = styled(FlexDiv)`
 	margin-bottom: 10px;
 	align-items: center;
+	justify-content: space-between;
+`;
+
+const StyledAnchor = styled.a`
+	height: 32px;
+	line-height: 32px;
+	font-size: 12px;
+	padding: 0 12px;
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
+	background-color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
+	width: 140px;
+	border-radius: 4px;
+	cursor: pointer;
+	text-align: center;
 `;
 
 export default FilterPool;

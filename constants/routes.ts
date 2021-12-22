@@ -1,7 +1,8 @@
 const ROUTES = {
 	Home: '/',
 	Stake: '/stake',
-	Airdrop: '/airdrop',
+	ClaimTokens: '/claim-tokens',
+	Docs: 'https://calavera.gitbook.io/aelin',
 	Pools: {
 		Home: '/pools',
 		Create: '/pools/create',

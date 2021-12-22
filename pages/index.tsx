@@ -27,7 +27,7 @@ const HomePage = () => {
 				<Row>
 					<Link href={ROUTES.Pools.Home}>
 						<a>
-							<CreatePoolContainer>
+							<LinkContainer>
 								<Image
 									src={JoinPoolImage}
 									layout="fixed"
@@ -36,7 +36,7 @@ const HomePage = () => {
 									alt="Join pool image"
 								/>
 								<ActionText>Join Pool</ActionText>
-							</CreatePoolContainer>
+							</LinkContainer>
 						</a>
 					</Link>
 
@@ -44,7 +44,7 @@ const HomePage = () => {
 
 					<Link href={ROUTES.Pools.Create}>
 						<a>
-							<CreatePoolContainer>
+							<LinkContainer>
 								<Image
 									src={CreatePoolImage}
 									layout="fixed"
@@ -53,16 +53,25 @@ const HomePage = () => {
 									alt="Create pool image"
 								/>
 								<ActionText>Create Pool</ActionText>
-							</CreatePoolContainer>
+							</LinkContainer>
 						</a>
 					</Link>
 				</Row>
 				<Row>
-					{!walletAddress ? (
-						<ConnectWallet onClick={connectWallet}>Connect Wallet</ConnectWallet>
-					) : (
-						<ConnectWallet onClick={disconnectWallet}>Disconnect Wallet</ConnectWallet>
-					)}
+					<Link href={ROUTES.ClaimTokens}>
+						<a>
+							<LinkContainer>
+								<Image
+									src={CreatePoolImage}
+									layout="fixed"
+									width={180}
+									height={60}
+									alt="Claim Tokens image"
+								/>
+								<ActionText>Claim Tokens</ActionText>
+							</LinkContainer>
+						</a>
+					</Link>
 				</Row>
 			</CenterContainer>
 		</Container>
@@ -94,10 +103,11 @@ const LogoContainer = styled.div`
 	flex-basis: 100%;
 `;
 
-const CreatePoolContainer = styled.div`
+const LinkContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	flex-basis: 100%;
+	align-items: center;
 `;
 
 const ActionText = styled.span`
@@ -105,18 +115,6 @@ const ActionText = styled.span`
 	color: #5b8847;
 	font-size: 22px;
 	position: relative;
-`;
-
-const ConnectWallet = styled.button`
-	font-family: Planetnv2-Regular;
-	color: #5b8847;
-	margin-top: 40px;
-	font-size: 22px;
-	z-index: 2;
-	outline: 0;
-	border: 0;
-	background: transparent;
-	cursor: pointer;
 `;
 
 const Row = styled.div`
