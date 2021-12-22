@@ -25,14 +25,12 @@ const Header: FC = () => {
 	return (
 		<Container>
 			<ImageContainer>
-				<StyledImage
-					onClick={() => router.push(ROUTES.Home)}
-					src={AelinLogo}
-					alt="aelin logo"
-					width={98}
-					height={22}
-				/>
-				<BetaLabel>[alpha]</BetaLabel>
+				<Link href={ROUTES.Home}>
+					<a>
+						<StyledImage src={AelinLogo} alt="aelin logo" width={98} height={22} />
+						<BetaLabel>[alpha]</BetaLabel>
+					</a>
+				</Link>
 			</ImageContainer>
 
 			<Links>
