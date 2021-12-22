@@ -1,12 +1,11 @@
-import { utils, BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import Connector from 'containers/Connector';
 import { useQuery } from 'react-query';
-import Wei, { wei } from '@synthetixio/wei';
 import { isMainnet, NetworkId } from 'constants/networks';
 
 type AirdropRecord = {
 	address: string;
-	balance: Wei;
+	balance: number;
 	index: number;
 	proof: string[];
 };
@@ -27,7 +26,7 @@ const useGetAirdropDataForAddress = () => {
 			return match
 				? {
 						address: match.address,
-						balance: wei(BigNumber.from(match.balance)),
+						balance: match.balance,
 						index: Number(match.index),
 						proof: match.proof,
 				  }

@@ -47,7 +47,7 @@ const Airdrop = () => {
 			try {
 				const gasEstimate = await aelinDistributionContract.estimateGas.claim(
 					wei(airdropIndex)!.toBN(),
-					airdropBalance.toBN(),
+					airdropBalance,
 					airdropProof
 				);
 				setGasLimitEstimate(wei(gasEstimate, 0));
@@ -67,7 +67,7 @@ const Airdrop = () => {
 		aelinDistributionContract,
 	]);
 
-	const isSubmitButtonDisabled = !airdropBalance || airdropBalance.eq(wei(0)) || !canClaim;
+	const isSubmitButtonDisabled = !airdropBalance || !airdropBalance || !canClaim;
 
 	const handleClaim = useCallback(async () => {
 		if (isSubmitButtonDisabled || !gasLimitEstimate || !aelinDistributionContract) return;
@@ -76,7 +76,7 @@ const Airdrop = () => {
 
 			const tx = await aelinDistributionContract.claim(
 				wei(airdropIndex).toBN(),
-				airdropBalance!.toBN(),
+				airdropBalance!,
 				airdropProof,
 				{
 					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toString(),
@@ -117,7 +117,7 @@ const Airdrop = () => {
 						? 'Please switch to the Optimism Network by clicking the network tab in the top right'
 						: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Using this page, you can check your allocation and process your claims. You can redeem vAELIN for AELIN tokens in near future. Since 2% of vAELIN is paid as fee during redemption, this amount has been reflected in original distribution amount.`}
 				</P>
-				<Header>{`Allocation: ${airdropBalance?.toString(4) ?? 0} vAELIN`}</Header>
+				<Header>{`Allocation: ${(airdropBalance ?? 0) / 1e18} vAELIN`}</Header>
 				<SubmitButton
 					disabled={isSubmitButtonDisabled}
 					onClick={() => setShowTxModal(true)}
@@ -134,7 +134,7 @@ const Airdrop = () => {
 				gasLimitEstimate={gasLimitEstimate}
 				onSubmit={handleClaim}
 			>
-				{`You are claiming ${airdropBalance?.toString(4) ?? 0} vAELIN`}
+				{`You are claiming ${(airdropBalance ?? 0) / 1e18} vAELIN`}
 			</ConfirmTransactionModal>
 		</PageLayout>
 	);
