@@ -115,10 +115,7 @@ const Airdrop = () => {
 				<P>
 					{network.id !== NetworkId['Mainnet-ovm']
 						? 'Please switch to the Optimism Network by clicking the network tab in the top right'
-						: `If you are a SNX staker on either L1 or L2, you might be eligible for the vAELIN distribution.
-					This screen will allow you to check your allocation and claim your vAELIN. vAELIN may be
-					redeemed for AELIN soon. You will lose 2% of your vAELIN tokens when converting them to
-					AELIN tokens. This is accounted for in the airdrop amount`}
+						: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Using this page, you can check your allocation and process your claims. You can redeem vAELIN for AELIN tokens in near future. Since 2% of vAELIN is paid as fee during redemption, this amount has been reflected in original distribution amount.`}
 				</P>
 				<Header>{`Allocation: ${airdropBalance?.toString(4) ?? 0} vAELIN`}</Header>
 				<SubmitButton

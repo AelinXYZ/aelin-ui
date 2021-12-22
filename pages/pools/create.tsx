@@ -240,10 +240,8 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseToken">Purchase Token address</label>
-						<QuestionMark
-							text={`The token purchasers use to enter the pool and eventually convert to deal tokens if they accept the deal`}
-						/>
+						<label htmlFor="purchaseToken">Purchase Currency</label>
+						<QuestionMark text={`The currency used to purchase pool tokens`} />
 					</>
 				),
 				subText: 'wETH, USDC, sUSD, etc...',
@@ -264,7 +262,12 @@ const Create: FC = () => {
 				formError: formik.errors.purchaseToken,
 			},
 			{
-				header: <label htmlFor="poolCap">Purchase Token Cap</label>,
+				header: (
+					<>
+						<label htmlFor="poolCap">Pool Cap</label>
+						<QuestionMark text={`Maximum number of pool tokens`} />
+					</>
+				),
 				subText: 'Uncapped if left blank or 0',
 				formField: (
 					<Input
@@ -281,10 +284,8 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseDuration">Enter the Pool Duration</label>
-						<QuestionMark
-							text={`The amount of time purchasers have to enter the pool by sending their purchase tokens`}
-						/>
+						<label htmlFor="purchaseDuration">Purchase Window</label>
+						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
 				subText: 'Time to purchase deal tokens',
@@ -327,9 +328,9 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="duration">Pool Locked Duration</label>
+						<label htmlFor="duration">Pool Duration</label>
 						<QuestionMark
-							text={`The amount of time funds will be locked in the pool after "Enter the Pool Duration" is complete while the sponsor searches for a deal`}
+							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
 					</>
 				),
@@ -375,7 +376,7 @@ const Create: FC = () => {
 					<>
 						<label htmlFor="sponsorFee">Sponsor Fee</label>
 						<QuestionMark
-							text={`The sponsor, aka the wallet creating the pool, may receive an optional fee only if purchasers accept the deal`}
+							text={`The fee paid to the sponsor for each deal token redeemed, paid in deal tokens`}
 						/>
 					</>
 				),
@@ -393,7 +394,7 @@ const Create: FC = () => {
 				formError: formik.errors.sponsorFee,
 			},
 			{
-				header: <label htmlFor="name">Name</label>,
+				header: <label htmlFor="name">Pool Name</label>,
 				subText: 'Name of the pool token',
 				formField: (
 					<TextInput
@@ -407,7 +408,7 @@ const Create: FC = () => {
 				formError: formik.errors.poolName,
 			},
 			{
-				header: <label htmlFor="symbol">Symbol</label>,
+				header: <label htmlFor="symbol">Pool Symbol</label>,
 				subText: 'Symbol of the pool token',
 				formField: (
 					<TextInput
@@ -421,8 +422,15 @@ const Create: FC = () => {
 				formError: formik.errors.poolSymbol,
 			},
 			{
-				header: 'Pool Privacy',
-				subText: 'Accessibility of the pool',
+				header: (
+					<>
+						<label htmlFor="privacy">Pool Privacy</label>
+						<QuestionMark
+							text={`A private pool allows a sponsor to specify which address can purchase pool tokens`}
+						/>
+					</>
+				),
+				subText: 'Is the pool open or private',
 				formField: (
 					<FlexDivCol>
 						<>
