@@ -138,22 +138,17 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Sponsor`}</>
-						<QuestionMark
-							text={`The sponsor will seek a deal on behalf of purchasers entering this pool`}
-						/>
+						<>{`Purchase Currency`}</>
+						<QuestionMark text={`The currency used to purchase pool tokens`} />
 					</>
 				),
 				subText: (
-					<FlexDivStart>
-						<Ens address={pool?.sponsor ?? ''} />
-						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
-					</FlexDivStart>
+					<TokenDisplay
+						displayAddress={true}
+						symbol={purchaseTokenSymbol}
+						address={pool?.purchaseToken ?? ''}
+					/>
 				),
-			},
-			{
-				header: `My ${purchaseTokenSymbol} Balance`,
-				subText: userPurchaseBalance,
 			},
 			{
 				header: (
@@ -171,30 +166,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Purchase Currency`}</>
-						<QuestionMark text={`The currency used to purchase pool tokens`} />
-					</>
-				),
-				subText: (
-					<TokenDisplay
-						displayAddress={true}
-						symbol={purchaseTokenSymbol}
-						address={pool?.purchaseToken ?? ''}
-					/>
-				),
-			},
-			{
-				header: (
-					<>
-						<>{`My pool balance`}</>
-						<QuestionMark text={`The number of purchase tokens you have deposited`} />
-					</>
-				),
-				subText: userPoolBalance,
-			},
-			{
-				header: (
-					<>
 						<>{`Amount Funded`}</>
 						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
 					</>
@@ -204,19 +175,17 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					.toString(),
 			},
 			{
+				header: `My ${purchaseTokenSymbol} Balance`,
+				subText: userPurchaseBalance,
+			},
+			{
 				header: (
 					<>
-						<>{`Sponsor Fee`}</>
-						<QuestionMark
-							text={`The fee paid to the sponsor for each deal token redeemed, paid in deal tokens`}
-						/>
+						<>{`My pool balance`}</>
+						<QuestionMark text={`The number of purchase tokens you have deposited`} />
 					</>
 				),
-				subText: `${
-					pool?.sponsorFee.toString() != null
-						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
-						: 0
-				}%`,
+				subText: userPoolBalance,
 			},
 			{
 				header: (
@@ -239,6 +208,37 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: (
 					<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 				),
+			},
+			{
+				header: (
+					<>
+						<>{`Sponsor`}</>
+						<QuestionMark
+							text={`The sponsor will seek a deal on behalf of purchasers entering this pool`}
+						/>
+					</>
+				),
+				subText: (
+					<FlexDivStart>
+						<Ens address={pool?.sponsor ?? ''} />
+						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
+					</FlexDivStart>
+				),
+			},
+			{
+				header: (
+					<>
+						<>{`Sponsor Fee`}</>
+						<QuestionMark
+							text={`The fee paid to the sponsor for each deal token redeemed, paid in deal tokens`}
+						/>
+					</>
+				),
+				subText: `${
+					pool?.sponsorFee.toString() != null
+						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
+						: 0
+				}%`,
 			},
 		],
 		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]
@@ -349,6 +349,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			setIsMaxValue={setIsMaxValue}
 			inputValue={inputValue}
 			setInputValue={setInputValue}
+			purchaseCurrency={purchaseTokenSymbol}
 		/>
 	);
 };

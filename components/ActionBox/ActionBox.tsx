@@ -29,9 +29,19 @@ export type InputType = {
 const actionBoxTypeToTitle = (
 	actionBoxType: ActionBoxType,
 	isPrivatePool: boolean,
-	privatePoolAmount: string
+	privatePoolAmount: string,
+	currency: string
 ) => {
-	const privatePoolText = `Private pool. You may purchase up to ${privatePoolAmount}`;
+	const privatePoolText = (
+		<div>
+			<div>Private pool</div>
+			<div>{`${
+				privatePoolAmount && Number(privatePoolAmount) > 0
+					? `You may purchase up to ${privatePoolAmount} ${currency}`
+					: 'You have no allocation'
+			}`}</div>
+		</div>
+	);
 	const publicPoolText = 'Public pool';
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
@@ -51,6 +61,7 @@ const getActionButtonLabel = ({
 	allowance,
 	amount,
 	isPurchaseExpired,
+	isPrivatePoolAndNoAllocation,
 }: {
 	actionBoxType: ActionBoxType;
 	isDealAccept: boolean;
@@ -58,6 +69,9 @@ const getActionButtonLabel = ({
 	amount: string | number;
 	isPurchaseExpired: boolean | undefined;
 }) => {
+	if (actionBoxType === ActionBoxType.FundPool && isPrivatePoolAndNoAllocation) {
+		return 'No Allocation';
+	}
 	if (actionBoxType === ActionBoxType.FundPool && Number(allowance ?? '0') < Number(amount)) {
 		return 'Approve';
 	}
@@ -90,6 +104,7 @@ interface ActionBoxProps {
 	setIsMaxValue: (isMax: boolean) => void;
 	inputValue: number;
 	setInputValue: (num: number) => void;
+	purchaseCurrency?: string;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
@@ -109,6 +124,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	setIsMaxValue,
 	inputValue,
 	setInputValue,
+	purchaseCurrency,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
@@ -131,7 +147,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit: onApprove,
 			},
 			[TransactionType.Purchase]: {
-				heading: `You are purchasing ${inputValue}`,
+				heading: `You are purchasing ${inputValue} ${purchaseCurrency}`,
 				onSubmit,
 			},
 			[TransactionType.Accept]: {
@@ -139,11 +155,11 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 			[TransactionType.Withdraw]: {
-				heading: `You are withdrawing ${inputValue} tokens`,
+				heading: `You are withdrawing ${inputValue} ${purchaseCurrency}`,
 				onSubmit,
 			},
 			[TransactionType.Vest]: {
-				heading: `You are vesting ${maxValue}`,
+				heading: `You are vesting ${maxValue} tokens`,
 				onSubmit,
 			},
 			[TransactionType.Stake]: {
@@ -151,7 +167,12 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 		}),
-		[inputValue, maxValue, onApprove, onSubmit]
+		[inputValue, maxValue, onApprove, onSubmit, purchaseCurrency]
+	);
+
+	const isPrivatePoolAndNoAllocation = useMemo(
+		() => privatePoolDetails?.isPrivatePool && !privatePoolDetails?.privatePoolAmount,
+		[privatePoolDetails?.isPrivatePool, privatePoolDetails?.privatePoolAmount]
 	);
 
 	return (
@@ -185,7 +206,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 					{actionBoxTypeToTitle(
 						actionBoxType,
 						privatePoolDetails?.isPrivatePool ?? false,
-						privatePoolDetails?.privatePoolAmount ?? '0'
+						privatePoolDetails?.privatePoolAmount ?? '0',
+						purchaseCurrency
 					)}
 				</ActionBoxHeader>
 				{isAcceptOrReject ? (
@@ -250,7 +272,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 					(actionBoxType !== ActionBoxType.VestingDeal &&
 						(!inputValue || Number(inputValue) === 0)) ||
 					(actionBoxType !== ActionBoxType.VestingDeal &&
-						Number(maxValue ?? 0) < Number(inputValue ?? 0))
+						Number(maxValue ?? 0) < Number(inputValue ?? 0)) ||
+					isPrivatePoolAndNoAllocation
 				}
 				isWithdraw={isWithdraw}
 				onClick={(e) => {
@@ -284,6 +307,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 					isDealAccept,
 					allowance,
 					amount: inputValue,
+					isPrivatePoolAndNoAllocation,
 				})}
 			</ActionButton>
 			{actionBoxType !== ActionBoxType.VestingDeal &&

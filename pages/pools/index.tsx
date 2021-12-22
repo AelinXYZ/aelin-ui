@@ -69,6 +69,7 @@ const Pools: FC = () => {
 				timestamp,
 				purchaseExpiry,
 				poolStatus,
+				hasAllowList,
 			}) => ({
 				sponsor,
 				name,
@@ -82,6 +83,7 @@ const Pools: FC = () => {
 				purchaseExpiry,
 				timestamp,
 				poolStatus,
+				hasAllowList,
 			})
 		);
 
@@ -192,6 +194,14 @@ const Pools: FC = () => {
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return `${Number(ethers.utils.formatEther(cellProps.value.toString()))}%`;
+				},
+				width: 75,
+			},
+			{
+				Header: 'privacy',
+				accessor: 'hasAllowList',
+				Cell: (cellProps: CellProps<any, any>) => {
+					return !!cellProps.value ? 'Private' : 'Open';
 				},
 				width: 75,
 			},
