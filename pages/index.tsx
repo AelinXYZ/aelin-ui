@@ -8,13 +8,9 @@ import AelinLogo from 'assets/svg/homepage/logo-light-theme.svg';
 import CreatePoolImage from 'assets/svg/homepage/create-pool-light-theme.svg';
 import JoinPoolImage from 'assets/svg/homepage/join-pool-light-theme.svg';
 
-import Connector from 'containers/Connector';
-
 import ROUTES from 'constants/routes';
 
 const HomePage = () => {
-	const { walletAddress, connectWallet, disconnectWallet } = Connector.useContainer();
-
 	return (
 		<Container>
 			<Image src={HomeBackground} layout="fill" objectFit="cover" alt="Background image" />

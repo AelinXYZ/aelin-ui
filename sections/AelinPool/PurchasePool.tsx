@@ -40,14 +40,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const {
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-		txType,
-		setTxType,
-	} = TransactionData.useContainer();
+	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
+		TransactionData.useContainer();
 	const [, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
@@ -152,7 +146,17 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 			},
 			{
-				header: `My ${purchaseTokenSymbol} Balance`,
+				header: (
+					<span>
+						My{' '}
+						<TokenDisplay
+							displayAddress={false}
+							symbol={purchaseTokenSymbol}
+							address={pool?.purchaseToken ?? ''}
+						/>
+						Balance
+					</span>
+				),
 				subText: userPurchaseBalance,
 			},
 			{
@@ -320,9 +324,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
-	]);
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<SectionDetails
@@ -332,7 +337,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			gridItems={poolGridItems}
 			input={{
 				placeholder: '0',
-				label: `Balance ${userPurchaseBalance} ${purchaseTokenSymbol}`,
+				label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
 				value: '0',
 				maxValue,
 				symbol: purchaseTokenSymbol,
