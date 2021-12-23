@@ -35,8 +35,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
-		TransactionData.useContainer();
+	const {
+		txState,
+		setTxState,
+		setGasPrice,
+		gasPrice,
+		txType,
+		setTxType,
+	} = TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -389,6 +395,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			setIsMaxValue={setIsMaxValue}
 			inputValue={inputValue}
 			setInputValue={setInputValue}
+			purchaseCurrency={pool?.purchaseToken ?? null}
 		/>
 	);
 };

@@ -132,18 +132,41 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Sponsor`}</>
-						<QuestionMark
-							text={`The sponsor will seek a deal on behalf of purchasers entering this pool`}
-						/>
+						<>{`Purchase Currency`}</>
+						<QuestionMark text={`The currency used to purchase pool tokens`} />
 					</>
 				),
 				subText: (
-					<FlexDivStart>
-						<Ens address={pool?.sponsor ?? ''} />
-						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
-					</FlexDivStart>
+					<TokenDisplay
+						displayAddress={true}
+						symbol={purchaseTokenSymbol}
+						address={pool?.purchaseToken ?? ''}
+					/>
 				),
+			},
+			{
+				header: (
+					<>
+						<>{`Pool Cap`}</>
+						<QuestionMark text={`Maximum number of pool tokens`} />
+					</>
+				),
+				subText: Number(
+					ethers.utils
+						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+						.toString()
+				),
+			},
+			{
+				header: (
+					<>
+						<>{`Amount Funded`}</>
+						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
+					</>
+				),
+				subText: ethers.utils
+					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+					.toString(),
 			},
 			{
 				header: (
@@ -162,65 +185,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Pool Cap`}</>
-						<QuestionMark text={`Maximum number of pool tokens`} />
-					</>
-				),
-				subText: Number(
-					ethers.utils
-						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString()
-				),
-			},
-			{
-				header: (
-					<>
-						<>{`Purchase Currency`}</>
-						<QuestionMark text={`The currency used to purchase pool tokens`} />
-					</>
-				),
-				subText: (
-					<TokenDisplay
-						displayAddress={true}
-						symbol={purchaseTokenSymbol}
-						address={pool?.purchaseToken ?? ''}
-					/>
-				),
-			},
-			{
-				header: (
-					<>
 						<>{`My pool balance`}</>
 						<QuestionMark text={`The number of purchase tokens you have deposited`} />
 					</>
 				),
 				subText: userPoolBalance,
-			},
-			{
-				header: (
-					<>
-						<>{`Amount Funded`}</>
-						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
-					</>
-				),
-				subText: ethers.utils
-					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-					.toString(),
-			},
-			{
-				header: (
-					<>
-						<>{`Sponsor Fee`}</>
-						<QuestionMark
-							text={`The fee paid to the sponsor for each deal token redeemed, paid in deal tokens`}
-						/>
-					</>
-				),
-				subText: `${
-					pool?.sponsorFee.toString() != null
-						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
-						: 0
-				}%`,
 			},
 			{
 				header: (
@@ -243,6 +212,37 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: (
 					<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 				),
+			},
+			{
+				header: (
+					<>
+						<>{`Sponsor`}</>
+						<QuestionMark
+							text={`The sponsor will seek a deal on behalf of purchasers entering this pool`}
+						/>
+					</>
+				),
+				subText: (
+					<FlexDivStart>
+						<Ens address={pool?.sponsor ?? ''} />
+						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
+					</FlexDivStart>
+				),
+			},
+			{
+				header: (
+					<>
+						<>{`Sponsor Fee`}</>
+						<QuestionMark
+							text={`The fee paid to the sponsor for each deal token redeemed, paid in deal tokens`}
+						/>
+					</>
+				),
+				subText: `${
+					pool?.sponsorFee.toString() != null
+						? Number(ethers.utils.formatEther(pool?.sponsorFee.toString()))
+						: 0
+				}%`,
 			},
 		],
 		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]
@@ -354,6 +354,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			setIsMaxValue={setIsMaxValue}
 			inputValue={inputValue}
 			setInputValue={setInputValue}
+			purchaseCurrency={purchaseTokenSymbol}
 		/>
 	);
 };

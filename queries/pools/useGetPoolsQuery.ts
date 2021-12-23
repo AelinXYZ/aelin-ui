@@ -28,6 +28,7 @@ const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
 			purchaseDuration: true,
 			contributions: true,
 			dealAddress: true,
+			hasAllowList: true,
 		},
 		{},
 		networkId ? networkId : NetworkId.Mainnet
@@ -50,6 +51,7 @@ export const parsePool = ({
 	contributions,
 	dealAddress,
 	purchaseTokenDecimals,
+	hasAllowList,
 }: PoolCreatedResult) => ({
 	id,
 	timestamp: Number(timestamp) * 1000,
@@ -66,6 +68,7 @@ export const parsePool = ({
 	sponsorFee,
 	poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
 	dealAddress,
+	hasAllowList,
 });
 
 export default useGetPoolsQuery;
