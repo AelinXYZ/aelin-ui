@@ -175,6 +175,17 @@ const ActionBox: FC<ActionBoxProps> = ({
 		[privatePoolDetails?.isPrivatePool, privatePoolDetails?.privatePoolAmount]
 	);
 
+	const isDisabled: boolean = useMemo(() => {
+		return (
+			!walletAddress ||
+			(!isWithdraw && isPurchaseExpired) ||
+			(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
+			(actionBoxType !== ActionBoxType.VestingDeal && (!inputValue || Number(inputValue) === 0)) ||
+			(actionBoxType !== ActionBoxType.VestingDeal &&
+				Number(maxValue ?? 0) < Number(inputValue ?? 0))
+		);
+	}, [walletAddress, isWithdraw, isPurchaseExpired, actionBoxType, maxValue, inputValue]);
+
 	return (
 		<Container>
 			{isAcceptOrReject && dealRedemptionData?.status != null ? (
@@ -225,6 +236,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 						<InputContainer>
 							<ActionBoxInput
 								type={'number'}
+								disabled={isDisabled}
 								placeholder={placeholder}
 								value={inputValue}
 								onChange={(e) => {
@@ -265,16 +277,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				)}
 			</ContentContainer>
 			<ActionButton
-				disabled={
-					!walletAddress ||
-					(!isWithdraw && isPurchaseExpired) ||
-					(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
-					(actionBoxType !== ActionBoxType.VestingDeal &&
-						(!inputValue || Number(inputValue) === 0)) ||
-					(actionBoxType !== ActionBoxType.VestingDeal &&
-						Number(maxValue ?? 0) < Number(inputValue ?? 0)) ||
-					isPrivatePoolAndNoAllocation
-				}
+				disabled={isDisabled}
 				isWithdraw={isWithdraw}
 				onClick={(e) => {
 					const setCorrectTxnType = () => {
