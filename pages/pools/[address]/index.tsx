@@ -25,7 +25,7 @@ const Pool: FC = () => {
 	return (
 		<>
 			<Head>
-				<title>{pool?.name ?? ''} Pool</title>
+				<title>Aelin - {pool?.name ?? ''} Pool</title>
 			</Head>
 
 			<ViewPool pool={pool} poolAddress={poolAddress} />
