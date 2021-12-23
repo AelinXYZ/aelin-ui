@@ -64,7 +64,7 @@ const NetworkWidget: FC = () => {
 				params: [{ chainId: formattedChainId }],
 			});
 		} catch (e) {
-			if (e.message.includes('Unrecognized chain ID')) {
+			if (e?.message?.includes('Unrecognized chain ID')) {
 				await web3Provider.provider.request({
 					method: 'wallet_addEthereumChain',
 					params: [OPTIMISM_NETWORKS[newNetworkId]],
