@@ -3,17 +3,17 @@ const abi = [
 		inputs: [
 			{
 				internalType: 'address',
-				name: '_owner',
+				name: 'owner_',
 				type: 'address',
 			},
 			{
-				internalType: 'contract IERC20',
-				name: '_token',
+				internalType: 'address',
+				name: 'token_',
 				type: 'address',
 			},
 			{
 				internalType: 'bytes32',
-				name: '_root',
+				name: 'merkleRoot_',
 				type: 'bytes32',
 			},
 		],
@@ -25,8 +25,14 @@ const abi = [
 		inputs: [
 			{
 				indexed: false,
+				internalType: 'uint256',
+				name: 'index',
+				type: 'uint256',
+			},
+			{
+				indexed: false,
 				internalType: 'address',
-				name: 'claimer',
+				name: 'account',
 				type: 'address',
 			},
 			{
@@ -35,14 +41,8 @@ const abi = [
 				name: 'amount',
 				type: 'uint256',
 			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'timestamp',
-				type: 'uint256',
-			},
 		],
-		name: 'Claim',
+		name: 'Claimed',
 		type: 'event',
 	},
 	{
@@ -93,25 +93,6 @@ const abi = [
 	{
 		inputs: [
 			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: '_claimed',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
 				internalType: 'address payable',
 				name: 'beneficiary',
 				type: 'address',
@@ -136,24 +117,10 @@ const abi = [
 				name: 'index',
 				type: 'uint256',
 			},
-		],
-		name: 'canClaim',
-		outputs: [
 			{
-				internalType: 'bool',
-				name: '',
-				type: 'bool',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: 'index',
-				type: 'uint256',
+				internalType: 'address',
+				name: 'account',
+				type: 'address',
 			},
 			{
 				internalType: 'uint256',
@@ -172,6 +139,25 @@ const abi = [
 		type: 'function',
 	},
 	{
+		inputs: [
+			{
+				internalType: 'uint256',
+				name: 'index',
+				type: 'uint256',
+			},
+		],
+		name: 'isClaimed',
+		outputs: [
+			{
+				internalType: 'bool',
+				name: '',
+				type: 'bool',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
 		inputs: [],
 		name: 'lastPauseTime',
 		outputs: [
@@ -179,6 +165,19 @@ const abi = [
 				internalType: 'uint256',
 				name: '',
 				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'merkleRoot',
+		outputs: [
+			{
+				internalType: 'bytes32',
+				name: '',
+				type: 'bytes32',
 			},
 		],
 		stateMutability: 'view',
@@ -237,19 +236,6 @@ const abi = [
 		type: 'function',
 	},
 	{
-		inputs: [],
-		name: 'root',
-		outputs: [
-			{
-				internalType: 'bytes32',
-				name: '',
-				type: 'bytes32',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
 		inputs: [
 			{
 				internalType: 'bool',
@@ -280,7 +266,7 @@ const abi = [
 		name: 'token',
 		outputs: [
 			{
-				internalType: 'contract IERC20',
+				internalType: 'address',
 				name: '',
 				type: 'address',
 			},
@@ -291,12 +277,8 @@ const abi = [
 ];
 
 const contract = {
-	42: {
-		address: '0x407B79613B6efBd3Bea408501a2bd5264F404676',
-		abi,
-	},
 	10: {
-		address: '0x1fa677ca369b97Ab30707373531cB050b1c3a7c6',
+		address: '0xeF5e00F3d204808B5D4E79b0F8fe197Af2de18bD',
 		abi,
 	},
 };

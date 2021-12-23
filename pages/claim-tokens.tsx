@@ -21,7 +21,7 @@ import { getKeyValue } from 'utils/helpers';
 const Airdrop = () => {
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const { gasPrice, setGasPrice, txState, setTxState } = TransactionData.useContainer();
+	const { gasPrice, setGasPrice } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { walletAddress, network, signer } = Connector.useContainer();
 	const airdropDataQuery = useGetAirdropDataForAddress();
@@ -46,7 +46,8 @@ const Airdrop = () => {
 			if (!walletAddress || !airdropBalance || !canClaim || !aelinDistributionContract) return;
 			try {
 				const gasEstimate = await aelinDistributionContract.estimateGas.claim(
-					wei(airdropIndex)!.toBN(),
+					airdropIndex,
+					walletAddress,
 					airdropBalance,
 					airdropProof
 				);
@@ -67,7 +68,7 @@ const Airdrop = () => {
 		aelinDistributionContract,
 	]);
 
-	const isSubmitButtonDisabled = !airdropBalance || !airdropBalance || !canClaim;
+	const isSubmitButtonDisabled = !airdropBalance || !canClaim;
 
 	const handleClaim = useCallback(async () => {
 		if (isSubmitButtonDisabled || !gasLimitEstimate || !aelinDistributionContract) return;
@@ -75,8 +76,9 @@ const Airdrop = () => {
 			setShowTxModal(false);
 
 			const tx = await aelinDistributionContract.claim(
-				wei(airdropIndex).toBN(),
-				airdropBalance!,
+				airdropIndex,
+				walletAddress,
+				airdropBalance,
 				airdropProof,
 				{
 					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toString(),
@@ -107,6 +109,7 @@ const Airdrop = () => {
 		gasPrice,
 		monitorTransaction,
 		isSubmitButtonDisabled,
+		walletAddress,
 	]);
 
 	return (
@@ -117,7 +120,7 @@ const Airdrop = () => {
 						? 'Please switch to the Optimism Network by clicking the network tab in the top right'
 						: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Using this page, you can check your allocation and process your claims. You can redeem vAELIN for AELIN tokens in near future. Since 2% of vAELIN is paid as fee during redemption, this amount has been reflected in original distribution amount.`}
 				</P>
-				<Header>{`Allocation: ${(airdropBalance ?? 0) / 1e18} vAELIN`}</Header>
+				<Header>{`Allocation: ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}</Header>
 				<SubmitButton
 					disabled={isSubmitButtonDisabled}
 					onClick={() => setShowTxModal(true)}
@@ -134,7 +137,7 @@ const Airdrop = () => {
 				gasLimitEstimate={gasLimitEstimate}
 				onSubmit={handleClaim}
 			>
-				{`You are claiming ${(airdropBalance ?? 0) / 1e18} vAELIN`}
+				{`You are claiming ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}
 			</ConfirmTransactionModal>
 		</PageLayout>
 	);

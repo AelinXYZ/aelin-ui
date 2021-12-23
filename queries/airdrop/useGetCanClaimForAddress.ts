@@ -22,7 +22,8 @@ const useGetCanClaimForAddress = (index: number | null) => {
 				distributionContract.abi,
 				provider
 			);
-			return aelinDistribution.canClaim(wei(index).toBN());
+			const response = await aelinDistribution.isClaimed(index);
+			return !response;
 		},
 		{
 			enabled:
