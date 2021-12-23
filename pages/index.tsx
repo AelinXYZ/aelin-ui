@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Head from 'next/head';
 import Image from 'next/image';
 import styled from 'styled-components';
 
@@ -12,65 +13,71 @@ import ROUTES from 'constants/routes';
 
 const HomePage = () => {
 	return (
-		<Container>
-			<Image src={HomeBackground} layout="fill" objectFit="cover" alt="Background image" />
+		<>
+			<Head>
+				<title>Aelin - Home</title>
+			</Head>
 
-			<LogoContainer>
-				<Image src={AelinLogo} layout="fixed" width={220} height={80} alt="Create pool image" />
-			</LogoContainer>
+			<Container>
+				<Image src={HomeBackground} layout="fill" objectFit="cover" alt="Background image" />
 
-			<CenterContainer>
-				<Row>
-					<Link href={ROUTES.Pools.Home}>
-						<a>
-							<LinkContainer>
-								<Image
-									src={JoinPoolImage}
-									layout="fixed"
-									width={180}
-									height={60}
-									alt="Join pool image"
-								/>
-								<ActionText>Join Pool</ActionText>
-							</LinkContainer>
-						</a>
-					</Link>
+				<LogoContainer>
+					<Image src={AelinLogo} layout="fixed" width={220} height={80} alt="Create pool image" />
+				</LogoContainer>
 
-					<Image src={Main} layout="intrinsic" width={400} height={360} alt="Main image" />
+				<CenterContainer>
+					<Row>
+						<Link href={ROUTES.Pools.Home}>
+							<a>
+								<LinkContainer>
+									<Image
+										src={JoinPoolImage}
+										layout="fixed"
+										width={180}
+										height={60}
+										alt="Join pool image"
+									/>
+									<ActionText>Join Pool</ActionText>
+								</LinkContainer>
+							</a>
+						</Link>
 
-					<Link href={ROUTES.Pools.Create}>
-						<a>
-							<LinkContainer>
-								<Image
-									src={CreatePoolImage}
-									layout="fixed"
-									width={180}
-									height={60}
-									alt="Create pool image"
-								/>
-								<ActionText>Create Pool</ActionText>
-							</LinkContainer>
-						</a>
-					</Link>
-				</Row>
-				<Row>
-					<Link href={ROUTES.ClaimTokens}>
-						<a>
-							<LinkContainer>
-								<Image
-									src={CreatePoolImage}
-									layout="fixed"
-									width={180}
-									height={60}
-									alt="Claim Tokens image"
-								/>
-								<ActionText>Claim Tokens</ActionText>
-							</LinkContainer>
-						</a>
-					</Link>
-				</Row>
-			</CenterContainer>
-		</Container>
+						<Image src={Main} layout="intrinsic" width={400} height={360} alt="Main image" />
+
+						<Link href={ROUTES.Pools.Create}>
+							<a>
+								<LinkContainer>
+									<Image
+										src={CreatePoolImage}
+										layout="fixed"
+										width={180}
+										height={60}
+										alt="Create pool image"
+									/>
+									<ActionText>Create Pool</ActionText>
+								</LinkContainer>
+							</a>
+						</Link>
+					</Row>
+					<Row>
+						<Link href={ROUTES.ClaimTokens}>
+							<a>
+								<LinkContainer>
+									<Image
+										src={CreatePoolImage}
+										layout="fixed"
+										width={180}
+										height={60}
+										alt="Claim Tokens image"
+									/>
+									<ActionText>Claim Tokens</ActionText>
+								</LinkContainer>
+							</a>
+						</Link>
+					</Row>
+				</CenterContainer>
+			</Container>
+		</>
 	);
 };
 

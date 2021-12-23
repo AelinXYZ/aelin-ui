@@ -1,4 +1,5 @@
 //@ts-nocheck
+import Head from 'next/head';
 import { useState } from 'react';
 import styled from 'styled-components';
 
@@ -12,14 +13,8 @@ const Stake = () => {
 	const [allowance, setAllowance] = useState<string | null>(null);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [maxValue, setMaxValue] = useState<string>('0');
-	const {
-		txState,
-		setTxState,
-		gasPrice,
-		setGasPrice,
-		setTxType,
-		txType,
-	} = TransactionData.useContainer();
+	const { txState, setTxState, gasPrice, setGasPrice, setTxType, txType } =
+		TransactionData.useContainer();
 	const handleApprove = () => {
 		console.log('approve');
 	};
@@ -28,38 +23,44 @@ const Stake = () => {
 	};
 
 	return (
-		<PageLayout title={<>Stake Your Balancer LP tokens</>} subtitle="">
-			<Layout>
-				<Section style={{ textAlign: 'center' }}>
-					<Header>Provide liquidity into the DEFI pool on Balancer to earn AELIN</Header>
-					<SubmitButton
-						onClick={() => window.open('https://app.balancer.fi/', 'blank')}
-						variant="text"
-					>
-						Go to Balancer
-					</SubmitButton>
-				</Section>
-				<ActionBox
-					onSubmit={handleSubmit}
-					actionBoxType={ActionBoxType.Stake}
-					onApprove={handleApprove}
-					allowance={allowance}
-					input={{
-						placeholder: '0',
-						label: `Balance 0 Balancer LP`,
+		<>
+			<Head>
+				<title>Aelin - Stake</title>
+			</Head>
 
-						maxValue,
-						symbol: 'Balancer LP',
-					}}
-					txState={txState}
-					setTxState={setTxState}
-					setGasPrice={setGasPrice}
-					gasLimitEstimate={gasLimitEstimate}
-					txType={txType}
-					setTxType={setTxType}
-				/>
-			</Layout>
-		</PageLayout>
+			<PageLayout title={<>Stake Your Balancer LP tokens</>} subtitle="">
+				<Layout>
+					<Section style={{ textAlign: 'center' }}>
+						<Header>Provide liquidity into the DEFI pool on Balancer to earn AELIN</Header>
+						<SubmitButton
+							onClick={() => window.open('https://app.balancer.fi/', 'blank')}
+							variant="text"
+						>
+							Go to Balancer
+						</SubmitButton>
+					</Section>
+					<ActionBox
+						onSubmit={handleSubmit}
+						actionBoxType={ActionBoxType.Stake}
+						onApprove={handleApprove}
+						allowance={allowance}
+						input={{
+							placeholder: '0',
+							label: `Balance 0 Balancer LP`,
+
+							maxValue,
+							symbol: 'Balancer LP',
+						}}
+						txState={txState}
+						setTxState={setTxState}
+						setGasPrice={setGasPrice}
+						gasLimitEstimate={gasLimitEstimate}
+						txType={txType}
+						setTxType={setTxType}
+					/>
+				</Layout>
+			</PageLayout>
+		</>
 	);
 };
 

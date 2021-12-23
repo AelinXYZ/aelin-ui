@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
@@ -113,33 +114,39 @@ const Airdrop = () => {
 	]);
 
 	return (
-		<PageLayout title={<>vAelin Distribution</>} subtitle="">
-			<Row>
-				<P>
-					{network.id !== NetworkId['Mainnet-ovm']
-						? 'Please switch to the Optimism Network by clicking the network tab in the top right'
-						: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Using this page, you can check your allocation and process your claims. You can redeem vAELIN for AELIN tokens in near future. Since 2% of vAELIN is paid as fee during redemption, this amount has been reflected in original distribution amount.`}
-				</P>
-				<Header>{`Allocation: ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}</Header>
-				<SubmitButton
-					disabled={isSubmitButtonDisabled}
-					onClick={() => setShowTxModal(true)}
-					variant="text"
+		<>
+			<Head>
+				<title>Aelin - Claim Tokens</title>
+			</Head>
+
+			<PageLayout title={<>vAelin Distribution</>} subtitle="">
+				<Row>
+					<P>
+						{network.id !== NetworkId['Mainnet-ovm']
+							? 'Please switch to the Optimism Network by clicking the network tab in the top right'
+							: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Using this page, you can check your allocation and process your claims. You can redeem vAELIN for AELIN tokens in near future. Since 2% of vAELIN is paid as fee during redemption, this amount has been reflected in original distribution amount.`}
+					</P>
+					<Header>{`Allocation: ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}</Header>
+					<SubmitButton
+						disabled={isSubmitButtonDisabled}
+						onClick={() => setShowTxModal(true)}
+						variant="text"
+					>
+						{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
+					</SubmitButton>
+				</Row>
+				<ConfirmTransactionModal
+					title="Confirm Transaction"
+					setIsModalOpen={setShowTxModal}
+					isModalOpen={showTxModal}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+					onSubmit={handleClaim}
 				>
-					{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
-				</SubmitButton>
-			</Row>
-			<ConfirmTransactionModal
-				title="Confirm Transaction"
-				setIsModalOpen={setShowTxModal}
-				isModalOpen={showTxModal}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={handleClaim}
-			>
-				{`You are claiming ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}
-			</ConfirmTransactionModal>
-		</PageLayout>
+					{`You are claiming ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}
+				</ConfirmTransactionModal>
+			</PageLayout>
+		</>
 	);
 	return;
 };

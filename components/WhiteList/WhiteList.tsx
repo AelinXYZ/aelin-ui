@@ -8,7 +8,7 @@ import Button from 'components/Button';
 import Input from 'components/Input/Input';
 import UploadCSV from 'components/UploadCSV';
 
-import { ColCenter, ContentTitle, ContentSubtitle } from 'sections/Layout/PageLayout';
+import { ColCenter, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 
