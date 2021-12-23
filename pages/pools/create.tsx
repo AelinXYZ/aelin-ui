@@ -1,4 +1,5 @@
 //@ts-nocheck
+import Head from 'next/head';
 import { useCallback } from 'react';
 import { useFormik } from 'formik';
 import { wei } from '@synthetixio/wei';
@@ -39,14 +40,8 @@ const Create: FC = () => {
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
+		TransactionData.useContainer();
 
 	const handleSubmit = async () => {
 		if (!contracts || !walletAddress) return;
@@ -500,21 +495,27 @@ const Create: FC = () => {
 	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 
 	return (
-		<PageLayout title={<>Create Pool</>} subtitle="">
-			<>
-				<CreateForm
-					formik={formik}
-					gridItems={gridItems}
-					summaryItems={summaryItems}
-					txType={CreateTxType.CreatePool}
-					txState={txState}
-					txHash={txHash}
-					setGasPrice={setGasPrice}
-					gasLimitEstimate={gasLimitEstimate}
-				/>
-				{isPrivate && <Whitelist formik={formik} />}
-			</>
-		</PageLayout>
+		<>
+			<Head>
+				<title>Aelin - Create Pool</title>
+			</Head>
+
+			<PageLayout title={<>Create Pool</>} subtitle="">
+				<>
+					<CreateForm
+						formik={formik}
+						gridItems={gridItems}
+						summaryItems={summaryItems}
+						txType={CreateTxType.CreatePool}
+						txState={txState}
+						txHash={txHash}
+						setGasPrice={setGasPrice}
+						gasLimitEstimate={gasLimitEstimate}
+					/>
+					{isPrivate && <Whitelist formik={formik} />}
+				</>
+			</PageLayout>
+		</>
 	);
 };
 

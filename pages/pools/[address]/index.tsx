@@ -1,4 +1,5 @@
 //@ts-nocheck
+import Head from 'next/head';
 import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ViewPool from 'sections/AelinPool/ViewPool';
@@ -21,7 +22,15 @@ const Pool: FC = () => {
 		[poolQuery?.data]
 	);
 
-	return <ViewPool pool={pool} poolAddress={poolAddress} />;
+	return (
+		<>
+			<Head>
+				<title>Aelin - {pool?.name ?? ''} Pool</title>
+			</Head>
+
+			<ViewPool pool={pool} poolAddress={poolAddress} />
+		</>
+	);
 };
 
 export default Pool;

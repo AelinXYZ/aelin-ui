@@ -1,5 +1,6 @@
 //@ts-nocheck
 /* eslint-disable react/display-name */
+import Head from 'next/head';
 import { ethers } from 'ethers';
 import { CellProps } from 'react-table';
 import { useRouter } from 'next/router';
@@ -218,24 +219,30 @@ const Pools: FC = () => {
 	);
 
 	return (
-		<PageLayout title={<>All pools</>} subtitle="">
-			<FilterPool
-				setSponsor={setSponsorFilter}
-				setCurrency={setCurrencyFilter}
-				setName={setNameFilter}
-				setStatus={setStatusFilter}
-				status={statusFilter}
-			/>
-			<Table
-				noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
-				setIsPageOne={setIsPageOne}
-				data={data && data.length > 0 ? data : []}
-				isLoading={poolsQuery.isLoading}
-				columns={columns}
-				hasLinksToPool={true}
-				showPagination={true}
-			/>
-		</PageLayout>
+		<>
+			<Head>
+				<title>Aelin - Pools</title>
+			</Head>
+
+			<PageLayout title={<>All pools</>} subtitle="">
+				<FilterPool
+					setSponsor={setSponsorFilter}
+					setCurrency={setCurrencyFilter}
+					setName={setNameFilter}
+					setStatus={setStatusFilter}
+					status={statusFilter}
+				/>
+				<Table
+					noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
+					setIsPageOne={setIsPageOne}
+					data={data && data.length > 0 ? data : []}
+					isLoading={poolsQuery.isLoading}
+					columns={columns}
+					hasLinksToPool={true}
+					showPagination={true}
+				/>
+			</PageLayout>
+		</>
 	);
 };
 
