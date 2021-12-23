@@ -14,6 +14,10 @@ import ROUTES from 'constants/routes';
 const HomePage = () => {
 	return (
 		<>
+			<Head>
+				<title>Aelin - Home</title>
+			</Head>
+
 			<Container>
 				<Image src={HomeBackground} layout="fill" objectFit="cover" alt="Background image" />
 
