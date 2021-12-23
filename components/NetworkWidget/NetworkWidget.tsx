@@ -11,7 +11,11 @@ import Connector from 'containers/Connector';
 import OptimismLogo from 'assets/svg/optimism-logo.svg';
 import EthereumLogo from 'assets/svg/ethereum-logo.svg';
 
-import { L2_TO_L1_NETWORK_MAPPER, L1_TO_L2_NETWORK_MAPPER } from '@synthetixio/optimism-networks';
+import {
+	L2_TO_L1_NETWORK_MAPPER,
+	L1_TO_L2_NETWORK_MAPPER,
+	OPTIMISM_NETWORKS,
+} from '@synthetixio/optimism-networks';
 import { NetworkId } from 'constants/networks';
 
 const CHAINS = [
@@ -54,10 +58,19 @@ const NetworkWidget: FC = () => {
 		if (!web3Provider.provider || !web3Provider.provider.request) return;
 		const newNetworkId = getCorrespondingNetwork(network?.id, isOVM);
 		const formattedChainId = ethers.utils.hexStripZeros(BigNumber.from(newNetworkId).toHexString());
-		await web3Provider.provider.request({
-			method: 'wallet_switchEthereumChain',
-			params: [{ chainId: formattedChainId }],
-		});
+		try {
+			await web3Provider.provider.request({
+				method: 'wallet_switchEthereumChain',
+				params: [{ chainId: formattedChainId }],
+			});
+		} catch (e) {
+			if (e?.message?.includes('Unrecognized chain ID')) {
+				await web3Provider.provider.request({
+					method: 'wallet_addEthereumChain',
+					params: [OPTIMISM_NETWORKS[newNetworkId]],
+				});
+			}
+		}
 	}, [isOVM, provider, network?.id, walletAddress]);
 
 	const ChainList = (
