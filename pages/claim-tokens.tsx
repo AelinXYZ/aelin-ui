@@ -67,6 +67,7 @@ const Airdrop = () => {
 		airdropProof,
 		canClaim,
 		aelinDistributionContract,
+		showTxModal,
 	]);
 
 	const isSubmitButtonDisabled = !airdropBalance || !canClaim;
