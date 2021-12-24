@@ -18,6 +18,7 @@ import DealStatus, { Status } from 'components/DealStatus';
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import { formatNumberToDisplay } from 'utils/numbers';
 
 import { formatShortDateWithTime } from 'utils/time';
 import Connector from 'containers/Connector';
@@ -115,6 +116,12 @@ const Pools: FC = () => {
 		return list;
 	}, [pools, sponsorFilter, currencyFilter, nameFilter, statusFilter]);
 
+	function numberWithCommas(value: string) {
+		var parts = value.split('.');
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		return parts.join('.');
+	}
+
 	const columns = useMemo(
 		() => [
 			{
@@ -146,12 +153,14 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							{ethers.utils
-								.formatUnits(
-									cellProps.value.toString(),
-									cellProps.row.original.purchaseTokenDecimals
-								)
-								.toString()}
+							{formatNumberToDisplay(
+								ethers.utils
+									.formatUnits(
+										cellProps.value.toString(),
+										cellProps.row.original.purchaseTokenDecimals
+									)
+									.toString()
+							)}
 						</FlexDivStart>
 					);
 				},

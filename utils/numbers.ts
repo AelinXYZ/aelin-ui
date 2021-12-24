@@ -12,6 +12,14 @@ export const formatNumber = (value: number, decimals?: number) => {
 	return numberWithCommas(value.toString(), decimals);
 };
 
+export const formatNumberToDisplay = (number: number, maxLength = 12) => {
+	const formattedNumber = formatNumber(number);
+
+	return formattedNumber.toString().length > 16
+		? String(formattedNumber).slice(0, maxLength)
+		: formattedNumber;
+};
+
 export const truncateNumber = (number: number, first = 5, last = 5) => {
 	const formattedNumber = formatNumber(number);
 	return formattedNumber.toString().length > 16
