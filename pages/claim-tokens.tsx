@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
+import Link from 'next/link';
 
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import useGetAirdropDataForAddress from 'queries/airdrop/useGetAirdropDataForAddress';
@@ -18,6 +19,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import DistributionContract from 'containers/ContractsInterface/contracts/AelinDistribution';
 import { getKeyValue } from 'utils/helpers';
+import ROUTES from 'constants/routes';
 
 const Airdrop = () => {
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
@@ -136,6 +138,11 @@ const Airdrop = () => {
 						{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
 					</SubmitButton>
 				</Row>
+				<Row>
+					<Link href={ROUTES.Pools.PoolView('0x')} passHref>
+						<Anchor>Go to the vAELIN Pool</Anchor>
+					</Link>
+				</Row>
 				<ConfirmTransactionModal
 					title="Confirm Transaction"
 					setIsModalOpen={setShowTxModal}
@@ -188,6 +195,12 @@ const SubmitButton = styled(Button)`
 			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
 		}
 	}
+`;
+
+const Anchor = styled.a`
+	margin-top: 80px;
+	text-decoration: underline;
+	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
 export default Airdrop;
