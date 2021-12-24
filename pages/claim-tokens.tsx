@@ -139,7 +139,7 @@ const Airdrop = () => {
 					</SubmitButton>
 				</Row>
 				<Row>
-					<Link href={ROUTES.Pools.PoolView('0x')} passHref>
+					<Link href={ROUTES.Pools.PoolView('0x3074306c0cc9200602bfc64beea955928dac56dd')} passHref>
 						<Anchor>Go to the vAELIN Pool</Anchor>
 					</Link>
 				</Row>
