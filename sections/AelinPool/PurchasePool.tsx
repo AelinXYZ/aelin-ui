@@ -25,6 +25,7 @@ import { TransactionStatus } from 'constants/transactions';
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { formatShortDateWithTime } from 'utils/time';
+import { formatNumber } from 'utils/numbers';
 
 import TransactionData from 'containers/TransactionData';
 
@@ -40,14 +41,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const {
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-		txType,
-		setTxType,
-	} = TransactionData.useContainer();
+	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
+		TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
@@ -193,9 +188,12 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
 					</>
 				),
-				subText: ethers.utils
-					.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-					.toString(),
+				subText: formatNumber(
+					ethers.utils
+						.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+						.toString(),
+					4
+				),
 			},
 			{
 				header: (
@@ -355,9 +353,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
-	]);
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<SectionDetails
