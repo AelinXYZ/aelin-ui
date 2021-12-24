@@ -153,7 +153,8 @@ const Pools: FC = () => {
 										cellProps.value.toString(),
 										cellProps.row.original.purchaseTokenDecimals
 									)
-									.toString()
+									.toString(),
+								{ minDecimals: 4, maxDecimals: 4 }
 							)}
 						</FlexDivStart>
 					);

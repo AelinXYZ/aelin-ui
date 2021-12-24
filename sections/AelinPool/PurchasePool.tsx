@@ -191,7 +191,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				subText: formatNumberToDisplay(
 					ethers.utils
 						.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString()
+						.toString(),
+					{ minDecimals: 4, maxDecimals: 4 }
 				),
 			},
 			{

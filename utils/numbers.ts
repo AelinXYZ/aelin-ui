@@ -1,3 +1,22 @@
+import Wei, { wei } from '@synthetixio/wei';
+import { ethers } from 'ethers';
+
+type WeiSource = Wei | number | string | ethers.BigNumber;
+
+export type FormatNumberOptions = {
+	minDecimals?: number;
+	maxDecimals?: number;
+	prefix?: string;
+	suffix?: string;
+};
+
+export type FormatCurrencyOptions = {
+	minDecimals?: number;
+	maxDecimals?: number;
+	sign?: string;
+	currencyKey?: string;
+};
+
 const numberWithCommas = (value: string, decimals?: number) => {
 	var parts = value.split('.');
 	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -12,14 +31,6 @@ export const formatNumber = (value: number, decimals?: number) => {
 	return numberWithCommas(value.toString(), decimals);
 };
 
-export const formatNumberToDisplay = (number: number, maxLength = 12) => {
-	const formattedNumber = formatNumber(number);
-
-	return formattedNumber.toString().length > 16
-		? String(formattedNumber).slice(0, maxLength)
-		: formattedNumber;
-};
-
 export const truncateNumber = (number: number, first = 5, last = 5) => {
 	const formattedNumber = formatNumber(number);
 	return formattedNumber.toString().length > 16
@@ -28,4 +39,27 @@ export const truncateNumber = (number: number, first = 5, last = 5) => {
 				String(formattedNumber).length
 		  )}`
 		: formattedNumber;
+};
+
+export const formatNumberToDisplay = (value: WeiSource, options?: FormatNumberOptions) => {
+	const prefix = options?.prefix;
+	const suffix = options?.suffix;
+
+	let weiValue = wei(0);
+	try {
+		weiValue = wei(value);
+	} catch {}
+
+	const formattedValue = [];
+	if (prefix) {
+		formattedValue.push(prefix);
+	}
+
+	formattedValue.push(numberWithCommas(weiValue.toString(options?.minDecimals ?? 16)));
+
+	if (suffix) {
+		formattedValue.push(` ${suffix}`);
+	}
+
+	return formattedValue.join('');
 };
