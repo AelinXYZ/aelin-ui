@@ -37,7 +37,7 @@ const HomePage = () => {
 										height={60}
 										alt="Join pool image"
 									/>
-									<ActionText>Join Pool</ActionText>
+									<ActionText>Pools</ActionText>
 								</LinkContainer>
 							</a>
 						</Link>
@@ -70,7 +70,7 @@ const HomePage = () => {
 										height={60}
 										alt="Claim Tokens image"
 									/>
-									<ActionText>Claim Tokens</ActionText>
+									<ActionText>Claim Aelin</ActionText>
 								</LinkContainer>
 							</a>
 						</Link>

@@ -125,7 +125,7 @@ const Airdrop = () => {
 					<P>
 						{network.id !== NetworkId['Mainnet-ovm']
 							? 'Please switch to the Optimism Network by clicking the network tab in the top right'
-							: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Using this page, you can check your allocation and process your claims. You can redeem vAELIN for AELIN tokens in near future. Since 2% of vAELIN is paid as fee during redemption, this amount has been reflected in original distribution amount.`}
+							: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Click claim to get your vAELIN. Once claimed you can convert vAELIN into AELIN via the vAELIN pool on the pools page.`}
 					</P>
 					<Header>{`Allocation: ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}</Header>
 					<SubmitButton

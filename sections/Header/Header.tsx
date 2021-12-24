@@ -16,7 +16,7 @@ const Header: FC = () => {
 	const LINKS = useMemo(
 		() => [
 			{ label: 'Pools', pathname: ROUTES.Pools.Home },
-			{ label: 'Claim Tokens', pathname: ROUTES.ClaimTokens },
+			{ label: 'Claim Aelin', pathname: ROUTES.ClaimTokens },
 			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true },
 			{ label: 'Stake (coming soon)', pathname: ROUTES.Stake, isDisabled: true },
 		],
