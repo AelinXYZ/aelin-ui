@@ -1,4 +1,5 @@
 import { FC, useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { ethers, BigNumber } from 'ethers';
@@ -7,6 +8,8 @@ import Dropdown from 'components/Dropdown';
 import { FlexDivCentered } from 'components/common';
 
 import Connector from 'containers/Connector';
+
+import ROUTES from 'constants/routes';
 
 import OptimismLogo from 'assets/svg/optimism-logo.svg';
 import EthereumLogo from 'assets/svg/ethereum-logo.svg';
@@ -43,6 +46,9 @@ const getCorrespondingNetwork = (networkId: NetworkId, isOVM: boolean) => {
 };
 
 const NetworkWidget: FC = () => {
+	const router = useRouter();
+	const { asPath, query } = router;
+
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const { isOVM, provider, network, walletAddress } = Connector.useContainer();
 	const [chain, setChain] = useState<Chain>(CHAINS[0]);
@@ -51,6 +57,12 @@ const NetworkWidget: FC = () => {
 		const chain = CHAINS[isOVM ? 1 : 0];
 		setChain(chain);
 	}, [isOVM]);
+
+	const checkRouteAndRedirect = useCallback(() => {
+		// @ts-ignore: missing nested field type
+		if (asPath !== ROUTES.Pools.PoolView(query.address)) return;
+		router.push(ROUTES.Pools.Home);
+	}, [asPath, query.address, router]);
 
 	const handleSwitchChain = useCallback(async () => {
 		if (!provider || !network?.id || !walletAddress) return;
@@ -71,6 +83,8 @@ const NetworkWidget: FC = () => {
 				});
 			}
 		}
+
+		checkRouteAndRedirect();
 	}, [isOVM, provider, network?.id, walletAddress]);
 
 	const ChainList = (
