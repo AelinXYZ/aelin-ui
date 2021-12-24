@@ -18,9 +18,9 @@ export interface CreatePoolValues {
 	purchaseDurationMinutes: number;
 	poolPrivacy: Privacy;
 	whitelist: {
-		address: string,
-		amount: number | null,
-		isSaved: boolean
+		address: string;
+		amount: number | null;
+		isSaved: boolean;
 	}[];
 }
 
@@ -35,8 +35,8 @@ const validateCreatePool = (values: CreatePoolValues) => {
 
 	if (!values.poolName) {
 		errors.poolName = 'Required';
-	} else if (values.poolName.length > 10) {
-		errors.poolName = 'No more than 10 chars';
+	} else if (values.poolName.length > 15) {
+		errors.poolName = 'No more than 15 chars';
 	}
 
 	if (!values.poolSymbol) {
@@ -84,20 +84,20 @@ const validateCreatePool = (values: CreatePoolValues) => {
 	if (values.poolPrivacy === Privacy.PRIVATE) {
 		const hasAddressError = values.whitelist.some((row) => {
 			if (!row.address.length) return false;
-			
+
 			return !utils.isAddress(row.address);
 		});
-	
+
 		if (hasAddressError) {
-			errors.whitelist = "Address format not valid";
-		}	else {
+			errors.whitelist = 'Address format not valid';
+		} else {
 			const isSaved = values.whitelist.every((row) => {
 				if (!row.address.length) return false;
-				
+
 				return row.isSaved;
 			});
-	
-			if (!isSaved) errors.whitelist = "Must save the values";
+
+			if (!isSaved) errors.whitelist = 'Must save the values';
 		}
 	}
 
