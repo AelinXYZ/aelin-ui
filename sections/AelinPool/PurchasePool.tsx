@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
-import { wei } from '@synthetixio/wei';
+import Wei, { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
@@ -48,7 +48,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		txType,
 		setTxType,
 	} = TransactionData.useContainer();
-	const [, setIsMaxValue] = useState<boolean>(false);
+	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
 	const poolBalancesQuery = usePoolBalancesQuery({
@@ -81,6 +81,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
 				.toString()
 		);
+
 		const purchaseCap = Number(
 			ethers.utils
 				.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
@@ -89,6 +90,30 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		return purchaseCap > 0
 			? Math.min(Number(userPurchaseBalance), Math.max(purchaseCap - contributions, 0))
 			: Number(userPurchaseBalance);
+	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
+
+	const maxValueBN = useMemo(() => {
+		if (!purchaseTokenDecimals) return wei(0);
+		const contribution = wei(
+			ethers.utils
+				.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+				.toString(),
+			purchaseTokenDecimals
+		);
+
+		const purchaseCap = wei(
+			ethers.utils
+				.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+				.toString(),
+			purchaseTokenDecimals
+		);
+
+		return purchaseCap.gt(wei(0))
+			? Wei.min(
+					wei(userPurchaseBalance, purchaseTokenDecimals),
+					Wei.max(purchaseCap.sub(contribution), 0)
+			  )
+			: wei(userPurchaseBalance, purchaseTokenDecimals);
 	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
 
 	useEffect(() => {
@@ -108,14 +133,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					);
 				} else {
 					if (!purchaseTokenDecimals) return;
-					setGasLimitEstimate(
-						wei(
-							await poolContract.estimateGas.purchasePoolTokens(
-								ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals)
-							),
-							0
-						)
-					);
+					const amount = isMaxValue
+						? maxValueBN.toBN()
+						: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
 				}
 			} catch (e) {
 				console.log(e);
@@ -131,6 +152,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		tokenContract,
 		setGasLimitEstimate,
 		inputValue,
+		isMaxValue,
+		maxValueBN,
 	]);
 
 	const poolGridItems = useMemo(
@@ -257,13 +280,13 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const handleSubmit = useCallback(async () => {
 		if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
 		try {
-			const tx = await poolContract.purchasePoolTokens(
-				ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals),
-				{
-					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
-					gasPrice: gasPrice.toBN(),
-				}
-			);
+			const amount = isMaxValue
+				? maxValueBN.toBN()
+				: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+			const tx = await poolContract.purchasePoolTokens(amount, {
+				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+				gasPrice: gasPrice.toBN(),
+			});
 			setTxState(TransactionStatus.WAITING);
 			if (tx) {
 				monitorTransaction({
@@ -292,6 +315,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		poolContract,
 		setTxState,
 		inputValue,
+		isMaxValue,
+		maxValueBN,
 	]);
 
 	const handleApprove = useCallback(async () => {
