@@ -33,13 +33,13 @@ const Footer: FC = () => {
 							<StyledA>HOME. </StyledA>
 						</Link>
 						<Link href={ROUTES.Pools.Home} passHref>
-							<StyledA>JOIN POOL. </StyledA>
+							<StyledA>POOLS. </StyledA>
 						</Link>
 						<Link href={ROUTES.Pools.Create} passHref>
 							<StyledA>CREATE POOL. </StyledA>
 						</Link>
 						<Link href={ROUTES.ClaimTokens} passHref>
-							<StyledA>CLAIM TOKENS. </StyledA>
+							<StyledA>CLAIM AELIN. </StyledA>
 						</Link>
 						<Link href={ROUTES.Docs} passHref>
 							<StyledA target="_blank">DOCS. </StyledA>

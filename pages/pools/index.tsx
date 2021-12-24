@@ -152,7 +152,7 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				Header: 'cap',
+				Header: 'pool cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
@@ -172,7 +172,7 @@ const Pools: FC = () => {
 			},
 			{
 				// TODO update this to be right
-				Header: 'Purchase ends',
+				Header: 'Purchase window closes',
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <>{formatShortDateWithTime(cellProps.value)}</>;
@@ -181,7 +181,7 @@ const Pools: FC = () => {
 			},
 			{
 				// TODO update this to be right
-				Header: 'Pool unlocks',
+				Header: 'Pool duration',
 				accessor: 'duration',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
