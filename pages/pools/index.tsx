@@ -56,37 +56,39 @@ const Pools: FC = () => {
 	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
 
 	const data = useMemo(() => {
-		let list = pools.map(
-			({
-				sponsorFee,
-				duration,
-				sponsor,
-				name,
-				id,
-				purchaseToken,
-				contributions,
-				purchaseTokenCap,
-				purchaseTokenDecimals,
-				timestamp,
-				purchaseExpiry,
-				poolStatus,
-				hasAllowList,
-			}) => ({
-				sponsor,
-				name,
-				id,
-				purchaseToken,
-				contributions,
-				cap: purchaseTokenCap,
-				purchaseTokenDecimals,
-				duration,
-				fee: sponsorFee,
-				purchaseExpiry,
-				timestamp,
-				poolStatus,
-				hasAllowList,
-			})
-		);
+		let list = pools
+			.filter(({ id }) => id != '0xee9146721a3d9e93d95ba536390008ac0df3c0d6')
+			.map(
+				({
+					sponsorFee,
+					duration,
+					sponsor,
+					name,
+					id,
+					purchaseToken,
+					contributions,
+					purchaseTokenCap,
+					purchaseTokenDecimals,
+					timestamp,
+					purchaseExpiry,
+					poolStatus,
+					hasAllowList,
+				}) => ({
+					sponsor,
+					name,
+					id,
+					purchaseToken,
+					contributions,
+					cap: purchaseTokenCap,
+					purchaseTokenDecimals,
+					duration,
+					fee: sponsorFee,
+					purchaseExpiry,
+					timestamp,
+					poolStatus,
+					hasAllowList,
+				})
+			);
 
 		if (sponsorFilter != null) {
 			list = list.filter(({ sponsor }) =>
