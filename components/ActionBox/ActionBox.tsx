@@ -236,7 +236,6 @@ const ActionBox: FC<ActionBoxProps> = ({
 						<InputContainer>
 							<ActionBoxInput
 								type={'number'}
-								disabled={isDisabled}
 								placeholder={placeholder}
 								value={inputValue}
 								onChange={(e) => {
