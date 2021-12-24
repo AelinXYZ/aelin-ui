@@ -20,6 +20,7 @@ import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 import { formatShortDateWithTime } from 'utils/time';
+import { formatNumber } from 'utils/numbers';
 import Connector from 'containers/Connector';
 
 const Pools: FC = () => {
@@ -146,12 +147,15 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							{ethers.utils
-								.formatUnits(
-									cellProps.value.toString(),
-									cellProps.row.original.purchaseTokenDecimals
-								)
-								.toString()}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(
+										cellProps.value.toString(),
+										cellProps.row.original.purchaseTokenDecimals
+									)
+									.toString(),
+								4
+							)}
 						</FlexDivStart>
 					);
 				},

@@ -8,7 +8,7 @@ const numberWithCommas = (value: string, decimals?: number) => {
 };
 
 // To be augmented for when we have WEI support
-export const formatNumber = (value: number, decimals?: number) => {
+export const formatNumber = (value: number | string, decimals?: number) => {
 	return numberWithCommas(value.toString(), decimals);
 };
 
