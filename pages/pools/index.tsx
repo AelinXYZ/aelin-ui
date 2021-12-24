@@ -57,7 +57,11 @@ const Pools: FC = () => {
 
 	const data = useMemo(() => {
 		let list = pools
-			.filter(({ id }) => id != '0xee9146721a3d9e93d95ba536390008ac0df3c0d6')
+			.filter(
+				({ id }) =>
+					id !== '0xee9146721a3d9e93d95ba536390008ac0df3c0d6' &&
+					id !== '0xb601cecd429fe0eaf424b6d96730ac1c66937e38'
+			)
 			.map(
 				({
 					sponsorFee,
