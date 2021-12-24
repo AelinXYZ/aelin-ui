@@ -27,9 +27,9 @@ import Connector from 'containers/Connector';
 const Pools: FC = () => {
 	const router = useRouter();
 	const { network } = Connector.useContainer();
-	const [sponsorFilter, setSponsorFilter] = useState<string | null>();
-	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
-	const [nameFilter, setNameFilter] = useState<string | null>(null);
+	const [sponsorFilter, setSponsorFilter] = useState<string>('');
+	const [currencyFilter, setCurrencyFilter] = useState<string>('');
+	const [nameFilter, setNameFilter] = useState<string>('');
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
