@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 
@@ -10,39 +10,22 @@ import PlusIcon from 'assets/svg/plus.svg';
 import Image from 'next/image';
 import StatusDropdown from 'sections/shared/StatusDropdown';
 import ROUTES from 'constants/routes';
-import Button from 'components/Button';
 
 interface FilterPoolProps {
-	values: {
-		sponsorFilter: string;
-		currencyFilter: string;
-		nameFilter: string;
-		statusFilter: Status | string | null;
-	};
 	setSponsor: (sponsor: string) => void;
 	setCurrency: (currency: string) => void;
 	setName: (name: string) => void;
 	setStatus: (status: Status | string) => void;
+	status: Status | string | null;
 }
 
 const FilterPool: FC<FilterPoolProps> = ({
-	values,
 	setSponsor,
 	setCurrency,
 	setName,
 	setStatus,
+	status,
 }) => {
-	const { sponsorFilter, currencyFilter, nameFilter, statusFilter } = values;
-	const [isViewAllButtonDisabled, setViewAllButtonDisabled] = useState<boolean>(false);
-
-	const clearFilters = () => {
-		setSponsor('');
-		setCurrency('');
-		setName('');
-		setStatus('');
-		setViewAllButtonDisabled(true);
-	};
-
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	return (
 		<Container>
@@ -52,13 +35,6 @@ const FilterPool: FC<FilterPoolProps> = ({
 					<StyledImage onClick={() => setIsVisible(!isVisible)} src={PlusIcon} alt="" />
 				</FlexDiv>
 				<FlexDiv>
-					<ButtonContainer>
-						{!isViewAllButtonDisabled && (
-							<Button variant="text" onClick={clearFilters}>
-								View All Pools
-							</Button>
-						)}
-					</ButtonContainer>
 					<Link href={ROUTES.Pools.Create} passHref>
 						<StyledAnchor>Create Pool</StyledAnchor>
 					</Link>
@@ -69,43 +45,24 @@ const FilterPool: FC<FilterPoolProps> = ({
 					<StyledTextInput
 						width="22%"
 						placeholder="sponsor"
-						value={sponsorFilter}
-						onChange={(e) => {
-							setSponsor(e.target.value);
-							if (!e.target.value.length) return;
-							setViewAllButtonDisabled(false);
-						}}
+						onChange={(e) => setSponsor(e.target.value)}
 					/>
 					<StyledTextInput
 						width="22%"
 						placeholder="currency"
-						value={currencyFilter}
-						onChange={(e) => {
-							setCurrency(e.target.value);
-							if (!e.target.value.length) return;
-							setViewAllButtonDisabled(false);
-						}}
+						onChange={(e) => setCurrency(e.target.value)}
 					/>
 					<StyledTextInput
 						width="22%"
 						placeholder="name"
-						value={nameFilter}
-						onChange={(e) => {
-							setName(e.target.value);
-							if (!e.target.value.length) return;
-							setViewAllButtonDisabled(false);
-						}}
+						onChange={(e) => setName(e.target.value)}
 					/>
 					<StatusDropdown
 						id="statusDropdown"
 						name="statusDropdown"
 						variant="outline"
-						selectedStatus={statusFilter}
-						onChange={(value) => {
-							setStatus(value);
-							if (!value) return;
-							setViewAllButtonDisabled(false);
-						}}
+						selectedStatus={status}
+						onChange={setStatus}
 					/>
 				</FlexDivRow>
 			) : null}
@@ -134,12 +91,6 @@ const StyledImage = styled(Image)`
 const HeaderSection = styled(FlexDiv)`
 	margin-bottom: 10px;
 	align-items: center;
-	justify-content: space-between;
-`;
-
-const ButtonContainer = styled.div`
-	width: 150px;
-	display: flex;
 	justify-content: space-between;
 `;
 

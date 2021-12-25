@@ -31,6 +31,7 @@ import TransactionData from 'containers/TransactionData';
 
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -175,10 +176,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`Maximum number of pool tokens`} />
 					</>
 				),
-				subText: Number(
+				subText: formatNumber(
 					ethers.utils
 						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString()
+						.toString(),
+					DEFAULT_DECIMALS
 				),
 			},
 			{
@@ -192,7 +194,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					ethers.utils
 						.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
 						.toString(),
-					4
+					DEFAULT_DECIMALS
 				),
 			},
 			{
