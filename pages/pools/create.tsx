@@ -28,12 +28,14 @@ import { TransactionStatus } from 'constants/transactions';
 
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
+import { formatNumber } from 'utils/numbers';
 import validateCreatePool from 'utils/validate/create-pool';
 import { scrollToBottom } from 'utils/window';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { erc20Abi } from 'contracts/erc20';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 const Create: FC = () => {
 	const { walletAddress, provider } = Connector.useContainer();
@@ -108,7 +110,7 @@ const Create: FC = () => {
 	});
 
 	const createVariablesToCreatePool = useCallback(async () => {
-		const { formatBytes32String, parseEther } = utils;
+		const { formatBytes32String, parseEther, parseUnits } = utils;
 		const now = new Date();
 
 		const {
@@ -152,7 +154,7 @@ const Create: FC = () => {
 				accum.push({
 					address,
 					amount: amount
-						? utils.parseUnits(String(amount), purchaseTokenDecimals)
+						? parseUnits(String(amount), purchaseTokenDecimals)
 						: ethers.constants.MaxUint256,
 				});
 
@@ -167,7 +169,7 @@ const Create: FC = () => {
 			...formik.values,
 			poolName: formatBytes32String(poolName),
 			poolSymbol: formatBytes32String(poolSymbol),
-			poolCap: parseEther(poolCap.toString()),
+			poolCap: parseUnits(poolCap.toString(), purchaseTokenDecimals),
 			sponsorFee: parseEther(sponsorFee.toString()),
 			duration,
 			purchaseDuration,
@@ -454,7 +456,7 @@ const Create: FC = () => {
 			},
 			{
 				label: 'Cap',
-				text: formik.values.poolCap,
+				text: formatNumber(formik.values.poolCap, DEFAULT_DECIMALS),
 			},
 			{
 				label: 'Currency',

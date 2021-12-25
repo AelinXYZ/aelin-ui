@@ -17,11 +17,12 @@ import DealStatus, { Status } from 'components/DealStatus';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
-import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import { DEFAULT_DECIMALS, DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
 import Connector from 'containers/Connector';
+import { filterList } from 'constants/poolFilterList';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -58,11 +59,7 @@ const Pools: FC = () => {
 
 	const data = useMemo(() => {
 		let list = pools
-			.filter(
-				({ id }) =>
-					id !== '0xee9146721a3d9e93d95ba536390008ac0df3c0d6' &&
-					id !== '0xb601cecd429fe0eaf424b6d96730ac1c66937e38'
-			)
+			.filter(({ id }) => !filterList.includes(id))
 			.map(
 				({
 					sponsorFee,
@@ -154,7 +151,7 @@ const Pools: FC = () => {
 										cellProps.row.original.purchaseTokenDecimals
 									)
 									.toString(),
-								4
+								DEFAULT_DECIMALS
 							)}
 						</FlexDivStart>
 					);
@@ -169,12 +166,15 @@ const Pools: FC = () => {
 						<FlexDivStart>
 							{Number(cellProps.value) === 0
 								? 'Uncapped'
-								: ethers.utils
-										.formatUnits(
-											cellProps.value.toString(),
-											cellProps.row.original.purchaseTokenDecimals
-										)
-										.toString()}
+								: formatNumber(
+										ethers.utils
+											.formatUnits(
+												cellProps.value.toString(),
+												cellProps.row.original.purchaseTokenDecimals
+											)
+											.toString(),
+										DEFAULT_DECIMALS
+								  )}
 						</FlexDivStart>
 					);
 				},
