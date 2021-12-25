@@ -219,7 +219,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The number of purchase tokens you have deposited`} />
 					</>
 				),
-				subText: userPoolBalance,
+				subText: formatNumber(userPoolBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
 				header: (
