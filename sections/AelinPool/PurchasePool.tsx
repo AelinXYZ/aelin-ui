@@ -17,6 +17,7 @@ import TokenDisplay from 'components/TokenDisplay';
 import { ActionBoxType } from 'components/ActionBox';
 import CopyToClipboard from 'components/CopyToClipboard';
 import QuestionMark from 'components/QuestionMark';
+import Countdown from 'components/Countdown';
 
 import { erc20Abi } from 'contracts/erc20';
 
@@ -38,7 +39,7 @@ interface PurchasePoolProps {
 }
 
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
-	const { walletAddress, signer } = Connector.useContainer();
+	const { walletAddress, signer, network } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
@@ -227,7 +228,12 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
-				subText: <>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>,
+				subText: (
+					<>
+						<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
+						<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
+					</>
+				),
 			},
 			{
 				header: (
@@ -239,7 +245,15 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					</>
 				),
 				subText: (
-					<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
+					<>
+						<Countdown
+							timeStart={pool?.purchaseExpiry ?? 0}
+							time={(pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)}
+							networkId={network.id}
+							shouldLog={true}
+						/>
+						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
+					</>
 				),
 			},
 			{
@@ -274,7 +288,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				}%`,
 			},
 		],
-		[pool, userPoolBalance, userPurchaseBalance, purchaseTokenSymbol, purchaseTokenDecimals]
+		[
+			pool,
+			userPoolBalance,
+			userPurchaseBalance,
+			purchaseTokenSymbol,
+			purchaseTokenDecimals,
+			network.id,
+		]
 	);
 
 	const handleSubmit = useCallback(async () => {

@@ -19,10 +19,10 @@ import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
 import { DEFAULT_DECIMALS, DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
-import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
 import Connector from 'containers/Connector';
 import { filterList } from 'constants/poolFilterList';
+import Countdown from 'components/Countdown';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -185,7 +185,11 @@ const Pools: FC = () => {
 				Header: 'Purchase window closes',
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return <>{formatShortDateWithTime(cellProps.value)}</>;
+					return (
+						<div>
+							<Countdown timeStart={null} time={cellProps.value} networkId={network.id} />
+						</div>
+					);
 				},
 				width: 125,
 			},
@@ -195,7 +199,11 @@ const Pools: FC = () => {
 				accessor: 'duration',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
-						<>{formatShortDateWithTime(cellProps.row.original.purchaseExpiry + cellProps.value)}</>
+						<Countdown
+							timeStart={cellProps.row.original.purchaseExpiry}
+							time={cellProps.row.original.purchaseExpiry + cellProps.value}
+							networkId={network.id}
+						/>
 					);
 				},
 				width: 125,
@@ -225,7 +233,7 @@ const Pools: FC = () => {
 				width: 75,
 			},
 		],
-		[]
+		[network.id]
 	);
 
 	return (
