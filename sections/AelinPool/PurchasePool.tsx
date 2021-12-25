@@ -250,7 +250,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 							timeStart={pool?.purchaseExpiry ?? 0}
 							time={(pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)}
 							networkId={network.id}
-							shouldLog={true}
 						/>
 						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 					</>

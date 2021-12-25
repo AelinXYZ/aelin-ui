@@ -8,17 +8,13 @@ interface CountdownProps {
 	time: number;
 	timeStart: number;
 	networkId: NetworkId | null;
-	shouldLog: any;
 }
 
-const Countdown: FC<CountdownProps> = ({ time, timeStart, networkId, shouldLog }) => {
+const Countdown: FC<CountdownProps> = ({ time, timeStart, networkId }) => {
 	const calculateTimeLeft = () => {
 		const now = +new Date();
 		const start = timeStart != null ? +new Date(timeStart) : now;
 		const end = +new Date(time);
-		if (shouldLog) {
-			console.log('now', now, 'start', start, 'end', end);
-		}
 		const difference = end - start;
 		if (start > now && now < end) {
 			return {
