@@ -25,9 +25,7 @@ export type TokenListResponse = {
 	version: { major: number; minor: number; patch: number };
 };
 
-export const AELIN_GOV_ADDRESS: string = '0x7856f2a12a7a18b4a115d295f548434a9b078fa1';
-
-export const ETH_ADDRESS: string = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const ether = {
 	address: ETH_ADDRESS,
