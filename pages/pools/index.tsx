@@ -18,23 +18,25 @@ import DealStatus, { Status } from 'components/DealStatus';
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import { AELIN_GOV_ADDRESS } from 'constants/token';
 
 import { formatShortDateWithTime } from 'utils/time';
+import { formatNumber } from 'utils/numbers';
 import Connector from 'containers/Connector';
 
 const Pools: FC = () => {
 	const router = useRouter();
 	const { network } = Connector.useContainer();
-	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
-	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
-	const [nameFilter, setNameFilter] = useState<string | null>(null);
+	const [sponsorFilter, setSponsorFilter] = useState<string>('');
+	const [currencyFilter, setCurrencyFilter] = useState<string>('');
+	const [nameFilter, setNameFilter] = useState<string>('');
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
 
 	useEffect(() => {
-		setSponsorFilter((router.query?.sponsorFilter ?? null) as string | null);
+		setSponsorFilter((router.query?.sponsorFilter ?? AELIN_GOV_ADDRESS) as string | null);
 	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
@@ -146,12 +148,15 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							{ethers.utils
-								.formatUnits(
-									cellProps.value.toString(),
-									cellProps.row.original.purchaseTokenDecimals
-								)
-								.toString()}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(
+										cellProps.value.toString(),
+										cellProps.row.original.purchaseTokenDecimals
+									)
+									.toString(),
+								4
+							)}
 						</FlexDivStart>
 					);
 				},
@@ -224,6 +229,13 @@ const Pools: FC = () => {
 		[]
 	);
 
+	const filterValues = {
+		sponsorFilter,
+		currencyFilter,
+		nameFilter,
+		statusFilter,
+	};
+
 	return (
 		<>
 			<Head>
@@ -232,11 +244,11 @@ const Pools: FC = () => {
 
 			<PageLayout title={<>All pools</>} subtitle="">
 				<FilterPool
+					values={filterValues}
 					setSponsor={setSponsorFilter}
 					setCurrency={setCurrencyFilter}
 					setName={setNameFilter}
 					setStatus={setStatusFilter}
-					status={statusFilter}
 				/>
 				<Table
 					noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
