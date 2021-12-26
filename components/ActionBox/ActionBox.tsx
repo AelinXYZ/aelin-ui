@@ -253,11 +253,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 											dealRedemptionData?.status === Status.OpenRedemption &&
 											dealRedemptionData.isOpenEligible
 										) {
-											max = Math.min(
-												Number(max),
-												Number(dealRedemptionData?.purchaseTokenTotalForDeal ?? 0) -
-													Number(dealRedemptionData.totalAmountAccepted ?? 0)
-											);
+											max =
+												Number(max) >=
+												dealRedemptionData?.purchaseTokenTotalForDeal -
+													dealRedemptionData?.totalAmountAccepted
+													? dealRedemptionData?.purchaseTokenTotalForDeal -
+													  dealRedemptionData?.totalAmountAccepted
+													: 0;
 										}
 										if (
 											(dealRedemptionData?.status === Status.Closed ||

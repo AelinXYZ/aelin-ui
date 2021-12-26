@@ -54,6 +54,10 @@ const usePoolBalancesQuery = ({
 				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
 				poolContract.totalAmountAccepted(),
 			]);
+			console.log(
+				'Total Accepted',
+				Number(ethers.utils.formatUnits(totalAmountAccepted, decimals))
+			);
 			return {
 				purchaseTokenDecimals: decimals,
 				purchaseTokenSymbol: symbol,

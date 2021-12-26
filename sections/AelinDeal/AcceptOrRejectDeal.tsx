@@ -39,8 +39,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer, network } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
-		TransactionData.useContainer();
+	const {
+		txState,
+		setTxState,
+		setGasPrice,
+		gasPrice,
+		txType,
+		setTxType,
+	} = TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -311,10 +317,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			underlyingDealTokenDecimals,
 			pool?.sponsorFee,
 			poolBalances?.purchaseTokenDecimals,
-			poolBalances?.totalAmountAccepted,
 			underlyingDealTokenSymbol,
 			network?.id,
-			dealRedemptionPeriod,
 		]
 	);
 
@@ -438,7 +442,12 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				maxProRata: poolBalances?.maxProRata ?? 0,
 				isOpenEligible: poolBalances?.isOpenEligible ?? false,
 				totalAmountAccepted: poolBalances?.totalAmountAccepted ?? 0,
-				purchaseTokenTotalForDeal: deal?.purchaseTokenTotalForDeal ?? 0,
+				purchaseTokenTotalForDeal: Number(
+					ethers.utils.formatUnits(
+						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+						poolBalances?.purchaseTokenDecimals ?? 0
+					)
+				),
 			}}
 			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}
