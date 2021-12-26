@@ -110,7 +110,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			holderFundingExpiryMinutes: 0,
 			holder: '',
 		},
-		validate: (values: CreateDealValues) => validateCreateDeal(values, totalPoolSupply),
+		validate: (values: CreateDealValues) => validateCreateDeal(values, totalPoolSupply, network.id),
 		onSubmit: handleSubmit,
 	});
 
