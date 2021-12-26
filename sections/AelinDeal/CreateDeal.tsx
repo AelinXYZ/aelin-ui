@@ -33,7 +33,7 @@ interface CreateDealProps {
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
-	const { walletAddress, signer, provider } = Connector.useContainer();
+	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
 		TransactionData.useContainer();
@@ -110,7 +110,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			holderFundingExpiryMinutes: 0,
 			holder: '',
 		},
-		validate: (values: CreateDealValues) => validateCreateDeal(values, totalPoolSupply),
+		validate: (values: CreateDealValues) => validateCreateDeal(values, totalPoolSupply, network.id),
 		onSubmit: handleSubmit,
 	});
 
@@ -203,7 +203,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 		const getGasLimitEstimate = async () => {
 			if (!walletAddress || !signer) return setGasLimitEstimate(null);
 
-			const errors = validateCreateDeal(formik.values, totalPoolSupply);
+			const errors = validateCreateDeal(formik.values, totalPoolSupply, network.id);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
 
@@ -255,6 +255,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 		createVariablesToCreateDeal,
 		setGasLimitEstimate,
 		totalPoolSupply,
+		network.id,
 	]);
 
 	const gridItems = useMemo(
