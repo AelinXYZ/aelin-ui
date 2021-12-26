@@ -245,6 +245,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 							/>
 							{maxValue ? (
 								<ActionBoxMax
+									isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
 									onClick={() => {
 										let max = maxValue;
 										if (privatePoolDetails?.isPrivatePool && !isWithdraw) {
@@ -268,7 +269,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 										setInputValue(Number(max));
 									}}
 								>
-									Max
+									{dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw
+										? 'Max Pro Rata'
+										: 'Max'}
 								</ActionBoxMax>
 							) : null}
 						</InputContainer>
@@ -436,11 +439,11 @@ const ActionBoxInput = styled.input`
 	}
 `;
 
-const ActionBoxMax = styled.div`
+const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 	position: absolute;
-	width: 33px;
+	width: ${(props) => (props.isProRata ? '85px' : '33px')};
 	height: 21px;
-	left: 210px;
+	left: ${(props) => (props.isProRata ? '190px' : '210px')};
 	text-align: center;
 	padding-top: 4px;
 	padding-left: 2px;

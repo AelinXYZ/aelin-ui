@@ -13,6 +13,8 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { formatNumber } from 'utils/numbers';
 
 interface VestingDealProps {
 	deal: any;
@@ -51,7 +53,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			},
 			{
 				header: 'My Deal Token Balance',
-				subText: dealBalance ?? '',
+				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
 				header: 'Exchange rate',

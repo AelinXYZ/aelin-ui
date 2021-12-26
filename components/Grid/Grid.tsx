@@ -5,7 +5,7 @@ export type GridItem = {
 	header: string | JSX.Element;
 	subText: string | number | JSX.Element;
 	formField?: JSX.Element;
-	formError?: string  | null | undefined | any[];
+	formError?: string | null | undefined | any[];
 };
 
 interface GridProps {
@@ -45,7 +45,7 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	padding: 20px;
-	height: ${(props) => (props.hasInputFields ? '145px' : '97px')};
+	height: ${(props) => (props.hasInputFields ? '145px' : '105px')};
 	min-width: 207px;
 	display: flex;
 	flex-direction: column;
