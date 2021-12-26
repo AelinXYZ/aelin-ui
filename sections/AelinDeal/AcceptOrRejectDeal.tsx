@@ -333,6 +333,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					}
 				);
 			} else if (txType === TransactionType.Accept && isMaxValue) {
+				console.log('isMaxValue', isMaxValue);
 				tx = await contract.acceptMaxDealTokens({
 					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 					gasPrice: gasPrice.toBN(),
@@ -447,6 +448,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				status: dealRedemptionData,
 				maxProRata: poolBalances?.maxProRata ?? 0,
 				isOpenEligible: poolBalances?.isOpenEligible ?? false,
+				totalAmountAccepted: poolBalances?.totalAmountAccepted ?? 0,
 			}}
 			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}
