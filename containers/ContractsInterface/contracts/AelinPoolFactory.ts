@@ -188,15 +188,15 @@ const abi = [
 ];
 const contract = {
 	42: {
-		address: '0x1dD5Cb629968a5d736F5057df9FfeF605c593DBD',
+		address: '0x6ec97223e3808eAee2581e55F84CF639963B5961',
 		abi,
 	},
 	10: {
-		address: '0x87525307974a312AF13a78041F88B0BAe23ebb10',
+		address: '0xCC2A483d21c5Eb783ecA41b0933042Ad9CCdE6A8',
 		abi,
 	},
 	1: {
-		address: '0x5541DA82549D732878c4104C9887c408790397AF',
+		address: '0x8bb1E2134925fA6fE9358c37B290aaE6c6D640BF',
 		abi,
 	},
 };
