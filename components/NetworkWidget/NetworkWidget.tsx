@@ -27,10 +27,6 @@ const CHAINS = [
 		img: EthereumLogo,
 	},
 	{
-		label: 'Kovan',
-		img: EthereumLogo,
-	},
-	{
 		label: 'Optimism',
 		img: OptimismLogo,
 	},
