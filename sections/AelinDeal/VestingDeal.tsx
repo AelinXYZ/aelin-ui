@@ -20,7 +20,7 @@ interface VestingDealProps {
 	deal: any;
 	dealBalance: number | null;
 	claims: any[];
-	underlyingPerDealExchangeRate: number | null;
+	dealPerUnderlyingExchangeRate: number | null;
 	underlyingDealTokenDecimals: number | null;
 	claimableUnderlyingTokens: number | null;
 }
@@ -29,7 +29,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 	deal,
 	dealBalance,
 	claims,
-	underlyingPerDealExchangeRate,
+	dealPerUnderlyingExchangeRate,
 	underlyingDealTokenDecimals,
 	claimableUnderlyingTokens,
 }) => {
@@ -57,7 +57,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			},
 			{
 				header: 'Exchange rate',
-				subText: underlyingPerDealExchangeRate,
+				subText: formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS),
 			},
 			{
 				header: 'Underlying Deal Token',
@@ -96,7 +96,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 		deal?.underlyingDealToken,
 		deal?.vestingCliff,
 		deal?.vestingPeriod,
-		underlyingPerDealExchangeRate,
+		dealPerUnderlyingExchangeRate,
 		underlyingDealTokenDecimals,
 		deal?.proRataRedemptionPeriodStart,
 		deal?.proRataRedemptionPeriod,

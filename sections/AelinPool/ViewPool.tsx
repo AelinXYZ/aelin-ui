@@ -173,14 +173,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Vesting" />
+							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
 						</ContentTitle>
 					</ContentHeader>
 					<VestingDeal
 						deal={deal}
 						dealBalance={dealBalance}
 						claims={claims}
-						underlyingPerDealExchangeRate={underlyingPerDealExchangeRate}
+						dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
 						claimableUnderlyingTokens={claimableUnderlyingTokens}
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
 					/>

@@ -8,6 +8,7 @@ import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
 import Connector from 'containers/Connector';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+import QuestionMark from 'components/QuestionMark';
 import { GasLimitEstimate } from 'constants/networks';
 import { Status } from 'components/DealStatus';
 import { statusToText } from 'constants/pool';
@@ -151,7 +152,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 			[TransactionType.Accept]: {
-				heading: `You are accepting ${inputValue} tokens`,
+				heading: `You are accepting ${inputValue} deal tokens`,
 				onSubmit,
 			},
 			[TransactionType.Withdraw]: {
@@ -212,21 +213,6 @@ const ActionBox: FC<ActionBoxProps> = ({
 					</RedemptionPeriodTooltip>
 				</RedemptionHeader>
 			) : null}
-			<FlexDivRow>
-				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-					{actionBoxTypeToTitle(
-						actionBoxType,
-						privatePoolDetails?.isPrivatePool ?? false,
-						privatePoolDetails?.privatePoolAmount ?? '0',
-						purchaseCurrency
-					)}
-				</ActionBoxHeader>
-				{isAcceptOrReject ? (
-					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>
-						Withdraw
-					</ActionBoxHeader>
-				) : null}
-			</FlexDivRow>
 			<ContentContainer>
 				{isVesting ? (
 					<Paragraph>{maxValue || 0} tokens to vest</Paragraph>
@@ -275,6 +261,33 @@ const ActionBox: FC<ActionBoxProps> = ({
 								</ActionBoxMax>
 							) : null}
 						</InputContainer>
+						<ActionBoxHeaderWrapper>
+							<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
+								<FlexDivRow>
+									<>
+										{actionBoxTypeToTitle(
+											actionBoxType,
+											privatePoolDetails?.isPrivatePool ?? false,
+											privatePoolDetails?.privatePoolAmount ?? '0',
+											purchaseCurrency
+										)}
+									</>{' '}
+									<QuestionMark text="choose accept to agree to the deal terms with up to the max amount based on your allocation this round" />
+								</FlexDivRow>
+							</ActionBoxHeader>
+							{isAcceptOrReject ? (
+								<ActionBoxHeader
+									onClick={() => setIsDealAccept(false)}
+									isWithdraw={true}
+									isPool={false}
+								>
+									<FlexDivRow>
+										<>Withdraw</>
+										<QuestionMark text="reject deal and withdraw your capital" />
+									</FlexDivRow>
+								</ActionBoxHeader>
+							) : null}
+						</ActionBoxHeaderWrapper>
 					</>
 				)}
 			</ContentContainer>
@@ -360,9 +373,12 @@ const Container = styled.div`
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
+const ActionBoxHeaderWrapper = styled(FlexDivRow)`
+	margin-top: 20px;
+`;
 
 const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
-	padding: 15px 20px;
+	padding: 15px 10px;
 	color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
 	font-size: 12px;
