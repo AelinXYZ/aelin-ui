@@ -19,7 +19,13 @@ interface SectionDetailsProps {
 	txState: TransactionStatus;
 	setTxState: (tx: TransactionStatus) => void;
 	isPurchaseExpired?: boolean;
-	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
+	dealRedemptionData?: {
+		status: Status;
+		maxProRata: string;
+		isOpenEligible: boolean;
+		purchaseTokenTotalForDeal: number;
+		totalAmountAccepted: number;
+	};
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };

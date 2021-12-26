@@ -52,6 +52,25 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
 
+	const dealRedemptionPeriod = useMemo(() => {
+		const now = Date.now();
+		if (
+			now >
+			deal?.proRataRedemptionPeriodStart +
+				deal?.proRataRedemptionPeriod +
+				deal?.openRedemptionPeriod
+		) {
+			return Status.Closed;
+		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
+			return Status.OpenRedemption;
+		}
+		return Status.ProRataRedemption;
+	}, [
+		deal?.proRataRedemptionPeriodStart,
+		deal?.proRataRedemptionPeriod,
+		deal?.openRedemptionPeriod,
+	]);
+
 	const dealGridItems = useMemo(
 		() => [
 			{
@@ -226,7 +245,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>{deal?.isDealFunded ? 'Open Redemption Ends' : 'Open Redemption'}</>
+						<>Open Redemption Ends</>
 						<QuestionMark
 							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
 						/>
@@ -239,22 +258,11 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						deal?.openRedemptionPeriod != null &&
 						deal?.openRedemptionPeriod > 0 ? (
 							<>
-								<Countdown
-									timeStart={deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod}
-									time={
-										deal?.proRataRedemptionPeriodStart +
+								{formatShortDateWithTime(
+									deal?.proRataRedemptionPeriodStart +
 										deal?.proRataRedemptionPeriod +
 										deal?.openRedemptionPeriod
-									}
-									networkId={network.id}
-								/>
-								<>
-									{formatShortDateWithTime(
-										deal?.proRataRedemptionPeriodStart +
-											deal?.proRataRedemptionPeriod +
-											deal?.openRedemptionPeriod
-									)}
-								</>
+								)}
 							</>
 						) : deal?.openRedemptionPeriod > 0 ? (
 							formatTimeDifference(deal?.openRedemptionPeriod)
@@ -300,12 +308,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			deal?.proRataRedemptionPeriodStart,
 			deal?.proRataRedemptionPeriod,
 			deal?.openRedemptionPeriod,
-			deal?.isDealFunded,
 			underlyingDealTokenDecimals,
 			pool?.sponsorFee,
 			poolBalances?.purchaseTokenDecimals,
+			poolBalances?.totalAmountAccepted,
 			underlyingDealTokenSymbol,
 			network?.id,
+			dealRedemptionPeriod,
 		]
 	);
 
@@ -422,31 +431,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		isMaxValue,
 	]);
 
-	const dealRedemptionData = useMemo(() => {
-		const now = Date.now();
-		if (
-			now >
-			deal?.proRataRedemptionPeriodStart +
-				deal?.proRataRedemptionPeriod +
-				deal?.openRedemptionPeriod
-		) {
-			return Status.Closed;
-		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
-			return Status.OpenRedemption;
-		}
-		return Status.ProRataRedemption;
-	}, [
-		deal?.proRataRedemptionPeriodStart,
-		deal?.proRataRedemptionPeriod,
-		deal?.openRedemptionPeriod,
-	]);
-
 	return (
 		<SectionDetails
 			dealRedemptionData={{
-				status: dealRedemptionData,
+				status: dealRedemptionPeriod,
 				maxProRata: poolBalances?.maxProRata ?? 0,
 				isOpenEligible: poolBalances?.isOpenEligible ?? false,
+				totalAmountAccepted: poolBalances?.totalAmountAccepted ?? 0,
+				purchaseTokenTotalForDeal: deal?.purchaseTokenTotalForDeal ?? 0,
 			}}
 			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}
