@@ -16,8 +16,10 @@ import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
 import Button from 'components/Button';
 import { formatShortDateWithTime } from 'utils/time';
+import { formatNumber } from 'utils/numbers';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 interface FundDealProps {
 	token: string;
@@ -197,12 +199,30 @@ const FundDeal: FC<FundDealProps> = ({
 			},
 			{
 				header: 'Amount to deposit',
-				subText: visibleAmount,
+				subText: formatNumber(visibleAmount, DEFAULT_DECIMALS),
 			},
 			{
-				header: 'Exchange rate',
-				subText:
-					Number(amount?.toString() ?? '0') / Number((purchaseTokenTotalForDeal ?? 0).toString()),
+				header: 'Exchange rates',
+				subText: (
+					<div>
+						<ExchangeRate>
+							Underlying / Purchase:{' '}
+							{formatNumber(
+								Number(amount?.toString() ?? '0') /
+									Number((purchaseTokenTotalForDeal ?? 0).toString()),
+								DEFAULT_DECIMALS
+							)}
+						</ExchangeRate>
+						<ExchangeRate>
+							Purchase / Underlying:{' '}
+							{formatNumber(
+								Number((purchaseTokenTotalForDeal ?? 0).toString()) /
+									Number(amount?.toString() ?? '0'),
+								DEFAULT_DECIMALS
+							)}
+						</ExchangeRate>
+					</div>
+				),
 			},
 			{
 				header: 'Purchase token',
@@ -215,10 +235,13 @@ const FundDeal: FC<FundDealProps> = ({
 				),
 			},
 			{
-				header: 'Purchase token total',
-				subText: ethers.utils.formatUnits(
-					(purchaseTokenTotalForDeal ?? 0).toString(),
-					purchaseTokenDecimals
+				header: 'Purchase currency total',
+				subText: formatNumber(
+					ethers.utils.formatUnits(
+						(purchaseTokenTotalForDeal ?? 0).toString(),
+						purchaseTokenDecimals
+					),
+					DEFAULT_DECIMALS
 				),
 			},
 			{
@@ -304,6 +327,10 @@ const Header = styled.div`
 	font-size: 14px;
 	margin: 20px 0 50px 0;
 	padding-left: 20px;
+`;
+
+const ExchangeRate = styled.div`
+	margin-bottom: 10px;
 `;
 
 export default FundDeal;

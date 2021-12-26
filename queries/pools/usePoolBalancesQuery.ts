@@ -41,15 +41,15 @@ const usePoolBalancesQuery = ({
 				unformattedMaxProRata,
 				isOpenEligible,
 			] = await Promise.all([
-				poolContract.balanceOf(walletAddress),
-				tokenContract.balanceOf(walletAddress),
+				walletAddress != null ? poolContract.balanceOf(walletAddress) : 0,
+				walletAddress != null ? tokenContract.balanceOf(walletAddress) : 0,
 				tokenContract.decimals(),
 				tokenContract.symbol(),
-				tokenContract.allowance(walletAddress, poolAddress),
+				walletAddress != null ? tokenContract.allowance(walletAddress, poolAddress) : 0,
 				poolContract.hasAllowList(),
-				poolContract.allowList(walletAddress),
-				poolContract.maxProRataAvail(walletAddress),
-				poolContract.openPeriodEligible(walletAddress),
+				walletAddress != null ? poolContract.allowList(walletAddress) : 0,
+				walletAddress != null ? poolContract.maxProRataAvail(walletAddress) : 0,
+				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
 			]);
 			return {
 				purchaseTokenDecimals: decimals,
@@ -64,7 +64,7 @@ const usePoolBalancesQuery = ({
 			};
 		},
 		{
-			enabled: !!purchaseToken && !!poolAddress && !!provider && !!walletAddress,
+			enabled: !!purchaseToken && !!poolAddress && !!provider,
 		}
 	);
 };

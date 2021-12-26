@@ -68,17 +68,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	useEffect(() => {
 		async function getDealInfo() {
-			if (
-				deal?.id != null &&
-				deal?.underlyingDealToken &&
-				provider != null &&
-				walletAddress != null
-			) {
+			if (deal?.id != null && deal?.underlyingDealToken && provider != null) {
 				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
-				const balance = await contract.balanceOf(walletAddress);
+				const balance = walletAddress != null ? await contract.balanceOf(walletAddress) : 0;
 				const decimals = await contract.decimals();
 				const underlyingExchangeRate = await contract.underlyingPerDealExchangeRate();
-				const claimable = await contract.claimableTokens(walletAddress);
+				const claimable = walletAddress != null ? await contract.claimableTokens(walletAddress) : 0;
 				const formattedDealBalance = Number(ethers.utils.formatUnits(balance, decimals));
 				setDealBalance(formattedDealBalance);
 				const { decimals: underlyingDecimals, symbol: underlyingSymbol } = await getERC20Data({
@@ -87,7 +82,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				});
 
 				const claimableTokens = Number(
-					ethers.utils.formatUnits(claimable.underlyingClaimable.toString(), underlyingDecimals)
+					ethers.utils.formatUnits(
+						claimable?.underlyingClaimable?.toString() ?? '0',
+						underlyingDecimals
+					)
 				);
 				setClaimableUnderlyingTokens(claimableTokens);
 				setUnderlyingDealTokenDecimals(underlyingDecimals);
@@ -104,7 +102,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	const now = Date.now();
 	const showCreateDealSection = useMemo(() => {
-		if (!pool || !now || !deal || walletAddress) return false;
+		if (!pool || !now || !deal || !walletAddress) return false;
 		// If the connected wallet is not the sponsor, then we don't display the createDeal section
 		if (walletAddress !== pool.sponsor) return false;
 		// If the Pool status is Open and PurchaseTokenCap is not null and is reached
@@ -115,7 +113,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		)
 			return true;
 		// If the Pool status is SeekingDeal
-		if (pool.poolStatus === Status.Status.SeekingDeal) return true;
+		if (pool.poolStatus === Status.SeekingDeal) return true;
 		// If the Pool status is FundingDeal and HolderFundingExpiration is reached
 		if (pool.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) return true;
 		return false;
@@ -173,14 +171,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Vesting" />
+							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
 						</ContentTitle>
 					</ContentHeader>
 					<VestingDeal
 						deal={deal}
 						dealBalance={dealBalance}
 						claims={claims}
-						underlyingPerDealExchangeRate={underlyingPerDealExchangeRate}
+						dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
 						claimableUnderlyingTokens={claimableUnderlyingTokens}
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
 					/>

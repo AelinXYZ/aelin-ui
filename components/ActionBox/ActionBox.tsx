@@ -8,6 +8,7 @@ import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
 import Connector from 'containers/Connector';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+import QuestionMark from 'components/QuestionMark';
 import { GasLimitEstimate } from 'constants/networks';
 import { Status } from 'components/DealStatus';
 import { statusToText } from 'constants/pool';
@@ -151,7 +152,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 			[TransactionType.Accept]: {
-				heading: `You are accepting ${inputValue} tokens`,
+				heading: `You are accepting ${inputValue} deal tokens`,
 				onSubmit,
 			},
 			[TransactionType.Withdraw]: {
@@ -212,21 +213,6 @@ const ActionBox: FC<ActionBoxProps> = ({
 					</RedemptionPeriodTooltip>
 				</RedemptionHeader>
 			) : null}
-			<FlexDivRow>
-				<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-					{actionBoxTypeToTitle(
-						actionBoxType,
-						privatePoolDetails?.isPrivatePool ?? false,
-						privatePoolDetails?.privatePoolAmount ?? '0',
-						purchaseCurrency
-					)}
-				</ActionBoxHeader>
-				{isAcceptOrReject ? (
-					<ActionBoxHeader onClick={() => setIsDealAccept(false)} isWithdraw={true} isPool={false}>
-						Withdraw
-					</ActionBoxHeader>
-				) : null}
-			</FlexDivRow>
 			<ContentContainer>
 				{isVesting ? (
 					<Paragraph>{maxValue || 0} tokens to vest</Paragraph>
@@ -245,6 +231,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 							/>
 							{maxValue ? (
 								<ActionBoxMax
+									isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
 									onClick={() => {
 										let max = maxValue;
 										if (privatePoolDetails?.isPrivatePool && !isWithdraw) {
@@ -268,10 +255,41 @@ const ActionBox: FC<ActionBoxProps> = ({
 										setInputValue(Number(max));
 									}}
 								>
-									Max
+									{dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw
+										? 'Max Pro Rata'
+										: 'Max'}
 								</ActionBoxMax>
 							) : null}
 						</InputContainer>
+						<ActionBoxHeaderWrapper>
+							<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
+								<FlexDivRow>
+									<>
+										{actionBoxTypeToTitle(
+											actionBoxType,
+											privatePoolDetails?.isPrivatePool ?? false,
+											privatePoolDetails?.privatePoolAmount ?? '0',
+											purchaseCurrency
+										)}
+									</>{' '}
+									{actionBoxType === ActionBoxType.AcceptOrRejectDeal ? (
+										<QuestionMark text="choose accept to agree to the deal terms with up to the max amount based on your allocation this round" />
+									) : null}
+								</FlexDivRow>
+							</ActionBoxHeader>
+							{isAcceptOrReject ? (
+								<ActionBoxHeader
+									onClick={() => setIsDealAccept(false)}
+									isWithdraw={true}
+									isPool={false}
+								>
+									<FlexDivRow>
+										<>Withdraw</>
+										<QuestionMark text="reject deal and withdraw your capital" />
+									</FlexDivRow>
+								</ActionBoxHeader>
+							) : null}
+						</ActionBoxHeaderWrapper>
 					</>
 				)}
 			</ContentContainer>
@@ -357,9 +375,12 @@ const Container = styled.div`
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
+const ActionBoxHeaderWrapper = styled(FlexDivRow)`
+	margin-top: 20px;
+`;
 
 const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
-	padding: 15px 20px;
+	padding: 15px 10px;
 	color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
 	font-size: 12px;
@@ -436,11 +457,11 @@ const ActionBoxInput = styled.input`
 	}
 `;
 
-const ActionBoxMax = styled.div`
+const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 	position: absolute;
-	width: 33px;
+	width: ${(props) => (props.isProRata ? '85px' : '33px')};
 	height: 21px;
-	left: 210px;
+	left: ${(props) => (props.isProRata ? '190px' : '210px')};
 	text-align: center;
 	padding-top: 4px;
 	padding-left: 2px;

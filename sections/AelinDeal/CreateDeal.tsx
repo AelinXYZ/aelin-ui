@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useCallback, useState } from 'react';
+import styled from 'styled-components';
 import { useFormik } from 'formik';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
@@ -24,6 +25,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 interface CreateDealProps {
 	poolAddress: string;
@@ -589,7 +591,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					: '',
 			},
 			{
-				label: 'Purchase token total:',
+				label: 'Purchase currency total:',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
@@ -601,16 +603,35 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					: '',
 			},
 			{
-				label: 'Underlying Per Purchase',
+				label: 'Exchange Rates',
 				text:
+					formik.values.purchaseTokenTotal === 0 ||
+					formik.values.underlyingDealTokenTotal === 0 ||
 					// @ts-ignore
-					formik.values.underlyingDealTokenTotal === '' || formik.values.purchaseTokenTotal === ''
-						? ''
-						: formatNumber(
-								Number(formik.values?.underlyingDealTokenTotal ?? 0) /
-									Number(formik.values?.purchaseTokenTotal ?? 0),
-								2
-						  ),
+					formik.values.underlyingDealTokenTotal === '' ||
+					// @ts-ignore
+					formik.values.purchaseTokenTotal === '' ? (
+						''
+					) : (
+						<div>
+							<ExchangeRate>
+								Underlying / Purchase:{' '}
+								{formatNumber(
+									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
+										Number(formik.values?.purchaseTokenTotal ?? 0),
+									DEFAULT_DECIMALS
+								)}
+							</ExchangeRate>
+							<ExchangeRate>
+								Purchase / Underlying:{' '}
+								{formatNumber(
+									Number(formik.values?.purchaseTokenTotal ?? 0) /
+										Number(formik.values?.underlyingDealTokenTotal ?? 0),
+									DEFAULT_DECIMALS
+								)}
+							</ExchangeRate>
+						</div>
+					),
 			},
 			{
 				label: 'Vesting period:',
@@ -665,5 +686,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 		/>
 	);
 };
+
+const ExchangeRate = styled.div`
+	margin-top: 10px;
+`;
 
 export default CreateDeal;
