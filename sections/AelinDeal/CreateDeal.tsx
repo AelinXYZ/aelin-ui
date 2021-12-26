@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useCallback, useState } from 'react';
+import styled from 'styled-components';
 import { useFormik } from 'formik';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
@@ -601,16 +602,32 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					: '',
 			},
 			{
-				label: 'Underlying Per Purchase',
+				label: 'Exchange Rates',
 				text:
 					// @ts-ignore
-					formik.values.underlyingDealTokenTotal === '' || formik.values.purchaseTokenTotal === ''
-						? ''
-						: formatNumber(
-								Number(formik.values?.underlyingDealTokenTotal ?? 0) /
-									Number(formik.values?.purchaseTokenTotal ?? 0),
-								2
-						  ),
+					formik.values.underlyingDealTokenTotal === '' ||
+					formik.values.purchaseTokenTotal === '' ? (
+						''
+					) : (
+						<div>
+							<ExchangeRate>
+								Underlying / Purchase:{' '}
+								{formatNumber(
+									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
+										Number(formik.values?.purchaseTokenTotal ?? 0),
+									2
+								)}
+							</ExchangeRate>
+							<ExchangeRate>
+								Purchase / Underlying:{' '}
+								{formatNumber(
+									Number(formik.values?.purchaseTokenTotal ?? 0) /
+										Number(formik.values?.underlyingDealTokenTotal ?? 0),
+									2
+								)}
+							</ExchangeRate>
+						</div>
+					),
 			},
 			{
 				label: 'Vesting period:',
@@ -665,5 +682,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 		/>
 	);
 };
+
+const ExchangeRate = styled.div`
+	margin-top: 10px;
+`;
 
 export default CreateDeal;

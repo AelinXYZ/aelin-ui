@@ -9,7 +9,7 @@ import { TransactionStatus } from 'constants/transactions';
 
 export type SummaryItem = {
 	label: string;
-	text: string | number;
+	text: string | number | JSX.Element;
 };
 
 export enum CreateTxType {
@@ -111,7 +111,7 @@ const Container = styled.div`
 `;
 
 const SummaryBoxHeader = styled.div`
-	padding: 20px;
+	padding: 20px 20px 0 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 12px;
 `;
@@ -124,7 +124,7 @@ const SummaryBoxGrid = styled.div`
 `;
 
 const Item = styled.div`
-	margin: 8px 3px 8px 0;
+	margin: 8px 3px 7px 0;
 `;
 
 const ItemLabel = styled.div`
