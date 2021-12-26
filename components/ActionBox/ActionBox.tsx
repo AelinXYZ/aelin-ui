@@ -133,7 +133,6 @@ const ActionBox: FC<ActionBoxProps> = ({
 	setInputValue,
 	purchaseCurrency,
 }) => {
-	console.log('dealRedemptionData', dealRedemptionData);
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);

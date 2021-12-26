@@ -245,7 +245,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>Open Redemption</>
+						<>Open Redemption Ends</>
 						<QuestionMark
 							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
 						/>
@@ -258,22 +258,11 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						deal?.openRedemptionPeriod != null &&
 						deal?.openRedemptionPeriod > 0 ? (
 							<>
-								<Countdown
-									timeStart={deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod}
-									time={
-										deal?.proRataRedemptionPeriodStart +
+								{formatShortDateWithTime(
+									deal?.proRataRedemptionPeriodStart +
 										deal?.proRataRedemptionPeriod +
 										deal?.openRedemptionPeriod
-									}
-									networkId={network.id}
-								/>
-								<>
-									{formatShortDateWithTime(
-										deal?.proRataRedemptionPeriodStart +
-											deal?.proRataRedemptionPeriod +
-											deal?.openRedemptionPeriod
-									)}
-								</>
+								)}
 							</>
 						) : deal?.openRedemptionPeriod > 0 ? (
 							formatTimeDifference(deal?.openRedemptionPeriod)
@@ -284,32 +273,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header:
-					dealRedemptionPeriod === Status.OpenRedemption
-						? 'Open Redemption Stats'
-						: 'Vesting Curve',
-				subText:
-					dealRedemptionPeriod === Status.OpenRedemption ? (
-						<>
-							<div>
-								Redeemded: {formatNumber(poolBalances?.totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}
-							</div>
-							<div>
-								Remaining:{' '}
-								{formatNumber(
-									Number(
-										ethers.utils.formatUnits(
-											(deal?.purchaseTokenTotalForDeal ?? 0).toString(),
-											poolBalances?.purchaseTokenDecimals
-										)
-									) - Number(poolBalances?.totalAmountAccepted ?? 0),
-									DEFAULT_DECIMALS
-								)}
-							</div>
-						</>
-					) : (
-						'linear'
-					),
+				header: 'Vesting Curve',
+				subText: 'linear',
 			},
 			{
 				header: (
