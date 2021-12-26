@@ -16,7 +16,7 @@ const Countdown: FC<CountdownProps> = ({ time, timeStart, networkId }) => {
 		const start = timeStart != null ? +new Date(timeStart) : now;
 		const end = +new Date(time);
 		const difference = end - start;
-		console.log('now', now, 'start', start, 'end', end, 'difference', difference);
+		// console.log('now', now, 'start', start, 'end', end, 'difference', difference);
 		if (start > now && now < end) {
 			return {
 				d: Math.floor(difference / (1000 * 60 * 60 * 24)),

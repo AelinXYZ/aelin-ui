@@ -285,10 +285,28 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			},
 			{
 				header:
-					dealRedemptionPeriod === Status.OpenRedemption ? 'Total Pool Redeemed' : 'Vesting Curve',
+					dealRedemptionPeriod === Status.OpenRedemption
+						? 'Open Redemption Stats'
+						: 'Vesting Curve',
 				subText:
 					dealRedemptionPeriod === Status.OpenRedemption ? (
-						<>{formatNumber(poolBalances?.totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}</>
+						<>
+							<div>
+								Redeemded: {formatNumber(poolBalances?.totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}
+							</div>
+							<div>
+								Remaining:{' '}
+								{formatNumber(
+									Number(
+										ethers.utils.formatUnits(
+											(deal?.purchaseTokenTotalForDeal ?? 0).toString(),
+											poolBalances?.purchaseTokenDecimals
+										)
+									) - Number(poolBalances?.totalAmountAccepted ?? 0),
+									DEFAULT_DECIMALS
+								)}
+							</div>
+						</>
 					) : (
 						'linear'
 					),
@@ -455,6 +473,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				maxProRata: poolBalances?.maxProRata ?? 0,
 				isOpenEligible: poolBalances?.isOpenEligible ?? false,
 				totalAmountAccepted: poolBalances?.totalAmountAccepted ?? 0,
+				purchaseTokenTotalForDeal: deal?.purchaseTokenTotalForDeal ?? 0,
 			}}
 			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}

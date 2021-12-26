@@ -99,7 +99,13 @@ interface ActionBoxProps {
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
-	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
+	dealRedemptionData?: {
+		status: Status;
+		maxProRata: string;
+		isOpenEligible: boolean;
+		purchaseTokenTotalForDeal: number;
+		totalAmountAccepted: number;
+	};
 	setTxType: (txnType: TransactionType) => void;
 	txType: TransactionType;
 	setIsMaxValue: (isMax: boolean) => void;
@@ -250,7 +256,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 										) {
 											max = Math.min(
 												Number(max),
-												Number(deal?.purchaseTokenTotalForDeal ?? 0) -
+												Number(dealRedemptionData?.purchaseTokenTotalForDeal ?? 0) -
 													Number(dealRedemptionData.totalAmountAccepted ?? 0)
 											);
 										}
