@@ -29,6 +29,7 @@ interface SectionDetailsProps {
 	inputValue: number;
 	setInputValue: (num: number) => void;
 	purchaseCurrency?: string;
+	poolId?: string;
 }
 
 const SectionDetails: FC<SectionDetailsProps> = ({
@@ -51,6 +52,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 	inputValue,
 	setInputValue,
 	purchaseCurrency,
+	poolId,
 }) => (
 	<FlexDiv>
 		<Grid hasInputFields={false} gridItems={gridItems} />
@@ -73,6 +75,7 @@ const SectionDetails: FC<SectionDetailsProps> = ({
 			inputValue={inputValue}
 			setInputValue={setInputValue}
 			purchaseCurrency={purchaseCurrency}
+			poolId={poolId}
 		/>
 	</FlexDiv>
 );
