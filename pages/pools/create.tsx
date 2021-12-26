@@ -29,7 +29,7 @@ import { TransactionStatus } from 'constants/transactions';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
-import validateCreatePool from 'utils/validate/create-pool';
+import validateCreatePool, { CreatePoolValues } from 'utils/validate/create-pool';
 import { scrollToBottom } from 'utils/window';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
@@ -105,7 +105,7 @@ const Create: FC = () => {
 			poolPrivacy: Privacy.PUBLIC,
 			whitelist: initialWhitelistValues,
 		},
-		validate: validateCreatePool,
+		validate: (values: CreatePoolValues) => validateCreatePool(values, network.id),
 		onSubmit: handleSubmit,
 	});
 
