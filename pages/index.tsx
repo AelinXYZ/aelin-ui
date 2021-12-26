@@ -44,7 +44,7 @@ const HomePage = () => {
 
 						<Image src={Main} layout="intrinsic" width={400} height={360} alt="Main image" />
 
-						<Link href={ROUTES.Pools.Create}>
+						<Link href={ROUTES.Home}>
 							<a>
 								<LinkContainer>
 									<Image
