@@ -3,6 +3,7 @@ import { ONE_YEAR_IN_SECS, ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants
 import { convertToSeconds } from 'utils/time';
 
 import { Privacy } from 'constants/pool';
+import { NetworkId } from 'constants/networks';
 
 export interface CreatePoolValues {
 	purchaseToken: string;
@@ -24,7 +25,7 @@ export interface CreatePoolValues {
 	}[];
 }
 
-const validateCreatePool = (values: CreatePoolValues) => {
+const validateCreatePool = (values: CreatePoolValues, networkId?: NetworkId) => {
 	const errors: any = {};
 
 	if (!values.purchaseToken) {
@@ -76,7 +77,11 @@ const validateCreatePool = (values: CreatePoolValues) => {
 		});
 		if (purchaseDurationSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.purchaseDurationMinutes = 'Max purchase expiry is 30 days';
-		} else if (purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 30) {
+		} else if (
+			networkId === NetworkId.Kovan
+				? purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 1
+				: purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 30
+		) {
 			errors.purchaseDurationMinutes = 'Min purchase expiry is 30 mins';
 		}
 	}

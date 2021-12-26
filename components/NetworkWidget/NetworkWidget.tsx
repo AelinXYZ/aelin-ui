@@ -27,6 +27,10 @@ const CHAINS = [
 		img: EthereumLogo,
 	},
 	{
+		label: 'Kovan',
+		img: EthereumLogo,
+	},
+	{
 		label: 'Optimism',
 		img: OptimismLogo,
 	},
@@ -85,7 +89,7 @@ const NetworkWidget: FC = () => {
 		}
 
 		checkRouteAndRedirect();
-	}, [isOVM, provider, network?.id, walletAddress]);
+	}, [isOVM, provider, network?.id, walletAddress, checkRouteAndRedirect]);
 
 	const ChainList = (
 		<List>

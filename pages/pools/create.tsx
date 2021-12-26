@@ -38,7 +38,7 @@ import { erc20Abi } from 'contracts/erc20';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 const Create: FC = () => {
-	const { walletAddress, provider } = Connector.useContainer();
+	const { walletAddress, provider, network } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -182,7 +182,7 @@ const Create: FC = () => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
 
-			const errors = validateCreatePool(formik.values);
+			const errors = validateCreatePool(formik.values, network.id);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
 
@@ -220,7 +220,7 @@ const Create: FC = () => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [contracts, walletAddress, formik.values, createVariablesToCreatePool]);
+	}, [contracts, walletAddress, formik.values, createVariablesToCreatePool, network.id]);
 
 	useEffect(() => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {
