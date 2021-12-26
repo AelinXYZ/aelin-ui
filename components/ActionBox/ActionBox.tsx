@@ -127,6 +127,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	setInputValue,
 	purchaseCurrency,
 }) => {
+	console.log('dealRedemptionData', dealRedemptionData);
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -241,17 +242,17 @@ const ActionBox: FC<ActionBoxProps> = ({
 											);
 										}
 										if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
-											max = Math.min(
-												Number(max),
-												Number(deal?.purchaseTokenTotalForDeal ?? 0) -
-													Number(dealRedemptionData.totalAmountAccepted ?? 0)
-											);
+											max = Math.min(Number(max), Number(dealRedemptionData.maxProRata ?? 0));
 										}
 										if (
 											dealRedemptionData?.status === Status.OpenRedemption &&
 											dealRedemptionData.isOpenEligible
 										) {
-											max = Math.min(Number(max), Number(dealRedemptionData?.remainingAmount));
+											max = Math.min(
+												Number(max),
+												Number(deal?.purchaseTokenTotalForDeal ?? 0) -
+													Number(dealRedemptionData.totalAmountAccepted ?? 0)
+											);
 										}
 										if (
 											(dealRedemptionData?.status === Status.Closed ||
