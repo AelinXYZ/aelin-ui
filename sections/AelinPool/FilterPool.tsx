@@ -35,9 +35,9 @@ const FilterPool: FC<FilterPoolProps> = ({
 					<StyledImage onClick={() => setIsVisible(!isVisible)} src={PlusIcon} alt="" />
 				</FlexDiv>
 				<FlexDiv>
-					<Link href={ROUTES.Pools.Create} passHref>
+					{/* <Link href={ROUTES.Pools.Create} passHref>
 						<StyledAnchor>Create Pool</StyledAnchor>
-					</Link>
+					</Link> */}
 				</FlexDiv>
 			</HeaderSection>
 			{isVisible ? (
