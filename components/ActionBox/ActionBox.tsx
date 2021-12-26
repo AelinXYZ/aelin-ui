@@ -272,7 +272,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 											purchaseCurrency
 										)}
 									</>{' '}
-									<QuestionMark text="choose accept to agree to the deal terms with up to the max amount based on your allocation this round" />
+									{actionBoxType === ActionBoxType.AcceptOrRejectDeal ? (
+										<QuestionMark text="choose accept to agree to the deal terms with up to the max amount based on your allocation this round" />
+									) : null}
 								</FlexDivRow>
 							</ActionBoxHeader>
 							{isAcceptOrReject ? (
