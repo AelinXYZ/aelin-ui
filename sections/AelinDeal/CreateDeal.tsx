@@ -605,8 +605,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			{
 				label: 'Exchange Rates',
 				text:
+					formik.values.purchaseTokenTotal === 0 ||
+					formik.values.underlyingDealTokenTotal === 0 ||
 					// @ts-ignore
 					formik.values.underlyingDealTokenTotal === '' ||
+					// @ts-ignore
 					formik.values.purchaseTokenTotal === '' ? (
 						''
 					) : (
