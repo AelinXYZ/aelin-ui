@@ -25,6 +25,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import TransactionData from 'containers/TransactionData';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 interface CreateDealProps {
 	poolAddress: string;
@@ -590,7 +591,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					: '',
 			},
 			{
-				label: 'Purchase token total:',
+				label: 'Purchase currency total:',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
@@ -604,8 +605,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			{
 				label: 'Exchange Rates',
 				text:
+					formik.values.purchaseTokenTotal === 0 ||
+					formik.values.underlyingDealTokenTotal === 0 ||
 					// @ts-ignore
 					formik.values.underlyingDealTokenTotal === '' ||
+					// @ts-ignore
 					formik.values.purchaseTokenTotal === '' ? (
 						''
 					) : (
@@ -615,7 +619,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 								{formatNumber(
 									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
-									2
+									DEFAULT_DECIMALS
 								)}
 							</ExchangeRate>
 							<ExchangeRate>
@@ -623,7 +627,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
 										Number(formik.values?.underlyingDealTokenTotal ?? 0),
-									2
+									DEFAULT_DECIMALS
 								)}
 							</ExchangeRate>
 						</div>
