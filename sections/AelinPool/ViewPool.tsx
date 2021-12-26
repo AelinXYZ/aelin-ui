@@ -68,17 +68,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	useEffect(() => {
 		async function getDealInfo() {
-			if (
-				deal?.id != null &&
-				deal?.underlyingDealToken &&
-				provider != null &&
-				walletAddress != null
-			) {
+			if (deal?.id != null && deal?.underlyingDealToken && provider != null) {
 				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
-				const balance = await contract.balanceOf(walletAddress);
+				const balance = walletAddress != null ? await contract.balanceOf(walletAddress) : 0;
 				const decimals = await contract.decimals();
 				const underlyingExchangeRate = await contract.underlyingPerDealExchangeRate();
-				const claimable = await contract.claimableTokens(walletAddress);
+				const claimable = walletAddress != null ? await contract.claimableTokens(walletAddress) : 0;
 				const formattedDealBalance = Number(ethers.utils.formatUnits(balance, decimals));
 				setDealBalance(formattedDealBalance);
 				const { decimals: underlyingDecimals, symbol: underlyingSymbol } = await getERC20Data({
@@ -87,7 +82,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				});
 
 				const claimableTokens = Number(
-					ethers.utils.formatUnits(claimable.underlyingClaimable.toString(), underlyingDecimals)
+					ethers.utils.formatUnits(
+						claimable?.underlyingClaimable?.toString() ?? '0',
+						underlyingDecimals
+					)
 				);
 				setClaimableUnderlyingTokens(claimableTokens);
 				setUnderlyingDealTokenDecimals(underlyingDecimals);
