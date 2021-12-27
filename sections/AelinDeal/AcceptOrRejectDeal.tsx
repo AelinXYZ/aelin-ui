@@ -62,19 +62,19 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		const now = Date.now();
 		if (
 			now >
-			deal?.proRataRedemptionPeriodStart +
-				deal?.proRataRedemptionPeriod +
-				deal?.openRedemptionPeriod
+			deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod
+			// deal?.openRedemptionPeriod
 		) {
 			return Status.Closed;
-		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
-			return Status.OpenRedemption;
 		}
+		// } else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
+		// 	return Status.OpenRedemption;
+		// }
 		return Status.ProRataRedemption;
 	}, [
 		deal?.proRataRedemptionPeriodStart,
 		deal?.proRataRedemptionPeriod,
-		deal?.openRedemptionPeriod,
+		// deal?.openRedemptionPeriod,
 	]);
 
 	const dealGridItems = useMemo(
@@ -339,7 +339,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						(inputValue ?? 0).toString(),
 						poolBalances?.purchaseTokenDecimals
 					),
-					// TODO update gasPrice and gasLimit
 					{
 						gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 						gasPrice: gasPrice.toBN(),
@@ -364,10 +363,16 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			} else {
 				throw new Error('unexpected tx type');
 			}
+			setTxState(TransactionStatus.WAITING);
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
-					onTxConfirmed: () => setTxState(TransactionStatus.SUCCESS),
+					onTxConfirmed: () => {
+						setTimeout(() => {
+							poolBalancesQuery.refetch();
+						}, 5 * 1000);
+						setTxState(TransactionStatus.SUCCESS);
+					},
 				});
 			}
 		} catch (e) {
@@ -385,6 +390,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		txType,
 		inputValue,
 		isMaxValue,
+		poolBalancesQuery,
 	]);
 
 	useEffect(() => {
