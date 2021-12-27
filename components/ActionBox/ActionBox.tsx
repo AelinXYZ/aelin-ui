@@ -112,6 +112,7 @@ interface ActionBoxProps {
 	inputValue: number;
 	setInputValue: (num: number) => void;
 	purchaseCurrency?: string;
+	poolId?: string;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
@@ -132,6 +133,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	inputValue,
 	setInputValue,
 	purchaseCurrency,
+	poolId,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isDealAccept, setIsDealAccept] = useState(false);
@@ -324,43 +326,47 @@ const ActionBox: FC<ActionBoxProps> = ({
 					</>
 				)}
 			</ContentContainer>
-			<ActionButton
-				disabled={isDisabled}
-				isWithdraw={isWithdraw}
-				onClick={(e) => {
-					const setCorrectTxnType = () => {
-						if (isPool && Number(allowance ?? 0) < Number(inputValue ?? 0)) {
-							return setTxType(TransactionType.Allowance);
-						}
-						if (isPool) {
-							return setTxType(TransactionType.Purchase);
-						}
-						if (actionBoxType === ActionBoxType.AcceptOrRejectDeal && isDealAccept) {
-							return setTxType(TransactionType.Accept);
-						}
-						if (isWithdraw) {
-							return setTxType(TransactionType.Withdraw);
-						}
-						if (actionBoxType === ActionBoxType.VestingDeal) {
-							return setTxType(TransactionType.Vest);
-						}
-						if (actionBoxType === ActionBoxType.Stake) {
-							return setTxType(TransactionType.Stake);
-						}
-					};
-					setCorrectTxnType();
-					setShowTxModal(true);
-				}}
-			>
-				{getActionButtonLabel({
-					isPurchaseExpired,
-					actionBoxType,
-					isDealAccept,
-					allowance,
-					amount: inputValue,
-					isPrivatePoolAndNoAllocation,
-				})}
-			</ActionButton>
+
+			{poolId === '0x7e135d4674406ca8f00f632be5c7a570060c0a15' ? null : (
+				<ActionButton
+					disabled={isDisabled}
+					isWithdraw={isWithdraw}
+					onClick={(e) => {
+						const setCorrectTxnType = () => {
+							if (isPool && Number(allowance ?? 0) < Number(inputValue ?? 0)) {
+								return setTxType(TransactionType.Allowance);
+							}
+							if (isPool) {
+								return setTxType(TransactionType.Purchase);
+							}
+							if (actionBoxType === ActionBoxType.AcceptOrRejectDeal && isDealAccept) {
+								return setTxType(TransactionType.Accept);
+							}
+							if (isWithdraw) {
+								return setTxType(TransactionType.Withdraw);
+							}
+							if (actionBoxType === ActionBoxType.VestingDeal) {
+								return setTxType(TransactionType.Vest);
+							}
+							if (actionBoxType === ActionBoxType.Stake) {
+								return setTxType(TransactionType.Stake);
+							}
+						};
+						setCorrectTxnType();
+						setShowTxModal(true);
+					}}
+				>
+					{getActionButtonLabel({
+						isPurchaseExpired,
+						actionBoxType,
+						isDealAccept,
+						allowance,
+						amount: inputValue,
+						isPrivatePoolAndNoAllocation,
+					})}
+				</ActionButton>
+			)}
+
 			{actionBoxType !== ActionBoxType.VestingDeal &&
 			Number(maxValue ?? 0) < Number(inputValue ?? 0) ? (
 				<ErrorNote>Max balance exceeded</ErrorNote>
