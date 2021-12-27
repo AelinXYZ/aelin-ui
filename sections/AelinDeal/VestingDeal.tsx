@@ -187,7 +187,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 const StyledExternalLink = styled(ExternalLink)`
 	color: ${(props) => props.theme.colors.statusBlue};
 `;
-
 const Notice = styled.div`
 	margin-top: 20px;
 	width: 100%;
