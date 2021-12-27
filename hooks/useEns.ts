@@ -4,6 +4,8 @@ import Connector from 'containers/Connector';
 import { useEffect, useState } from 'react';
 import { NetworkId } from 'constants/networks';
 
+import useDeepCompareEffect from 'use-deep-compare-effect';
+
 export const isEns = (x: string) => x.endsWith('.eth');
 
 export const useEnsToAddress = (ensName: string) => {
@@ -36,14 +38,14 @@ export const useAddressesToEns = (addresses: string[]) => {
 		[]
 	);
 
-	useEffect(() => {
+	useDeepCompareEffect(() => {
 		const getEnsName = async () => {
 			const areAddresses = addresses.map(utils.isAddress).some(Boolean);
 
 			if (!areAddresses) return;
 
 			let addresesToEns = [];
-			for await (let address of addresses) {
+			for (let address of addresses) {
 				const resolvedEnsName = await provider?.lookupAddress(address);
 
 				// ENS does not enforce the accuracy of reverse records - for instance, anyone may claim that the name for their address is 'alice.eth'. To be certain that the claim is accurate, you must always perform a forward resolution for the returned name and check it matches the original address.
@@ -59,8 +61,7 @@ export const useAddressesToEns = (addresses: string[]) => {
 			setEnsNames(addresesToEns);
 		};
 		getEnsName();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [addresses.length, setEnsNames, provider, network.id]);
+	}, [addresses, setEnsNames, provider, network.id]);
 
 	return ensNames;
 };

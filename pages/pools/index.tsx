@@ -30,16 +30,16 @@ const Pools: FC = () => {
 	const { network } = Connector.useContainer();
 
 	const [poolList, setPoolList] = useState([]);
-	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
-	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
-	const [nameFilter, setNameFilter] = useState<string | null>(null);
+	const [sponsorFilter, setSponsorFilter] = useState<string>('');
+	const [currencyFilter, setCurrencyFilter] = useState<string>('');
+	const [nameFilter, setNameFilter] = useState<string>('');
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [isPageOne, setIsPageOne] = useState<boolean>(true);
 
 	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
 
 	useEffect(() => {
-		setSponsorFilter((router.query?.sponsorFilter ?? null) as string | null);
+		setSponsorFilter((router.query?.sponsorFilter ?? '') as string | null);
 	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
@@ -86,7 +86,7 @@ const Pools: FC = () => {
 					};
 				});
 
-			if (sponsorFilter != null) {
+			if (sponsorFilter.length) {
 				list = list.filter(
 					(_, index) =>
 						ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase()) ||
@@ -94,13 +94,13 @@ const Pools: FC = () => {
 				);
 			}
 
-			if (currencyFilter != null) {
+			if (currencyFilter.length) {
 				list = list.filter(({ purchaseToken }) =>
 					purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
 				);
 			}
 
-			if (nameFilter != null) {
+			if (nameFilter.length) {
 				list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 			}
 
