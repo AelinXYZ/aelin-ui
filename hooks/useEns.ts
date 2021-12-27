@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { utils, providers } from 'ethers';
+import useDeepCompareEffect from 'use-deep-compare-effect';
+
 import Connector from 'containers/Connector';
-import { useEffect, useState } from 'react';
+
 import { NetworkId } from 'constants/networks';
 
-import useDeepCompareEffect from 'use-deep-compare-effect';
+import { hasNonAsciiCharacters } from 'utils/string';
 
 export const isEns = (x: string) => x.endsWith('.eth');
 
@@ -52,10 +54,14 @@ export const useAddressesToEns = (addresses: string[]) => {
 				const resolvedAddress = resolvedEnsName
 					? await provider?.resolveName(resolvedEnsName)
 					: undefined;
+
 				const validEnsName =
 					resolvedAddress?.toLowerCase() === address.toLowerCase() ? resolvedEnsName : address;
 
-				addresesToEns.push(validEnsName || address);
+				// Filter ENS that contains non-ASCII characters E.g: aеlingov.eth
+				const ensOrAddress = hasNonAsciiCharacters(validEnsName) ? address : validEnsName;
+
+				addresesToEns.push(ensOrAddress);
 			}
 
 			setEnsNames(addresesToEns);
