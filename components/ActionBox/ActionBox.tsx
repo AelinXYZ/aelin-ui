@@ -99,7 +99,13 @@ interface ActionBoxProps {
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
-	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
+	dealRedemptionData?: {
+		status: Status;
+		maxProRata: string;
+		isOpenEligible: boolean;
+		purchaseTokenTotalForDeal: number;
+		totalAmountAccepted: number;
+	};
 	setTxType: (txnType: TransactionType) => void;
 	txType: TransactionType;
 	setIsMaxValue: (isMax: boolean) => void;
@@ -181,13 +187,25 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isDisabled: boolean = useMemo(() => {
 		return (
 			!walletAddress ||
+			(actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
+				isDealAccept &&
+				dealRedemptionData?.status === Status.OpenRedemption) ||
 			(!isWithdraw && isPurchaseExpired) ||
 			(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
 			(actionBoxType !== ActionBoxType.VestingDeal && (!inputValue || Number(inputValue) === 0)) ||
 			(actionBoxType !== ActionBoxType.VestingDeal &&
 				Number(maxValue ?? 0) < Number(inputValue ?? 0))
 		);
-	}, [walletAddress, isWithdraw, isPurchaseExpired, actionBoxType, maxValue, inputValue]);
+	}, [
+		walletAddress,
+		isWithdraw,
+		isPurchaseExpired,
+		actionBoxType,
+		maxValue,
+		inputValue,
+		isDealAccept,
+		dealRedemptionData?.status,
+	]);
 
 	return (
 		<Container>
@@ -244,6 +262,19 @@ const ActionBox: FC<ActionBoxProps> = ({
 										}
 										if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
 											max = Math.min(Number(max), Number(dealRedemptionData.maxProRata ?? 0));
+										}
+										if (
+											dealRedemptionData?.status === Status.OpenRedemption &&
+											dealRedemptionData.isOpenEligible &&
+											!isWithdraw
+										) {
+											max =
+												Number(max) >=
+												dealRedemptionData?.purchaseTokenTotalForDeal -
+													dealRedemptionData?.totalAmountAccepted
+													? dealRedemptionData?.purchaseTokenTotalForDeal -
+													  dealRedemptionData?.totalAmountAccepted
+													: 0;
 										}
 										if (
 											(dealRedemptionData?.status === Status.Closed ||

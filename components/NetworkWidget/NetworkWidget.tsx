@@ -85,7 +85,7 @@ const NetworkWidget: FC = () => {
 		}
 
 		checkRouteAndRedirect();
-	}, [isOVM, provider, network?.id, walletAddress]);
+	}, [isOVM, provider, network?.id, walletAddress, checkRouteAndRedirect]);
 
 	const ChainList = (
 		<List>
