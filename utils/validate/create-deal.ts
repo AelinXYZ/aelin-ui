@@ -27,7 +27,7 @@ export interface CreateDealValues {
 
 const validateCreateDeal = (
 	values: CreateDealValues,
-	totalPoolSupply: number,
+	totalPoolSupply: string,
 	networkId?: NetworkId
 ) => {
 	const errors: any = {};

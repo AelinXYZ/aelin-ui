@@ -5,6 +5,11 @@ export enum Privacy {
 	PRIVATE = 'private',
 }
 
+export enum Allocation {
+	MAX = 'max',
+	DEALLOCATE = 'deallocate',
+}
+
 export const statusToText = (status: Status): string => {
 	switch (status) {
 		case Status.PoolOpen:

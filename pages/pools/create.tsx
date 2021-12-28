@@ -21,7 +21,7 @@ import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { FlexDivRow, FlexDivCol, Tooltip } from 'components/common';
+import { FlexDivRow, FlexDivCol } from 'components/common';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 import { TransactionStatus } from 'constants/transactions';

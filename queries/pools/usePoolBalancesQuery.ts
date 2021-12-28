@@ -58,8 +58,6 @@ const usePoolBalancesQuery = ({
 				poolContract.totalSupply(),
 				poolContract.purchaseTokenCap(),
 			]);
-			console.log('total supply', totalSupply.toString());
-			console.log('purchase cap', cap.toString());
 			console.log(
 				'Total Accepted',
 				Number(ethers.utils.formatUnits(totalAmountAccepted, decimals))

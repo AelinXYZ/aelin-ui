@@ -303,7 +303,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			const amount = isMaxValue
 				? maxValueBN.toBN()
 				: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
-			console.log('amount', amount);
+
 			const tx = await poolContract.purchasePoolTokens(amount, {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice.toBN(),

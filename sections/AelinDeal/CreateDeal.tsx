@@ -6,7 +6,7 @@ import { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
 
-import { FlexDivRow } from 'components/common';
+import { FlexDivRow, FlexDivCol } from 'components/common';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import { truncateAddress } from 'utils/crypto';
@@ -26,13 +26,15 @@ import TransactionData from 'containers/TransactionData';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { Allocation } from 'constants/pool';
 
 interface CreateDealProps {
 	poolAddress: string;
 }
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
-	const [totalPoolSupply, setTotalPoolSupply] = useState<number>(0);
+	const [totalPoolSupply, setTotalPoolSupply] = useState<string>('0');
+	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
@@ -108,6 +110,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			holderFundingExpiryDays: 0,
 			holderFundingExpiryHours: 0,
 			holderFundingExpiryMinutes: 0,
+			allocation: Allocation.MAX,
 			holder: '',
 		},
 		validate: (values: CreateDealValues) => validateCreateDeal(values, totalPoolSupply, network.id),
@@ -193,7 +196,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 				const supply = await poolContract.totalSupply();
 				const decimals = await poolContract.decimals();
-				setTotalPoolSupply(Number(ethers.utils.formatUnits(supply.toString(), decimals)));
+				setTotalPoolSupply(ethers.utils.formatUnits(supply.toString(), decimals));
 			}
 		}
 		getTotalSupply();
@@ -220,9 +223,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					openRedemptionDuration,
 					holder,
 					holderFundingDuration,
+					allocation,
 				} = await createVariablesToCreateDeal();
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
-
 				let gasEstimate = wei(
 					await poolContract!.estimateGas.createDeal(
 						underlyingDealToken,
@@ -297,14 +300,39 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 				subText: 'amount',
 				formField: (
-					<Input
-						id="purchaseTokenTotal"
-						name="purchaseTokenTotal"
-						type="number"
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						value={formik.values.purchaseTokenTotal || ''}
-					/>
+					<div>
+						<Input
+							id="purchaseTokenTotal"
+							name="purchaseTokenTotal"
+							type="number"
+							step="0.000000000000000001"
+							onChange={(e: any) => formik.setFieldValue('purchaseTokenTotal', e.target.value)}
+							onBlur={formik.handleBlur}
+							value={formik.values.purchaseTokenTotal || ''}
+						/>
+						<FlexDivRow>
+							<AllocationRow>
+								<Dot
+									onClick={() => {
+										setAllocation(Allocation.MAX);
+										formik.setFieldValue('purchaseTokenTotal', totalPoolSupply);
+									}}
+									isActive={allocation === Allocation.MAX}
+								/>{' '}
+								{Allocation.MAX}
+							</AllocationRow>
+							<AllocationRow>
+								<Dot
+									onClick={() => {
+										setAllocation(Allocation.DEALLOCATE);
+										formik.setFieldValue('purchaseTokenTotal', '0');
+									}}
+									isActive={allocation === Allocation.DEALLOCATE}
+								/>{' '}
+								{Allocation.DEALLOCATE}
+							</AllocationRow>
+						</FlexDivRow>
+					</div>
 				),
 				formError: formik.errors.purchaseTokenTotal,
 			},
@@ -689,6 +717,21 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 };
 
 const ExchangeRate = styled.div`
+	margin-top: 10px;
+`;
+
+const Dot = styled.div<{ isActive: boolean }>`
+	margin-right: 3px;
+	width: 15px;
+	height: 15px;
+	cursor: pointer;
+	border-radius: 50%;
+	background: ${(props) =>
+		props.isActive ? props.theme.colors.headerGrey : props.theme.colors.cell};
+	border: 1px solid ${(props) => props.theme.colors.headerGrey};
+`;
+
+const AllocationRow = styled(FlexDivRow)`
 	margin-top: 10px;
 `;
 
