@@ -25,12 +25,11 @@ export const statusToText = (status: Status): string => {
 };
 
 export const initialWhitelistValues = [
-	...new Array(5).fill(
-		{
-			address: '',
-			amount: null,
-			isSaved: false,
-		}
-	)
+	...new Array(5).fill({
+		address: '',
+		amount: null,
+		isSaved: false,
+	}),
 ];
 
+export const firstAelinPoolDealID = '0x06bad08305074da59fe98d0e85bad8f524e167df';
