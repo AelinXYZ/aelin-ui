@@ -6,7 +6,7 @@ import { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
 
-import { FlexDivRow, FlexDivCol } from 'components/common';
+import { FlexDivRow } from 'components/common';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import { truncateAddress } from 'utils/crypto';
@@ -223,7 +223,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					openRedemptionDuration,
 					holder,
 					holderFundingDuration,
-					allocation,
 				} = await createVariablesToCreateDeal();
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 				let gasEstimate = wei(

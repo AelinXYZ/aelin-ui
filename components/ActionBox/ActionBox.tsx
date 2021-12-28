@@ -246,7 +246,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 								value={inputValue}
 								onChange={(e) => {
 									setIsMaxValue(false);
-									setInputValue(e.target.value);
+									setInputValue(parseFloat(e.target.value));
 								}}
 							/>
 							{maxValue ? (
