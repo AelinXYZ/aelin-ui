@@ -143,28 +143,30 @@ const VestingDeal: FC<VestingDealProps> = ({
 		<div>
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-				<ActionBox
-					actionBoxType={ActionBoxType.VestingDeal}
-					onSubmit={() => {
-						if (deal?.id === firstAelinPoolDealID) {
-							return alert('Deal claiming is inactive for this pool. Please see message below');
-						}
-						handleSubmit();
-					}}
-					input={{
-						placeholder: '0',
-						label: '',
-						maxValue: claimableUnderlyingTokens ?? 0,
-					}}
-					inputValue={inputValue}
-					setInputValue={setInputValue}
-					setIsMaxValue={setIsMaxValue}
-					txState={txState}
-					setGasPrice={setGasPrice}
-					gasLimitEstimate={gasLimitEstimate}
-					txType={txType}
-					setTxType={setTxType}
-				/>
+				{deal?.id !== firstAelinPoolDealID ? (
+					<ActionBox
+						actionBoxType={ActionBoxType.VestingDeal}
+						onSubmit={() => {
+							if (deal?.id === firstAelinPoolDealID) {
+								return alert('Deal claiming is inactive for this pool. Please see message below');
+							}
+							handleSubmit();
+						}}
+						input={{
+							placeholder: '0',
+							label: '',
+							maxValue: claimableUnderlyingTokens ?? 0,
+						}}
+						inputValue={inputValue}
+						setInputValue={setInputValue}
+						setIsMaxValue={setIsMaxValue}
+						txState={txState}
+						setGasPrice={setGasPrice}
+						gasLimitEstimate={gasLimitEstimate}
+						txType={txType}
+						setTxType={setTxType}
+					/>
+				) : null}
 			</FlexDiv>
 			{deal?.id === firstAelinPoolDealID ? (
 				<Notice>
