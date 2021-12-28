@@ -196,11 +196,15 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 				const supply = await poolContract.totalSupply();
 				const decimals = await poolContract.decimals();
-				setTotalPoolSupply(ethers.utils.formatUnits(supply.toString(), decimals));
+				const poolSupply = ethers.utils.formatUnits(supply.toString(), decimals);
+				setTotalPoolSupply(poolSupply);
+				if (allocation === Allocation.MAX) {
+					formik.setFieldValue('purchaseTokenTotal', poolSupply);
+				}
 			}
 		}
 		getTotalSupply();
-	}, [poolAddress, signer]);
+	}, [poolAddress, signer, allocation, formik]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -607,7 +611,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				formError: formik.errors.holder,
 			},
 		],
-		[formik]
+		[formik, allocation, totalPoolSupply]
 	);
 
 	const summaryItems = useMemo(
