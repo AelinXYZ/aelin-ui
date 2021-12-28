@@ -52,23 +52,34 @@ export const parsePool = ({
 	dealAddress,
 	purchaseTokenDecimals,
 	hasAllowList,
-}: PoolCreatedResult) => ({
-	id,
-	timestamp: Number(timestamp) * 1000,
-	name: utils.parseBytes32String(name.split('-')[1]),
-	symbol: utils.parseBytes32String(symbol.split('-')[1]),
-	duration: Number(duration) * 1000,
-	purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
-	purchaseToken,
-	purchaseExpiry: Number(purchaseExpiry) * 1000,
-	purchaseTokenCap,
-	sponsor,
-	contributions,
-	purchaseDuration,
-	sponsorFee,
-	poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
-	dealAddress,
-	hasAllowList,
-});
+}: PoolCreatedResult) => {
+	let formattedName = '';
+	let formattedSymbol = '';
+	try {
+		formattedName = utils.parseBytes32String(name.split('-')[1]);
+		formattedSymbol = utils.parseBytes32String(symbol.split('-')[1]);
+	} catch (e) {
+		formattedName = name.split('-')[1];
+		formattedSymbol = symbol.split('-')[1];
+	}
+	return {
+		id,
+		timestamp: Number(timestamp) * 1000,
+		name: formattedName,
+		symbol: formattedSymbol,
+		duration: Number(duration) * 1000,
+		purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
+		purchaseToken,
+		purchaseExpiry: Number(purchaseExpiry) * 1000,
+		purchaseTokenCap,
+		sponsor,
+		contributions,
+		purchaseDuration,
+		sponsorFee,
+		poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
+		dealAddress,
+		hasAllowList,
+	};
+};
 
 export default useGetPoolsQuery;

@@ -110,7 +110,7 @@ const Create: FC = () => {
 	});
 
 	const createVariablesToCreatePool = useCallback(async () => {
-		const { formatBytes32String, parseEther, parseUnits } = utils;
+		const { parseEther, parseUnits } = utils;
 		const now = new Date();
 
 		const {
@@ -167,8 +167,8 @@ const Create: FC = () => {
 
 		return {
 			...formik.values,
-			poolName: formatBytes32String(poolName),
-			poolSymbol: formatBytes32String(poolSymbol),
+			poolName,
+			poolSymbol,
 			poolCap: parseUnits(poolCap.toString(), purchaseTokenDecimals),
 			sponsorFee: parseEther(sponsorFee.toString()),
 			duration,

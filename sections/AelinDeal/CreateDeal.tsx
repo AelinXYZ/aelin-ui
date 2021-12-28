@@ -193,7 +193,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 				const supply = await poolContract.totalSupply();
 				const decimals = await poolContract.decimals();
-				setTotalPoolSupply(Number(ethers.utils.formatUnits(supply, decimals)));
+				setTotalPoolSupply(Number(ethers.utils.formatUnits(supply.toString(), decimals)));
 			}
 		}
 		getTotalSupply();

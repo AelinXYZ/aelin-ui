@@ -148,6 +148,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	useEffect(() => {
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
+	console.log('inputValue', inputValue);
 
 	const modalContent = useMemo(
 		() => ({
@@ -246,7 +247,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 								value={inputValue}
 								onChange={(e) => {
 									setIsMaxValue(false);
-									setInputValue(parseFloat(e.target.value));
+									setInputValue(e.target.value);
 								}}
 							/>
 							{maxValue ? (
@@ -254,6 +255,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 									isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
 									onClick={() => {
 										let max = maxValue;
+										console.log('dealRedemptionData?.status', dealRedemptionData?.status);
 										if (privatePoolDetails?.isPrivatePool && !isWithdraw) {
 											max = Math.min(
 												Number(privatePoolDetails?.privatePoolAmount ?? 0),

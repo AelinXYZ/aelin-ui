@@ -42,6 +42,8 @@ const usePoolBalancesQuery = ({
 				unformattedMaxProRata,
 				isOpenEligible,
 				totalAmountAccepted,
+				totalSupply,
+				cap,
 			] = await Promise.all([
 				walletAddress != null ? poolContract.balanceOf(walletAddress) : 0,
 				walletAddress != null ? tokenContract.balanceOf(walletAddress) : 0,
@@ -53,7 +55,11 @@ const usePoolBalancesQuery = ({
 				walletAddress != null ? poolContract.maxProRataAvail(walletAddress) : 0,
 				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
 				poolContract.totalAmountAccepted(),
+				poolContract.totalSupply(),
+				poolContract.purchaseTokenCap(),
 			]);
+			console.log('total supply', totalSupply.toString());
+			console.log('purchase cap', cap.toString());
 			console.log(
 				'Total Accepted',
 				Number(ethers.utils.formatUnits(totalAmountAccepted, decimals))
