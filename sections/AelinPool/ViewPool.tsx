@@ -18,6 +18,7 @@ import useGetClaimedUnderlyingDealTokensQuery, {
 import SectionTitle from 'sections/shared/SectionTitle';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import PurchasePool from './PurchasePool';
+import PoolDurationEnded from './PoolDurationEnded';
 import { PoolCreatedResult } from 'subgraph';
 import { Status } from 'components/DealStatus';
 import Connector from 'containers/Connector';
@@ -163,6 +164,17 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
 						underlyingDealTokenSymbol={underlyingDealTokenSymbol}
 					/>
+				</SectionWrapper>
+			) : null}
+			{now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
+			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle address={deal?.id} title="Aelin Pool Unlocked" />
+						</ContentTitle>
+					</ContentHeader>
+					<PoolDurationEnded pool={pool} />
 				</SectionWrapper>
 			) : null}
 			{(deal?.id != null &&

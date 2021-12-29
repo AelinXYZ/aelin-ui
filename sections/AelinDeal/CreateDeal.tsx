@@ -192,7 +192,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 
 	useEffect(() => {
 		async function getTotalSupply() {
-			if (signer != null && poolAddress != null) {
+			if (signer != null && poolAddress != null && totalPoolSupply === '0') {
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 				const supply = await poolContract.totalSupply();
 				const decimals = await poolContract.decimals();
@@ -204,7 +204,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 			}
 		}
 		getTotalSupply();
-	}, [poolAddress, signer, allocation, formik]);
+	}, [poolAddress, signer, allocation, formik, totalPoolSupply]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -309,7 +309,12 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							name="purchaseTokenTotal"
 							type="number"
 							step="0.000000000000000001"
-							onChange={(e: any) => formik.setFieldValue('purchaseTokenTotal', e.target.value)}
+							onChange={(e: any) => {
+								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
+									setAllocation(Allocation.DEALLOCATE);
+								}
+								formik.setFieldValue('purchaseTokenTotal', e.target.value);
+							}}
 							onBlur={formik.handleBlur}
 							value={formik.values.purchaseTokenTotal || ''}
 						/>
@@ -352,7 +357,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 						id="underlyingDealTokenTotal"
 						name="underlyingDealTokenTotal"
 						type="number"
-						onChange={formik.handleChange}
+						step="0.000000000000000001"
+						onChange={(e: any) => formik.setFieldValue('underlyingDealTokenTotal', e.target.value)}
 						onBlur={formik.handleBlur}
 						value={formik.values.underlyingDealTokenTotal || ''}
 					/>

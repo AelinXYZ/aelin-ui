@@ -39,14 +39,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer, network } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const {
-		txState,
-		setTxState,
-		setGasPrice,
-		gasPrice,
-		txType,
-		setTxType,
-	} = TransactionData.useContainer();
+	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
+		TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -57,6 +51,12 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	});
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
+	const totalAmountAccepted = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.totalAmountAccepted ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
 
 	const dealRedemptionPeriod = useMemo(() => {
 		const now = Date.now();
@@ -279,8 +279,18 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header: 'Vesting Curve',
-				subText: 'linear',
+				header: 'Total redeemed',
+				subText: (
+					<div>
+						<div>{formatNumber(totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
+						<NoticeText>
+							{(poolBalances?.totalAmountAccepted ?? '1') ===
+							(deal?.purchaseTokenTotalForDeal?.toString() ?? '0')
+								? 'Pool cap reached'
+								: null}
+						</NoticeText>
+					</div>
+				),
 			},
 			{
 				header: (
@@ -319,6 +329,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			poolBalances?.purchaseTokenDecimals,
 			underlyingDealTokenSymbol,
 			network?.id,
+			poolBalances?.totalAmountAccepted,
+			totalAmountAccepted,
 		]
 	);
 
@@ -447,7 +459,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				status: dealRedemptionPeriod,
 				maxProRata: poolBalances?.maxProRata ?? 0,
 				isOpenEligible: poolBalances?.isOpenEligible ?? false,
-				totalAmountAccepted: poolBalances?.totalAmountAccepted ?? 0,
+				totalAmountAccepted: totalAmountAccepted ?? 0,
 				purchaseTokenTotalForDeal: Number(
 					ethers.utils.formatUnits(
 						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
@@ -480,6 +492,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 const ExchangeRate = styled.div`
 	margin-bottom: 4px;
+`;
+
+const NoticeText = styled.div`
+	color: ${(props) => props.theme.colors.statusRed};
+	margin-top: 3px;
+	font-size: 14px;
+	font-weight: bold;
 `;
 
 export default AcceptOrRejectDeal;

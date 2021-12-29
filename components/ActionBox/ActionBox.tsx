@@ -18,6 +18,7 @@ export enum ActionBoxType {
 	AcceptOrRejectDeal = 'ACCEPT_OR_REJECT_DEAL',
 	VestingDeal = 'VESTING_DEAL',
 	Stake = 'STAKE',
+	Withdraw = 'WITHDRAW',
 }
 
 export type InputType = {
@@ -53,6 +54,8 @@ const actionBoxTypeToTitle = (
 			return 'Vest Deal';
 		case ActionBoxType.Stake:
 			return 'Stake';
+		case ActionBoxType.Withdraw:
+			return 'Withdraw';
 	}
 };
 
@@ -85,6 +88,8 @@ const getActionButtonLabel = ({
 			return 'Vest Deal';
 		case ActionBoxType.Stake:
 			return 'Stake';
+		case ActionBoxType.Withdraw:
+			return 'Withdraw';
 	}
 };
 
@@ -487,7 +492,7 @@ const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 	position: absolute;
 	width: ${(props) => (props.isProRata ? '85px' : '33px')};
 	height: 21px;
-	left: ${(props) => (props.isProRata ? '190px' : '210px')};
+	left: ${(props) => (props.isProRata ? '185px' : '210px')};
 	text-align: center;
 	padding-top: 4px;
 	padding-left: 2px;
