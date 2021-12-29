@@ -210,7 +210,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						Balance
 					</span>
 				),
-				subText: userPurchaseBalance,
+				subText: formatNumber(userPurchaseBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
 				header: (

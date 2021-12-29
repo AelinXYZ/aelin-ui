@@ -90,3 +90,14 @@ export const StyledSpinner = styled(Image)`
 	display: block;
 	margin: 30px auto;
 `;
+
+export const Notice = styled.div`
+	margin-top: 20px;
+	width: 100%;
+	max-width: 940px;
+	background-color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
+	text-align: center;
+	padding: 10px;
+	font-size: 20px;
+`;

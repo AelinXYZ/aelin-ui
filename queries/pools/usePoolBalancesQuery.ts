@@ -15,7 +15,7 @@ type PoolBalances = {
 	privatePoolAmount: number;
 	isOpenEligible: boolean;
 	maxProRata: number;
-	totalAmountAccepted: number;
+	totalAmountAccepted: string;
 };
 
 const usePoolBalancesQuery = ({
@@ -67,7 +67,7 @@ const usePoolBalancesQuery = ({
 				isPrivatePool: hasAllowList,
 				privatePoolAmount: Number(ethers.utils.formatUnits(unformattedAllowListAmount, decimals)),
 				maxProRata: Number(ethers.utils.formatUnits(unformattedMaxProRata, decimals)),
-				totalAmountAccepted: Number(ethers.utils.formatUnits(totalAmountAccepted, decimals)),
+				totalAmountAccepted: totalAmountAccepted.toString(),
 				isOpenEligible,
 			};
 		},
