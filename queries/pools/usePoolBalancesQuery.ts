@@ -58,10 +58,6 @@ const usePoolBalancesQuery = ({
 				poolContract.totalSupply(),
 				poolContract.purchaseTokenCap(),
 			]);
-			console.log(
-				'Total Accepted',
-				Number(ethers.utils.formatUnits(totalAmountAccepted, decimals))
-			);
 			return {
 				purchaseTokenDecimals: decimals,
 				purchaseTokenSymbol: symbol,

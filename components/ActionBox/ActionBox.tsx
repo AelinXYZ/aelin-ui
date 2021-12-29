@@ -187,25 +187,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isDisabled: boolean = useMemo(() => {
 		return (
 			!walletAddress ||
-			(actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
-				isDealAccept &&
-				dealRedemptionData?.status === Status.OpenRedemption) ||
 			(!isWithdraw && isPurchaseExpired) ||
 			(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
 			(actionBoxType !== ActionBoxType.VestingDeal && (!inputValue || Number(inputValue) === 0)) ||
 			(actionBoxType !== ActionBoxType.VestingDeal &&
 				Number(maxValue ?? 0) < Number(inputValue ?? 0))
 		);
-	}, [
-		walletAddress,
-		isWithdraw,
-		isPurchaseExpired,
-		actionBoxType,
-		maxValue,
-		inputValue,
-		isDealAccept,
-		dealRedemptionData?.status,
-	]);
+	}, [walletAddress, isWithdraw, isPurchaseExpired, actionBoxType, maxValue, inputValue]);
 
 	return (
 		<Container>
