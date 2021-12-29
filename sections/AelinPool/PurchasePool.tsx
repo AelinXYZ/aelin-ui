@@ -238,7 +238,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Pool Duration`}</>
+						<>{`Pool Duration Ends`}</>
 						<QuestionMark
 							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
@@ -246,11 +246,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<>
-						<Countdown
-							timeStart={pool?.purchaseExpiry ?? 0}
-							time={(pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)}
-							networkId={network.id}
-						/>
 						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 					</>
 				),

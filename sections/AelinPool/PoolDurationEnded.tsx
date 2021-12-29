@@ -9,7 +9,6 @@ import Grid from 'components/Grid';
 import ActionBox, { ActionBoxType } from 'components/ActionBox';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
-import Countdown from 'components/Countdown';
 
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -25,13 +24,14 @@ import TransactionData from 'containers/TransactionData';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { TransactionType, TransactionStatus } from 'constants/transactions';
 
 interface PoolDurationEndedProps {
 	pool: PoolCreatedResult | null;
 }
 
 const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
-	const { walletAddress, signer, network } = Connector.useContainer();
+	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
@@ -39,6 +39,8 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 		TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
+
+	useEffect(() => setTxType(TransactionType.Withdraw), []);
 
 	const poolContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
@@ -57,23 +59,20 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!poolContract || !pool.id || !walletAddress || !signer || !purchaseTokenDecimals)
+			if (!poolContract || !pool.id || !walletAddress || !signer || !purchaseTokenDecimals) {
 				return setGasLimitEstimate(null);
+			}
 			try {
 				if (isMaxValue) {
-					setGasLimitEstimate(
-						setGasLimitEstimate(wei(await poolContract.estimateGas.withdrawMaxFromPool(), 0))
-					);
+					setGasLimitEstimate(wei(await poolContract.estimateGas.withdrawMaxFromPool(), 0));
 				} else {
-					wei(
-						await poolContract.estimateGas.withdrawFromPool(
-							ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals)
-						),
-						0
+					const amount = ethers.utils.parseUnits(
+						(inputValue ?? 0).toString(),
+						purchaseTokenDecimals
 					);
+					setGasLimitEstimate(wei(await poolContract.estimateGas.withdrawFromPool(amount), 0));
 				}
 			} catch (e) {
-				console.log(e);
 				setGasLimitEstimate(null);
 			}
 		};
@@ -167,7 +166,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Pool Duration`}</>
+						<>{`Pool Duration Ends`}</>
 						<QuestionMark
 							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
@@ -175,11 +174,6 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 				),
 				subText: (
 					<>
-						<Countdown
-							timeStart={pool?.purchaseExpiry ?? 0}
-							time={(pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)}
-							networkId={network.id}
-						/>
 						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 					</>
 				),
@@ -192,7 +186,6 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 			purchaseTokenSymbol,
 			pool?.purchaseExpiry,
 			pool?.duration,
-			network.id,
 		]
 	);
 
@@ -216,12 +209,12 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 					gasLimitEstimate={gasLimitEstimate}
 					txType={txType}
 					setTxType={setTxType}
+					purchaseCurrency={purchaseTokenSymbol}
 				/>
 			</FlexDiv>
 			<Notice>
-				The duration for this AELIN pool has ended. You are welcome to withdraw your funds although
-				the sponsor may still create a deal for the funds remaining in the pool so you might want to
-				wait if you think a good deal is coming soon
+				The duration for this AELIN pool has ended. You may withdraw your funds now although the
+				sponsor may still create a deal for you if you remain in the pool
 			</Notice>
 		</>
 	);
