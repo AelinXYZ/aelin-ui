@@ -136,7 +136,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	poolId,
 }) => {
 	const { walletAddress } = Connector.useContainer();
-	const [isDealAccept, setIsDealAccept] = useState(false);
+	const [isDealAccept, setIsDealAccept] = useState(true);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
 
@@ -407,6 +407,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
 	max-height: 400px;
+	min-height: 250px;
 	width: 300px;
 	position: relative;
 	border-radius: 8px;
