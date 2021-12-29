@@ -62,19 +62,19 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		const now = Date.now();
 		if (
 			now >
-			deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod
-			// deal?.openRedemptionPeriod
+			deal?.proRataRedemptionPeriodStart +
+				deal?.proRataRedemptionPeriod +
+				deal?.openRedemptionPeriod
 		) {
 			return Status.Closed;
+		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
+			return Status.OpenRedemption;
 		}
-		// } else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
-		// 	return Status.OpenRedemption;
-		// }
 		return Status.ProRataRedemption;
 	}, [
 		deal?.proRataRedemptionPeriodStart,
 		deal?.proRataRedemptionPeriod,
-		// deal?.openRedemptionPeriod,
+		deal?.openRedemptionPeriod,
 	]);
 
 	const dealGridItems = useMemo(
