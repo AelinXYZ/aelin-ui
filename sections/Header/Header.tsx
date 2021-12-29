@@ -18,7 +18,7 @@ const Header: FC = () => {
 			{ label: 'Pools', pathname: ROUTES.Pools.Home },
 			{ label: 'Claim Aelin', pathname: ROUTES.ClaimTokens },
 			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true },
-			{ label: 'Stake (coming soon)', pathname: ROUTES.Stake, isDisabled: true },
+			{ label: 'Stake', pathname: ROUTES.Stake },
 		],
 		[]
 	);

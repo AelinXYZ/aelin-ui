@@ -35,7 +35,7 @@ const Footer: FC = () => {
 						<Link href={ROUTES.Pools.Home} passHref>
 							<StyledA>POOLS. </StyledA>
 						</Link>
-						<Link href={ROUTES.Home} passHref>
+						<Link href={ROUTES.Pools.Create} passHref>
 							<StyledA>CREATE POOL. </StyledA>
 						</Link>
 						<Link href={ROUTES.ClaimTokens} passHref>
@@ -45,7 +45,7 @@ const Footer: FC = () => {
 							<StyledA target="_blank">DOCS. </StyledA>
 						</Link>
 						<Link href={ROUTES.Stake} passHref>
-							<StyledA isDisabled>STAKE (COMING SOON). </StyledA>
+							<StyledA isDisabled>STAKE. </StyledA>
 						</Link>
 					</>
 				</NavRow>
