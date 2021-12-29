@@ -8,8 +8,15 @@ import PoolFactoryContract from './contracts/AelinPoolFactory';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { getKeyValue } from 'utils/helpers';
 
+type StakingContracts = {
+	RewardsContract: Contract;
+	TokenContract: Contract;
+};
+
 type AelinContracts = {
 	AelinPoolFactory: Contract | null;
+	AelinStaking: StakingContracts | null;
+	AelinEthStaking: StakingContracts | null;
 };
 
 const useContractsInterface = () => {
