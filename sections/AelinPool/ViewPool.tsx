@@ -26,6 +26,7 @@ import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
 import VestingDeal from 'sections/AelinDeal/VestingDeal';
 import FundDeal from '../AelinDeal/FundDeal';
 import { getERC20Data } from 'utils/crypto';
+import { vAelinPoolID } from 'constants/pool';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -167,6 +168,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				</SectionWrapper>
 			) : null}
 			{now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
+			pool?.id !== vAelinPoolID &&
 			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
 				<SectionWrapper>
 					<ContentHeader>
