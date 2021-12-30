@@ -1,81 +1,85 @@
 import { FC, useState, useMemo, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import Info from 'assets/svg/info.svg';
-import Image from 'next/image';
+import Wei, { wei } from '@synthetixio/wei';
 
-import { FlexDivRow, FlexDivRowCentered, Tooltip, FlexDiv } from 'components/common';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { FlexDiv } from 'components/common';
+import { TransactionStatus } from 'constants/transactions';
 import Connector from 'containers/Connector';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-import QuestionMark from 'components/QuestionMark';
 import { GasLimitEstimate } from 'constants/networks';
-import { Status } from 'components/DealStatus';
-import { statusToText } from 'constants/pool';
-
-import { StakeActions } from 'sections/Stake/constants';
+import { StakeActions, StakeActionLabel } from 'sections/Stake/constants';
 
 export type InputType = {
 	placeholder: string;
 	label: string;
-	maxValue?: string | number;
-	symbol?: string;
+	symbol: string;
 };
 
 interface ActionBoxProps {
 	onSubmit: () => void;
 	input: InputType;
-	allowance?: string;
-	onApprove?: () => void;
+	onApprove: () => void;
 	txState: TransactionStatus;
-	isPurchaseExpired?: boolean;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
-	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
-	dealRedemptionData?: {
-		status: Status;
-		maxProRata: string;
-		isOpenEligible: boolean;
-		purchaseTokenTotalForDeal: number;
-		totalAmountAccepted: number;
-	};
-	setTxType: (txnType: TransactionType) => void;
-	txType: TransactionType;
 	setIsMaxValue: (isMax: boolean) => void;
 	inputValue: number;
 	setInputValue: (num: number) => void;
-	purchaseCurrency?: string;
-	poolId?: string;
+	balance: Wei;
+	isApproved: boolean;
+	action: StakeActionLabel;
+	setAction: (action: StakeActionLabel) => void;
 }
 
 const ActionBox: FC<ActionBoxProps> = ({
 	onSubmit,
-	input: { placeholder, label, maxValue },
-	allowance,
+	input: { placeholder, label, symbol },
 	onApprove,
 	txState,
-	isPurchaseExpired,
 	setGasPrice,
 	gasLimitEstimate,
-	dealRedemptionData,
-	setTxType,
-	txType,
 	setIsMaxValue,
 	inputValue,
 	setInputValue,
-	purchaseCurrency,
 	action,
 	setAction,
+	isApproved,
+	balance,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState(false);
+
+	const modalContent = useMemo(() => {
+		if (!isApproved) {
+			return {
+				onSubmit: onApprove,
+				heading: 'Confirm Approval',
+			};
+		}
+		if (action === StakeActionLabel.DEPOSIT) {
+			return {
+				onSubmit: onSubmit,
+				heading: `Confirm deposit of ${inputValue} ${symbol}`,
+			};
+		}
+		if (action === StakeActionLabel.WITHDRAW) {
+			return {
+				onSubmit: onSubmit,
+				heading: `Confirm withdrawal of ${inputValue} ${symbol}`,
+			};
+		}
+	}, [isApproved, onApprove, action, onSubmit, inputValue, symbol]);
 
 	useEffect(() => {
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
 
 	const isDisabled: boolean = useMemo(() => {
-		return !walletAddress || !inputValue || Number(inputValue) === 0;
-	}, [walletAddress, inputValue]);
+		if (!isApproved) return false;
+		if (!walletAddress || !inputValue) return true;
+		if (balance?.toNumber() < inputValue) return true;
+		return false;
+	}, [walletAddress, inputValue, isApproved, balance]);
 
 	return (
 		<Container>
@@ -102,62 +106,39 @@ const ActionBox: FC<ActionBoxProps> = ({
 							setInputValue(parseFloat(e.target.value));
 						}}
 					/>
-					{maxValue ? (
-						<ActionBoxMax
-							isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
-							onClick={() => console.log('here')}
-						>
-							{dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw
-								? 'Max Pro Rata'
-								: 'Max'}
-						</ActionBoxMax>
-					) : null}
+					<ActionBoxMax
+						onClick={() => {
+							if (balance?.gt(wei(0))) {
+								setInputValue(balance?.toNumber());
+							}
+						}}
+					>
+						Max
+					</ActionBoxMax>
+					{balance?.toNumber() < inputValue ? <ErrorNote>Max balance exceeded</ErrorNote> : null}
 				</InputContainer>
 			</ContentContainer>
 
 			<ActionButton
+				isWithdraw={action === StakeActionLabel.WITHDRAW}
 				disabled={isDisabled}
-				// isWithdraw={isWithdraw}
 				onClick={(e) => {
 					setShowTxModal(true);
 				}}
 			>
-				{action}
+				{isApproved ? action : 'approve'}
 			</ActionButton>
 
-			{/* {actionBoxType !== ActionBoxType.VestingDeal &&
-			Number(maxValue ?? 0) < Number(inputValue ?? 0) ? (
-				<ErrorNote>Max balance exceeded</ErrorNote>
-			) : null}
-			{actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
-			dealRedemptionData?.status === Status.ProRataRedemption &&
-			!isWithdraw &&
-			Number(dealRedemptionData.maxProRata ?? 0) < Number(inputValue ?? 0) ? (
-				<ErrorNote>More than pro rata amount</ErrorNote>
-			) : null}
-			{actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
-			dealRedemptionData?.status === Status.Closed &&
-			!isWithdraw &&
-			Number(inputValue ?? 0) > 0 ? (
-				<ErrorNote>Redemption period is closed</ErrorNote>
-			) : null}
-			{actionBoxType === ActionBoxType.AcceptOrRejectDeal &&
-			dealRedemptionData?.status === Status.OpenRedemption &&
-			!dealRedemptionData.isOpenEligible &&
-			!isWithdraw &&
-			Number(inputValue ?? 0) > 0 ? (
-				<ErrorNote>You are not eligible for open redemption period</ErrorNote>
-			) : null} */}
-			{/* <ConfirmTransactionModal
+			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={modalContent[txType].onSubmit}
+				onSubmit={modalContent?.onSubmit}
 			>
-				{modalContent[txType].heading}
-			</ConfirmTransactionModal> */}
+				{modalContent?.heading}
+			</ConfirmTransactionModal>
 		</Container>
 	);
 };
@@ -188,12 +169,8 @@ const ActionTabElement = styled.div<{ selected: boolean }>`
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
 	width: 300px;
-	/* position: relative; */
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-`;
-const ActionBoxHeaderWrapper = styled(FlexDivRow)`
-	margin-top: 20px;
 `;
 
 const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
@@ -210,28 +187,6 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 		`}
 `;
 
-const RedemptionHeader = styled.div`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	height: 32px;
-	width: 100%;
-	color: ${(props) => props.theme.colors.white};
-	text-align: center;
-	padding-top: 7px;
-	font-size: 12px;
-	border-radius: 4px 4px 0 0;
-`;
-
-const RedemptionPeriodTooltip = styled(Tooltip)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-`;
-
-const InfoClick = styled.div`
-	padding-left: 8px;
-	padding-top: 3px;
-	cursor: pointer;
-	display: inline;
-`;
-
 const InputContainer = styled.div`
 	position: relative;
 `;
@@ -240,14 +195,11 @@ const ContentContainer = styled.div`
 	padding: 30px 20px;
 `;
 
-const Paragraph = styled.p`
-	color: ${(props) => props.theme.colors.black};
-	font-size: 12px;
-`;
-
 const ErrorNote = styled.div`
+	position: absolute;
+	bottom: -18px;
+	left: 0;
 	color: ${(props) => props.theme.colors.statusRed};
-	padding-left: 20px;
 	font-size: 12px;
 	font-weight: bold;
 `;
@@ -274,15 +226,14 @@ const ActionBoxInput = styled.input`
 	}
 `;
 
-const ActionBoxMax = styled.div<{ isProRata: boolean }>`
+const ActionBoxMax = styled.div`
 	position: absolute;
-	width: ${(props) => (props.isProRata ? '85px' : '33px')};
 	height: 21px;
-	left: ${(props) => (props.isProRata ? '190px' : '210px')};
+	left: 180px;
 	text-align: center;
-	padding-top: 4px;
-	padding-left: 2px;
-	top: 7px;
+	padding: 4px 6px 4px 4px;
+	top: 50%;
+	transform: translateY(-50%);
 	color: ${(props) => props.theme.colors.textGrey};
 	font-size: 11px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
