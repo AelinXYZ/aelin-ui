@@ -52,7 +52,7 @@ const usePoolBalancesQuery = ({
 				walletAddress != null ? tokenContract.allowance(walletAddress, poolAddress) : 0,
 				poolContract.hasAllowList(),
 				walletAddress != null ? poolContract.allowList(walletAddress) : 0,
-				walletAddress != null ? poolContract.maxProRataAvail(walletAddress) : 0,
+				walletAddress != null ? poolContract.maxProRataAmount(walletAddress) : 0,
 				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
 				poolContract.totalAmountAccepted(),
 				poolContract.totalSupply(),
