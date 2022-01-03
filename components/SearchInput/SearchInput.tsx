@@ -39,7 +39,7 @@ const Input = styled.input`
 	padding: 12px 30px;
 	&::placeholder {
 		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
+		font-size: 1rem;
 	}
 `;
 

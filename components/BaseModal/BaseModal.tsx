@@ -72,7 +72,7 @@ const StyledModalBody = styled.div`
 const StyledModalHeader = styled.div`
 	display: flex;
 	justify-content: flex-end;
-	font-size: 25px;
+	font-size: 2rem;
 `;
 
 const StyledTitle = styled.div`

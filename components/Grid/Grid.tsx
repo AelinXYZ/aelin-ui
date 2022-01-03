@@ -101,7 +101,7 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 
 const GridItemHeader = styled.div`
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 12px;
+	font-size: 1.2rem;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -109,14 +109,14 @@ const GridItemHeader = styled.div`
 
 const GridItemSubText = styled.div`
 	color: ${(props) => props.theme.colors.black};
-	font-size: 12px;
+	font-size: 1rem;
 	margin: 5px 0;
 `;
 
 const ErrorField = styled.div`
 	color: ${(props) => props.theme.colors.statusRed};
 	margin-top: 5px;
-	font-size: 13px;
+	font-size: 1rem;
 	font-weight: bold;
 `;
 

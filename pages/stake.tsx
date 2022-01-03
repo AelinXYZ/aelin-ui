@@ -134,7 +134,7 @@ const Stake = () => {
 const Header = styled.h3`
 	padding: 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 22px;
+	font-size: 2rem;
 	margin: 0 10px 20px 0;
 	padding: 0;
 `;
@@ -142,7 +142,7 @@ const Header = styled.h3`
 const Text = styled.h3`
 	padding: 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 14px;
+	font-size: 1.2rem;
 	margin: 20px 0;
 	padding: 0;
 `;

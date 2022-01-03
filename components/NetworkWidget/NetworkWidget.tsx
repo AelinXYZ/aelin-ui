@@ -151,7 +151,7 @@ const ChainElement = styled(FlexDivCentered)`
 
 const ChainLabel = styled.span`
 	margin-left: 8px;
-	font-size: 12px;
+	font-size: 1rem;
 `;
 
 export default NetworkWidget;

@@ -116,7 +116,7 @@ const LinkContainer = styled.div`
 const ActionText = styled.span`
 	font-family: Planetnv2-Regular;
 	color: #5b8847;
-	font-size: 22px;
+	font-size: 2rem;
 	position: relative;
 `;
 
