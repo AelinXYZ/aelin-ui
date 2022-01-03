@@ -397,6 +397,25 @@ const poolAbi = [
 		inputs: [
 			{
 				internalType: 'address',
+				name: '',
+				type: 'address',
+			},
+		],
+		name: 'amountWithdrawn',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [
+			{
+				internalType: 'address',
 				name: 'spender',
 				type: 'address',
 			},
@@ -706,7 +725,7 @@ const poolAbi = [
 				type: 'address',
 			},
 		],
-		name: 'maxProRataAvail',
+		name: 'maxProRataAmount',
 		outputs: [
 			{
 				internalType: 'uint256',
@@ -921,6 +940,19 @@ const poolAbi = [
 	{
 		inputs: [],
 		name: 'totalAmountAccepted',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'totalAmountWithdrawn',
 		outputs: [
 			{
 				internalType: 'uint256',
