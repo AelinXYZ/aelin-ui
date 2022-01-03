@@ -9,14 +9,14 @@ type StakingRewardsData = {
 	earned: Wei;
 };
 
-const useGetStakingRewardsData = ({
+const useGetStakingRewardsDataForAddress = ({
 	stakingRewardsContract,
 }: {
 	stakingRewardsContract: ethers.Contract | null;
 }) => {
 	const { walletAddress, network } = Connector.useContainer();
 	return useQuery<StakingRewardsData | null>(
-		['stakingRewardsData', stakingRewardsContract?.address, walletAddress, network?.id],
+		['stakingRewardsDataForAddress', stakingRewardsContract?.address, walletAddress, network?.id],
 		async () => {
 			try {
 				const [balance, earned] = await Promise.all([
@@ -38,4 +38,4 @@ const useGetStakingRewardsData = ({
 	);
 };
 
-export default useGetStakingRewardsData;
+export default useGetStakingRewardsDataForAddress;

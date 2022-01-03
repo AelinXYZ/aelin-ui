@@ -110,6 +110,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 						onClick={() => {
 							if (balance?.gt(wei(0))) {
 								setInputValue(balance?.toNumber());
+								setIsMaxValue(true);
 							}
 						}}
 					>

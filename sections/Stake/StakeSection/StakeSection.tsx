@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 
-import Button from 'components/Button';
 import { StakeActionLabel } from '../constants';
 import StakeBox from '../StakeBox';
+import ClaimBox from '../ClaimBox';
 import QuestionMark from 'components/QuestionMark';
-import { FlexDivCol, FlexDiv } from 'components/common';
+import { FlexDiv, FlexDivColCentered } from 'components/common';
 import { GasLimitEstimate } from 'constants/networks';
 import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -15,7 +15,8 @@ import { StakingContracts } from 'containers/ContractsInterface/constants';
 import Connector from 'containers/Connector';
 import { TransactionStatus } from 'constants/transactions';
 import useGetTokenBalance from 'queries/token/useGetTokenBalance';
-import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsData';
+import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
+import useGetStakingRewardsAPY from 'queries/stakingRewards/useGetStakingRewardsAPY';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { formatNumber } from 'utils/numbers';
 
@@ -46,7 +47,12 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 		stakingRewardsContract: StakingContract,
 	});
 	const tokenStakedBalance = tokenStakedBalanceQuery?.data?.balance ?? wei(0);
-	const earned = tokenStakedBalanceQuery?.data?.earned ?? wei(0);
+
+	const stakingRewardsAPYQuery = useGetStakingRewardsAPY({
+		stakingRewardsContract: StakingContract,
+		tokenContract: TokenContract,
+	});
+	const apy = stakingRewardsAPYQuery?.data?.apy ?? 0;
 
 	const totalBalance = useMemo(() => {
 		if (stakeAction === StakeActionLabel.DEPOSIT) {
@@ -173,6 +179,7 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 						setTimeout(() => {
 							tokenBalanceQuery.refetch();
 							tokenStakedBalanceQuery.refetch();
+							setInputValue(0);
 						}, 5 * 1000);
 					},
 				});
@@ -201,13 +208,14 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 		setInputValue(0);
 	};
 
-	const handleClaim = useCallback(async () => {}, []);
-
 	return (
 		<>
 			<HeaderSection>
-				<Header>{header}</Header>
-				<QuestionMark text={tooltipInfo} />
+				<HeaderRow>
+					<Header>{header}</Header>
+					<QuestionMark text={tooltipInfo} />
+				</HeaderRow>
+				<SubHeader>{`APY - ${apy.toFixed(0)}%`}</SubHeader>
 			</HeaderSection>
 			<StakeBox
 				onSubmit={handleSubmit}
@@ -228,55 +236,31 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 				setInputValue={setInputValue}
 				setIsMaxValue={setIsMaxValue}
 			/>
-			<RewardsBox>
-				<div>{`Rewards: ${
-					earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'
-				} AELIN`}</div>
-				<SubmitButton onClick={handleClaim} variant="text">
-					Claim
-				</SubmitButton>
-			</RewardsBox>
+			<ClaimBox stakingContract={StakingContract} />
 		</>
 	);
 };
 
-const HeaderSection = styled(FlexDiv)`
-	align-items: center;
+const HeaderSection = styled(FlexDivColCentered)`
 	margin: 0 0 20px 0;
 `;
 
+const HeaderRow = styled(FlexDiv)`
+	align-items: center;
+`;
+
 const Header = styled.h3`
-	padding: 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 22px;
 	margin: 0;
 	padding: 0;
 `;
 
-const RewardsBox = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
-	text-align: center;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	padding: 20px;
-	height: 100px;
-	width: 300px;
-	position: relative;
-	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 120px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
+const SubHeader = styled.h4`
+	color: ${(props) => props.theme.colors.headerGreen};
+	font-size: 14px;
+	margin: 0;
+	padding: 0;
 `;
 
 export default StakeSection;

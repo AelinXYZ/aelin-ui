@@ -28,7 +28,7 @@ const Stake = () => {
 							contracts={contracts?.AelinStaking ?? null}
 						/>
 					</PageSection>
-					<PageSection>
+					{/* <PageSection>
 						<OverlayWrapper>
 							<Overlay>
 								<StakeSection
@@ -54,7 +54,7 @@ const Stake = () => {
 							</Overlay>
 							<ComingSoon>Coming Soon</ComingSoon>
 						</OverlayWrapper>
-					</PageSection>
+					</PageSection> */}
 				</JustifiedLayout>
 			</PageLayout>
 		</>
