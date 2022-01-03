@@ -188,7 +188,7 @@ const abi = [
 ];
 const contract = {
 	42: {
-		address: '0x6ec97223e3808eAee2581e55F84CF639963B5961',
+		address: '0xC2a4231A9B8590F7992167903c965541446a4357',
 		abi,
 	},
 	10: {
