@@ -1,9 +1,8 @@
 import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
 import Connector from 'containers/Connector';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { erc20Abi } from 'contracts/erc20';
-import { UseQueryOptions, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 
 type PoolBalances = {
 	purchaseTokenDecimals: number;
@@ -42,7 +41,6 @@ const usePoolBalancesQuery = ({
 				allowance,
 				hasAllowList,
 				unformattedAllowListAmount,
-				unformattedMaxProRata,
 				isOpenEligible,
 				totalAmountAccepted,
 				totalAmountWithdrawn,
@@ -57,15 +55,21 @@ const usePoolBalancesQuery = ({
 				walletAddress != null ? tokenContract.allowance(walletAddress, poolAddress) : 0,
 				poolContract.hasAllowList(),
 				walletAddress != null ? poolContract.allowList(walletAddress) : 0,
-				walletAddress != null ? poolContract.maxProRataAmount(walletAddress) : 0,
 				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
 				poolContract.totalAmountAccepted(),
 				poolContract.totalAmountWithdrawn(),
 				walletAddress != null ? poolContract.amountAccepted(walletAddress) : 0,
 				walletAddress != null ? poolContract.amountWithdrawn(walletAddress) : 0,
 				poolContract.totalSupply(),
-				poolContract.purchaseTokenCap(),
 			]);
+			let unformattedMaxProRata = 0;
+			if (walletAddress != null) {
+				try {
+					unformattedMaxProRata = await poolContract.maxProRataAmount(walletAddress);
+				} catch (e) {
+					unformattedMaxProRata = await poolContract.maxProRataAvail(walletAddress);
+				}
+			}
 			return {
 				purchaseTokenDecimals: decimals,
 				purchaseTokenSymbol: symbol,

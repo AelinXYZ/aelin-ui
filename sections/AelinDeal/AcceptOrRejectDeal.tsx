@@ -293,7 +293,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: (
 					<div>
 						<div>
-							Pro rata Allocation: {formatNumber(poolBalances?.maxProRata ?? 0, DEFAULT_DECIMALS)}
+							Remaining Pro-rata Allocation:{' '}
+							{formatNumber(poolBalances?.maxProRata ?? 0, DEFAULT_DECIMALS)}
 						</div>
 						<div>Redeemed: {formatNumber(userAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
 						<div>Withdrawn: {formatNumber(userAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>

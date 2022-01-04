@@ -228,7 +228,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 			) : null}
 			<ContentContainer>
 				{isVesting ? (
-					<Paragraph>{maxValue || 0} underlying deal tokens to vest</Paragraph>
+					<Paragraph>{maxValue || 0} Underlying Deal Tokens to vest</Paragraph>
 				) : (
 					<>
 						<ActionBoxInputLabel>{label}</ActionBoxInputLabel>

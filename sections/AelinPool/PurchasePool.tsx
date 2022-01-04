@@ -191,7 +191,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				header: (
 					<>
 						<>{`Pool stats`}</>
-						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
+						<QuestionMark
+							text={`The total amount of tokens all purchasers have deposited, withdrawn and the remaining amount in the pool`}
+						/>
 					</>
 				),
 				subText: (
