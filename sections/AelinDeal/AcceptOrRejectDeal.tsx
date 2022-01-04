@@ -224,7 +224,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>Pro Rata Redemption</>
+						<>Pro Rata Redemption Ends</>
 						<QuestionMark
 							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
 						/>

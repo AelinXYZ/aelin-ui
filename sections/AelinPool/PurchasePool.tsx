@@ -255,12 +255,24 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
-				subText: (
-					<>
-						<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
-						<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
-					</>
-				),
+				subText:
+					Number(
+						ethers.utils
+							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+							.toString()
+					) ===
+					Number(
+						ethers.utils
+							.formatUnits(pool?.contributions.toString() ?? '-1', purchaseTokenDecimals ?? 0)
+							.toString()
+					) ? (
+						<div>Cap Reached</div>
+					) : (
+						<>
+							<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
+							<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
+						</>
+					),
 			},
 			{
 				header: (
