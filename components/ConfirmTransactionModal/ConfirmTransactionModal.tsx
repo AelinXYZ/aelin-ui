@@ -12,7 +12,7 @@ type ConfirmTransactionModalProps = {
 	isModalOpen: boolean;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
-	onSubmit: Function;
+	onSubmit: Function | undefined;
 };
 
 const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
@@ -38,7 +38,7 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 					disabled={!gasLimitEstimate}
 					variant="text"
 					type="submit"
-					onClick={() => onSubmit()}
+					onClick={() => !!onSubmit && onSubmit()}
 				>
 					Submit
 				</SubmitButton>
