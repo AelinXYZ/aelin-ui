@@ -228,7 +228,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 			) : null}
 			<ContentContainer>
 				{isVesting ? (
-					<Paragraph>{maxValue || 0} tokens to vest</Paragraph>
+					<Paragraph>{maxValue || 0} Underlying Deal Tokens to vest</Paragraph>
 				) : (
 					<>
 						<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
@@ -406,6 +406,7 @@ const Container = styled.div`
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
+
 const ActionBoxHeaderWrapper = styled(FlexDivRow)`
 	margin-top: 20px;
 `;

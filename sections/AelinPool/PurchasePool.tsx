@@ -177,25 +177,52 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`Maximum number of pool tokens`} />
 					</>
 				),
-				subText: formatNumber(
-					ethers.utils
-						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString(),
-					DEFAULT_DECIMALS
-				),
+				subText:
+					Number(pool?.purchaseTokenCap.toString()) > 0
+						? formatNumber(
+								ethers.utils
+									.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+									.toString(),
+								DEFAULT_DECIMALS
+						  )
+						: 'Uncapped',
 			},
 			{
 				header: (
 					<>
-						<>{`Amount Funded`}</>
-						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
+						<>{`Pool stats`}</>
+						<QuestionMark
+							text={`The total amount of tokens all purchasers have deposited, withdrawn and the remaining amount in the pool`}
+						/>
 					</>
 				),
-				subText: formatNumber(
-					ethers.utils
-						.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString(),
-					DEFAULT_DECIMALS
+				subText: (
+					<>
+						<div>
+							Funded:{' '}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+									.toString(),
+								DEFAULT_DECIMALS
+							)}
+						</div>
+						<div>
+							Withdrawn:{' '}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(
+										poolBalances?.totalAmountWithdrawn ?? '0',
+										poolBalances?.purchaseTokenDecimals ?? 0
+									)
+									.toString(),
+								DEFAULT_DECIMALS
+							)}
+						</div>
+						<div>
+							Amount in pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
+						</div>
+					</>
 				),
 			},
 			{
@@ -228,12 +255,24 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
-				subText: (
-					<>
-						<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
-						<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
-					</>
-				),
+				subText:
+					Number(
+						ethers.utils
+							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+							.toString()
+					) ===
+					Number(
+						ethers.utils
+							.formatUnits(pool?.contributions.toString() ?? '-1', purchaseTokenDecimals ?? 0)
+							.toString()
+					) ? (
+						<div>Cap Reached</div>
+					) : (
+						<>
+							<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
+							<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
+						</>
+					),
 			},
 			{
 				header: (
