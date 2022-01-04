@@ -104,7 +104,6 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	width: 300px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};

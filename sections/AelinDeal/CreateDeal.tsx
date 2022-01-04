@@ -6,7 +6,7 @@ import { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
 
-import { FlexDivRow } from 'components/common';
+import { FlexDivStart, FlexDivRow } from 'components/common';
 import TextInput from 'components/Input/TextInput';
 import Input from 'components/Input/Input';
 import { truncateAddress } from 'utils/crypto';
@@ -309,6 +309,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							name="purchaseTokenTotal"
 							type="number"
 							step="0.000000000000000001"
+							placeholder="0"
 							onChange={(e: any) => {
 								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
 									setAllocation(Allocation.DEALLOCATE);
@@ -316,7 +317,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
 							}}
 							onBlur={formik.handleBlur}
-							value={formik.values.purchaseTokenTotal || ''}
+							value={formik.values.purchaseTokenTotal ? formik.values.purchaseTokenTotal : ''}
 						/>
 						<FlexDivRow>
 							<AllocationRow>
@@ -333,7 +334,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 								<Dot
 									onClick={() => {
 										setAllocation(Allocation.DEALLOCATE);
-										formik.setFieldValue('purchaseTokenTotal', '0');
+										formik.setFieldValue('purchaseTokenTotal', 0);
 									}}
 									isActive={allocation === Allocation.DEALLOCATE}
 								/>{' '}
@@ -376,7 +377,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 				subText: 'time to vest after the cliff',
 				formField: (
-					<FlexDivRow>
+					<FlexDivStart>
 						<Input
 							width="50px"
 							id="vestingPeriodDays"
@@ -407,7 +408,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							onBlur={formik.handleBlur}
 							value={formik.values.vestingPeriodMinutes || ''}
 						/>
-					</FlexDivRow>
+					</FlexDivStart>
 				),
 				formError: formik.errors.vestingPeriodMinutes,
 			},
@@ -422,7 +423,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 				subText: 'time until vesting starts',
 				formField: (
-					<FlexDivRow>
+					<FlexDivStart>
 						<Input
 							width="50px"
 							id="vestingCliffDays"
@@ -453,7 +454,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							onBlur={formik.handleBlur}
 							value={formik.values.vestingCliffMinutes || ''}
 						/>
-					</FlexDivRow>
+					</FlexDivStart>
 				),
 				formError: formik.errors.vestingCliffMinutes,
 			},
@@ -468,7 +469,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 				subText: 'the first period to accept',
 				formField: (
-					<FlexDivRow>
+					<FlexDivStart>
 						<Input
 							width="50px"
 							id="proRataRedemptionDays"
@@ -499,7 +500,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							onBlur={formik.handleBlur}
 							value={formik.values.proRataRedemptionMinutes || ''}
 						/>
-					</FlexDivRow>
+					</FlexDivStart>
 				),
 				formError: formik.errors.proRataRedemptionMinutes,
 			},
@@ -514,7 +515,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 				subText: 'The second period to accept',
 				formField: (
-					<FlexDivRow>
+					<FlexDivStart>
 						<Input
 							width="50px"
 							id="openRedemptionDays"
@@ -545,7 +546,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							onBlur={formik.handleBlur}
 							value={formik.values.openRedemptionMinutes || ''}
 						/>
-					</FlexDivRow>
+					</FlexDivStart>
 				),
 				formError: formik.errors.openRedemptionMinutes,
 			},
@@ -560,7 +561,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 				subText: 'holder time limit to fund',
 				formField: (
-					<FlexDivRow>
+					<FlexDivStart>
 						<Input
 							width="50px"
 							id="holderFundingExpiryDays"
@@ -591,7 +592,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 							onBlur={formik.handleBlur}
 							value={formik.values.holderFundingExpiryMinutes || ''}
 						/>
-					</FlexDivRow>
+					</FlexDivStart>
 				),
 				formError: formik.errors.holderFundingExpiryMinutes,
 			},
@@ -629,13 +630,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					: '',
 			},
 			{
-				label: 'Purchase currency total:',
+				label: 'Purchase currency total',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
 			},
 			{
-				label: 'Underlying deal token total:',
+				label: 'Underlying deal token total',
 				text: formik.values.underlyingDealTokenTotal
 					? formatNumber(formik.values.underlyingDealTokenTotal)
 					: '',
@@ -672,7 +673,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					),
 			},
 			{
-				label: 'Vesting period:',
+				label: 'Vesting period',
 				text: formatDuration(
 					formik.values.vestingPeriodDays,
 					formik.values.vestingPeriodHours,
@@ -680,7 +681,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 			},
 			{
-				label: 'Vesting cliff:',
+				label: 'Vesting cliff',
 				text: formatDuration(
 					formik.values.vestingCliffDays,
 					formik.values.vestingCliffHours,
@@ -688,7 +689,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 			},
 			{
-				label: 'Pro rata period:',
+				label: 'Pro rata period',
 				text: formatDuration(
 					formik.values.proRataRedemptionDays,
 					formik.values.proRataRedemptionHours,
@@ -696,7 +697,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 				),
 			},
 			{
-				label: 'Open period:',
+				label: 'Open period',
 				text: formatDuration(
 					formik.values.openRedemptionDays,
 					formik.values.openRedemptionHours,
@@ -740,7 +741,7 @@ const Dot = styled.div<{ isActive: boolean }>`
 	border: 1px solid ${(props) => props.theme.colors.headerGrey};
 `;
 
-const AllocationRow = styled(FlexDivRow)`
+const AllocationRow = styled(FlexDivStart)`
 	margin-top: 10px;
 `;
 

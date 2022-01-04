@@ -47,7 +47,7 @@ const validateCreateDeal = (
 	if (!values.purchaseTokenTotal) {
 		errors.purchaseTokenTotal = 'Required';
 		// @ts-ignore
-	} else if (values.purchaseTokenTotal > totalPoolSupply) {
+	} else if (Number(values.purchaseTokenTotal) > Number(totalPoolSupply)) {
 		errors.purchaseTokenTotal = `Max is ${totalPoolSupply}`;
 	}
 
