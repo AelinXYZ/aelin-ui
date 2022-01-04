@@ -1,4 +1,4 @@
-const poolAbi = [
+const latestPoolAbi = [
 	{
 		inputs: [],
 		stateMutability: 'nonpayable',
@@ -1068,5 +1068,28 @@ const poolAbi = [
 		type: 'function',
 	},
 ];
+
+const oldPoolAbi = [
+	{
+		inputs: [
+			{
+				internalType: 'address',
+				name: 'purchaser',
+				type: 'address',
+			},
+		],
+		name: 'maxProRataAvail',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+];
+const poolAbi = [...oldPoolAbi, ...latestPoolAbi];
 
 export default poolAbi;

@@ -185,6 +185,26 @@ const Pools: FC = () => {
 				Header: 'Purchase window closes',
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
+					if (
+						Number(
+							ethers.utils
+								.formatUnits(
+									cellProps.row.original.cap.toString(),
+									cellProps.row.original.purchaseTokenDecimals
+								)
+								.toString()
+						) ===
+						Number(
+							ethers.utils
+								.formatUnits(
+									cellProps.row.original.contributions.toString(),
+									cellProps.row.original.purchaseTokenDecimals
+								)
+								.toString()
+						)
+					) {
+						return <div>Cap Reached</div>;
+					}
 					return (
 						<div>
 							<Countdown timeStart={null} time={cellProps.value} networkId={network.id} />
