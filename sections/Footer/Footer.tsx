@@ -88,7 +88,7 @@ const NavRow = styled.div`
 
 const StyledA = styled.a<{ isDisabled?: boolean }>`
 	color: #000000;
-	font-size: 12px;
+	font-size: 1rem;
 	letter-spacing: 0.62px;
 	margin: 0 3px;
 	${(props) =>

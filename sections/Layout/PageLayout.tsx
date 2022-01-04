@@ -50,14 +50,14 @@ export const ContentHeader = styled.div`
 
 export const ContentTitle = styled.h1`
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 20px;
+	font-size: 1.8rem;
 	margin: 0;
 `;
 
 export const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGrey};
-	font-size: 15px;
+	font-size: 1.2rem;
 `;
 
 export const ContentBody = styled.div``;

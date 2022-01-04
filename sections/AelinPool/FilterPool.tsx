@@ -73,6 +73,7 @@ const FilterPool: FC<FilterPoolProps> = ({
 const Header = styled.div`
 	color: ${(props) => props.theme.colors.forestGreen};
 	margin-right: 15px;
+	font-size: 1.3rem;
 `;
 
 const Container = styled.div`
@@ -97,7 +98,7 @@ const HeaderSection = styled(FlexDiv)`
 const StyledAnchor = styled.a`
 	height: 32px;
 	line-height: 32px;
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 0 12px;
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
 	background-color: ${(props) => props.theme.colors.forestGreen};
