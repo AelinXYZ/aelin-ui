@@ -261,11 +261,16 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
 							.toString()
 					) ===
+						Number(
+							ethers.utils
+								.formatUnits(pool?.contributions.toString() ?? '-1', purchaseTokenDecimals ?? 0)
+								.toString()
+						) &&
 					Number(
 						ethers.utils
-							.formatUnits(pool?.contributions.toString() ?? '-1', purchaseTokenDecimals ?? 0)
+							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
 							.toString()
-					) ? (
+					) !== 0 ? (
 						<div>Cap Reached</div>
 					) : (
 						<>

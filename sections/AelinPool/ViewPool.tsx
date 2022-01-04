@@ -123,7 +123,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						underlyingDealTokenDecimals
 					)
 				);
-				console.log('claimableTokens: ', claimableTokens);
+
 				setClaimableUnderlyingTokens(claimableTokens);
 			}
 		}

@@ -194,14 +194,22 @@ const Pools: FC = () => {
 								)
 								.toString()
 						) ===
+							Number(
+								ethers.utils
+									.formatUnits(
+										cellProps.row.original.contributions.toString(),
+										cellProps.row.original.purchaseTokenDecimals
+									)
+									.toString()
+							) &&
 						Number(
 							ethers.utils
 								.formatUnits(
-									cellProps.row.original.contributions.toString(),
+									cellProps.row.original.cap.toString(),
 									cellProps.row.original.purchaseTokenDecimals
 								)
 								.toString()
-						)
+						) !== 0
 					) {
 						return <div>Cap Reached</div>;
 					}

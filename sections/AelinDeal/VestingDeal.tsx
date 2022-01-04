@@ -48,6 +48,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
 			0
 		);
+
 		return [
 			{
 				header: 'Name',
