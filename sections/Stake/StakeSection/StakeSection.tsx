@@ -251,14 +251,14 @@ const HeaderRow = styled(FlexDiv)`
 
 const Header = styled.h3`
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 22px;
+	font-size: 2rem;
 	margin: 0;
 	padding: 0;
 `;
 
 const SubHeader = styled.h4`
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 14px;
+	font-size: 1.2rem;
 	margin: 0;
 	padding: 0;
 `;

@@ -69,7 +69,7 @@ const PaginationContainer = styled(GridDivCenteredCol)`
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
 	justify-items: center;
-	font-size: 14px;
+	font-size: 1rem;
 `;
 
 const ArrowButton = styled.button`

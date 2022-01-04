@@ -14,7 +14,7 @@ const Button = styled.button<ButtonProps>`
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
 	height: 32px;
 	line-height: 32px;
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 0 12px;
 	border: none;
 	border-radius: ${(props) => (props.isRounded ? '100px' : '4px')};

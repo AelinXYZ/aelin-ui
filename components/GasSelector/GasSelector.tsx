@@ -28,9 +28,10 @@ const GasSelector: React.FC<IGasSelector> = ({
 
 	const exchangeRatesQuery = useExchangeRatesQuery(network);
 	const ethGasStationQuery = useEthGasPriceQuery({ networkId: network.id, provider });
-	const gasPrices = useMemo(() => ethGasStationQuery.data ?? ({} as GasPrices), [
-		ethGasStationQuery.data,
-	]);
+	const gasPrices = useMemo(
+		() => ethGasStationQuery.data ?? ({} as GasPrices),
+		[ethGasStationQuery.data]
+	);
 	const exchangeRates = exchangeRatesQuery.data ?? null;
 
 	const gasPrice: Wei | null = useMemo(() => {
@@ -134,11 +135,11 @@ const StyledContainer = styled.div`
 
 const StyledGasDescription = styled.span`
 	color: #5b5b5b;
-	font-size: 14px;
+	font-size: 1rem;
 `;
 
 const StyledGasPrice = styled.span`
-	font-size: 14px;
+	font-size: 1rem;
 	margin: 0 10px;
 `;
 
@@ -149,7 +150,7 @@ const StyledInput = styled.input`
 	background-color: #dbdbdb;
 	height: 32px;
 	padding: 0 8px;
-	font-size: 14px;
+	font-size: 1rem;
 	border: 0;
 	border-radius: 4px;
 	border: 1px solid #c4c4c4;

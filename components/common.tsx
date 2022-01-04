@@ -58,7 +58,7 @@ export const Tooltip = styled(Tippy)`
 		color: ${(props) => props.theme.colors.white};
 	}
 	.tippy-content {
-		font-size: 12px;
+		font-size: 1rem;
 		padding: 10px;
 	}
 `;
@@ -89,4 +89,15 @@ export const resetButtonCSS = css`
 export const StyledSpinner = styled(Image)`
 	display: block;
 	margin: 30px auto;
+`;
+
+export const Notice = styled.div`
+	margin-top: 20px;
+	width: 100%;
+	max-width: 940px;
+	background-color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.white};
+	text-align: center;
+	padding: 10px;
+	font-size: 1.4rem;
 `;

@@ -2,7 +2,7 @@ import { FC, useMemo, useCallback, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import { FlexDiv, ExternalLink } from 'components/common';
+import { FlexDiv, ExternalLink, Notice } from 'components/common';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
@@ -146,12 +146,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 				{deal?.id !== firstAelinPoolDealID ? (
 					<ActionBox
 						actionBoxType={ActionBoxType.VestingDeal}
-						onSubmit={() => {
-							if (deal?.id === firstAelinPoolDealID) {
-								return alert('Deal claiming is inactive for this pool. Please see message below');
-							}
-							handleSubmit();
-						}}
+						onSubmit={() => handleSubmit()}
 						input={{
 							placeholder: '0',
 							label: '',
@@ -188,16 +183,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 
 const StyledExternalLink = styled(ExternalLink)`
 	color: ${(props) => props.theme.colors.statusBlue};
-`;
-const Notice = styled.div`
-	margin-top: 20px;
-	width: 100%;
-	max-width: 940px;
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	text-align: center;
-	padding: 10px;
-	font-size: 20px;
 `;
 
 export default VestingDeal;

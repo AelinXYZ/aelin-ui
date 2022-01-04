@@ -18,6 +18,7 @@ export enum ActionBoxType {
 	AcceptOrRejectDeal = 'ACCEPT_OR_REJECT_DEAL',
 	VestingDeal = 'VESTING_DEAL',
 	Stake = 'STAKE',
+	Withdraw = 'WITHDRAW',
 }
 
 export type InputType = {
@@ -53,6 +54,8 @@ const actionBoxTypeToTitle = (
 			return 'Vest Deal';
 		case ActionBoxType.Stake:
 			return 'Stake';
+		case ActionBoxType.Withdraw:
+			return 'Withdraw';
 	}
 };
 
@@ -85,6 +88,8 @@ const getActionButtonLabel = ({
 			return 'Vest Deal';
 		case ActionBoxType.Stake:
 			return 'Stake';
+		case ActionBoxType.Withdraw:
+			return 'Withdraw';
 	}
 };
 
@@ -233,8 +238,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 								placeholder={placeholder}
 								value={inputValue}
 								onChange={(e) => {
+									const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
 									setIsMaxValue(false);
-									setInputValue(parseFloat(e.target.value));
+									setInputValue(value);
 								}}
 							/>
 							{maxValue ? (
@@ -409,7 +415,7 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 	padding: 15px 10px;
 	color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
-	font-size: 12px;
+	font-size: 1rem;
 	${(props) =>
 		!props.isPool &&
 		css`
@@ -426,7 +432,7 @@ const RedemptionHeader = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	text-align: center;
 	padding-top: 7px;
-	font-size: 12px;
+	font-size: 1rem;
 	border-radius: 4px 4px 0 0;
 `;
 
@@ -451,19 +457,19 @@ const ContentContainer = styled.div`
 
 const Paragraph = styled.p`
 	color: ${(props) => props.theme.colors.black};
-	font-size: 12px;
+	font-size: 1rem;
 `;
 
 const ErrorNote = styled.div`
 	color: ${(props) => props.theme.colors.statusRed};
 	padding-left: 20px;
-	font-size: 12px;
+	font-size: 1rem;
 	font-weight: bold;
 `;
 
 const ActionBoxInputLabel = styled.div`
 	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
+	font-size: 1rem;
 	padding-bottom: 4px;
 `;
 
@@ -479,21 +485,19 @@ const ActionBoxInput = styled.input`
 	padding: 6px 12px;
 	&::placeholder {
 		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
+		font-size: 1rem;
 	}
 `;
 
 const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 	position: absolute;
-	width: ${(props) => (props.isProRata ? '85px' : '33px')};
-	height: 21px;
-	left: ${(props) => (props.isProRata ? '190px' : '210px')};
+	width: ${(props) => (props.isProRata ? '94px' : '42px')};
+	left: ${(props) => (props.isProRata ? '185px' : '210px')};
 	text-align: center;
-	padding-top: 4px;
-	padding-left: 2px;
+	padding: 2px 6px;
 	top: 7px;
 	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
+	font-size: 1rem;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-radius: 100px;
 	&:hover {
