@@ -61,7 +61,7 @@ const AddressWidget = styled.div`
 	text-align: center;
 	margin-left: 10px;
 	margin-right: 10px;
-	padding-top: 5px;
+	padding-top: 2px;
 `;
 
 export default SectionTitle;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const Input = styled.input<{ width?: string }>`
 	width: ${(props) => props.width || '100%'};
 	min-width: 0;
+	margin-right: 8px;
 	font-family: ${(props) => props.theme.fonts.agrandir};
 	background-color: ${(props) => props.theme.colors.background};
 	height: 32px;
