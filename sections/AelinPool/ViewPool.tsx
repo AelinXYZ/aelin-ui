@@ -1,8 +1,7 @@
 //@ts-nocheck
 import { FC, useMemo, useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
@@ -170,14 +169,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			{now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
 			pool?.id !== vAelinPoolID &&
 			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle address={deal?.id} title="Aelin Pool Unlocked" />
-						</ContentTitle>
-					</ContentHeader>
-					<PoolDurationEnded pool={pool} />
-				</SectionWrapper>
+				<PoolDurationEnded pool={pool} dealID={deal.id} />
 			) : null}
 			{(deal?.id != null &&
 				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
@@ -201,9 +193,5 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		</PageLayout>
 	);
 };
-
-const SectionWrapper = styled.div`
-	margin-top: 35px;
-`;
 
 export default ViewPool;

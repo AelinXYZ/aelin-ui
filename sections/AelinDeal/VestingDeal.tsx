@@ -58,8 +58,13 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
-				header: 'Exchange rate',
-				subText: formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS),
+				header: 'Claiming Exchange Rate',
+				subText: (
+					<div>
+						<Subheader>Deal token / Underlying Deal Token</Subheader>
+						<div>{formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS)}</div>
+					</div>
+				),
 			},
 			{
 				header: 'Underlying Deal Token',
@@ -183,6 +188,11 @@ const VestingDeal: FC<VestingDealProps> = ({
 
 const StyledExternalLink = styled(ExternalLink)`
 	color: ${(props) => props.theme.colors.statusBlue};
+`;
+
+const Subheader = styled.div`
+	color: ${(props) => props.theme.colors.forestGreen};
+	margin-bottom: 4px;
 `;
 
 export default VestingDeal;
