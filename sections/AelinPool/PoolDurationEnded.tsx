@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 import { wei } from '@synthetixio/wei';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+import SectionTitle from 'sections/shared/SectionTitle';
 
 import { FlexDiv, Notice } from 'components/common';
 import Grid from 'components/Grid';
@@ -28,9 +30,10 @@ import { TransactionType, TransactionStatus } from 'constants/transactions';
 
 interface PoolDurationEndedProps {
 	pool: PoolCreatedResult | null;
+	dealID: string;
 }
 
-const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
+const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -189,8 +192,13 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 		]
 	);
 
-	return (
-		<>
+	return Number(userPoolBalance ?? 0) > 0 ? (
+		<SectionWrapper>
+			<ContentHeader>
+				<ContentTitle>
+					<SectionTitle address={dealID} title="Aelin Pool Unlocked" />
+				</ContentTitle>
+			</ContentHeader>
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={withdrawGridItems} />
 				<ActionBox
@@ -216,8 +224,8 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool }) => {
 				The duration for this AELIN pool has ended. You may withdraw your funds now although the
 				sponsor may still create a deal for you if you remain in the pool
 			</Notice>
-		</>
-	);
+		</SectionWrapper>
+	) : null;
 };
 
 export default PoolDurationEnded;

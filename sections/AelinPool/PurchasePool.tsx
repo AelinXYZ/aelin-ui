@@ -177,25 +177,50 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`Maximum number of pool tokens`} />
 					</>
 				),
-				subText: formatNumber(
-					ethers.utils
-						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString(),
-					DEFAULT_DECIMALS
-				),
+				subText:
+					Number(pool?.purchaseTokenCap.toString()) > 0
+						? formatNumber(
+								ethers.utils
+									.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+									.toString(),
+								DEFAULT_DECIMALS
+						  )
+						: 'Uncapped',
 			},
 			{
 				header: (
 					<>
-						<>{`Amount Funded`}</>
+						<>{`Pool stats`}</>
 						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
 					</>
 				),
-				subText: formatNumber(
-					ethers.utils
-						.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString(),
-					DEFAULT_DECIMALS
+				subText: (
+					<>
+						<div>
+							Funded:{' '}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+									.toString(),
+								DEFAULT_DECIMALS
+							)}
+						</div>
+						<div>
+							Withdrawn:{' '}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(
+										poolBalances?.totalAmountWithdrawn ?? '0',
+										poolBalances?.purchaseTokenDecimals ?? 0
+									)
+									.toString(),
+								DEFAULT_DECIMALS
+							)}
+						</div>
+						<div>
+							Amount in pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
+						</div>
+					</>
 				),
 			},
 			{

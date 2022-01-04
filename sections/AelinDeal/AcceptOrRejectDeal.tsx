@@ -57,6 +57,24 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			poolBalances?.purchaseTokenDecimals ?? 0
 		)
 	);
+	const totalAmountWithdrawn = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.totalAmountWithdrawn ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
+	const userAmountAccepted = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.userAmountAccepted ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
+	const userAmountWithdrawn = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.userAmountWithdrawn ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
 
 	const dealRedemptionPeriod = useMemo(() => {
 		const now = Date.now();
@@ -171,35 +189,27 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>{`Vesting Period`}</>
+						<>{`Vesting Data`}</>
 						<QuestionMark
-							text={`After the vesting cliff, a linear vesting period where you may claim your underlying deal tokens`}
+							text={`After the vesting cliff ends there is a linear vesting period where you may claim your underlying deal tokens`}
 						/>
 					</>
 				),
 				subText: (
-					<>
-						{(deal?.vestingPeriod ?? 0) > 0
-							? formatTimeDifference(Number(deal?.vestingPeriod))
-							: '0'}
-					</>
-				),
-			},
-			{
-				header: (
-					<>
-						<>{`Vesting Cliff`}</>
-						<QuestionMark
-							text={`After the deal has been finalized, a period where no tokens are vesting`}
-						/>
-					</>
-				),
-				subText: (
-					<>
-						{(deal?.vestingCliff ?? 0) > 0
-							? formatTimeDifference(Number(deal?.vestingCliff ?? 0))
-							: '0'}
-					</>
+					<div>
+						<div>
+							Cliff:{' '}
+							{(deal?.vestingCliff ?? 0) > 0
+								? formatTimeDifference(Number(deal?.vestingCliff ?? 0))
+								: '0'}
+						</div>
+						<div>
+							Linear Period:{' '}
+							{(deal?.vestingPeriod ?? 0) > 0
+								? formatTimeDifference(Number(deal?.vestingPeriod))
+								: '0'}
+						</div>
+					</div>
 				),
 			},
 			{
@@ -279,10 +289,26 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header: 'Total redeemed',
+				header: 'User stats',
 				subText: (
 					<div>
-						<div>{formatNumber(totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
+						<div>
+							Pro rata Allocation: {formatNumber(poolBalances?.maxProRata ?? 0, DEFAULT_DECIMALS)}
+						</div>
+						<div>Redeemed: {formatNumber(userAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
+						<div>Withdrawn: {formatNumber(userAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>
+					</div>
+				),
+			},
+			{
+				header: 'Pool stats',
+				subText: (
+					<div>
+						<div>
+							Amount in Pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
+						</div>
+						<div>Total Redeemed: {formatNumber(totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
+						<div>Total Withdrawn: {formatNumber(totalAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>
 						<NoticeText>
 							{(poolBalances?.totalAmountAccepted ?? '1') ===
 							(deal?.purchaseTokenTotalForDeal?.toString() ?? '0')

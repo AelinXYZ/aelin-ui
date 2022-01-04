@@ -16,6 +16,9 @@ type PoolBalances = {
 	isOpenEligible: boolean;
 	maxProRata: number;
 	totalAmountAccepted: string;
+	userAmountAccepted: string;
+	userAmountWithdrawn: string;
+	totalSupply: number;
 };
 
 const usePoolBalancesQuery = ({
@@ -42,8 +45,10 @@ const usePoolBalancesQuery = ({
 				unformattedMaxProRata,
 				isOpenEligible,
 				totalAmountAccepted,
-				totalSupply,
-				cap,
+				totalAmountWithdrawn,
+				userAmountAccepted,
+				userAmountWithdrawn,
+				unformattedTotalSupply,
 			] = await Promise.all([
 				walletAddress != null ? poolContract.balanceOf(walletAddress) : 0,
 				walletAddress != null ? tokenContract.balanceOf(walletAddress) : 0,
@@ -55,6 +60,9 @@ const usePoolBalancesQuery = ({
 				walletAddress != null ? poolContract.maxProRataAmount(walletAddress) : 0,
 				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
 				poolContract.totalAmountAccepted(),
+				poolContract.totalAmountWithdrawn(),
+				walletAddress != null ? poolContract.amountAccepted(walletAddress) : 0,
+				walletAddress != null ? poolContract.amountWithdrawn(walletAddress) : 0,
 				poolContract.totalSupply(),
 				poolContract.purchaseTokenCap(),
 			]);
@@ -68,7 +76,11 @@ const usePoolBalancesQuery = ({
 				privatePoolAmount: Number(ethers.utils.formatUnits(unformattedAllowListAmount, decimals)),
 				maxProRata: Number(ethers.utils.formatUnits(unformattedMaxProRata, decimals)),
 				totalAmountAccepted: totalAmountAccepted.toString(),
+				totalAmountWithdrawn: totalAmountWithdrawn.toString(),
+				userAmountWithdrawn: userAmountWithdrawn.toString(),
+				userAmountAccepted: userAmountAccepted.toString(),
 				isOpenEligible,
+				totalSupply: Number(ethers.utils.formatUnits(unformattedTotalSupply, decimals)),
 			};
 		},
 		{

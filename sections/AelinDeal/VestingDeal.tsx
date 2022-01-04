@@ -58,7 +58,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
-				header: 'Exchange rate',
+				header: 'Exchange Rate: (Deal token) / (Underlying Deal Token)',
 				subText: formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS),
 			},
 			{

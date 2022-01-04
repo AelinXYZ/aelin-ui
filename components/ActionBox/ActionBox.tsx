@@ -228,7 +228,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 			) : null}
 			<ContentContainer>
 				{isVesting ? (
-					<Paragraph>{maxValue || 0} tokens to vest</Paragraph>
+					<Paragraph>{maxValue || 0} underlying deal tokens to vest</Paragraph>
 				) : (
 					<>
 						<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
@@ -400,7 +400,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	max-height: 400px;
+	max-height: 485px;
 	min-height: 250px;
 	width: 300px;
 	position: relative;
