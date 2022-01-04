@@ -7,7 +7,7 @@ export const Input = styled.input<{ width?: string }>`
 	background-color: ${(props) => props.theme.colors.background};
 	height: 32px;
 	padding: 0 8px;
-	font-size: 14px;
+	font-size: 1rem;
 	border: 0;
 	border-radius: 4px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};

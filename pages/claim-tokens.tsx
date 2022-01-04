@@ -170,21 +170,21 @@ const P = styled.p`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
 	padding: 20px;
-	font-size: 18px;
+	font-size: 1.3rem;
 	font-weight: bold;
 `;
 
 const Header = styled.h3`
 	margin: 40px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 18px;
+	font-size: 1.6rem;
 `;
 
 const SubmitButton = styled(Button)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
-	width: 140px;
 	margin: 10px auto 0 auto;
+	padding: 0 8px;
 	&:disabled {
 		background-color: ${(props) => props.theme.colors.forestGreen};
 		opacity: 0.5;

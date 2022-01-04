@@ -497,7 +497,7 @@ const ExchangeRate = styled.div`
 const NoticeText = styled.div`
 	color: ${(props) => props.theme.colors.statusRed};
 	margin-top: 3px;
-	font-size: 14px;
+	font-size: 1.2rem;
 	font-weight: bold;
 `;
 

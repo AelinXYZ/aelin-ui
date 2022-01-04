@@ -113,7 +113,7 @@ const Container = styled.div`
 const SummaryBoxHeader = styled.div`
 	padding: 20px 20px 0 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 12px;
+	font-size: 1.2rem;
 `;
 
 const SummaryBoxGrid = styled.div`
@@ -129,12 +129,12 @@ const Item = styled.div`
 
 const ItemLabel = styled.div`
 	color: ${(props) => props.theme.colors.headerGrey};
-	font-size: 12px;
+	font-size: 1.1rem;
 	margin-bottom: 3px;
 `;
 const ItemText = styled.div`
 	color: ${(props) => props.theme.colors.black};
-	font-size: 12px;
+	font-size: 1rem;
 `;
 
 const PurchaseButton = styled.div<{ isValidForm: boolean }>`
@@ -143,7 +143,7 @@ const PurchaseButton = styled.div<{ isValidForm: boolean }>`
 	height: 56px;
 	text-align: center;
 	padding-top: 16px;
-	font-size: 16px;
+	font-size: 1.3rem;
 	background-color: transparent;
 	border: none;
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};

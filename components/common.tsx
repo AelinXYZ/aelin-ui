@@ -58,7 +58,7 @@ export const Tooltip = styled(Tippy)`
 		color: ${(props) => props.theme.colors.white};
 	}
 	.tippy-content {
-		font-size: 12px;
+		font-size: 1rem;
 		padding: 10px;
 	}
 `;
@@ -99,5 +99,5 @@ export const Notice = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	text-align: center;
 	padding: 10px;
-	font-size: 20px;
+	font-size: 1.4rem;
 `;

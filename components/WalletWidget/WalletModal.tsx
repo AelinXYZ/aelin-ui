@@ -149,7 +149,7 @@ const StyledButton = styled(Button).attrs({
 	size: 'lg',
 })`
 	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	padding: 0 20px;
+	padding: 0 8px;
 	width: 140px;
 	display: inline-grid;
 	grid-template-columns: auto 1fr;
@@ -186,7 +186,7 @@ const SelectedWallet = styled(FlexDivCentered)`
 const WalletAddress = styled.div`
 	margin: 6px;
 	font-family: ${(props) => props.theme.fonts.agrandir};
-	font-size: 14px;
+	font-size: 1.2rem;
 `;
 
 const ActionIcons = styled(FlexDivCentered)`

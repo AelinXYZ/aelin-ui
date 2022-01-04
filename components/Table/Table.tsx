@@ -233,7 +233,7 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 				max-height: calc(100% - ${CARD_HEIGHT});
 			}
 			${TableCell} {
-				font-size: 12px;
+				font-size: 1rem;
 				height: ${CARD_HEIGHT};
 				border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 				font-family: ${(props) => props.theme.fonts.ASMRegular};
@@ -259,7 +259,7 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 				background-color: ${(props) => props.theme.colors.grey};
 				color: ${(props) => props.theme.colors.black};
 				text-transform: uppercase;
-				font-size: 12px;
+				font-size: 1rem;
 			}
 			${TableBodyRow} {
 				background-color: ${(props) => props.theme.colors.grey};

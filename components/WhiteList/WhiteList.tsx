@@ -215,13 +215,13 @@ const HeaderRow = styled(Row)`
 `;
 
 const Title = styled.span`
-	font-size: 12px;
+	font-size: 1.2rem;
 	margin-bottom: 5px;
 	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
 const Subtitle = styled.span`
-	font-size: 12px;
+	font-size: 1rem;
 `;
 
 export default Whitelist;
