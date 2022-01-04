@@ -173,7 +173,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 			[TransactionType.Vest]: {
-				heading: `You are vesting ${maxValue} tokens`,
+				heading: `You are vesting ${maxValue} underlying deal tokens`,
 				onSubmit,
 			},
 			[TransactionType.Stake]: {
@@ -400,13 +400,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	max-height: 485px;
 	min-height: 250px;
 	width: 300px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
+
 const ActionBoxHeaderWrapper = styled(FlexDivRow)`
 	margin-top: 20px;
 `;
@@ -448,7 +448,9 @@ const InfoClick = styled.div`
 `;
 
 const InputContainer = styled.div`
-	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 `;
 
 const ContentContainer = styled.div`
@@ -475,9 +477,7 @@ const ActionBoxInputLabel = styled.div`
 
 const ActionBoxInput = styled.input`
 	outline: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	width: 150px;
 	background-color: ${(props) => props.theme.colors.background};
 	border-radius: 4px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -490,8 +490,7 @@ const ActionBoxInput = styled.input`
 `;
 
 const ActionBoxMax = styled.div<{ isProRata: boolean }>`
-	position: absolute;
-	width: ${(props) => (props.isProRata ? '94px' : '42px')};
+	width: ${(props) => (props.isProRata ? '105px' : '42px')};
 	left: ${(props) => (props.isProRata ? '185px' : '210px')};
 	text-align: center;
 	padding: 2px 6px;
@@ -509,8 +508,9 @@ const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	cursor: pointer;
 	width: 100%;
 	height: 56px;
-	background-color: transparent;
 	border: none;
+	font-size: 1.2rem;
+	background-color: transparent;
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	${(props) => {
 		if (props.disabled) {

@@ -1,11 +1,12 @@
 //@ts-nocheck
-import { FC, useMemo, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+import styled from 'styled-components';
+import { PoolCreatedResult } from 'subgraph';
+import { FC, useMemo, useState, useEffect } from 'react';
 
+import Connector from 'containers/Connector';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
-import { PageLayout } from 'sections/Layout';
 import useGetDealDetailByIdQuery, {
 	parseDealDetail,
 } from 'queries/deals/useGetDealDetailByIdQuery';
@@ -14,18 +15,26 @@ import useGetClaimedUnderlyingDealTokensQuery, {
 	parseClaimedResult,
 } from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
 
-import SectionTitle from 'sections/shared/SectionTitle';
+import { PageLayout } from 'sections/Layout';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
+import SectionTitle from 'sections/shared/SectionTitle';
+import VestingDeal from 'sections/AelinDeal/VestingDeal';
+import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
+import { Status } from 'components/DealStatus';
+
+import useInterval from 'hooks/useInterval';
+
+import { getERC20Data } from 'utils/crypto';
+
+import { vAelinPoolID } from 'constants/pool';
+import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+
+import FundDeal from '../AelinDeal/FundDeal';
+
 import PurchasePool from './PurchasePool';
 import PoolDurationEnded from './PoolDurationEnded';
-import { PoolCreatedResult } from 'subgraph';
-import { Status } from 'components/DealStatus';
-import Connector from 'containers/Connector';
-import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
-import VestingDeal from 'sections/AelinDeal/VestingDeal';
-import FundDeal from '../AelinDeal/FundDeal';
-import { getERC20Data } from 'utils/crypto';
-import { vAelinPoolID } from 'constants/pool';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -100,6 +109,27 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		}
 		getDealInfo();
 	}, [deal?.id, provider, walletAddress, deal?.underlyingDealToken]);
+
+	useInterval(() => {
+		async function getClaimableTokens() {
+			if (deal?.id != null && deal?.underlyingDealToken && provider != null) {
+				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
+
+				const claimable = walletAddress != null ? await contract.claimableTokens(walletAddress) : 0;
+
+				const claimableTokens = Number(
+					ethers.utils.formatUnits(
+						claimable?.underlyingClaimable?.toString() ?? '0',
+						underlyingDealTokenDecimals
+					)
+				);
+				console.log('claimableTokens: ', claimableTokens);
+				setClaimableUnderlyingTokens(claimableTokens);
+			}
+		}
+
+		getClaimableTokens();
+	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
 	const now = Date.now();
 	const showCreateDealSection = useMemo(() => {

@@ -77,6 +77,7 @@ const StyledModalHeader = styled.div`
 
 const StyledTitle = styled.div`
 	text-align: center;
+	font-size: 1.2rem;
 	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
