@@ -173,7 +173,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 			[TransactionType.Vest]: {
-				heading: `You are vesting ${maxValue} tokens`,
+				heading: `You are vesting ${maxValue} underlying deal tokens`,
 				onSubmit,
 			},
 			[TransactionType.Stake]: {

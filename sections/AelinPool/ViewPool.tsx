@@ -20,7 +20,7 @@ import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import SectionTitle from 'sections/shared/SectionTitle';
 import VestingDeal from 'sections/AelinDeal/VestingDeal';
 import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
-import { ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { Status } from 'components/DealStatus';
 
