@@ -48,6 +48,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
 			0
 		);
+
 		return [
 			{
 				header: 'Name',
@@ -114,6 +115,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 		if (!walletAddress || !signer || !deal.id) return;
 		const contract = new ethers.Contract(deal.id, dealAbi, signer);
 		try {
+			setTxState(TransactionStatus.WAITING);
 			const tx = await contract.claim({
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice.toBN(),

@@ -33,21 +33,8 @@ const usePoolBalancesQuery = ({
 		async () => {
 			const poolContract = new ethers.Contract(poolAddress!, poolAbi, provider);
 			const tokenContract = new ethers.Contract(purchaseToken!, erc20Abi, provider);
-			const [
-				poolBalance,
-				balance,
-				decimals,
-				symbol,
-				allowance,
-				hasAllowList,
-				unformattedAllowListAmount,
-				isOpenEligible,
-				totalAmountAccepted,
-				totalAmountWithdrawn,
-				userAmountAccepted,
-				userAmountWithdrawn,
-				unformattedTotalSupply,
-			] = await Promise.all([
+
+			const results = await Promise.allSettled([
 				walletAddress != null ? poolContract.balanceOf(walletAddress) : 0,
 				walletAddress != null ? tokenContract.balanceOf(walletAddress) : 0,
 				tokenContract.decimals(),
@@ -62,6 +49,26 @@ const usePoolBalancesQuery = ({
 				walletAddress != null ? poolContract.amountWithdrawn(walletAddress) : 0,
 				poolContract.totalSupply(),
 			]);
+
+			const [
+				poolBalance,
+				balance,
+				decimals,
+				symbol,
+				allowance,
+				hasAllowList,
+				unformattedAllowListAmount,
+				isOpenEligible,
+				totalAmountAccepted,
+				totalAmountWithdrawn,
+				userAmountAccepted,
+				userAmountWithdrawn,
+				unformattedTotalSupply,
+			] = results.map((result) => {
+				if (result.status === 'fulfilled') return result.value;
+				if (result.status === 'rejected') return 0;
+			});
+
 			let unformattedMaxProRata = 0;
 			if (walletAddress != null) {
 				try {
@@ -70,6 +77,7 @@ const usePoolBalancesQuery = ({
 					unformattedMaxProRata = await poolContract.maxProRataAvail(walletAddress);
 				}
 			}
+
 			return {
 				purchaseTokenDecimals: decimals,
 				purchaseTokenSymbol: symbol,

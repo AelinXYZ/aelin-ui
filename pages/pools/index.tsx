@@ -194,14 +194,22 @@ const Pools: FC = () => {
 								)
 								.toString()
 						) ===
+							Number(
+								ethers.utils
+									.formatUnits(
+										cellProps.row.original.contributions.toString(),
+										cellProps.row.original.purchaseTokenDecimals
+									)
+									.toString()
+							) &&
 						Number(
 							ethers.utils
 								.formatUnits(
-									cellProps.row.original.contributions.toString(),
+									cellProps.row.original.cap.toString(),
 									cellProps.row.original.purchaseTokenDecimals
 								)
 								.toString()
-						)
+						) !== 0
 					) {
 						return <div>Cap Reached</div>;
 					}
@@ -232,7 +240,9 @@ const Pools: FC = () => {
 				Header: 'fee',
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${Number(ethers.utils.formatEther(cellProps.value.toString()))}%`;
+					return `${parseFloat(
+						Number(ethers.utils.formatEther(cellProps.value.toString())).toFixed(2)
+					)}%`;
 				},
 				width: 75,
 			},
