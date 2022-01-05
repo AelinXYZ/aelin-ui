@@ -41,16 +41,14 @@ const usePoolBalances = ({
 				let allowListAmount = '0';
 				if (hasAllowList) {
 					const unformattedAllowListAmount = await poolContract.allowList(walletAddress);
-					allowListAmount = Number(
-						ethers.utils.formatUnits(unformattedAllowListAmount, decimals)
-					).toString();
+					allowListAmount = ethers.utils.formatUnits(unformattedAllowListAmount, decimals);
 				}
 
 				const formattedBalance = ethers.utils.formatUnits(balance, decimals);
 				const formattedAllowance = ethers.utils.formatUnits(allowance, decimals);
 				const formattedPoolBalance = ethers.utils.formatUnits(poolBalance, decimals);
 				setIsPrivatePool(hasAllowList);
-				setPrivatePoolAmount(allowListAmount);
+				setPrivatePoolAmount(allowListAmount.toString());
 				setPurchaseTokenDecimlas(decimals);
 				setUserPurchaseBalance(formattedBalance.toString());
 				setUserPoolBalance(formattedPoolBalance.toString());

@@ -185,7 +185,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	);
 
 	const isPrivatePoolAndNoAllocation = useMemo(
-		() => privatePoolDetails?.isPrivatePool && !privatePoolDetails?.privatePoolAmount,
+		() => privatePoolDetails?.isPrivatePool && !Number(privatePoolDetails?.privatePoolAmount),
 		[privatePoolDetails?.isPrivatePool, privatePoolDetails?.privatePoolAmount]
 	);
 
