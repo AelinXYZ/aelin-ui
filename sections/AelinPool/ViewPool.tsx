@@ -196,7 +196,8 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					/>
 				</SectionWrapper>
 			) : null}
-			{now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
+			{pool?.poolStatus !== Status.FundingDeal &&
+			now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
 			pool?.id !== vAelinPoolID &&
 			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
 				<PoolDurationEnded pool={pool} dealID={deal.id} />
