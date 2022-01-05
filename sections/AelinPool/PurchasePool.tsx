@@ -89,30 +89,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			: Number(userPurchaseBalance);
 	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
 
-	const maxValueBN = useMemo(() => {
-		if (!purchaseTokenDecimals) return wei(0);
-		const contribution = wei(
-			ethers.utils
-				.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-				.toString(),
-			purchaseTokenDecimals
-		);
-
-		const purchaseCap = wei(
-			ethers.utils
-				.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-				.toString(),
-			purchaseTokenDecimals
-		);
-
-		return purchaseCap.gt(wei(0))
-			? Wei.min(
-					wei(userPurchaseBalance, purchaseTokenDecimals),
-					Wei.max(purchaseCap.sub(contribution), 0)
-			  )
-			: wei(userPurchaseBalance, purchaseTokenDecimals);
-	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
-
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (
@@ -130,9 +106,12 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					);
 				} else {
 					if (!purchaseTokenDecimals) return;
-					const amount = isMaxValue
-						? maxValueBN.toBN()
-						: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+
+					const amount = ethers.utils.parseUnits(
+						(inputValue ?? 0).toString(),
+						purchaseTokenDecimals
+					);
+
 					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
 				}
 			} catch (e) {
@@ -150,7 +129,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		setGasLimitEstimate,
 		inputValue,
 		isMaxValue,
-		maxValueBN,
 	]);
 
 	const poolGridItems = useMemo(
@@ -339,9 +317,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const handleSubmit = useCallback(async () => {
 		if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
 		try {
-			const amount = isMaxValue
-				? maxValueBN.toBN()
-				: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+			const amount = ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
 
 			const tx = await poolContract.purchasePoolTokens(amount, {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -376,7 +352,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		setTxState,
 		inputValue,
 		isMaxValue,
-		maxValueBN,
 	]);
 
 	const handleApprove = useCallback(async () => {
