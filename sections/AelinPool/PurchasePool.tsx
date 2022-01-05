@@ -224,7 +224,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 								ethers.utils
 									.formatUnits(
 										poolBalances?.totalAmountWithdrawn ?? '0',
-										poolBalances?.purchaseTokenDecimals ?? 0
+										purchaseTokenDecimals ?? 0
 									)
 									.toString(),
 								DEFAULT_DECIMALS
@@ -344,6 +344,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			purchaseTokenSymbol,
 			purchaseTokenDecimals,
 			network.id,
+			poolBalances?.totalAmountWithdrawn,
+			poolBalances?.totalSupply,
 		]
 	);
 
