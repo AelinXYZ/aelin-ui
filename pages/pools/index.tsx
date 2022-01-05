@@ -240,7 +240,9 @@ const Pools: FC = () => {
 				Header: 'fee',
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return `${Number(ethers.utils.formatEther(cellProps.value.toString()))}%`;
+					return `${parseFloat(
+						Number(ethers.utils.formatEther(cellProps.value.toString())).toFixed(2)
+					)}%`;
 				},
 				width: 75,
 			},
