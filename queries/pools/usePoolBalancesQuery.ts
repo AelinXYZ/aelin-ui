@@ -11,7 +11,7 @@ type PoolBalances = {
 	userPurchaseBalance: string;
 	userPoolBalance: string;
 	isPrivatePool: boolean;
-	privatePoolAmount: number;
+	privatePoolAmount: string;
 	isOpenEligible: boolean;
 	maxProRata: number;
 	totalAmountAccepted: string;
@@ -85,7 +85,9 @@ const usePoolBalancesQuery = ({
 				userPurchaseBalance: ethers.utils.formatUnits(balance, decimals).toString(),
 				userPoolBalance: ethers.utils.formatUnits(poolBalance, decimals).toString(),
 				isPrivatePool: hasAllowList,
-				privatePoolAmount: Number(ethers.utils.formatUnits(unformattedAllowListAmount, decimals)),
+				privatePoolAmount: ethers.utils
+					.formatUnits(unformattedAllowListAmount, decimals)
+					.toString(),
 				maxProRata: Number(ethers.utils.formatUnits(unformattedMaxProRata, decimals)),
 				totalAmountAccepted: totalAmountAccepted.toString(),
 				totalAmountWithdrawn: totalAmountWithdrawn.toString(),

@@ -105,13 +105,24 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			purchaseTokenDecimals
 		);
 
-		return purchaseCap.gt(wei(0))
+		const publicPoolMaxBN = purchaseCap.gt(wei(0))
 			? Wei.min(
 					wei(userPurchaseBalance, purchaseTokenDecimals),
 					Wei.max(purchaseCap.sub(contribution), 0)
 			  )
 			: wei(userPurchaseBalance, purchaseTokenDecimals);
-	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
+
+		return isPrivatePool
+			? Wei.min(publicPoolMaxBN, wei(privatePoolAmount, purchaseTokenDecimals))
+			: publicPoolMaxBN;
+	}, [
+		privatePoolAmount,
+		userPurchaseBalance,
+		pool?.purchaseTokenCap,
+		purchaseTokenDecimals,
+		pool?.contributions,
+		isPrivatePool,
+	]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -130,10 +141,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					);
 				} else {
 					if (!purchaseTokenDecimals) return;
-					const amount =
-						isMaxValue && !isPrivatePool
-							? maxValueBN.toBN()
-							: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+					const amount = isMaxValue
+						? maxValueBN.toBN()
+						: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
 					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
 				}
 			} catch (e) {
