@@ -130,9 +130,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					);
 				} else {
 					if (!purchaseTokenDecimals) return;
-					const amount = isMaxValue
-						? maxValueBN.toBN()
-						: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+					const amount =
+						isMaxValue && !isPrivatePool
+							? maxValueBN.toBN()
+							: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
 					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
 				}
 			} catch (e) {
