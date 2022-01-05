@@ -2,31 +2,31 @@ import Connector from 'containers/Connector';
 import { useQuery } from 'react-query';
 import { isMainnet, NetworkId } from 'constants/networks';
 
-type AirdropRecord = {
+type MerkleRecord = {
 	balance: string;
 	index: number;
 	proof: string[];
 };
 
-const useGetAirdropDataForAddress = () => {
+const useGetMerkleDataForAddress = () => {
 	const { walletAddress, isOVM, network } = Connector.useContainer();
 	const isOnMainnet = isMainnet(network?.id ?? NetworkId.Mainnet);
 
-	return useQuery<AirdropRecord | null>(
-		['airdrop', 'data', walletAddress, network?.id],
+	return useQuery<MerkleRecord | null>(
+		['merkle', 'data', walletAddress, network?.id],
 		async () => {
 			if (walletAddress == null) {
 				return null;
 			}
-			const request = await fetch('/data/dist-hashes.json');
-			const airdropSource = await request.json();
-			const claimAccounts = Object.keys(airdropSource.claims).map((e) => e.toLowerCase());
-			const claimAccountsArr = Object.keys(airdropSource.claims).map((ele) => {
+			const request = await fetch('/data/second-dist-hashes.json');
+			const merkleSource = await request.json();
+			const claimAccounts = Object.keys(merkleSource.claims).map((e) => e.toLowerCase());
+			const claimAccountsArr = Object.keys(merkleSource.claims).map((ele) => {
 				return {
 					address: ele.toLowerCase(),
-					index: airdropSource.claims[ele]['index'],
-					amount: airdropSource.claims[ele]['amount'],
-					proof: airdropSource.claims[ele]['proof'],
+					index: merkleSource.claims[ele]['index'],
+					amount: merkleSource.claims[ele]['amount'],
+					proof: merkleSource.claims[ele]['proof'],
 				};
 			});
 			if (claimAccounts.includes(walletAddress)) {
@@ -44,4 +44,4 @@ const useGetAirdropDataForAddress = () => {
 	);
 };
 
-export default useGetAirdropDataForAddress;
+export default useGetMerkleDataForAddress;

@@ -2,18 +2,18 @@ import { useQuery } from 'react-query';
 import { ethers } from 'ethers';
 
 import Connector from 'containers/Connector';
-import DistributionContract from 'containers/ContractsInterface/contracts/AelinDistribution';
+import SecondDistributionContract from 'containers/ContractsInterface/contracts/SecondAelinDistribution';
 import { getKeyValue } from 'utils/helpers';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { isMainnet, NetworkId } from 'constants/networks';
 
-const useGetCanClaimForAddress = (index: number | null) => {
+const useGetAddressCanClaimMerkle = (index: number | null) => {
 	const { network, provider, walletAddress, isOVM } = Connector.useContainer();
 	const isOnMainnet = isMainnet(network?.id ?? NetworkId.Mainnet);
 	return useQuery<boolean | null>(
-		['airdrop', 'canClaim', index, walletAddress, network?.id],
+		['merkle', 'canClaim', index, walletAddress, network?.id],
 		async () => {
-			const distributionContract = (getKeyValue(DistributionContract) as any)(
+			const distributionContract = (getKeyValue(SecondDistributionContract) as any)(
 				network?.id ?? DEFAULT_NETWORK_ID
 			);
 			const aelinDistribution = new ethers.Contract(
@@ -37,4 +37,4 @@ const useGetCanClaimForAddress = (index: number | null) => {
 	);
 };
 
-export default useGetCanClaimForAddress;
+export default useGetAddressCanClaimMerkle;
