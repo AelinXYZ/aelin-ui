@@ -42,7 +42,7 @@ const Dot = styled.div<{ isActive: boolean }>`
 `;
 
 const Address = styled.div`
-	font-size: 12px;
+	font-size: 1rem;
 	margin-top: 2px;
 	margin-left: 10px;
 `;

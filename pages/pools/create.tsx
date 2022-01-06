@@ -21,7 +21,7 @@ import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { FlexDivRow, FlexDivCol, Tooltip } from 'components/common';
+import { FlexDivRow, FlexDivCol } from 'components/common';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 import { TransactionStatus } from 'constants/transactions';
@@ -110,7 +110,7 @@ const Create: FC = () => {
 	});
 
 	const createVariablesToCreatePool = useCallback(async () => {
-		const { formatBytes32String, parseEther, parseUnits } = utils;
+		const { parseEther, parseUnits } = utils;
 		const now = new Date();
 
 		const {
@@ -167,8 +167,8 @@ const Create: FC = () => {
 
 		return {
 			...formik.values,
-			poolName: formatBytes32String(poolName),
-			poolSymbol: formatBytes32String(poolSymbol),
+			poolName,
+			poolSymbol,
 			poolCap: parseUnits(poolCap.toString(), purchaseTokenDecimals),
 			sponsorFee: parseEther(sponsorFee.toString()),
 			duration,

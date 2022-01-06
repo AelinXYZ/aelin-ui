@@ -65,12 +65,12 @@ const TransactionInfo = styled(FlexDivCol)`
 `;
 const TransactionInfoHeading = styled.h3`
 	margin: 0;
-	font-size: 14px;
+	font-size: 1.2rem;
 	color: ${(props) => props.theme.colors.headerGreen};
 `;
 
 const TransactionInfoBody = styled.div<{ isFailureMessage?: boolean }>`
-	font-size: 12px;
+	font-size: 1rem;
 	${(props) =>
 		props.isFailureMessage &&
 		css`

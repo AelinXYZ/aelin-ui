@@ -1,5 +1,4 @@
 import { useQuery } from 'react-query';
-import { wei } from '@synthetixio/wei';
 import { ethers } from 'ethers';
 
 import Connector from 'containers/Connector';

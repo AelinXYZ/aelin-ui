@@ -324,7 +324,7 @@ const Container = styled.div`
 
 const Header = styled.div`
 	color: ${(props) => props.theme.colors.forestGreen};
-	font-size: 14px;
+	font-size: 1.2rem;
 	margin: 20px 0 50px 0;
 	padding-left: 20px;
 `;

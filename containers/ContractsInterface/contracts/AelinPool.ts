@@ -1,4 +1,4 @@
-const poolAbi = [
+const latestPoolAbi = [
 	{
 		inputs: [],
 		stateMutability: 'nonpayable',
@@ -397,6 +397,25 @@ const poolAbi = [
 		inputs: [
 			{
 				internalType: 'address',
+				name: '',
+				type: 'address',
+			},
+		],
+		name: 'amountWithdrawn',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [
+			{
+				internalType: 'address',
 				name: 'spender',
 				type: 'address',
 			},
@@ -706,7 +725,7 @@ const poolAbi = [
 				type: 'address',
 			},
 		],
-		name: 'maxProRataAvail',
+		name: 'maxProRataAmount',
 		outputs: [
 			{
 				internalType: 'uint256',
@@ -933,6 +952,19 @@ const poolAbi = [
 	},
 	{
 		inputs: [],
+		name: 'totalAmountWithdrawn',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
 		name: 'totalSupply',
 		outputs: [
 			{
@@ -1036,5 +1068,28 @@ const poolAbi = [
 		type: 'function',
 	},
 ];
+
+const oldPoolAbi = [
+	{
+		inputs: [
+			{
+				internalType: 'address',
+				name: 'purchaser',
+				type: 'address',
+			},
+		],
+		name: 'maxProRataAvail',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+];
+const poolAbi = [...oldPoolAbi, ...latestPoolAbi];
 
 export default poolAbi;

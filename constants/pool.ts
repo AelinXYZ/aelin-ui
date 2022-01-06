@@ -5,6 +5,11 @@ export enum Privacy {
 	PRIVATE = 'private',
 }
 
+export enum Allocation {
+	MAX = 'max',
+	DEALLOCATE = 'deallocate',
+}
+
 export const statusToText = (status: Status): string => {
 	switch (status) {
 		case Status.PoolOpen:
@@ -33,3 +38,5 @@ export const initialWhitelistValues = [
 ];
 
 export const firstAelinPoolDealID = '0x06bad08305074da59fe98d0e85bad8f524e167df';
+
+export const vAelinPoolID = '0x3074306c0cc9200602bfc64beea955928dac56dd';

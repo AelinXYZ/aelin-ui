@@ -1,7 +1,7 @@
 import Wei, { wei } from '@synthetixio/wei';
 import { GasLimitEstimate, GWEI_UNIT } from 'constants/networks';
 
-const GAS_LIMIT_BUFFER_MULTIPLIER = 15;
+const GAS_LIMIT_BUFFER_MULTIPLIER = 20;
 
 export const getTransactionPrice = (
 	gasPrice: Wei | null,

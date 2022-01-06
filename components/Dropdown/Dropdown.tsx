@@ -59,7 +59,7 @@ const Inner = styled.div`
 	border-radius: 50px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	height: 35px;
-	padding: 12px 30px;
+	padding: 12px 20px;
 	cursor: pointer;
 `;
 

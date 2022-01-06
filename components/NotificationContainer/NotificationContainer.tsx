@@ -20,8 +20,8 @@ const StyledToastContainer = styled(ToastContainer)`
 	}
 	.Toastify__toast-body {
 		font-family: ${(props) => props.theme.fonts.agrandir};
-		font-size: 14px;
-		line-height: 14px;
+		font-size: 1rem;
+		line-height: 1rem;
 	}
 	.Toastify__progress-bar {
 		background: ${(props) => props.theme.colors.headerGreen};
