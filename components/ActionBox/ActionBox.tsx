@@ -440,7 +440,7 @@ const ActionBoxHeader = styled(Button)<{
 	${(props) =>
 		props.isSelected &&
 		css`
-			background-color: #d7d7d7;
+			background-color: ${props.theme.colors.grey};
 		`}
 
 	${(props) =>
