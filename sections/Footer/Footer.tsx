@@ -45,7 +45,7 @@ const Footer: FC = () => {
 							<StyledA target="_blank">DOCS. </StyledA>
 						</Link>
 						<Link href={ROUTES.Stake} passHref>
-							<StyledA isDisabled>STAKE. </StyledA>
+							<StyledA>STAKE. </StyledA>
 						</Link>
 					</>
 				</NavRow>
