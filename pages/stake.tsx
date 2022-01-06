@@ -16,7 +16,7 @@ const Stake = () => {
 			<Head>
 				<title>Aelin - Stake</title>
 			</Head>
-			<PageLayout title={<>Stake AELIN or AELIN-ETH LP tokens</>} subtitle="">
+			<PageLayout title={<>Stake AELIN (and coming soon AELIN-ETH LP tokens)</>} subtitle="">
 				<JustifiedLayout>
 					<PageSection>
 						<StakeSection
