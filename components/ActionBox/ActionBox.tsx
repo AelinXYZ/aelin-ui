@@ -296,6 +296,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 						<ActionBoxHeaderWrapper>
 							<ActionBoxHeader
 								isPool={isPool}
+								isSelected={isDealAccept}
 								onClick={() => setIsDealAccept(true)}
 								isAcceptOrReject={isAcceptOrReject}
 							>
@@ -319,6 +320,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 							{isAcceptOrReject && (
 								<ActionBoxHeader
 									isPool={false}
+									isSelected={!isDealAccept}
 									isWithdraw={true}
 									onClick={() => setIsDealAccept(false)}
 									isAcceptOrReject={isAcceptOrReject}
@@ -427,12 +429,19 @@ const ActionBoxHeaderWrapper = styled(FlexDivRow)`
 const ActionBoxHeader = styled(Button)<{
 	isAcceptOrReject: boolean;
 	isPool: boolean;
+	isSelected: boolean;
 	isWithdraw?: boolean;
 }>`
 	margin: 5px;
 	color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
 	font-size: 1rem;
+
+	${(props) =>
+		props.isSelected &&
+		css`
+			background-color: #d7d7d7;
+		`}
 
 	${(props) =>
 		!props.isPool &&
@@ -448,6 +457,7 @@ const ActionBoxHeader = styled(Button)<{
 			padding: 4px;
 			background: transparent;
 			cursor: default;
+			text-align: start;
 		`}
 `;
 
