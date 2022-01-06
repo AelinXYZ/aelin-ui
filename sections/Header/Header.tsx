@@ -3,13 +3,12 @@ import { FC, useMemo } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
 import WalletWidget from 'components/WalletWidget';
 import NetworkWidget from 'components/NetworkWidget';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, ExternalLink } from 'components/common';
 
 const Header: FC = () => {
 	const LINKS = useMemo(
@@ -47,6 +46,13 @@ const Header: FC = () => {
 						</StyledLink>
 					</Link>
 				))}
+				<StyledExternalLink
+					href={
+						'https://info.uniswap.org/#/optimism/pools/0x5e8b0fc35065a5d980c11f96cb52381de390b13f'
+					}
+				>
+					Uniswap Pool
+				</StyledExternalLink>
 			</Links>
 			<HeaderBlock>
 				<NetworkWidget />
@@ -93,6 +99,10 @@ const HeaderBlock = styled.div`
 `;
 
 const StyledLink = styled.a`
+	font-size: 1.2rem;
+`;
+
+const StyledExternalLink = styled(ExternalLink)`
 	font-size: 1.2rem;
 `;
 
