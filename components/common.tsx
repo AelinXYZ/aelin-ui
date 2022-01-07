@@ -54,12 +54,15 @@ export const Tooltip = styled(Tippy)`
 	background: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
 	border-radius: 4px;
-	.tippy-arrow {
-		color: ${(props) => props.theme.colors.white};
-	}
+	max-width: 500px !important;
+
 	.tippy-content {
 		font-size: 1rem;
 		padding: 10px;
+	}
+
+	.tippy-arrow {
+		color: ${(props) => props.theme.colors.white};
 	}
 `;
 
