@@ -326,8 +326,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 									isAcceptOrReject={isAcceptOrReject}
 								>
 									<FlexDivCenterRow>
-										<>Reject Deal</>
-										<QuestionMark text="Reject deal and withdraw your capital" />
+										<>Withdraw</>
+										<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
 									</FlexDivCenterRow>
 								</ActionBoxHeader>
 							)}
