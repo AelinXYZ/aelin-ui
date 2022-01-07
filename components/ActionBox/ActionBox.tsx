@@ -11,9 +11,9 @@ import { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
-import { statusToText } from 'constants/pool';
 import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { statusToText, sheldonPoolId, swimmingPoolID } from 'constants/pool';
 
 import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 
@@ -155,6 +155,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = isAcceptOrReject && !isDealAccept;
 
+	const isPoolDisabled = [sheldonPoolId, swimmingPoolID].includes(poolId);
+
 	useEffect(() => {
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
@@ -201,9 +203,18 @@ const ActionBox: FC<ActionBoxProps> = ({
 			(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
 			(actionBoxType !== ActionBoxType.VestingDeal && (!inputValue || Number(inputValue) === 0)) ||
 			(actionBoxType !== ActionBoxType.VestingDeal &&
-				Number(maxValue ?? 0) < Number(inputValue ?? 0))
+				Number(maxValue ?? 0) < Number(inputValue ?? 0)) ||
+			isPoolDisabled
 		);
-	}, [walletAddress, isWithdraw, isPurchaseExpired, actionBoxType, maxValue, inputValue]);
+	}, [
+		walletAddress,
+		isWithdraw,
+		isPurchaseExpired,
+		actionBoxType,
+		maxValue,
+		inputValue,
+		isPoolDisabled,
+	]);
 
 	return (
 		<Container>
@@ -373,6 +384,14 @@ const ActionBox: FC<ActionBoxProps> = ({
 						amount: inputValue,
 						isPrivatePoolAndNoAllocation,
 					})}
+					{isPoolDisabled && (
+						<div>
+							<QuestionMark
+								isOpen
+								text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md"
+							/>
+						</div>
+					)}
 				</ActionButton>
 			)}
 
@@ -545,6 +564,9 @@ const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 `;
 
 const ActionButton = styled.button<{ isWithdraw: boolean }>`
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	cursor: pointer;
 	width: 100%;
 	height: 56px;
