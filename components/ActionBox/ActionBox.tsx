@@ -4,14 +4,18 @@ import styled, { css } from 'styled-components';
 import Info from 'assets/svg/info.svg';
 import Image from 'next/image';
 
-import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
 import Connector from 'containers/Connector';
-import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-import QuestionMark from 'components/QuestionMark';
-import { GasLimitEstimate } from 'constants/networks';
+
+import Button from 'components/Button';
 import { Status } from 'components/DealStatus';
+import QuestionMark from 'components/QuestionMark';
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+
 import { statusToText } from 'constants/pool';
+import { GasLimitEstimate } from 'constants/networks';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
+
+import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 
 export enum ActionBoxType {
 	FundPool = 'FundPool',
@@ -45,6 +49,7 @@ const actionBoxTypeToTitle = (
 		</div>
 	);
 	const publicPoolText = 'Public pool';
+
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
 			return isPrivatePool ? privatePoolText : publicPoolText;
@@ -289,8 +294,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 							) : null}
 						</InputContainer>
 						<ActionBoxHeaderWrapper>
-							<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-								<FlexDivRow>
+							<ActionBoxHeader
+								isPool={isPool}
+								isSelected={isDealAccept}
+								onClick={() => setIsDealAccept(true)}
+								isAcceptOrReject={isAcceptOrReject}
+							>
+								<FlexDivCenterRow>
 									<>
 										{actionBoxTypeToTitle(
 											actionBoxType,
@@ -299,23 +309,28 @@ const ActionBox: FC<ActionBoxProps> = ({
 											purchaseCurrency
 										)}
 									</>{' '}
-									{actionBoxType === ActionBoxType.AcceptOrRejectDeal ? (
-										<QuestionMark text="choose accept to agree to the deal terms with up to the max amount based on your allocation this round" />
-									) : null}
-								</FlexDivRow>
+									{isAcceptOrReject && (
+										<QuestionMark
+											isOpen={true}
+											text={`Choose accept to agree to the deal terms with up to the max amount based on your allocation this round`}
+										/>
+									)}
+								</FlexDivCenterRow>
 							</ActionBoxHeader>
-							{isAcceptOrReject ? (
+							{isAcceptOrReject && (
 								<ActionBoxHeader
-									onClick={() => setIsDealAccept(false)}
-									isWithdraw={true}
 									isPool={false}
+									isSelected={!isDealAccept}
+									isWithdraw={true}
+									onClick={() => setIsDealAccept(false)}
+									isAcceptOrReject={isAcceptOrReject}
 								>
-									<FlexDivRow>
+									<FlexDivCenterRow>
 										<>Withdraw</>
-										<QuestionMark text="reject deal and withdraw your capital" />
-									</FlexDivRow>
+										<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
+									</FlexDivCenterRow>
 								</ActionBoxHeader>
-							) : null}
+							)}
 						</ActionBoxHeaderWrapper>
 					</>
 				)}
@@ -401,7 +416,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
 	min-height: 250px;
-	width: 300px;
+	min-width: 300px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -411,11 +426,23 @@ const ActionBoxHeaderWrapper = styled(FlexDivRow)`
 	margin-top: 20px;
 `;
 
-const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
-	padding: 15px 10px;
+const ActionBoxHeader = styled(Button)<{
+	isAcceptOrReject: boolean;
+	isPool: boolean;
+	isSelected: boolean;
+	isWithdraw?: boolean;
+}>`
+	margin: 5px;
 	color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
 	font-size: 1rem;
+
+	${(props) =>
+		props.isSelected &&
+		css`
+			background-color: ${props.theme.colors.grey};
+		`}
+
 	${(props) =>
 		!props.isPool &&
 		css`
@@ -423,6 +450,19 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 				cursor: pointer;
 			}
 		`}
+
+	${(props) =>
+		!props.isAcceptOrReject &&
+		css`
+			padding: 4px;
+			background: transparent;
+			cursor: default;
+			text-align: start;
+		`}
+`;
+
+const FlexDivCenterRow = styled(FlexDivRow)`
+	align-items: center;
 `;
 
 const RedemptionHeader = styled.div`
