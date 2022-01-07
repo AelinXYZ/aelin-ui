@@ -11,9 +11,9 @@ import { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
-import { statusToText, sheldonPoolId, swimmingPoolID } from 'constants/pool';
 import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { statusToText, sheldonPoolId, swimmingPoolID } from 'constants/pool';
 
 import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 
@@ -337,8 +337,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 									isAcceptOrReject={isAcceptOrReject}
 								>
 									<FlexDivCenterRow>
-										<>Reject Deal</>
-										<QuestionMark text="Reject deal and withdraw your capital" />
+										<>Withdraw</>
+										<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
 									</FlexDivCenterRow>
 								</ActionBoxHeader>
 							)}
