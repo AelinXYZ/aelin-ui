@@ -12,13 +12,7 @@ const QuestionMark: FC<QuestionMarkProps> = ({ text }) => {
 	const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
 
 	return (
-		<Tooltip
-			visible={isTooltipOpen}
-			appendTo="parent"
-			allowHTML
-			interactive
-			content={<div>{text}</div>}
-		>
+		<Tooltip visible={isTooltipOpen} allowHTML content={<div>{text}</div>}>
 			<StyledQuestionMark
 				onMouseEnter={() => setIsTooltipOpen(true)}
 				onMouseLeave={() => setIsTooltipOpen(false)}
