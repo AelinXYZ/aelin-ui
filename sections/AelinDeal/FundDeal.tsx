@@ -223,7 +223,7 @@ const FundDeal: FC<FundDealProps> = ({
 						<ExchangeRate>
 							{areTokenSymbolsAvailable
 								? `${purchaseTokenSymbol} / ${symbol}: `
-								: `Underlying / Purchase: `}
+								: `Purchase / Underlying: `}
 							{formatNumber(
 								Number((purchaseTokenTotalForDeal ?? 0).toString()) /
 									Number(amount?.toString() ?? '0'),
