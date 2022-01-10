@@ -95,6 +95,11 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		deal?.openRedemptionPeriod,
 	]);
 
+	const areTokenSymbolsAvailable = [
+		underlyingDealTokenSymbol,
+		poolBalances?.purchaseTokenSymbol,
+	].some((val) => val !== null && val !== '');
+
 	const dealGridItems = useMemo(
 		() => [
 			{
@@ -148,7 +153,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
-							{`${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `}
+							{areTokenSymbolsAvailable
+								? `${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `
+								: `Underlying / Purchase: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(
@@ -166,7 +173,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							)}
 						</ExchangeRate>
 						<ExchangeRate>
-							{`${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `}
+							{areTokenSymbolsAvailable
+								? `${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `
+								: `Purchase / Underlying: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(
