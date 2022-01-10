@@ -148,7 +148,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
-							Underlying / Purchase:{' '}
+							{`${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(
@@ -166,7 +166,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							)}
 						</ExchangeRate>
 						<ExchangeRate>
-							Purchase / Underlying:{' '}
+							{`${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(

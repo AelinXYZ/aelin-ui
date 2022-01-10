@@ -206,7 +206,7 @@ const FundDeal: FC<FundDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
-							Underlying / Purchase:{' '}
+							{`${symbol} / ${purchaseTokenSymbol}: `}
 							{formatNumber(
 								Number(amount?.toString() ?? '0') /
 									Number((purchaseTokenTotalForDeal ?? 0).toString()),
@@ -214,7 +214,7 @@ const FundDeal: FC<FundDealProps> = ({
 							)}
 						</ExchangeRate>
 						<ExchangeRate>
-							Purchase / Underlying:{' '}
+							{`${purchaseTokenSymbol} / ${symbol}: `}
 							{formatNumber(
 								Number((purchaseTokenTotalForDeal ?? 0).toString()) /
 									Number(amount?.toString() ?? '0'),
