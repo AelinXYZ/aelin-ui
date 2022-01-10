@@ -98,7 +98,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	const areTokenSymbolsAvailable = [
 		underlyingDealTokenSymbol,
 		poolBalances?.purchaseTokenSymbol,
-	].some((val) => val !== null && val !== '');
+	].every((val) => val !== null && val !== '');
 
 	const dealGridItems = useMemo(
 		() => [
