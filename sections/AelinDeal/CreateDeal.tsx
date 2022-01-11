@@ -5,34 +5,41 @@ import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
-
-import { FlexDivStart, FlexDivRow } from 'components/common';
-import TextInput from 'components/Input/TextInput';
-import Input from 'components/Input/Input';
-import { truncateAddress } from 'utils/crypto';
-import { formatNumber } from 'utils/numbers';
-import { getDuration, formatDuration } from 'utils/time';
+import TransactionData from 'containers/TransactionData';
+import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
+
+import Input from 'components/Input/Input';
+import QuestionMark from 'components/QuestionMark';
+import TokenDisplay from 'components/TokenDisplay';
+import TextInput from 'components/Input/TextInput';
+import TokenDropdown from 'components/TokenDropdown';
+import { FlexDivStart, FlexDivRow } from 'components/common';
+import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+
+import { formatNumber } from 'utils/numbers';
+import { truncateAddress } from 'utils/crypto';
+import { getGasEstimateWithBuffer } from 'utils/network';
+import { getDuration, formatDuration } from 'utils/time';
+import validateCreateDeal, { CreateDealValues } from 'utils/validate/create-deal';
+
 import { erc20Abi } from 'contracts/erc20';
 
-import validateCreateDeal, { CreateDealValues } from 'utils/validate/create-deal';
 import CreateForm from 'sections/shared/CreateForm';
-import TokenDropdown from 'components/TokenDropdown';
-import QuestionMark from 'components/QuestionMark';
-import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+
 import { TransactionStatus } from 'constants/transactions';
-import TransactionNotifier from 'containers/TransactionNotifier';
-import TransactionData from 'containers/TransactionData';
 import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { Allocation } from 'constants/pool';
 
+import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
+
 interface CreateDealProps {
 	poolAddress: string;
+	purchaseToken: string;
 }
 
-const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
+const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<string>('0');
 	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
@@ -40,6 +47,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
 		TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
+
+	const poolBalancesQuery = usePoolBalancesQuery({
+		poolAddress: poolAddress,
+		purchaseToken: purchaseToken,
+	});
+
+	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
 
 	const handleSubmit = async () => {
 		if (!walletAddress || !signer) return;
@@ -654,7 +668,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 					) : (
 						<div>
 							<ExchangeRate>
-								Underlying / Purchase:{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} /> /{' '}
+								{poolBalances?.purchaseTokenSymbol}:{' '}
 								{formatNumber(
 									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
@@ -662,7 +677,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress }) => {
 								)}
 							</ExchangeRate>
 							<ExchangeRate>
-								Purchase / Underlying:{' '}
+								{poolBalances?.purchaseTokenSymbol} /{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
 										Number(formik.values?.underlyingDealTokenTotal ?? 0),
