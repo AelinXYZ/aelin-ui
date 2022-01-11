@@ -13,7 +13,7 @@ import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
-import { statusToText, sheldonPoolId, swimmingPoolID } from 'constants/pool';
+import { statusToText, swimmingPoolID } from 'constants/pool';
 
 import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 
@@ -155,7 +155,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = isAcceptOrReject && !isDealAccept;
 
-	const isPoolDisabled = [sheldonPoolId, swimmingPoolID].includes(poolId);
+	const isPoolDisabled = [swimmingPoolID].includes(poolId);
 
 	useEffect(() => {
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
