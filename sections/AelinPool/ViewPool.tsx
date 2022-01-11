@@ -160,7 +160,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 							<SectionTitle address={null} title="Create Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<CreateDeal poolAddress={poolAddress} />
+					<CreateDeal poolAddress={poolAddress} purchaseToken={pool.purchaseToken} />
 				</SectionWrapper>
 			) : null}
 			{pool?.poolStatus === Status.FundingDeal && deal?.id != null ? (
