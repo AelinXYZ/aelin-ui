@@ -3,7 +3,7 @@ import Wei from '@synthetixio/wei';
 export enum Network {
 	Mainnet = 'mainnet',
 	Kovan = 'kovan',
-	'Mainnet-ovm' = 'mainnet-ovm',
+	'Mainnet-ovm' = 'optimism-mainnet',
 	'Optimism-Kovan' = 'optimism-kovan',
 }
 
