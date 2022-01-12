@@ -239,7 +239,7 @@ const Airdrop = () => {
 							{canClaimMerkle ? 'Claim' : !merkleBalance ? 'Nothing to Claim' : 'Already Claimed'}
 						</SubmitButton>
 						<P>
-							{network.id !== NetworkId['Mainnet-ovm']
+							{network.id !== NetworkId['Optimism-Mainnet']
 								? 'Please switch to the Optimism Network by clicking the network tab in the top right'
 								: `If you participated in the pro rata phase of the initial AELIN Pool you may claim your $AELIN tokens here. Retro payments to volunteer devs are also claimable here. Finally, eligible SNX stakers who submitted their addresses before Dec 28th can claim their tokens here. Those who are eligible but submitted after Dec 28 will receive their AELIN tokens after the Jan 15th submittal deadline`}
 						</P>
@@ -257,7 +257,7 @@ const Airdrop = () => {
 								{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
 							</SubmitButton>
 							<P>
-								{network.id !== NetworkId['Mainnet-ovm']
+								{network.id !== NetworkId['Optimism-Mainnet']
 									? 'Please switch to the Optimism Network by clicking the network tab in the top right'
 									: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Click claim to get your vAELIN. Once claimed you can convert vAELIN into AELIN via the vAELIN pool on the pools page.`}
 							</P>
