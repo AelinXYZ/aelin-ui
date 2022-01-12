@@ -89,7 +89,8 @@ const Pools: FC = () => {
 			if (sponsorFilter.length) {
 				list = list.filter(
 					(_, index) =>
-						ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase()) ||
+						(!!ensOrAddresses.length &&
+							ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase())) ||
 						sponsors[index].toLowerCase().includes(sponsorFilter.toLowerCase())
 				);
 			}
