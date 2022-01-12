@@ -39,7 +39,9 @@ type Chain = {
 
 const getCorrespondingNetwork = (networkId: NetworkId, isOVM: boolean) => {
 	if (isOVM) {
-		return L2_TO_L1_NETWORK_MAPPER[networkId] || L2_TO_L1_NETWORK_MAPPER[NetworkId['Mainnet-ovm']];
+		return (
+			L2_TO_L1_NETWORK_MAPPER[networkId] || L2_TO_L1_NETWORK_MAPPER[NetworkId['Optimism-Mainnet']]
+		);
 	} else {
 		return L1_TO_L2_NETWORK_MAPPER[networkId] || L1_TO_L2_NETWORK_MAPPER[NetworkId.Mainnet];
 	}
