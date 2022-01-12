@@ -24,7 +24,7 @@ const useTokenListQuery = (options?: UseQueryOptions<Token[]>) => {
 			let tokens: Token[] = response.tokens;
 			if (isOVM) {
 				tokens = response.tokens.filter(
-					({ chainId }) => Number(chainId) === Number(NetworkId['Mainnet-ovm'])
+					({ chainId }) => Number(chainId) === Number(NetworkId['Optimism-Mainnet'])
 				);
 			}
 			return tokens;

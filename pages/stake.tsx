@@ -1,76 +1,65 @@
-//@ts-nocheck
 import Head from 'next/head';
-import { useState } from 'react';
 import styled from 'styled-components';
 
 import { PageLayout } from 'sections/Layout';
-import TransactionData from 'containers/TransactionData';
+import { FlexDivCol } from 'components/common';
 import Button from 'components/Button';
-import ActionBox, { ActionBoxType } from 'components/ActionBox';
-import { GasLimitEstimate } from 'constants/networks';
+
+import StakeSection from 'sections/Stake/StakeSection';
+import ContractsInterface from 'containers/ContractsInterface';
 
 const Stake = () => {
-	const [allowance, setAllowance] = useState<string | null>(null);
-	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const [maxValue, setMaxValue] = useState<string>('0');
-	const { txState, setTxState, gasPrice, setGasPrice, setTxType, txType } =
-		TransactionData.useContainer();
-	const handleApprove = () => {
-		console.log('approve');
-	};
-	const handleSubmit = () => {
-		console.log('submit');
-	};
+	const { contracts } = ContractsInterface.useContainer();
 
 	return (
 		<>
 			<Head>
 				<title>Aelin - Stake</title>
 			</Head>
-
-			<PageLayout title={<>Stake Your Balancer LP tokens</>} subtitle="">
-				<Layout>
-					<Section style={{ textAlign: 'center' }}>
-						<Header>Provide liquidity into the DEFI pool on Balancer to earn AELIN</Header>
-						<SubmitButton
-							onClick={() => window.open('https://app.balancer.fi/', 'blank')}
-							variant="text"
-						>
-							Go to Balancer
-						</SubmitButton>
-					</Section>
-					<ActionBox
-						onSubmit={handleSubmit}
-						actionBoxType={ActionBoxType.Stake}
-						onApprove={handleApprove}
-						allowance={allowance}
-						input={{
-							placeholder: '0',
-							label: `Balance 0 Balancer LP`,
-
-							maxValue,
-							symbol: 'Balancer LP',
-						}}
-						txState={txState}
-						setTxState={setTxState}
-						setGasPrice={setGasPrice}
-						gasLimitEstimate={gasLimitEstimate}
-						txType={txType}
-						setTxType={setTxType}
-					/>
-				</Layout>
+			<PageLayout title={<>Stake AELIN (and coming soon AELIN-ETH LP tokens)</>} subtitle="">
+				<JustifiedLayout>
+					<PageSection>
+						<StakeSection
+							header={'AELIN Staking'}
+							tooltipInfo={
+								'Staking AELIN gives a share of 29 AELIN/month in inflationary rewards + 2/3 of protocol deal fees. Note deal fees are temporarily custodied by the Aelin Council and will be distributed in the future.'
+							}
+							token={'AELIN'}
+							contracts={contracts?.AelinStaking ?? null}
+						/>
+					</PageSection>
+					{/* <PageSection>
+						<OverlayWrapper>
+							<Overlay>
+								<StakeSection
+									header={'AELIN/ETH staking'}
+									tooltipInfo={
+										'Staking AELIN/ETH LP gives a share of 44 AELIN/month in inflationary rewards + 1/3 of deal fees. Note deal fees are temporarily custodied by the Aelin Council and will be distributed in the future.'
+									}
+									token={'AELIN/ETH LP'}
+									contracts={contracts?.AelinEthStaking ?? null}
+								/>
+								<Section>
+									<Text>
+										To obtain AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
+										on Uniswap
+									</Text>
+									<SubmitButton
+										onClick={() => window.open('https://app.uniswap.org/', 'blank')}
+										variant="text"
+									>
+										Go to Uniswap
+									</SubmitButton>
+								</Section>
+							</Overlay>
+							<ComingSoon>Coming Soon</ComingSoon>
+						</OverlayWrapper>
+					</PageSection> */}
+				</JustifiedLayout>
 			</PageLayout>
 		</>
 	);
 };
-
-const Header = styled.h3`
-	padding: 20px;
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 14px;
-	margin: 0;
-	padding: 0;
-`;
 
 const Layout = styled.div`
 	margin-top: 50px;
@@ -79,12 +68,27 @@ const Layout = styled.div`
 `;
 
 const Section = styled.div`
-	margin-right: 40px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 300px;
+`;
+
+const PageSection = styled(FlexDivCol)`
+	flex: 1;
+	align-items: center;
+`;
+
+const JustifiedLayout = styled(Layout)`
+	justify-content: space-around;
+`;
+
+const Text = styled.h3`
+	padding: 20px;
+	color: ${(props) => props.theme.colors.headerGreen};
+	font-size: 14px;
+	margin: 20px 0;
+	padding: 0;
 `;
 
 const SubmitButton = styled(Button)`
@@ -98,6 +102,29 @@ const SubmitButton = styled(Button)`
 			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
 		}
 	}
+`;
+
+const OverlayWrapper = styled(FlexDivCol)`
+	position: relative;
+	width: 100%;
+	pointer-events: none;
+	align-items: center;
+`;
+
+const Overlay = styled(FlexDivCol)`
+	width: 100%;
+	pointer-events: none;
+	opacity: 0.2;
+	align-items: center;
+`;
+
+const ComingSoon = styled.div`
+	position: absolute;
+	font-size: 22px;
+	color: ${(props) => props.theme.colors.headerGreen};
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 `;
 
 export default Stake;

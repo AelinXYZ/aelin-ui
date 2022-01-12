@@ -1,9 +1,8 @@
 import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
 import Connector from 'containers/Connector';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import { erc20Abi } from 'contracts/erc20';
-import { UseQueryOptions, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 
 type PoolBalances = {
 	purchaseTokenDecimals: number;
@@ -12,9 +11,13 @@ type PoolBalances = {
 	userPurchaseBalance: string;
 	userPoolBalance: string;
 	isPrivatePool: boolean;
-	privatePoolAmount: number;
+	privatePoolAmount: string;
 	isOpenEligible: boolean;
 	maxProRata: number;
+	totalAmountAccepted: string;
+	userAmountAccepted: string;
+	userAmountWithdrawn: string;
+	totalSupply: number;
 };
 
 const usePoolBalancesQuery = ({
@@ -30,6 +33,23 @@ const usePoolBalancesQuery = ({
 		async () => {
 			const poolContract = new ethers.Contract(poolAddress!, poolAbi, provider);
 			const tokenContract = new ethers.Contract(purchaseToken!, erc20Abi, provider);
+
+			const results = await Promise.allSettled([
+				walletAddress != null ? poolContract.balanceOf(walletAddress) : 0,
+				walletAddress != null ? tokenContract.balanceOf(walletAddress) : 0,
+				tokenContract.decimals(),
+				tokenContract.symbol(),
+				walletAddress != null ? tokenContract.allowance(walletAddress, poolAddress) : 0,
+				poolContract.hasAllowList(),
+				walletAddress != null ? poolContract.allowList(walletAddress) : 0,
+				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
+				poolContract.totalAmountAccepted(),
+				poolContract.totalAmountWithdrawn(),
+				walletAddress != null ? poolContract.amountAccepted(walletAddress) : 0,
+				walletAddress != null ? poolContract.amountWithdrawn(walletAddress) : 0,
+				poolContract.totalSupply(),
+			]);
+
 			const [
 				poolBalance,
 				balance,
@@ -38,19 +58,26 @@ const usePoolBalancesQuery = ({
 				allowance,
 				hasAllowList,
 				unformattedAllowListAmount,
-				unformattedMaxProRata,
 				isOpenEligible,
-			] = await Promise.all([
-				walletAddress != null ? poolContract.balanceOf(walletAddress) : 0,
-				walletAddress != null ? tokenContract.balanceOf(walletAddress) : 0,
-				tokenContract.decimals(),
-				tokenContract.symbol(),
-				walletAddress != null ? tokenContract.allowance(walletAddress, poolAddress) : 0,
-				poolContract.hasAllowList(),
-				walletAddress != null ? poolContract.allowList(walletAddress) : 0,
-				walletAddress != null ? poolContract.maxProRataAvail(walletAddress) : 0,
-				walletAddress != null ? poolContract.openPeriodEligible(walletAddress) : false,
-			]);
+				totalAmountAccepted,
+				totalAmountWithdrawn,
+				userAmountAccepted,
+				userAmountWithdrawn,
+				unformattedTotalSupply,
+			] = results.map((result) => {
+				if (result.status === 'fulfilled') return result.value;
+				if (result.status === 'rejected') return 0;
+			});
+
+			let unformattedMaxProRata = 0;
+			if (walletAddress != null) {
+				try {
+					unformattedMaxProRata = await poolContract.maxProRataAmount(walletAddress);
+				} catch (e) {
+					unformattedMaxProRata = await poolContract.maxProRataAvail(walletAddress);
+				}
+			}
+
 			return {
 				purchaseTokenDecimals: decimals,
 				purchaseTokenSymbol: symbol,
@@ -58,9 +85,16 @@ const usePoolBalancesQuery = ({
 				userPurchaseBalance: ethers.utils.formatUnits(balance, decimals).toString(),
 				userPoolBalance: ethers.utils.formatUnits(poolBalance, decimals).toString(),
 				isPrivatePool: hasAllowList,
-				privatePoolAmount: Number(ethers.utils.formatUnits(unformattedAllowListAmount, decimals)),
+				privatePoolAmount: ethers.utils
+					.formatUnits(unformattedAllowListAmount, decimals)
+					.toString(),
 				maxProRata: Number(ethers.utils.formatUnits(unformattedMaxProRata, decimals)),
+				totalAmountAccepted: totalAmountAccepted.toString(),
+				totalAmountWithdrawn: totalAmountWithdrawn.toString(),
+				userAmountWithdrawn: userAmountWithdrawn.toString(),
+				userAmountAccepted: userAmountAccepted.toString(),
 				isOpenEligible,
+				totalSupply: Number(ethers.utils.formatUnits(unformattedTotalSupply, decimals)),
 			};
 		},
 		{

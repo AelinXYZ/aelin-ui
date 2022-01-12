@@ -61,9 +61,9 @@ const Countdown: FC<CountdownProps> = ({ time, timeStart, networkId }) => {
 			</span>
 		);
 	});
-	const estSymbol = networkId === NetworkId['Mainnet-ovm'] ? '~' : '';
+	const estSymbol = networkId === NetworkId['Optimism-Mainnet'] ? '~' : '';
 	const questionMark =
-		networkId === NetworkId['Mainnet-ovm'] ? (
+		networkId === NetworkId['Optimism-Mainnet'] ? (
 			<QuestionMark
 				text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
 			/>

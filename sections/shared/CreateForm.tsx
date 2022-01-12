@@ -31,9 +31,11 @@ const CreateForm: FC<CreateFormProps> = ({
 	setGasPrice,
 	gasLimitEstimate,
 }) => {
-	const isValidForm = useMemo(() => Object.keys(formik?.errors ?? {}).length === 0, [
-		formik.errors,
-	]);
+	const isValidForm = useMemo(
+		() => Object.keys(formik?.errors ?? {}).length === 0,
+		[formik.errors]
+	);
+
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={true} gridItems={gridItems} />

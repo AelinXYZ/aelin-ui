@@ -21,7 +21,7 @@ import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { FlexDivRow, FlexDivCol, Tooltip } from 'components/common';
+import { FlexDivRow, FlexDivCol } from 'components/common';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 import { TransactionStatus } from 'constants/transactions';
@@ -29,7 +29,7 @@ import { TransactionStatus } from 'constants/transactions';
 import { truncateAddress } from 'utils/crypto';
 import { getDuration, formatDuration } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
-import validateCreatePool from 'utils/validate/create-pool';
+import validateCreatePool, { CreatePoolValues } from 'utils/validate/create-pool';
 import { scrollToBottom } from 'utils/window';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
@@ -38,7 +38,7 @@ import { erc20Abi } from 'contracts/erc20';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 const Create: FC = () => {
-	const { walletAddress, provider } = Connector.useContainer();
+	const { walletAddress, provider, network } = Connector.useContainer();
 	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -105,12 +105,12 @@ const Create: FC = () => {
 			poolPrivacy: Privacy.PUBLIC,
 			whitelist: initialWhitelistValues,
 		},
-		validate: validateCreatePool,
+		validate: (values: CreatePoolValues) => validateCreatePool(values, network.id),
 		onSubmit: handleSubmit,
 	});
 
 	const createVariablesToCreatePool = useCallback(async () => {
-		const { formatBytes32String, parseEther, parseUnits } = utils;
+		const { parseEther, parseUnits } = utils;
 		const now = new Date();
 
 		const {
@@ -167,8 +167,8 @@ const Create: FC = () => {
 
 		return {
 			...formik.values,
-			poolName: formatBytes32String(poolName),
-			poolSymbol: formatBytes32String(poolSymbol),
+			poolName,
+			poolSymbol,
 			poolCap: parseUnits(poolCap.toString(), purchaseTokenDecimals),
 			sponsorFee: parseEther(sponsorFee.toString()),
 			duration,
@@ -182,7 +182,7 @@ const Create: FC = () => {
 		const getGasLimitEstimate = async () => {
 			if (!contracts || !walletAddress) return setGasLimitEstimate(null);
 
-			const errors = validateCreatePool(formik.values);
+			const errors = validateCreatePool(formik.values, network.id);
 			const hasError = Object.keys(errors).length !== 0;
 			if (hasError) return setGasLimitEstimate(null);
 
@@ -220,7 +220,7 @@ const Create: FC = () => {
 			}
 		};
 		getGasLimitEstimate();
-	}, [contracts, walletAddress, formik.values, createVariablesToCreatePool]);
+	}, [contracts, walletAddress, formik.values, createVariablesToCreatePool, network.id]);
 
 	useEffect(() => {
 		if (formik.values.poolPrivacy === Privacy.PRIVATE) {

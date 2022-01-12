@@ -1,46 +1,36 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { useState, } from 'react';
+import { useState } from 'react';
 
 import { Tooltip } from 'components/common';
 
 interface QuestionMarkProps {
-  text: string;
-};
+	text: string;
+}
 
 const QuestionMark: FC<QuestionMarkProps> = ({ text }) => {
 	const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
 
-  return (
-    <Tooltip
-      visible={isTooltipOpen}
-      appendTo="parent"
-      allowHTML
-      interactive
-      content={
-        <div>
-          { text }
-        </div>
-      }
-    >
-      <StyledQuestionMark
-        onMouseEnter={() => setIsTooltipOpen(true)}
-        onMouseLeave={() => setIsTooltipOpen(false)}
-      >
-        ?
-      </StyledQuestionMark>
-    </Tooltip>
-  );
+	return (
+		<Tooltip visible={isTooltipOpen} allowHTML content={<div>{text}</div>}>
+			<StyledQuestionMark
+				onMouseEnter={() => setIsTooltipOpen(true)}
+				onMouseLeave={() => setIsTooltipOpen(false)}
+			>
+				?
+			</StyledQuestionMark>
+		</Tooltip>
+	);
 };
 
 const StyledQuestionMark = styled.span`
 	width: 18px;
 	height: 18px;
 	margin: 0 5px;
-	font-size: 9px;
+	font-size: 0.6rem;
 	font-weight: bold;
 	border-radius: 50%;
-	line-height: 18px;
+	line-height: 1.2rem;
 	margin-right: 5px;
 	text-align: center;
 	display: inline-block;
@@ -50,6 +40,5 @@ const StyledQuestionMark = styled.span`
 	background: ${(props) => props.theme.colors.grey};
 `;
 
-
-export { QuestionMark }
+export { QuestionMark };
 export default QuestionMark;

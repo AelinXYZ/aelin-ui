@@ -167,6 +167,11 @@ const FundDeal: FC<FundDealProps> = ({
 		[visibleAmount, allowance]
 	);
 
+	const areTokenSymbolsAvailable = [
+		underlyingDealTokenSymbol,
+		poolBalances?.purchaseTokenSymbol,
+	].every((val) => val !== null && val !== '');
+
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!token || !signer || !dealAddress) return;
@@ -206,7 +211,9 @@ const FundDeal: FC<FundDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
-							Underlying / Purchase:{' '}
+							{areTokenSymbolsAvailable
+								? `${symbol} / ${purchaseTokenSymbol}: `
+								: `Underlying / Purchase: `}
 							{formatNumber(
 								Number(amount?.toString() ?? '0') /
 									Number((purchaseTokenTotalForDeal ?? 0).toString()),
@@ -214,7 +221,9 @@ const FundDeal: FC<FundDealProps> = ({
 							)}
 						</ExchangeRate>
 						<ExchangeRate>
-							Purchase / Underlying:{' '}
+							{areTokenSymbolsAvailable
+								? `${purchaseTokenSymbol} / ${symbol}: `
+								: `Purchase / Underlying: `}
 							{formatNumber(
 								Number((purchaseTokenTotalForDeal ?? 0).toString()) /
 									Number(amount?.toString() ?? '0'),
@@ -324,7 +333,7 @@ const Container = styled.div`
 
 const Header = styled.div`
 	color: ${(props) => props.theme.colors.forestGreen};
-	font-size: 14px;
+	font-size: 1.2rem;
 	margin: 20px 0 50px 0;
 	padding-left: 20px;
 `;

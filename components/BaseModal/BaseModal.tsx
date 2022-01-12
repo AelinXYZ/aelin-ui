@@ -72,11 +72,12 @@ const StyledModalBody = styled.div`
 const StyledModalHeader = styled.div`
 	display: flex;
 	justify-content: flex-end;
-	font-size: 25px;
+	font-size: 2rem;
 `;
 
 const StyledTitle = styled.div`
 	text-align: center;
+	font-size: 1.2rem;
 	color: ${(props) => props.theme.colors.forestGreen};
 `;
 

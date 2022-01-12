@@ -56,12 +56,12 @@ const AddressWidget = styled.div`
 	height: 22px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-radius: 100px;
-	font-size: 11px;
+	font-size: 1rem;
 	color: ${(props) => props.theme.colors.headerGrey};
 	text-align: center;
 	margin-left: 10px;
 	margin-right: 10px;
-	padding-top: 5px;
+	padding-top: 2px;
 `;
 
 export default SectionTitle;

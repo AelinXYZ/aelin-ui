@@ -1,4 +1,3 @@
-import { utils } from 'ethers';
 import Connector from 'containers/Connector';
 import { useQuery } from 'react-query';
 import { isMainnet, NetworkId } from 'constants/networks';

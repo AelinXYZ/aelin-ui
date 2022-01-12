@@ -35,7 +35,7 @@ const Footer: FC = () => {
 						<Link href={ROUTES.Pools.Home} passHref>
 							<StyledA>POOLS. </StyledA>
 						</Link>
-						<Link href={ROUTES.Home} passHref>
+						<Link href={ROUTES.Pools.Create} passHref>
 							<StyledA>CREATE POOL. </StyledA>
 						</Link>
 						<Link href={ROUTES.ClaimTokens} passHref>
@@ -45,7 +45,7 @@ const Footer: FC = () => {
 							<StyledA target="_blank">DOCS. </StyledA>
 						</Link>
 						<Link href={ROUTES.Stake} passHref>
-							<StyledA isDisabled>STAKE (COMING SOON). </StyledA>
+							<StyledA>STAKE. </StyledA>
 						</Link>
 					</>
 				</NavRow>
@@ -88,7 +88,7 @@ const NavRow = styled.div`
 
 const StyledA = styled.a<{ isDisabled?: boolean }>`
 	color: #000000;
-	font-size: 12px;
+	font-size: 1rem;
 	letter-spacing: 0.62px;
 	margin: 0 3px;
 	${(props) =>

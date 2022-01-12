@@ -7,7 +7,7 @@ export const ETH_GAS_STATION_API_URL = 'https://ethgasstation.info/json/ethgasAP
 export const GAS_NOW_API_URL = 'https://etherchain.org/api/gasnow';
 
 export const getGraphEndpoint = (networkId?: NetworkId) => {
-	if (networkId === NetworkId['Mainnet-ovm']) {
+	if (networkId === NetworkId['Optimism-Mainnet']) {
 		return GRAPH_ENDPOINT_OPTIMISM;
 	} else if (networkId === NetworkId.Kovan) {
 		return GRAPH_ENDPOINT_KOVAN;

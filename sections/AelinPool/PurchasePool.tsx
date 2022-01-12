@@ -43,14 +43,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const {
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-		txType,
-		setTxType,
-	} = TransactionData.useContainer();
+	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
+		TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
@@ -111,13 +105,24 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			purchaseTokenDecimals
 		);
 
-		return purchaseCap.gt(wei(0))
+		const publicPoolMaxBN = purchaseCap.gt(wei(0))
 			? Wei.min(
 					wei(userPurchaseBalance, purchaseTokenDecimals),
 					Wei.max(purchaseCap.sub(contribution), 0)
 			  )
 			: wei(userPurchaseBalance, purchaseTokenDecimals);
-	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
+
+		return isPrivatePool
+			? Wei.min(publicPoolMaxBN, wei(privatePoolAmount, purchaseTokenDecimals))
+			: publicPoolMaxBN;
+	}, [
+		privatePoolAmount,
+		userPurchaseBalance,
+		pool?.purchaseTokenCap,
+		purchaseTokenDecimals,
+		pool?.contributions,
+		isPrivatePool,
+	]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -183,25 +188,52 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`Maximum number of pool tokens`} />
 					</>
 				),
-				subText: formatNumber(
-					ethers.utils
-						.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString(),
-					DEFAULT_DECIMALS
-				),
+				subText:
+					Number(pool?.purchaseTokenCap.toString()) > 0
+						? formatNumber(
+								ethers.utils
+									.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+									.toString(),
+								DEFAULT_DECIMALS
+						  )
+						: 'Uncapped',
 			},
 			{
 				header: (
 					<>
-						<>{`Amount Funded`}</>
-						<QuestionMark text={`The total amount of tokens all purchasers have deposited`} />
+						<>{`Pool stats`}</>
+						<QuestionMark
+							text={`The total amount of tokens all purchasers have deposited, withdrawn and the remaining amount in the pool`}
+						/>
 					</>
 				),
-				subText: formatNumber(
-					ethers.utils
-						.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-						.toString(),
-					DEFAULT_DECIMALS
+				subText: (
+					<>
+						<div>
+							Funded:{' '}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
+									.toString(),
+								DEFAULT_DECIMALS
+							)}
+						</div>
+						<div>
+							Withdrawn:{' '}
+							{formatNumber(
+								ethers.utils
+									.formatUnits(
+										poolBalances?.totalAmountWithdrawn ?? '0',
+										purchaseTokenDecimals ?? 0
+									)
+									.toString(),
+								DEFAULT_DECIMALS
+							)}
+						</div>
+						<div>
+							Amount in pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
+						</div>
+					</>
 				),
 			},
 			{
@@ -216,7 +248,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						Balance
 					</span>
 				),
-				subText: userPurchaseBalance,
+				subText: formatNumber(userPurchaseBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
 				header: (
@@ -234,17 +266,34 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
-				subText: (
-					<>
-						<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
-						<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
-					</>
-				),
+				subText:
+					Number(
+						ethers.utils
+							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+							.toString()
+					) ===
+						Number(
+							ethers.utils
+								.formatUnits(pool?.contributions.toString() ?? '-1', purchaseTokenDecimals ?? 0)
+								.toString()
+						) &&
+					Number(
+						ethers.utils
+							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
+							.toString()
+					) !== 0 ? (
+						<div>Cap Reached</div>
+					) : (
+						<>
+							<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
+							<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
+						</>
+					),
 			},
 			{
 				header: (
 					<>
-						<>{`Pool Duration`}</>
+						<>{`Pool Duration Ends`}</>
 						<QuestionMark
 							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
@@ -252,11 +301,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<>
-						<Countdown
-							timeStart={pool?.purchaseExpiry ?? 0}
-							time={(pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)}
-							networkId={network.id}
-						/>
 						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
 					</>
 				),
@@ -300,6 +344,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			purchaseTokenSymbol,
 			purchaseTokenDecimals,
 			network.id,
+			poolBalances?.totalAmountWithdrawn,
+			poolBalances?.totalSupply,
 		]
 	);
 
@@ -309,6 +355,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			const amount = isMaxValue
 				? maxValueBN.toBN()
 				: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+
 			const tx = await poolContract.purchasePoolTokens(amount, {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice.toBN(),
@@ -381,9 +428,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
-	]);
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<SectionDetails

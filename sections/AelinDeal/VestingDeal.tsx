@@ -1,7 +1,8 @@
 import { FC, useMemo, useCallback, useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, ExternalLink, Notice } from 'components/common';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
@@ -14,6 +15,7 @@ import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { firstAelinPoolDealID } from 'constants/pool';
 import { formatNumber } from 'utils/numbers';
 
 interface VestingDealProps {
@@ -46,6 +48,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
 			0
 		);
+
 		return [
 			{
 				header: 'Name',
@@ -56,8 +59,13 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			{
-				header: 'Exchange rate',
-				subText: formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS),
+				header: 'Claiming Exchange Rate',
+				subText: (
+					<div>
+						<Subheader>Deal token / Underlying Deal Token</Subheader>
+						<div>{formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS)}</div>
+					</div>
+				),
 			},
 			{
 				header: 'Underlying Deal Token',
@@ -107,6 +115,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 		if (!walletAddress || !signer || !deal.id) return;
 		const contract = new ethers.Contract(deal.id, dealAbi, signer);
 		try {
+			setTxState(TransactionStatus.WAITING);
 			const tx = await contract.claim({
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice.toBN(),
@@ -138,27 +147,54 @@ const VestingDeal: FC<VestingDealProps> = ({
 	}, [deal.id, signer]);
 
 	return (
-		<FlexDiv>
-			<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-			<ActionBox
-				actionBoxType={ActionBoxType.VestingDeal}
-				onSubmit={() => handleSubmit()}
-				input={{
-					placeholder: '0',
-					label: '',
-					maxValue: claimableUnderlyingTokens ?? 0,
-				}}
-				inputValue={inputValue}
-				setInputValue={setInputValue}
-				setIsMaxValue={setIsMaxValue}
-				txState={txState}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-				txType={txType}
-				setTxType={setTxType}
-			/>
-		</FlexDiv>
+		<div>
+			<FlexDiv>
+				<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
+				{deal?.id !== firstAelinPoolDealID ? (
+					<ActionBox
+						actionBoxType={ActionBoxType.VestingDeal}
+						onSubmit={() => handleSubmit()}
+						input={{
+							placeholder: '0',
+							label: '',
+							maxValue: claimableUnderlyingTokens ?? 0,
+						}}
+						inputValue={inputValue}
+						setInputValue={setInputValue}
+						setIsMaxValue={setIsMaxValue}
+						txState={txState}
+						setGasPrice={setGasPrice}
+						gasLimitEstimate={gasLimitEstimate}
+						txType={txType}
+						setTxType={setTxType}
+					/>
+				) : null}
+			</FlexDiv>
+			{deal?.id === firstAelinPoolDealID ? (
+				<Notice>
+					<>
+						Due to an issue in the open redemption period of the first AELIN pool, claiming has been
+						disabled. Instructions to claim your official $AELIN tokens will be added shortly. For
+						more information please see
+					</>{' '}
+					<StyledExternalLink
+						href={'https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md'}
+					>
+						AELIP-4
+					</StyledExternalLink>
+				</Notice>
+			) : null}
+		</div>
 	);
 };
+
+const StyledExternalLink = styled(ExternalLink)`
+	color: ${(props) => props.theme.colors.statusBlue};
+`;
+
+const Subheader = styled.div`
+	color: ${(props) => props.theme.colors.forestGreen};
+	margin-bottom: 4px;
+`;
 
 export default VestingDeal;

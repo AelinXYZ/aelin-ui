@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants/time';
 import { convertToSeconds } from 'utils/time';
+import { NetworkId } from 'constants/networks';
 
 export interface CreateDealValues {
 	underlyingDealToken: string;
@@ -24,7 +25,11 @@ export interface CreateDealValues {
 	holder: string;
 }
 
-const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) => {
+const validateCreateDeal = (
+	values: CreateDealValues,
+	totalPoolSupply: string,
+	networkId?: NetworkId
+) => {
 	const errors: any = {};
 
 	if (!values.holder) {
@@ -41,7 +46,7 @@ const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) =
 
 	if (!values.purchaseTokenTotal) {
 		errors.purchaseTokenTotal = 'Required';
-	} else if (values.purchaseTokenTotal > totalPoolSupply) {
+	} else if (Number(values.purchaseTokenTotal) > Number(totalPoolSupply)) {
 		errors.purchaseTokenTotal = `Max is ${totalPoolSupply}`;
 	}
 
@@ -63,15 +68,21 @@ const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) =
 		});
 		if (proRataRedemptionSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.proRataRedemptionMinutes = 'Max pro rata is 30 days';
-		} else if (proRataRedemptionSeconds < ONE_MINUTE_IN_SECS * 30) {
+		} else if (
+			networkId === NetworkId.Kovan
+				? proRataRedemptionSeconds < ONE_MINUTE_IN_SECS * 1
+				: proRataRedemptionSeconds < ONE_MINUTE_IN_SECS * 30
+		) {
 			errors.proRataRedemptionMinutes = 'Min pro rata is 30 mins';
 		}
 	}
 
 	const noOpenValues =
 		!values.openRedemptionDays && !values.openRedemptionHours && !values.openRedemptionMinutes;
+	// @ts-ignore
 	if (values.purchaseTokenTotal === totalPoolSupply && !noOpenValues) {
 		errors.openRedemptionMinutes = 'Pool supply maxed. Set open to 0';
+		// @ts-ignore
 	} else if (values.purchaseTokenTotal !== totalPoolSupply && noOpenValues) {
 		errors.openRedemptionMinutes = 'Required';
 	} else {
@@ -83,8 +94,13 @@ const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) =
 		if (openRedemptionSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.openRedemptionMinutes = 'Max open is 30 days';
 		} else if (
-			openRedemptionSeconds < ONE_MINUTE_IN_SECS * 30 &&
-			values.purchaseTokenTotal !== totalPoolSupply
+			networkId === NetworkId.Kovan
+				? openRedemptionSeconds < ONE_MINUTE_IN_SECS * 1 &&
+				  // @ts-ignore
+				  values.purchaseTokenTotal !== totalPoolSupply
+				: openRedemptionSeconds < ONE_MINUTE_IN_SECS * 30 &&
+				  // @ts-ignore
+				  values.purchaseTokenTotal !== totalPoolSupply
 		) {
 			errors.openRedemptionMinutes = 'Min open is 30 mins';
 		}
@@ -104,7 +120,11 @@ const validateCreateDeal = (values: CreateDealValues, totalPoolSupply: number) =
 		});
 		if (holderFundingExpirySeconds > ONE_DAY_IN_SECS * 30) {
 			errors.holderFundingExpiryMinutes = 'Max holder funding is 30 days';
-		} else if (holderFundingExpirySeconds < ONE_MINUTE_IN_SECS * 30) {
+		} else if (
+			networkId === NetworkId.Kovan
+				? holderFundingExpirySeconds < ONE_MINUTE_IN_SECS * 1
+				: holderFundingExpirySeconds < ONE_MINUTE_IN_SECS * 30
+		) {
 			errors.holderFundingExpiryMinutes = 'Min holder funding is 30 mins';
 		}
 	}

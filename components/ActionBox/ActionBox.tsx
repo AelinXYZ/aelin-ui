@@ -4,20 +4,25 @@ import styled, { css } from 'styled-components';
 import Info from 'assets/svg/info.svg';
 import Image from 'next/image';
 
-import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
 import Connector from 'containers/Connector';
-import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-import QuestionMark from 'components/QuestionMark';
-import { GasLimitEstimate } from 'constants/networks';
+
+import Button from 'components/Button';
 import { Status } from 'components/DealStatus';
-import { statusToText } from 'constants/pool';
+import QuestionMark from 'components/QuestionMark';
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+
+import { GasLimitEstimate } from 'constants/networks';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { statusToText, swimmingPoolID } from 'constants/pool';
+
+import { FlexDivRow, FlexDivRowCentered, Tooltip } from '../common';
 
 export enum ActionBoxType {
 	FundPool = 'FundPool',
 	AcceptOrRejectDeal = 'ACCEPT_OR_REJECT_DEAL',
 	VestingDeal = 'VESTING_DEAL',
 	Stake = 'STAKE',
+	Withdraw = 'WITHDRAW',
 }
 
 export type InputType = {
@@ -44,6 +49,7 @@ const actionBoxTypeToTitle = (
 		</div>
 	);
 	const publicPoolText = 'Public pool';
+
 	switch (actionBoxType) {
 		case ActionBoxType.FundPool:
 			return isPrivatePool ? privatePoolText : publicPoolText;
@@ -53,6 +59,8 @@ const actionBoxTypeToTitle = (
 			return 'Vest Deal';
 		case ActionBoxType.Stake:
 			return 'Stake';
+		case ActionBoxType.Withdraw:
+			return 'Withdraw';
 	}
 };
 
@@ -85,6 +93,8 @@ const getActionButtonLabel = ({
 			return 'Vest Deal';
 		case ActionBoxType.Stake:
 			return 'Stake';
+		case ActionBoxType.Withdraw:
+			return 'Withdraw';
 	}
 };
 
@@ -99,7 +109,13 @@ interface ActionBoxProps {
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
-	dealRedemptionData?: { status: Status; maxProRata: string; isOpenEligible: boolean };
+	dealRedemptionData?: {
+		status: Status;
+		maxProRata: string;
+		isOpenEligible: boolean;
+		purchaseTokenTotalForDeal: number;
+		totalAmountAccepted: number;
+	};
 	setTxType: (txnType: TransactionType) => void;
 	txType: TransactionType;
 	setIsMaxValue: (isMax: boolean) => void;
@@ -130,7 +146,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	poolId,
 }) => {
 	const { walletAddress } = Connector.useContainer();
-	const [isDealAccept, setIsDealAccept] = useState(false);
+	const [isDealAccept, setIsDealAccept] = useState(true);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
 
@@ -138,6 +154,8 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isAcceptOrReject = actionBoxType === ActionBoxType.AcceptOrRejectDeal;
 	const isVesting = actionBoxType === ActionBoxType.VestingDeal;
 	const isWithdraw = isAcceptOrReject && !isDealAccept;
+
+	const isPoolDisabled = [swimmingPoolID].includes(poolId);
 
 	useEffect(() => {
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
@@ -162,7 +180,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 				onSubmit,
 			},
 			[TransactionType.Vest]: {
-				heading: `You are vesting ${maxValue} tokens`,
+				heading: `You are vesting ${maxValue} underlying deal tokens`,
 				onSubmit,
 			},
 			[TransactionType.Stake]: {
@@ -174,7 +192,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	);
 
 	const isPrivatePoolAndNoAllocation = useMemo(
-		() => privatePoolDetails?.isPrivatePool && !privatePoolDetails?.privatePoolAmount,
+		() => privatePoolDetails?.isPrivatePool && !Number(privatePoolDetails?.privatePoolAmount),
 		[privatePoolDetails?.isPrivatePool, privatePoolDetails?.privatePoolAmount]
 	);
 
@@ -185,9 +203,18 @@ const ActionBox: FC<ActionBoxProps> = ({
 			(actionBoxType === ActionBoxType.VestingDeal && !maxValue) ||
 			(actionBoxType !== ActionBoxType.VestingDeal && (!inputValue || Number(inputValue) === 0)) ||
 			(actionBoxType !== ActionBoxType.VestingDeal &&
-				Number(maxValue ?? 0) < Number(inputValue ?? 0))
+				Number(maxValue ?? 0) < Number(inputValue ?? 0)) ||
+			isPoolDisabled
 		);
-	}, [walletAddress, isWithdraw, isPurchaseExpired, actionBoxType, maxValue, inputValue]);
+	}, [
+		walletAddress,
+		isWithdraw,
+		isPurchaseExpired,
+		actionBoxType,
+		maxValue,
+		inputValue,
+		isPoolDisabled,
+	]);
 
 	return (
 		<Container>
@@ -217,7 +244,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 			) : null}
 			<ContentContainer>
 				{isVesting ? (
-					<Paragraph>{maxValue || 0} tokens to vest</Paragraph>
+					<Paragraph>{maxValue || 0} Underlying Deal Tokens to vest</Paragraph>
 				) : (
 					<>
 						<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
@@ -227,8 +254,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 								placeholder={placeholder}
 								value={inputValue}
 								onChange={(e) => {
+									const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
 									setIsMaxValue(false);
-									setInputValue(parseFloat(e.target.value));
+									setInputValue(value);
 								}}
 							/>
 							{maxValue ? (
@@ -244,6 +272,19 @@ const ActionBox: FC<ActionBoxProps> = ({
 										}
 										if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
 											max = Math.min(Number(max), Number(dealRedemptionData.maxProRata ?? 0));
+										}
+										if (
+											dealRedemptionData?.status === Status.OpenRedemption &&
+											dealRedemptionData.isOpenEligible &&
+											!isWithdraw
+										) {
+											max =
+												Number(max) >=
+												dealRedemptionData?.purchaseTokenTotalForDeal -
+													dealRedemptionData?.totalAmountAccepted
+													? dealRedemptionData?.purchaseTokenTotalForDeal -
+													  dealRedemptionData?.totalAmountAccepted
+													: 0;
 										}
 										if (
 											(dealRedemptionData?.status === Status.Closed ||
@@ -264,8 +305,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 							) : null}
 						</InputContainer>
 						<ActionBoxHeaderWrapper>
-							<ActionBoxHeader onClick={() => setIsDealAccept(true)} isPool={isPool}>
-								<FlexDivRow>
+							<ActionBoxHeader
+								isPool={isPool}
+								isSelected={isDealAccept}
+								onClick={() => setIsDealAccept(true)}
+								isAcceptOrReject={isAcceptOrReject}
+							>
+								<FlexDivCenterRow>
 									<>
 										{actionBoxTypeToTitle(
 											actionBoxType,
@@ -274,23 +320,28 @@ const ActionBox: FC<ActionBoxProps> = ({
 											purchaseCurrency
 										)}
 									</>{' '}
-									{actionBoxType === ActionBoxType.AcceptOrRejectDeal ? (
-										<QuestionMark text="choose accept to agree to the deal terms with up to the max amount based on your allocation this round" />
-									) : null}
-								</FlexDivRow>
+									{isAcceptOrReject && (
+										<QuestionMark
+											isOpen={true}
+											text={`Choose accept to agree to the deal terms with up to the max amount based on your allocation this round`}
+										/>
+									)}
+								</FlexDivCenterRow>
 							</ActionBoxHeader>
-							{isAcceptOrReject ? (
+							{isAcceptOrReject && (
 								<ActionBoxHeader
-									onClick={() => setIsDealAccept(false)}
-									isWithdraw={true}
 									isPool={false}
+									isSelected={!isDealAccept}
+									isWithdraw={true}
+									onClick={() => setIsDealAccept(false)}
+									isAcceptOrReject={isAcceptOrReject}
 								>
-									<FlexDivRow>
+									<FlexDivCenterRow>
 										<>Withdraw</>
-										<QuestionMark text="reject deal and withdraw your capital" />
-									</FlexDivRow>
+										<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
+									</FlexDivCenterRow>
 								</ActionBoxHeader>
-							) : null}
+							)}
 						</ActionBoxHeaderWrapper>
 					</>
 				)}
@@ -333,6 +384,14 @@ const ActionBox: FC<ActionBoxProps> = ({
 						amount: inputValue,
 						isPrivatePoolAndNoAllocation,
 					})}
+					{isPoolDisabled && (
+						<div>
+							<QuestionMark
+								isOpen
+								text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md"
+							/>
+						</div>
+					)}
 				</ActionButton>
 			)}
 
@@ -375,21 +434,34 @@ const ActionBox: FC<ActionBoxProps> = ({
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	max-height: 400px;
-	width: 300px;
+	min-height: 250px;
+	min-width: 300px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
+
 const ActionBoxHeaderWrapper = styled(FlexDivRow)`
 	margin-top: 20px;
 `;
 
-const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
-	padding: 15px 10px;
+const ActionBoxHeader = styled(Button)<{
+	isAcceptOrReject: boolean;
+	isPool: boolean;
+	isSelected: boolean;
+	isWithdraw?: boolean;
+}>`
+	margin: 5px;
 	color: ${(props) =>
 		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
-	font-size: 12px;
+	font-size: 1rem;
+
+	${(props) =>
+		props.isSelected &&
+		css`
+			background-color: ${props.theme.colors.grey};
+		`}
+
 	${(props) =>
 		!props.isPool &&
 		css`
@@ -397,6 +469,19 @@ const ActionBoxHeader = styled.div<{ isPool: boolean; isWithdraw?: boolean }>`
 				cursor: pointer;
 			}
 		`}
+
+	${(props) =>
+		!props.isAcceptOrReject &&
+		css`
+			padding: 4px;
+			background: transparent;
+			cursor: default;
+			text-align: start;
+		`}
+`;
+
+const FlexDivCenterRow = styled(FlexDivRow)`
+	align-items: center;
 `;
 
 const RedemptionHeader = styled.div`
@@ -406,7 +491,7 @@ const RedemptionHeader = styled.div`
 	color: ${(props) => props.theme.colors.white};
 	text-align: center;
 	padding-top: 7px;
-	font-size: 12px;
+	font-size: 1rem;
 	border-radius: 4px 4px 0 0;
 `;
 
@@ -422,7 +507,9 @@ const InfoClick = styled.div`
 `;
 
 const InputContainer = styled.div`
-	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 `;
 
 const ContentContainer = styled.div`
@@ -431,27 +518,25 @@ const ContentContainer = styled.div`
 
 const Paragraph = styled.p`
 	color: ${(props) => props.theme.colors.black};
-	font-size: 12px;
+	font-size: 1rem;
 `;
 
 const ErrorNote = styled.div`
 	color: ${(props) => props.theme.colors.statusRed};
 	padding-left: 20px;
-	font-size: 12px;
+	font-size: 1rem;
 	font-weight: bold;
 `;
 
 const ActionBoxInputLabel = styled.div`
 	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
+	font-size: 1rem;
 	padding-bottom: 4px;
 `;
 
 const ActionBoxInput = styled.input`
 	outline: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	width: 150px;
 	background-color: ${(props) => props.theme.colors.background};
 	border-radius: 4px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -459,21 +544,18 @@ const ActionBoxInput = styled.input`
 	padding: 6px 12px;
 	&::placeholder {
 		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
+		font-size: 1rem;
 	}
 `;
 
 const ActionBoxMax = styled.div<{ isProRata: boolean }>`
-	position: absolute;
-	width: ${(props) => (props.isProRata ? '85px' : '33px')};
-	height: 21px;
-	left: ${(props) => (props.isProRata ? '190px' : '210px')};
+	width: ${(props) => (props.isProRata ? '105px' : '42px')};
+	left: ${(props) => (props.isProRata ? '185px' : '210px')};
 	text-align: center;
-	padding-top: 4px;
-	padding-left: 2px;
+	padding: 2px 6px;
 	top: 7px;
 	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
+	font-size: 1rem;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	border-radius: 100px;
 	&:hover {
@@ -482,11 +564,15 @@ const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 `;
 
 const ActionButton = styled.button<{ isWithdraw: boolean }>`
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	cursor: pointer;
 	width: 100%;
 	height: 56px;
-	background-color: transparent;
 	border: none;
+	font-size: 1.2rem;
+	background-color: transparent;
 	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	${(props) => {
 		if (props.disabled) {

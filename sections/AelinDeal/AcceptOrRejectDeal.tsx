@@ -51,6 +51,54 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	});
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
+	const totalAmountAccepted = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.totalAmountAccepted ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
+	const totalAmountWithdrawn = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.totalAmountWithdrawn ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
+	const userAmountAccepted = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.userAmountAccepted ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
+	const userAmountWithdrawn = Number(
+		ethers.utils.formatUnits(
+			poolBalances?.userAmountWithdrawn ?? '0',
+			poolBalances?.purchaseTokenDecimals ?? 0
+		)
+	);
+
+	const dealRedemptionPeriod = useMemo(() => {
+		const now = Date.now();
+		if (
+			now >
+			deal?.proRataRedemptionPeriodStart +
+				deal?.proRataRedemptionPeriod +
+				deal?.openRedemptionPeriod
+		) {
+			return Status.Closed;
+		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
+			return Status.OpenRedemption;
+		}
+		return Status.ProRataRedemption;
+	}, [
+		deal?.proRataRedemptionPeriodStart,
+		deal?.proRataRedemptionPeriod,
+		deal?.openRedemptionPeriod,
+	]);
+
+	const areTokenSymbolsAvailable = [
+		underlyingDealTokenSymbol,
+		poolBalances?.purchaseTokenSymbol,
+	].every((val) => val !== null && val !== '');
 
 	const dealGridItems = useMemo(
 		() => [
@@ -105,7 +153,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
-							Underlying / Purchase:{' '}
+							{areTokenSymbolsAvailable
+								? `${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `
+								: `Underlying / Purchase: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(
@@ -123,7 +173,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							)}
 						</ExchangeRate>
 						<ExchangeRate>
-							Purchase / Underlying:{' '}
+							{areTokenSymbolsAvailable
+								? `${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `
+								: `Purchase / Underlying: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(
@@ -146,35 +198,27 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>{`Vesting Period`}</>
+						<>{`Vesting Data`}</>
 						<QuestionMark
-							text={`After the vesting cliff, a linear vesting period where you may claim your underlying deal tokens`}
+							text={`After the vesting cliff ends there is a linear vesting period where you may claim your underlying deal tokens`}
 						/>
 					</>
 				),
 				subText: (
-					<>
-						{(deal?.vestingPeriod ?? 0) > 0
-							? formatTimeDifference(Number(deal?.vestingPeriod))
-							: '0'}
-					</>
-				),
-			},
-			{
-				header: (
-					<>
-						<>{`Vesting Cliff`}</>
-						<QuestionMark
-							text={`After the deal has been finalized, a period where no tokens are vesting`}
-						/>
-					</>
-				),
-				subText: (
-					<>
-						{(deal?.vestingCliff ?? 0) > 0
-							? formatTimeDifference(Number(deal?.vestingCliff ?? 0))
-							: '0'}
-					</>
+					<div>
+						<div>
+							Cliff:{' '}
+							{(deal?.vestingCliff ?? 0) > 0
+								? formatTimeDifference(Number(deal?.vestingCliff ?? 0))
+								: '0'}
+						</div>
+						<div>
+							Linear Period:{' '}
+							{(deal?.vestingPeriod ?? 0) > 0
+								? formatTimeDifference(Number(deal?.vestingPeriod))
+								: '0'}
+						</div>
+					</div>
 				),
 			},
 			{
@@ -189,7 +233,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>Pro Rata Redemption</>
+						<>Pro Rata Redemption Ends</>
 						<QuestionMark
 							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
 						/>
@@ -226,7 +270,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>{deal?.isDealFunded ? 'Open Redemption Ends' : 'Open Redemption'}</>
+						<>Open Redemption Ends</>
 						<QuestionMark
 							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
 						/>
@@ -239,22 +283,11 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						deal?.openRedemptionPeriod != null &&
 						deal?.openRedemptionPeriod > 0 ? (
 							<>
-								<Countdown
-									timeStart={deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod}
-									time={
-										deal?.proRataRedemptionPeriodStart +
+								{formatShortDateWithTime(
+									deal?.proRataRedemptionPeriodStart +
 										deal?.proRataRedemptionPeriod +
 										deal?.openRedemptionPeriod
-									}
-									networkId={network.id}
-								/>
-								<>
-									{formatShortDateWithTime(
-										deal?.proRataRedemptionPeriodStart +
-											deal?.proRataRedemptionPeriod +
-											deal?.openRedemptionPeriod
-									)}
-								</>
+								)}
 							</>
 						) : deal?.openRedemptionPeriod > 0 ? (
 							formatTimeDifference(deal?.openRedemptionPeriod)
@@ -265,8 +298,35 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 			},
 			{
-				header: 'Vesting Curve',
-				subText: 'linear',
+				header: 'User stats',
+				subText: (
+					<div>
+						<div>
+							Remaining Pro-rata Allocation:{' '}
+							{formatNumber(poolBalances?.maxProRata ?? 0, DEFAULT_DECIMALS)}
+						</div>
+						<div>Redeemed: {formatNumber(userAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
+						<div>Withdrawn: {formatNumber(userAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>
+					</div>
+				),
+			},
+			{
+				header: 'Pool stats',
+				subText: (
+					<div>
+						<div>
+							Amount in Pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
+						</div>
+						<div>Total Redeemed: {formatNumber(totalAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
+						<div>Total Withdrawn: {formatNumber(totalAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>
+						<NoticeText>
+							{(poolBalances?.totalAmountAccepted ?? '1') ===
+							(deal?.purchaseTokenTotalForDeal?.toString() ?? '0')
+								? 'Pool cap reached'
+								: null}
+						</NoticeText>
+					</div>
+				),
 			},
 			{
 				header: (
@@ -300,12 +360,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			deal?.proRataRedemptionPeriodStart,
 			deal?.proRataRedemptionPeriod,
 			deal?.openRedemptionPeriod,
-			deal?.isDealFunded,
 			underlyingDealTokenDecimals,
 			pool?.sponsorFee,
 			poolBalances?.purchaseTokenDecimals,
 			underlyingDealTokenSymbol,
 			network?.id,
+			poolBalances?.totalAmountAccepted,
+			totalAmountAccepted,
 		]
 	);
 
@@ -326,7 +387,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						(inputValue ?? 0).toString(),
 						poolBalances?.purchaseTokenDecimals
 					),
-					// TODO update gasPrice and gasLimit
 					{
 						gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 						gasPrice: gasPrice.toBN(),
@@ -351,10 +411,16 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			} else {
 				throw new Error('unexpected tx type');
 			}
+			setTxState(TransactionStatus.WAITING);
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
-					onTxConfirmed: () => setTxState(TransactionStatus.SUCCESS),
+					onTxConfirmed: () => {
+						setTimeout(() => {
+							poolBalancesQuery.refetch();
+						}, 5 * 1000);
+						setTxState(TransactionStatus.SUCCESS);
+					},
 				});
 			}
 		} catch (e) {
@@ -372,6 +438,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		txType,
 		inputValue,
 		isMaxValue,
+		poolBalancesQuery,
 	]);
 
 	useEffect(() => {
@@ -422,31 +489,19 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		isMaxValue,
 	]);
 
-	const dealRedemptionData = useMemo(() => {
-		const now = Date.now();
-		if (
-			now >
-			deal?.proRataRedemptionPeriodStart +
-				deal?.proRataRedemptionPeriod +
-				deal?.openRedemptionPeriod
-		) {
-			return Status.Closed;
-		} else if (now > deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod) {
-			return Status.OpenRedemption;
-		}
-		return Status.ProRataRedemption;
-	}, [
-		deal?.proRataRedemptionPeriodStart,
-		deal?.proRataRedemptionPeriod,
-		deal?.openRedemptionPeriod,
-	]);
-
 	return (
 		<SectionDetails
 			dealRedemptionData={{
-				status: dealRedemptionData,
+				status: dealRedemptionPeriod,
 				maxProRata: poolBalances?.maxProRata ?? 0,
 				isOpenEligible: poolBalances?.isOpenEligible ?? false,
+				totalAmountAccepted: totalAmountAccepted ?? 0,
+				purchaseTokenTotalForDeal: Number(
+					ethers.utils.formatUnits(
+						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+						poolBalances?.purchaseTokenDecimals ?? 0
+					)
+				),
 			}}
 			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
 			gridItems={dealGridItems}
@@ -473,6 +528,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 const ExchangeRate = styled.div`
 	margin-bottom: 4px;
+`;
+
+const NoticeText = styled.div`
+	color: ${(props) => props.theme.colors.statusRed};
+	margin-top: 3px;
+	font-size: 1.2rem;
+	font-weight: bold;
 `;
 
 export default AcceptOrRejectDeal;

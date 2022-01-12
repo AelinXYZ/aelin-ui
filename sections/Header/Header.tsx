@@ -3,22 +3,20 @@ import { FC, useMemo } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 import AelinLogo from 'assets/svg/aelin-logo.svg';
 import ROUTES from 'constants/routes';
 import WalletWidget from 'components/WalletWidget';
 import NetworkWidget from 'components/NetworkWidget';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, ExternalLink } from 'components/common';
 
 const Header: FC = () => {
-	const router = useRouter();
 	const LINKS = useMemo(
 		() => [
 			{ label: 'Pools', pathname: ROUTES.Pools.Home },
 			{ label: 'Claim Aelin', pathname: ROUTES.ClaimTokens },
 			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true },
-			{ label: 'Stake (coming soon)', pathname: ROUTES.Stake, isDisabled: true },
+			{ label: 'Stake', pathname: ROUTES.Stake },
 		],
 		[]
 	);
@@ -35,16 +33,26 @@ const Header: FC = () => {
 
 			<Links>
 				{LINKS.map(({ label, pathname, query, isDisabled, newTab }) => (
-					<StyledLink
+					<Link
 						href={query != null ? { pathname, query } : { pathname }}
 						key={`link-${label}`}
 						passHref
 					>
-						<a className={isDisabled ? 'is-disabled' : ''} target={newTab ? '_blank' : '_self'}>
+						<StyledLink
+							className={isDisabled ? 'is-disabled' : ''}
+							target={newTab ? '_blank' : '_self'}
+						>
 							{label}
-						</a>
-					</StyledLink>
+						</StyledLink>
+					</Link>
 				))}
+				<StyledExternalLink
+					href={
+						'https://info.uniswap.org/#/optimism/pools/0x5e8b0fc35065a5d980c11f96cb52381de390b13f'
+					}
+				>
+					Uniswap Pool
+				</StyledExternalLink>
 			</Links>
 			<HeaderBlock>
 				<NetworkWidget />
@@ -90,8 +98,12 @@ const HeaderBlock = styled.div`
 	}
 `;
 
-const StyledLink = styled(Link)`
-	font-size: 14px;
+const StyledLink = styled.a`
+	font-size: 1.2rem;
+`;
+
+const StyledExternalLink = styled(ExternalLink)`
+	font-size: 1.2rem;
 `;
 
 const ImageContainer = styled(FlexDiv)`
@@ -99,7 +111,7 @@ const ImageContainer = styled(FlexDiv)`
 `;
 
 const BetaLabel = styled.span`
-	font-size: 14px;
+	font-size: 1rem;
 	font-style: italic;
 `;
 
