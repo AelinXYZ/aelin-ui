@@ -35,6 +35,7 @@ import FundDeal from '../AelinDeal/FundDeal';
 
 import PurchasePool from './PurchasePool';
 import PoolDurationEnded from './PoolDurationEnded';
+import WithdrawExpiry from '../AelinDeal/WithdrawExpiry';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -201,6 +202,16 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			pool?.id !== vAelinPoolID &&
 			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
 				<PoolDurationEnded pool={pool} dealID={deal.id} />
+			) : null}
+			{now >
+				(deal?.proRataRedemptionPeriodStart ?? 0) +
+					(deal?.proRataRedemptionPeriod ?? 0) +
+					(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder ? (
+				<WithdrawExpiry
+					holder={deal?.holder as string}
+					token={deal.underlyingDealToken}
+					dealAddress={deal.id}
+				/>
 			) : null}
 			{(deal?.id != null &&
 				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
