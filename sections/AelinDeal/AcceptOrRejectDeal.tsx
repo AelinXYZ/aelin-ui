@@ -366,7 +366,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			underlyingDealTokenSymbol,
 			network?.id,
 			poolBalances?.totalAmountAccepted,
+			poolBalances?.maxProRata,
+			poolBalances?.totalSupply,
+			poolBalances?.purchaseTokenSymbol,
+			userAmountAccepted,
+			userAmountWithdrawn,
 			totalAmountAccepted,
+			areTokenSymbolsAvailable,
+			totalAmountWithdrawn,
 		]
 	);
 

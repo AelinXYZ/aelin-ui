@@ -167,10 +167,9 @@ const FundDeal: FC<FundDealProps> = ({
 		[visibleAmount, allowance]
 	);
 
-	const areTokenSymbolsAvailable = [
-		underlyingDealTokenSymbol,
-		poolBalances?.purchaseTokenSymbol,
-	].every((val) => val !== null && val !== '');
+	const areTokenSymbolsAvailable = [symbol, purchaseTokenSymbol].every(
+		(val) => val !== null && val !== ''
+	);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -271,6 +270,7 @@ const FundDeal: FC<FundDealProps> = ({
 			purchaseTokenTotalForDeal,
 			amount,
 			purchaseTokenDecimals,
+			areTokenSymbolsAvailable,
 		]
 	);
 
