@@ -4,6 +4,8 @@ import { ethers } from 'ethers';
 import styled from 'styled-components';
 import { wei } from '@synthetixio/wei';
 
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+import SectionTitle from 'sections/shared/SectionTitle';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import { erc20Abi } from 'contracts/erc20';
 import Connector from 'containers/Connector';
@@ -34,19 +36,19 @@ const WithdrawExpiry: FC<WithdrawExpiryProps> = ({ token, dealAddress, holder })
 
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [symbol, setSymbol] = useState<string | null>(null);
-	const [amount, setAmount] = useState<string | null>(null);
+	const [amount, setAmount] = useState<number | null>(null);
 
 	useEffect(() => {
 		async function getSymbolAndAmount() {
-			if (provider != null && walletAddress !== holder && dealAddress != null && token != null) {
+			if (provider != null && walletAddress === holder && dealAddress != null && token != null) {
 				const underlyingTokenContract = new ethers.Contract(token, erc20Abi, provider);
 				const dealContract = new ethers.Contract(dealAddress, dealAbi, provider);
 				const [
-					totalSupply,
-					underlyingPerDealExchangeRate,
+					unformattedTotalSupply,
+					unformattedUnderlyingPerDealExchangeRate,
 					underlyingDecimals,
 					underlyingSymbol,
-					underlyingBalance,
+					unformattedUnderlyingBalance,
 				] = await Promise.all([
 					dealContract.totalSupply(),
 					dealContract.underlyingPerDealExchangeRate(),
@@ -54,12 +56,16 @@ const WithdrawExpiry: FC<WithdrawExpiryProps> = ({ token, dealAddress, holder })
 					underlyingTokenContract.symbol(),
 					underlyingTokenContract.balanceOf(dealAddress),
 				]);
-				const unformattedAmount = underlyingBalance.sub(
-					totalSupply.mul(underlyingPerDealExchangeRate).div(1e18)
+				const totalSupply = ethers.utils.formatEther(unformattedTotalSupply);
+				const underlyingPerDealExchangeRate = ethers.utils.formatEther(
+					unformattedUnderlyingPerDealExchangeRate
 				);
-				console.log('unformattedAmount', unformattedAmount.toString());
-
-				const formattedAmount = ethers.utils.formatUnits(unformattedAmount, underlyingDecimals);
+				const underlyingBalance = ethers.utils.formatUnits(
+					unformattedUnderlyingBalance,
+					underlyingDecimals
+				);
+				const formattedAmount =
+					Number(underlyingBalance) - Number(totalSupply) * Number(underlyingPerDealExchangeRate);
 				setSymbol(underlyingSymbol);
 				setAmount(formattedAmount);
 			}
@@ -83,7 +89,6 @@ const WithdrawExpiry: FC<WithdrawExpiryProps> = ({ token, dealAddress, holder })
 				});
 			}
 		} catch (e) {
-			console.log('error submitting tx e', e);
 			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
@@ -99,7 +104,7 @@ const WithdrawExpiry: FC<WithdrawExpiryProps> = ({ token, dealAddress, holder })
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!!signer || !dealAddress) return;
+			if (!signer || !dealAddress) return;
 			try {
 				const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 				setGasLimitEstimate(wei(await contract.estimateGas.withdrawExpiry(), 0));
@@ -119,34 +124,43 @@ const WithdrawExpiry: FC<WithdrawExpiryProps> = ({ token, dealAddress, holder })
 			},
 			{
 				header: 'Amount to withdraw',
-				subText: formatNumber(amount, DEFAULT_DECIMALS),
+				subText: formatNumber(amount ?? 0, DEFAULT_DECIMALS),
 			},
 		],
 		[amount, symbol, token]
 	);
 
 	return Number(amount ?? 0) > 0 ? (
-		<FlexDiv>
-			<Grid hasInputFields={false} gridItems={gridItems} />
-			<Container>
-				<Header>
-					{walletAddress != holder ? 'Only the holder may withdraw' : 'Withdraw unredeemed tokens'}
-				</Header>
-				<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
-					{`Withdraw ${amount} ${symbol}`}
-				</StyledButton>
-			</Container>
-			<ConfirmTransactionModal
-				title="Confirm Transaction"
-				setIsModalOpen={setShowTxModal}
-				isModalOpen={showTxModal}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={handleSubmit}
-			>
-				{`Confirm Withdrawal of ${amount.toString()} ${symbol}`}
-			</ConfirmTransactionModal>
-		</FlexDiv>
+		<SectionWrapper>
+			<ContentHeader>
+				<ContentTitle>
+					<SectionTitle address={dealAddress} title="Holder Withdraws Unredeemed Tokens" />
+				</ContentTitle>
+			</ContentHeader>
+			<FlexDiv>
+				<Grid hasInputFields={false} gridItems={gridItems} />
+				<Container>
+					<Header>
+						{walletAddress != holder
+							? 'Only the holder may withdraw'
+							: 'Withdraw unredeemed tokens'}
+					</Header>
+					<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
+						{`Withdraw ${formatNumber(amount ?? 0, DEFAULT_DECIMALS)} ${symbol}`}
+					</StyledButton>
+				</Container>
+				<ConfirmTransactionModal
+					title="Confirm Transaction"
+					setIsModalOpen={setShowTxModal}
+					isModalOpen={showTxModal}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+					onSubmit={handleSubmit}
+				>
+					{`Confirm Withdrawal of ${formatNumber(amount ?? 0, DEFAULT_DECIMALS)} ${symbol}`}
+				</ConfirmTransactionModal>
+			</FlexDiv>
+		</SectionWrapper>
 	) : null;
 };
 
