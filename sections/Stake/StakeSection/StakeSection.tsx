@@ -215,7 +215,7 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 					<Header>{header}</Header>
 					<QuestionMark text={tooltipInfo} />
 				</HeaderRow>
-				<SubHeader>{`APY - ${apy.toFixed(0)}%`}</SubHeader>
+				<SubHeader>{`APY: ${apy.toFixed(0)}%`}</SubHeader>
 			</HeaderSection>
 			<StakeBox
 				onSubmit={handleSubmit}
