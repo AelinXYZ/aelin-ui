@@ -16,18 +16,17 @@ import Connector from 'containers/Connector';
 import { TransactionStatus } from 'constants/transactions';
 import useGetTokenBalance from 'queries/token/useGetTokenBalance';
 import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
-import useGetStakingRewardsAPY from 'queries/stakingRewards/useGetStakingRewardsAPY';
 import { getGasEstimateWithBuffer } from 'utils/network';
-import { formatNumber } from 'utils/numbers';
 
 type StakeSectionProps = {
 	header: string;
 	tooltipInfo: string;
 	token: string;
 	contracts: StakingContracts | null;
+	apy: Number | null;
 };
 
-const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contracts }) => {
+const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contracts, apy }) => {
 	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [stakeAction, setStakeAction] = useState<StakeActionLabel>(StakeActionLabel.DEPOSIT);
@@ -47,12 +46,6 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 		stakingRewardsContract: StakingContract,
 	});
 	const tokenStakedBalance = tokenStakedBalanceQuery?.data?.balance ?? wei(0);
-
-	const stakingRewardsAPYQuery = useGetStakingRewardsAPY({
-		stakingRewardsContract: StakingContract,
-		tokenContract: TokenContract,
-	});
-	const apy = stakingRewardsAPYQuery?.data?.apy ?? 0;
 
 	const totalBalance = useMemo(() => {
 		if (stakeAction === StakeActionLabel.DEPOSIT) {
@@ -215,7 +208,7 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 					<Header>{header}</Header>
 					<QuestionMark text={tooltipInfo} />
 				</HeaderRow>
-				<SubHeader>{`APY: ${apy.toFixed(0)}%`}</SubHeader>
+				<SubHeader>{apy === null ? 'APY: TBD' : `APY: ${apy?.toFixed(0) ?? 0}%`}</SubHeader>
 			</HeaderSection>
 			<StakeBox
 				onSubmit={handleSubmit}
