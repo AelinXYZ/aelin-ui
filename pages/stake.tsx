@@ -26,7 +26,7 @@ const Stake = () => {
 			<Head>
 				<title>Aelin - Stake</title>
 			</Head>
-			<PageLayout title={<>Stake AELIN and AELIN-ETH LP tokens)</>} subtitle="">
+			<PageLayout title={<>Stake AELIN and AELIN-ETH LP tokens</>} subtitle="">
 				<JustifiedLayout>
 					<PageSection>
 						<StakeSection
@@ -53,13 +53,18 @@ const Stake = () => {
 							<Text>
 								To obtain G-UNI AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
 								on Uniswap via Sorbet.Finance. A full tutorial can be found on our blog{' '}
-								<Link href="" passHref>
-									<StyledAnchor>here</StyledAnchor>
+								<Link href="https://medium.com/@aelinprotocol/b0f55bfc2976" passHref>
+									<StyledAnchor target="_blank">here</StyledAnchor>
 								</Link>
 								.
 							</Text>
 							<SubmitButton
-								onClick={() => window.open('https://app.uniswap.org/', 'blank')}
+								onClick={() =>
+									window.open(
+										'https://www.sorbet.finance/#/pools/0x665d8D87ac09Bdbc1222B8B9E72Ddcb82f76B54A',
+										'blank'
+									)
+								}
 								variant="text"
 							>
 								Go to Sorbet.Finance
@@ -99,6 +104,7 @@ const JustifiedLayout = styled(Layout)`
 `;
 
 const Text = styled.h3`
+	width: 400px;
 	padding: 20px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 14px;
