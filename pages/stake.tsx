@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import styled from 'styled-components';
+import Link from 'next/link';
 
 import { PageLayout } from 'sections/Layout';
 import { FlexDivCol } from 'components/common';
@@ -8,15 +9,24 @@ import Button from 'components/Button';
 import StakeSection from 'sections/Stake/StakeSection';
 import ContractsInterface from 'containers/ContractsInterface';
 
+import useGetStakingRewardsAPY from 'queries/stakingRewards/useGetStakingRewardsAPY';
+
 const Stake = () => {
 	const { contracts } = ContractsInterface.useContainer();
+
+	const aelinStakingRewardsAPYQuery = useGetStakingRewardsAPY({
+		stakingRewardsContract: contracts?.AelinStaking?.StakingContract ?? null,
+		tokenContract: contracts?.AelinStaking?.TokenContract ?? null,
+	});
+	const aelinPoolAPY = aelinStakingRewardsAPYQuery?.data?.apy ?? 0;
+	const aelinEthPoolAPY = null;
 
 	return (
 		<>
 			<Head>
 				<title>Aelin - Stake</title>
 			</Head>
-			<PageLayout title={<>Stake AELIN (and coming soon AELIN-ETH LP tokens)</>} subtitle="">
+			<PageLayout title={<>Stake AELIN and AELIN-ETH LP tokens)</>} subtitle="">
 				<JustifiedLayout>
 					<PageSection>
 						<StakeSection
@@ -26,40 +36,45 @@ const Stake = () => {
 							}
 							token={'AELIN'}
 							contracts={contracts?.AelinStaking ?? null}
+							apy={aelinPoolAPY}
 						/>
 					</PageSection>
-					{/* <PageSection>
-						<OverlayWrapper>
-							<Overlay>
-								<StakeSection
-									header={'AELIN/ETH staking'}
-									tooltipInfo={
-										'Staking AELIN/ETH LP gives a share of 44 AELIN/month in inflationary rewards + 1/3 of deal fees. Note deal fees are temporarily custodied by the Aelin Council and will be distributed in the future.'
-									}
-									token={'AELIN/ETH LP'}
-									contracts={contracts?.AelinEthStaking ?? null}
-								/>
-								<Section>
-									<Text>
-										To obtain AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
-										on Uniswap
-									</Text>
-									<SubmitButton
-										onClick={() => window.open('https://app.uniswap.org/', 'blank')}
-										variant="text"
-									>
-										Go to Uniswap
-									</SubmitButton>
-								</Section>
-							</Overlay>
-							<ComingSoon>Coming Soon</ComingSoon>
-						</OverlayWrapper>
-					</PageSection> */}
+					<PageSection>
+						<StakeSection
+							header={'AELIN/ETH staking'}
+							tooltipInfo={
+								'Staking AELIN/ETH LP gives a share of 44 AELIN/month in inflationary rewards + 1/3 of deal fees. Note deal fees are temporarily custodied by the Aelin Council and will be distributed in the future.'
+							}
+							token={'G-UNI'}
+							contracts={contracts?.AelinEthStaking ?? null}
+							apy={null}
+						/>
+						<Section>
+							<Text>
+								To obtain G-UNI AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
+								on Uniswap via Sorbet.Finance. A full tutorial can be found on our blog{' '}
+								<Link href="" passHref>
+									<StyledAnchor>here</StyledAnchor>
+								</Link>
+								.
+							</Text>
+							<SubmitButton
+								onClick={() => window.open('https://app.uniswap.org/', 'blank')}
+								variant="text"
+							>
+								Go to Sorbet.Finance
+							</SubmitButton>
+						</Section>
+					</PageSection>
 				</JustifiedLayout>
 			</PageLayout>
 		</>
 	);
 };
+
+const StyledAnchor = styled.a`
+	text-decoration: underline;
+`;
 
 const Layout = styled.div`
 	margin-top: 50px;
@@ -94,7 +109,7 @@ const Text = styled.h3`
 const SubmitButton = styled(Button)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
-	width: 120px;
+	padding: 0 6px;
 	margin: 10px auto 0 auto;
 	&:hover {
 		&:not(:disabled) {
@@ -102,29 +117,6 @@ const SubmitButton = styled(Button)`
 			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
 		}
 	}
-`;
-
-const OverlayWrapper = styled(FlexDivCol)`
-	position: relative;
-	width: 100%;
-	pointer-events: none;
-	align-items: center;
-`;
-
-const Overlay = styled(FlexDivCol)`
-	width: 100%;
-	pointer-events: none;
-	opacity: 0.2;
-	align-items: center;
-`;
-
-const ComingSoon = styled.div`
-	position: absolute;
-	font-size: 22px;
-	color: ${(props) => props.theme.colors.headerGreen};
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 `;
 
 export default Stake;
