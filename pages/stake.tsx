@@ -57,7 +57,7 @@ const Stake = () => {
 							contracts={contracts?.AelinEthStaking ?? null}
 							apy={aelinEthPoolAPY}
 							apyTooltip={
-								'Estimation value based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.'
+								'Estimation based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.'
 							}
 						/>
 						<Section>
