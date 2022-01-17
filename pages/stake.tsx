@@ -10,6 +10,7 @@ import StakeSection from 'sections/Stake/StakeSection';
 import ContractsInterface from 'containers/ContractsInterface';
 
 import useGetStakingRewardsAPY from 'queries/stakingRewards/useGetStakingRewardsAPY';
+import useGetUniswapStakingRewardsAPY from 'queries/stakingRewards/useGetUniswapStakingRewardsAPY';
 
 const Stake = () => {
 	const { contracts } = ContractsInterface.useContainer();
@@ -18,8 +19,12 @@ const Stake = () => {
 		stakingRewardsContract: contracts?.AelinStaking?.StakingContract ?? null,
 		tokenContract: contracts?.AelinStaking?.TokenContract ?? null,
 	});
+	const aelinEthStakingRewardsAPYQuery = useGetUniswapStakingRewardsAPY({
+		stakingRewardsContract: contracts?.AelinEthStaking?.StakingContract ?? null,
+		tokenContract: contracts?.AelinEthStaking?.TokenContract ?? null,
+	});
 	const aelinPoolAPY = aelinStakingRewardsAPYQuery?.data?.apy ?? 0;
-	const aelinEthPoolAPY = null;
+	const aelinEthPoolAPY = aelinEthStakingRewardsAPYQuery?.data?.apy ?? 0;
 
 	return (
 		<>
@@ -37,6 +42,9 @@ const Stake = () => {
 							token={'AELIN'}
 							contracts={contracts?.AelinStaking ?? null}
 							apy={aelinPoolAPY}
+							apyTooltip={
+								'Estimation based on the total amount of rewards for a year and the total value staked in the contract.'
+							}
 						/>
 					</PageSection>
 					<PageSection>
@@ -47,7 +55,10 @@ const Stake = () => {
 							}
 							token={'G-UNI'}
 							contracts={contracts?.AelinEthStaking ?? null}
-							apy={null}
+							apy={aelinEthPoolAPY}
+							apyTooltip={
+								'Estimation based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.'
+							}
 						/>
 						<Section>
 							<Text>
