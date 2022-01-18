@@ -1,34 +1,40 @@
-//@ts-nocheck
-import { FC, useMemo, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import { ActionBoxType } from 'components/ActionBox';
-import SectionDetails from 'sections/shared/SectionDetails';
+import styled from 'styled-components';
+import { PoolCreatedResult } from 'subgraph';
+import { FC, useMemo, useCallback, useEffect, useState } from 'react';
+
+// import SectionDetails from 'sections/shared/SectionDetails';
+
+import Grid from 'components/Grid';
+import { FlexDiv } from 'components/common';
+import Countdown from 'components/Countdown';
 import { Status } from 'components/DealStatus';
-import { statusToText } from 'constants/pool';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
-import Connector from 'containers/Connector';
-import TransactionNotifier from 'containers/TransactionNotifier';
-import TransactionData from 'containers/TransactionData';
-import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
-import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
-import { PoolCreatedResult } from 'subgraph';
-import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
-import { formatNumber } from 'utils/numbers';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
-import Countdown from 'components/Countdown';
+import DealActionBox from 'components/ActionBox/components/DealActionBox';
 
+import { statusToText } from 'constants/pool';
+import { GasLimitEstimate } from 'constants/networks';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
+
+import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
+import TransactionNotifier from 'containers/TransactionNotifier';
+import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
+
+import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
+
+import { formatNumber } from 'utils/numbers';
+import { getGasEstimateWithBuffer } from 'utils/network';
 import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';
 
 interface AcceptOrRejectDealProps {
 	deal: any;
 	pool: PoolCreatedResult | null;
 	underlyingDealTokenDecimals: number | null;
-	underlyingDealTokenSymbol: string | null;
+	underlyingDealTokenSymbol: string | undefined;
 }
 
 const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
@@ -100,7 +106,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		poolBalances?.purchaseTokenSymbol,
 	].every((val) => val !== null && val !== '');
 
-	const dealGridItems = useMemo(
+	const gridItems = useMemo(
 		() => [
 			{
 				header: 'Name',
@@ -497,39 +503,41 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	]);
 
 	return (
-		<SectionDetails
-			dealRedemptionData={{
-				status: dealRedemptionPeriod,
-				maxProRata: poolBalances?.maxProRata ?? 0,
-				isOpenEligible: poolBalances?.isOpenEligible ?? false,
-				totalAmountAccepted: totalAmountAccepted ?? 0,
-				purchaseTokenTotalForDeal: Number(
-					ethers.utils.formatUnits(
-						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-						poolBalances?.purchaseTokenDecimals ?? 0
-					)
-				),
-			}}
-			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
-			gridItems={dealGridItems}
-			input={{
-				placeholder: '0',
-				label: `Balance ${poolBalances?.userPoolBalance} Pool Tokens`,
-				maxValue: poolBalances?.userPoolBalance,
-				symbol: pool?.symbol,
-			}}
-			txState={txState}
-			setTxState={setTxState}
-			onSubmit={handleSubmit}
-			setGasPrice={setGasPrice}
-			gasLimitEstimate={gasLimitEstimate}
-			txType={txType}
-			setTxType={setTxType}
-			setIsMaxValue={setIsMaxValue}
-			inputValue={inputValue}
-			setInputValue={setInputValue}
-			purchaseCurrency={pool?.purchaseToken ?? null}
-		/>
+		<FlexDiv>
+			<Grid hasInputFields={false} gridItems={gridItems} />
+			<DealActionBox
+				poolId={pool?.id}
+				dealRedemptionData={{
+					status: dealRedemptionPeriod,
+					maxProRata: poolBalances?.maxProRata ?? 0,
+					isOpenEligible: poolBalances?.isOpenEligible ?? false,
+					totalAmountAccepted: totalAmountAccepted ?? 0,
+					purchaseTokenTotalForDeal: Number(
+						ethers.utils.formatUnits(
+							deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+							poolBalances?.purchaseTokenDecimals ?? 0
+						)
+					),
+				}}
+				purchaseCurrency={pool?.purchaseToken ?? null}
+				transaction={{
+					txType,
+					txState,
+					setTxType,
+					setGasPrice,
+					gasLimitEstimate,
+					onSubmit: handleSubmit,
+				}}
+				input={{
+					placeholder: '0',
+					label: `Balance ${poolBalances?.userPoolBalance} Pool Tokens`,
+					maxValue: poolBalances?.userPoolBalance,
+					inputValue,
+					setInputValue,
+					setIsMaxValue,
+				}}
+			/>
+		</FlexDiv>
 	);
 };
 

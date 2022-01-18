@@ -264,15 +264,18 @@ const ActionBox: FC<ActionBoxProps> = ({
 									isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
 									onClick={() => {
 										let max = maxValue;
+
 										if (privatePoolDetails?.isPrivatePool && !isWithdraw) {
 											max = Math.min(
 												Number(privatePoolDetails?.privatePoolAmount ?? 0),
 												Number(maxValue)
 											);
 										}
+
 										if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
 											max = Math.min(Number(max), Number(dealRedemptionData.maxProRata ?? 0));
 										}
+
 										if (
 											dealRedemptionData?.status === Status.OpenRedemption &&
 											dealRedemptionData.isOpenEligible &&

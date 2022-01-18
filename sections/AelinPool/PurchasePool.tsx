@@ -8,16 +8,15 @@ import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
-import SectionDetails from 'sections/shared/SectionDetails';
-
 import Ens from 'components/Ens';
+import Grid from 'components/Grid';
 import { Status } from 'components/DealStatus';
-import { FlexDivStart } from 'components/common';
-import TokenDisplay from 'components/TokenDisplay';
-import { ActionBoxType } from 'components/ActionBox';
-import CopyToClipboard from 'components/CopyToClipboard';
-import QuestionMark from 'components/QuestionMark';
 import Countdown from 'components/Countdown';
+import QuestionMark from 'components/QuestionMark';
+import TokenDisplay from 'components/TokenDisplay';
+import CopyToClipboard from 'components/CopyToClipboard';
+import { FlexDivStart, FlexDiv } from 'components/common';
+import FundPoolActionBox from 'components/ActionBox/components/FundPoolActionBox';
 
 import { erc20Abi } from 'contracts/erc20';
 
@@ -164,7 +163,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		maxValueBN,
 	]);
 
-	const poolGridItems = useMemo(
+	const gridItems = useMemo(
 		() => [
 			{
 				header: (
@@ -434,33 +433,33 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	);
 
 	return (
-		<SectionDetails
-			privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
-			isPurchaseExpired={isPurchaseExpired}
-			actionBoxType={ActionBoxType.FundPool}
-			gridItems={poolGridItems}
-			input={{
-				placeholder: '0',
-				label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
-				value: '0',
-				maxValue,
-				symbol: purchaseTokenSymbol,
-			}}
-			allowance={purchaseTokenAllowance}
-			onApprove={handleApprove}
-			onSubmit={handleSubmit}
-			txState={txState}
-			setTxState={setTxState}
-			setGasPrice={setGasPrice}
-			gasLimitEstimate={gasLimitEstimate}
-			txType={txType}
-			setTxType={setTxType}
-			setIsMaxValue={setIsMaxValue}
-			inputValue={inputValue}
-			setInputValue={setInputValue}
-			purchaseCurrency={purchaseTokenSymbol}
-			poolId={pool?.id}
-		/>
+		<FlexDiv>
+			<Grid hasInputFields={false} gridItems={gridItems} />
+			<FundPoolActionBox
+				poolId={pool?.id}
+				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
+				isPurchaseExpired={isPurchaseExpired}
+				purchaseCurrency={purchaseTokenSymbol}
+				allowance={purchaseTokenAllowance}
+				transaction={{
+					txType,
+					txState,
+					setTxType,
+					setGasPrice,
+					gasLimitEstimate,
+					onApprove: handleApprove,
+					onSubmit: handleSubmit,
+				}}
+				input={{
+					placeholder: '0',
+					label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
+					inputValue: '0',
+					maxValue,
+					setInputValue,
+					setIsMaxValue,
+				}}
+			/>
+		</FlexDiv>
 	);
 };
 

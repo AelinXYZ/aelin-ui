@@ -6,7 +6,7 @@ import { FlexDiv, ExternalLink, Notice } from 'components/common';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
-import ActionBox, { ActionBoxType } from 'components/ActionBox';
+import VestingDealActionBox from 'components/ActionBox/components/VestingDealActionBox';
 import { formatShortDateWithTime } from 'utils/time';
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
@@ -150,25 +150,18 @@ const VestingDeal: FC<VestingDealProps> = ({
 		<div>
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-				{deal?.id !== firstAelinPoolDealID ? (
-					<ActionBox
-						actionBoxType={ActionBoxType.VestingDeal}
-						onSubmit={() => handleSubmit()}
-						input={{
-							placeholder: '0',
-							label: '',
-							maxValue: claimableUnderlyingTokens ?? 0,
+				{deal?.id !== firstAelinPoolDealID && (
+					<VestingDealActionBox
+						maxValue={claimableUnderlyingTokens ?? 0}
+						transaction={{
+							txType,
+							setTxType,
+							setGasPrice,
+							gasLimitEstimate,
+							onSubmit: handleSubmit,
 						}}
-						inputValue={inputValue}
-						setInputValue={setInputValue}
-						setIsMaxValue={setIsMaxValue}
-						txState={txState}
-						setGasPrice={setGasPrice}
-						gasLimitEstimate={gasLimitEstimate}
-						txType={txType}
-						setTxType={setTxType}
 					/>
-				) : null}
+				)}
 			</FlexDiv>
 			{deal?.id === firstAelinPoolDealID ? (
 				<Notice>
