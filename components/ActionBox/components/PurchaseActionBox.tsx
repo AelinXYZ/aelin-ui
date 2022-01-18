@@ -81,10 +81,14 @@ const FundPoolActionBox = ({
 	}, [txState, setShowTxModal]);
 
 	const isPoolDisabled = [swimmingPoolID].includes(poolId);
+	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
+	const isEmptyInput = inputValue === 0 || inputValue === null;
 
 	const isDisabled: boolean = useMemo(() => {
-		return !walletAddress || isPurchaseExpired || isPoolDisabled;
-	}, [walletAddress, isPurchaseExpired, isPoolDisabled]);
+		return (
+			!walletAddress || isPurchaseExpired || isPoolDisabled || isMaxBalanceExceeded || isEmptyInput
+		);
+	}, [walletAddress, isPurchaseExpired, isPoolDisabled, isMaxBalanceExceeded, isEmptyInput]);
 
 	const modalContent = useMemo(
 		() => ({
@@ -154,7 +158,7 @@ const FundPoolActionBox = ({
 				<ActionButton
 					disabled={isDisabled}
 					isWithdraw={false}
-					onClick={(e) => {
+					onClick={() => {
 						const setCorrectTxnType = () => {
 							if (Number(allowance ?? 0) < Number(inputValue ?? 0)) {
 								return setTxType(TransactionType.Allowance);
@@ -181,9 +185,7 @@ const FundPoolActionBox = ({
 				</ActionButton>
 			)}
 
-			{Number(maxValue ?? 0) < Number(inputValue ?? 0) && (
-				<ErrorNote>Max balance exceeded</ErrorNote>
-			)}
+			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 
 			<ConfirmTransactionModal
 				title="Confirm Transaction"

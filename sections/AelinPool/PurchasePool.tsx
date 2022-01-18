@@ -16,7 +16,7 @@ import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
 import CopyToClipboard from 'components/CopyToClipboard';
 import { FlexDivStart, FlexDiv } from 'components/common';
-import FundPoolActionBox from 'components/ActionBox/components/FundPoolActionBox';
+import PurchaseActionBox from 'components/ActionBox/components/PurchaseActionBox';
 
 import { erc20Abi } from 'contracts/erc20';
 
@@ -435,7 +435,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
-			<FundPoolActionBox
+			<PurchaseActionBox
 				poolId={pool?.id}
 				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
 				isPurchaseExpired={isPurchaseExpired}
@@ -453,7 +453,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				input={{
 					placeholder: '0',
 					label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
-					inputValue: '0',
+					inputValue,
 					maxValue,
 					setInputValue,
 					setIsMaxValue,
