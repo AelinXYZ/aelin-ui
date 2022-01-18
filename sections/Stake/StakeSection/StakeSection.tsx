@@ -261,8 +261,8 @@ const StakeSection: FC<StakeSectionProps> = ({
 			<ClaimBox stakingContract={StakingContract} />
 			{lpAssets?.etherAmount != null && lpAssets.aelinAmount != null ? (
 				<SubHeader>
-					<FlexDiv>{`$ETH in Pool: ${formatNumber(lpAssets?.etherAmount, 2)}`}</FlexDiv>
-					<FlexDiv>{`$AELIN in Pool: ${formatNumber(lpAssets?.aelinAmount, 2)}`}</FlexDiv>
+					<FlexDiv>{`$ETH in pool via G-UNI: ${formatNumber(lpAssets?.etherAmount, 2)}`}</FlexDiv>
+					<FlexDiv>{`$AELIN in pool via G-UNI: ${formatNumber(lpAssets?.aelinAmount, 2)}`}</FlexDiv>
 				</SubHeader>
 			) : null}
 		</>
