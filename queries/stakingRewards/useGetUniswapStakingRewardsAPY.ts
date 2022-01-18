@@ -33,7 +33,9 @@ const GELTAO_POOL_ABI = [
 ];
 
 type StakingRewardsData = {
-	apy: Number;
+	apy: number;
+	aelin: number;
+	eth: number;
 };
 
 const useGetUniswapStakingRewardsAPY = ({
@@ -89,6 +91,8 @@ const useGetUniswapStakingRewardsAPY = ({
 				const rewardsValuePerYear = (rewardForDuration / 1e18) * yearProRata * aelinRate;
 
 				return {
+					eth: amount0Current / 1e18,
+					aelin: amount1Current / 1e18,
 					apy: (100 * rewardsValuePerYear) / gUNIValueInContract,
 				};
 			} catch (e) {

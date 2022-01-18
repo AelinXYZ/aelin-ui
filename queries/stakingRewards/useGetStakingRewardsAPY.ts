@@ -7,7 +7,8 @@ import Connector from 'containers/Connector';
 const ONE_YEAR = 365 * 24 * 3600;
 
 type StakingRewardsData = {
-	apy: Number;
+	apy: number;
+	aelin: number;
 };
 
 const useGetStakingRewardsAPY = ({
@@ -30,6 +31,7 @@ const useGetStakingRewardsAPY = ({
 
 				const yearProRata = ONE_YEAR / Number(duration);
 				return {
+					aelin: contractBalance / 1e18,
 					apy: (100 * ((rewardForDuration / 1e18) * yearProRata)) / (contractBalance / 1e18),
 				};
 			} catch (e) {
