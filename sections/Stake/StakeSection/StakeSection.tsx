@@ -29,7 +29,7 @@ type StakeSectionProps = {
 	contracts: StakingContracts | null;
 	apy: Number | null;
 	apyTooltip: string;
-	lpAssets?: { etherAmount: number; aelinAmount: number };
+	lpAssets: { etherAmount?: number; aelinAmount: number };
 };
 
 const StakeSection: FC<StakeSectionProps> = ({
@@ -259,12 +259,20 @@ const StakeSection: FC<StakeSectionProps> = ({
 				setIsMaxValue={setIsMaxValue}
 			/>
 			<ClaimBox stakingContract={StakingContract} />
-			{lpAssets?.etherAmount != null && lpAssets.aelinAmount != null ? (
-				<SubHeader>
-					<FlexDiv>{`$ETH in pool via G-UNI: ${formatNumber(lpAssets?.etherAmount, 2)}`}</FlexDiv>
-					<FlexDiv>{`$AELIN in pool via G-UNI: ${formatNumber(lpAssets?.aelinAmount, 2)}`}</FlexDiv>
-				</SubHeader>
-			) : null}
+			<SubHeader>
+				<FlexDiv>
+					{lpAssets?.etherAmount != null
+						? `$ETH in pool via G-UNI: ${formatNumber(lpAssets?.etherAmount, 2)}`
+						: null}
+				</FlexDiv>
+				<FlexDiv>
+					{lpAssets.aelinAmount != null
+						? lpAssets?.etherAmount == null
+							? `$AELIN staked: ${formatNumber(lpAssets?.aelinAmount, 2)}`
+							: `$AELIN in pool via G-UNI: ${formatNumber(lpAssets?.aelinAmount, 2)}`
+						: null}
+				</FlexDiv>
+			</SubHeader>
 		</>
 	);
 };

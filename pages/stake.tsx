@@ -24,6 +24,7 @@ const Stake = () => {
 		tokenContract: contracts?.AelinEthStaking?.TokenContract ?? null,
 	});
 	const aelinPoolAPY = aelinStakingRewardsAPYQuery?.data?.apy ?? 0;
+	const aelinPoolAmount = aelinStakingRewardsAPYQuery?.data?.aelin ?? 0;
 	const aelinEthPoolAPY = aelinEthStakingRewardsAPYQuery?.data?.apy ?? 0;
 	const etherAmount = aelinEthStakingRewardsAPYQuery?.data?.eth ?? 0;
 	const aelinAmount = aelinEthStakingRewardsAPYQuery?.data?.aelin ?? 0;
@@ -44,6 +45,7 @@ const Stake = () => {
 							token={'AELIN'}
 							contracts={contracts?.AelinStaking ?? null}
 							apy={aelinPoolAPY}
+							lpAssets={{ aelinAmount: aelinPoolAmount }}
 							apyTooltip={
 								'Estimation based on the total amount of rewards for a year and the total value staked in the contract.'
 							}
