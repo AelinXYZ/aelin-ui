@@ -25,6 +25,8 @@ const Stake = () => {
 	});
 	const aelinPoolAPY = aelinStakingRewardsAPYQuery?.data?.apy ?? 0;
 	const aelinEthPoolAPY = aelinEthStakingRewardsAPYQuery?.data?.apy ?? 0;
+	const etherAmount = aelinEthStakingRewardsAPYQuery?.data?.eth ?? 0;
+	const aelinAmount = aelinEthStakingRewardsAPYQuery?.data?.aelin ?? 0;
 
 	return (
 		<>
@@ -56,6 +58,7 @@ const Stake = () => {
 							token={'G-UNI'}
 							contracts={contracts?.AelinEthStaking ?? null}
 							apy={aelinEthPoolAPY}
+							lpAssets={{ etherAmount, aelinAmount }}
 							apyTooltip={
 								'Estimation based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.'
 							}
