@@ -6,11 +6,11 @@ import { wei } from '@synthetixio/wei';
 import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 import SectionTitle from 'sections/shared/SectionTitle';
 
-import { FlexDiv, Notice } from 'components/common';
 import Grid from 'components/Grid';
-import ActionBox, { ActionBoxType } from 'components/ActionBox';
+import { FlexDiv, Notice } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
+import WithdrawActionBox from 'components/ActionBox/components/WithdrawActionBox';
 
 import Connector from 'containers/Connector';
 import TransactionNotifier from 'containers/TransactionNotifier';
@@ -201,23 +201,25 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 			</ContentHeader>
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={withdrawGridItems} />
-				<ActionBox
-					actionBoxType={ActionBoxType.Withdraw}
-					onSubmit={() => handleSubmit()}
+				<WithdrawActionBox
+					purchaseCurrency={purchaseTokenSymbol}
 					input={{
 						placeholder: '0',
 						label: `Balance ${userPoolBalance} Pool Tokens`,
 						maxValue: userPoolBalance ?? 0,
+						inputValue,
+						isMaxValue,
+						setInputValue,
+						setIsMaxValue,
 					}}
-					inputValue={inputValue}
-					setInputValue={setInputValue}
-					setIsMaxValue={setIsMaxValue}
-					txState={txState}
-					setGasPrice={setGasPrice}
-					gasLimitEstimate={gasLimitEstimate}
-					txType={txType}
-					setTxType={setTxType}
-					purchaseCurrency={purchaseTokenSymbol}
+					transaction={{
+						txType,
+						txState,
+						setTxType,
+						setGasPrice,
+						gasLimitEstimate,
+						onSubmit: handleSubmit,
+					}}
 				/>
 			</FlexDiv>
 			<Notice>

@@ -57,14 +57,14 @@ const getActionButtonLabel = ({
 		return 'No Allocation';
 	}
 
-	if (Number(allowance ?? '0') < Number(amount)) {
+	if (Number(allowance ?? '0') < Number(amount) && !isPurchaseExpired) {
 		return 'Approve';
 	}
 
 	return isPurchaseExpired ? 'Purchase Expired' : 'Purchase';
 };
 
-const FundPoolActionBox = ({
+const PurchaseActionBox = ({
 	poolId,
 	privatePoolDetails,
 	isPurchaseExpired,
@@ -201,4 +201,4 @@ const FundPoolActionBox = ({
 	);
 };
 
-export default FundPoolActionBox;
+export default PurchaseActionBox;
