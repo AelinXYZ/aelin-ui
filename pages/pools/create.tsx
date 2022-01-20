@@ -16,7 +16,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 
 import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
-import Whitelist from 'components/Whitelist';
+import WhiteList from 'components/WhiteList';
 import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
@@ -514,7 +514,7 @@ const Create: FC = () => {
 						setGasPrice={setGasPrice}
 						gasLimitEstimate={gasLimitEstimate}
 					/>
-					{isPrivate && <Whitelist formik={formik} />}
+					{isPrivate && <WhiteList formik={formik} />}
 				</>
 			</PageLayout>
 		</>
