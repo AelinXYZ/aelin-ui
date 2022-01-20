@@ -10,7 +10,7 @@ interface AcceptOrRejectDealErrorProps {
 	isMaxBalanceExceeded: boolean;
 	dealRedemptionData: {
 		status: Status;
-		maxProRata: string;
+		maxProRata: number;
 		isOpenEligible: boolean;
 	};
 }
