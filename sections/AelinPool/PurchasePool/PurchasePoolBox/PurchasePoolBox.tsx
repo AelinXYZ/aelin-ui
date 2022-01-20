@@ -17,10 +17,10 @@ import {
 	ActionBoxHeader,
 	FlexDivCenterRow,
 	ActionButton,
-} from './commons';
+} from '../../../shared/common';
 
-import { TransactionStatus, TransactionType } from 'constants/transactions';
 import { swimmingPoolID } from 'constants/pool';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
 
 const actionBoxTypeToTitle = (
 	isPrivatePool: boolean,
@@ -64,7 +64,7 @@ const getActionButtonLabel = ({
 	return isPurchaseExpired ? 'Purchase Expired' : 'Purchase';
 };
 
-const PurchaseActionBox = ({
+const PurchasePoolBox = ({
 	poolId,
 	privatePoolDetails,
 	isPurchaseExpired,
@@ -81,8 +81,8 @@ const PurchaseActionBox = ({
 	}, [txState, setShowTxModal]);
 
 	const isPoolDisabled = [swimmingPoolID].includes(poolId);
-	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
 	const isEmptyInput = inputValue === 0 || inputValue === null;
+	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
 
 	const isDisabled: boolean = useMemo(() => {
 		return (
@@ -177,6 +177,7 @@ const PurchaseActionBox = ({
 						isPurchaseExpired,
 						isPrivatePoolAndNoAllocation,
 					})}
+
 					{isPoolDisabled && (
 						<div>
 							<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
@@ -193,12 +194,16 @@ const PurchaseActionBox = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
+				// @ts-ignore
 				onSubmit={modalContent[txType]?.onSubmit}
 			>
-				{modalContent[txType]?.heading}
+				{
+					// @ts-ignore
+					modalContent[txType]?.heading
+				}
 			</ConfirmTransactionModal>
 		</Container>
 	);
 };
 
-export default PurchaseActionBox;
+export default PurchasePoolBox;

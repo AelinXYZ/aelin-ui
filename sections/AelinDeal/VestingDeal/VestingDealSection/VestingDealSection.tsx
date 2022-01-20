@@ -2,21 +2,26 @@ import { FC, useMemo, useCallback, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import { FlexDiv, ExternalLink, Notice } from 'components/common';
-import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
+
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
-import VestingDealActionBox from 'components/ActionBox/components/VestingDealActionBox';
-import { formatShortDateWithTime } from 'utils/time';
-import TransactionData from 'containers/TransactionData';
+import { FlexDiv, ExternalLink, Notice } from 'components/common';
+
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import { TransactionStatus } from 'constants/transactions';
-import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
-import { firstAelinPoolDealID } from 'constants/pool';
+import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
+
 import { formatNumber } from 'utils/numbers';
+import { formatShortDateWithTime } from 'utils/time';
+import { getGasEstimateWithBuffer } from 'utils/network';
+
+import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { GasLimitEstimate } from 'constants/networks';
+import { firstAelinPoolDealID } from 'constants/pool';
+import { TransactionStatus } from 'constants/transactions';
+
+import VestingDealBox from '../VestingDealBox';
 
 interface VestingDealProps {
 	deal: any;
@@ -39,8 +44,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { txState, setTxState, gasPrice, setGasPrice, setTxType, txType } =
 		TransactionData.useContainer();
-	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const dealVestingGridItems = useMemo(() => {
@@ -151,7 +154,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
 				{deal?.id !== firstAelinPoolDealID && (
-					<VestingDealActionBox
+					<VestingDealBox
 						maxValue={claimableUnderlyingTokens ?? 0}
 						transaction={{
 							txType,

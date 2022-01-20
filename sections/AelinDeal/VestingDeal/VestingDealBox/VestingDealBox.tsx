@@ -5,11 +5,11 @@ import Connector from 'containers/Connector';
 
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
-import { Container, ContentContainer, ActionButton } from './commons';
+import { Container, ContentContainer, ActionButton } from '../../../shared/common';
 
 import { TransactionType } from 'constants/transactions';
 
-const VestingDealActionBox = ({
+const VestingDealBox = ({
 	maxValue,
 	showTxModal,
 	setShowTxModal,
@@ -20,16 +20,6 @@ const VestingDealActionBox = ({
 	const isDisabled: boolean = useMemo(() => {
 		return !walletAddress || !maxValue;
 	}, [walletAddress, maxValue]);
-
-	const modalContent = useMemo(
-		() => ({
-			[TransactionType.Vest]: {
-				heading: `You are vesting ${maxValue} underlying deal tokens`,
-				onSubmit,
-			},
-		}),
-		[maxValue, onSubmit]
-	);
 
 	return (
 		<Container>
@@ -54,9 +44,9 @@ const VestingDealActionBox = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={modalContent[txType].onSubmit}
+				onSubmit={onSubmit}
 			>
-				{modalContent[txType].heading}
+				{`You are vesting ${maxValue} underlying deal tokens`}
 			</ConfirmTransactionModal>
 		</Container>
 	);
@@ -67,4 +57,4 @@ const Paragraph = styled.p`
 	font-size: 1rem;
 `;
 
-export default VestingDealActionBox;
+export default VestingDealBox;

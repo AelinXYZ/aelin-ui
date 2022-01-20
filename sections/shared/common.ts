@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 
 import Button from 'components/Button';
 
-import { FlexDivRow } from '../../common';
+import { FlexDivRow } from 'components/common';
 
 export const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};

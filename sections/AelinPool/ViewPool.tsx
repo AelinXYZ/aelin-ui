@@ -1,6 +1,5 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
-import styled from 'styled-components';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useState, useEffect } from 'react';
 
@@ -16,10 +15,15 @@ import useGetClaimedUnderlyingDealTokensQuery, {
 } from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
 
 import { PageLayout } from 'sections/Layout';
+import FundDeal from 'sections/AelinDeal/FundDeal';
 import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import SectionTitle from 'sections/shared/SectionTitle';
-import VestingDeal from 'sections/AelinDeal/VestingDeal';
-import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
+import WithdrawExpiry from 'sections/AelinDeal/WithdrawExpiry';
+import PurchasePoolSection from 'sections/AelinPool/PurchasePool/PurchasePoolSection';
+import VestingDealSection from 'sections/AelinDeal/VestingDeal/VestingDealSection';
+import PoolDurationEndedSection from 'sections/AelinPool/PoolDurationEnded/PoolDurationEndedSection';
+import AcceptOrRejectDealSection from 'sections/AelinDeal/AcceptOrRejectDeal/AcceptOrRejectDealSection';
+
 import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import { Status } from 'components/DealStatus';
@@ -30,12 +34,6 @@ import { getERC20Data } from 'utils/crypto';
 
 import { vAelinPoolID } from 'constants/pool';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
-
-import FundDeal from '../AelinDeal/FundDeal';
-
-import PurchasePool from './PurchasePool';
-import PoolDurationEnded from './PoolDurationEnded';
-import WithdrawExpiry from '../AelinDeal/WithdrawExpiry';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -153,7 +151,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
-			<PurchasePool pool={pool} />
+			<PurchasePoolSection pool={pool} />
 			{showCreateDealSection ? (
 				<SectionWrapper>
 					<ContentHeader>
@@ -189,7 +187,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 							<SectionTitle address={deal?.id} title="Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<AcceptOrRejectDeal
+					<AcceptOrRejectDealSection
 						pool={pool}
 						deal={deal}
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
@@ -201,7 +199,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
 			pool?.id !== vAelinPoolID &&
 			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
-				<PoolDurationEnded pool={pool} dealID={deal.id} />
+				<PoolDurationEndedSection pool={pool} dealID={deal.id} />
 			) : null}
 			{now >
 				(deal?.proRataRedemptionPeriodStart ?? 0) +
@@ -222,7 +220,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
 						</ContentTitle>
 					</ContentHeader>
-					<VestingDeal
+					<VestingDealSection
 						deal={deal}
 						dealBalance={dealBalance}
 						claims={claims}

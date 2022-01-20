@@ -1,32 +1,33 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
+import { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
-import { wei } from '@synthetixio/wei';
-import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
 import SectionTitle from 'sections/shared/SectionTitle';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import Grid from 'components/Grid';
-import { FlexDiv, Notice } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
-import WithdrawActionBox from 'components/ActionBox/components/WithdrawActionBox';
+import { FlexDiv, Notice } from 'components/common';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
-import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
-
-import TransactionData from 'containers/TransactionData';
+import { formatShortDateWithTime } from 'utils/time';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { TransactionType, TransactionStatus } from 'constants/transactions';
+
+import PoolDurationEndedBox from '../PoolDurationEndedBox';
 
 interface PoolDurationEndedProps {
 	pool: PoolCreatedResult | null;
@@ -201,7 +202,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 			</ContentHeader>
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={withdrawGridItems} />
-				<WithdrawActionBox
+				<PoolDurationEndedBox
 					purchaseCurrency={purchaseTokenSymbol}
 					input={{
 						placeholder: '0',

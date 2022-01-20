@@ -2,7 +2,6 @@ import { useMemo, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
 
-import QuestionMark from 'components/QuestionMark';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import {
@@ -14,11 +13,11 @@ import {
 	ActionBoxInput,
 	ActionBoxMax,
 	ActionButton,
-} from './commons';
+} from '../../../shared/common';
 
 import { TransactionStatus, TransactionType } from 'constants/transactions';
 
-const WithdrawActionBox = ({
+const PoolDurationEndedBox = ({
 	purchaseCurrency,
 	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
 	transaction: { txType, txState, setTxType, setGasPrice, gasLimitEstimate, onSubmit },
@@ -30,18 +29,8 @@ const WithdrawActionBox = ({
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState, setShowTxModal]);
 
-	const modalContent = useMemo(
-		() => ({
-			[TransactionType.Withdraw]: {
-				heading: `You are withdrawing ${inputValue} ${purchaseCurrency}`,
-				onSubmit,
-			},
-		}),
-		[inputValue, onSubmit, purchaseCurrency]
-	);
-
-	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
 	const isEmptyInput = inputValue === 0 || inputValue === null;
+	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
 
 	const isDisabled: boolean = useMemo(() => {
 		return !walletAddress || isMaxBalanceExceeded || isEmptyInput;
@@ -96,12 +85,12 @@ const WithdrawActionBox = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={modalContent[txType]?.onSubmit}
+				onSubmit={onSubmit}
 			>
-				{modalContent[txType]?.heading}
+				{`You are withdrawing ${inputValue} ${purchaseCurrency}`}
 			</ConfirmTransactionModal>
 		</Container>
 	);
 };
 
-export default WithdrawActionBox;
+export default PoolDurationEndedBox;

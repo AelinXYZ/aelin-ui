@@ -5,6 +5,7 @@ import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
@@ -16,22 +17,20 @@ import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
 import CopyToClipboard from 'components/CopyToClipboard';
 import { FlexDivStart, FlexDiv } from 'components/common';
-import PurchaseActionBox from 'components/ActionBox/components/PurchaseActionBox';
 
 import { erc20Abi } from 'contracts/erc20';
 
-import { TransactionStatus } from 'constants/transactions';
-
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
-import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
-
-import TransactionData from 'containers/TransactionData';
+import { formatShortDateWithTime } from 'utils/time';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { TransactionStatus } from 'constants/transactions';
+
+import PurchasePoolBox from '../PurchasePoolBox';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -435,7 +434,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
-			<PurchaseActionBox
+			<PurchasePoolBox
 				poolId={pool?.id}
 				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
 				isPurchaseExpired={isPurchaseExpired}

@@ -10,7 +10,7 @@ import { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
-import { FlexDivRowCentered, Tooltip } from '../../common';
+import { FlexDivRowCentered, Tooltip } from '../../../../components/common';
 
 import {
 	Container,
@@ -24,12 +24,12 @@ import {
 	ActionBoxHeader,
 	FlexDivCenterRow,
 	ActionButton,
-} from './commons';
+} from '../../../shared/common';
 
 import { TransactionType, TransactionStatus } from 'constants/transactions';
 import { statusToText, swimmingPoolID } from 'constants/pool';
 
-const DealActionBox = ({
+const AcceptOrRejectDealBox = ({
 	poolId,
 	dealRedemptionData,
 	purchaseCurrency,
@@ -42,8 +42,8 @@ const DealActionBox = ({
 	const [isDealAccept, setIsDealAccept] = useState(true);
 
 	const isWithdraw = !isDealAccept;
-
 	const isPoolDisabled = [swimmingPoolID].includes(poolId);
+	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
 
 	const isDisabled: boolean = useMemo(
 		() => !walletAddress || !isWithdraw || isPoolDisabled,
@@ -125,58 +125,56 @@ const DealActionBox = ({
 				</RedemptionPeriodTooltip>
 			</RedemptionHeader>
 			<ContentContainer>
-				<>
-					<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
-					<InputContainer>
-						<ActionBoxInput
-							type={'number'}
-							placeholder={placeholder}
-							value={inputValue}
-							onChange={(e) => {
-								const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
-								setIsMaxValue(false);
-								setInputValue(value);
-							}}
-						/>
-						{maxValue && (
-							<ActionBoxMax
-								isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
-								onClick={handleMaxButtonClick}
-							>
-								{dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw
-									? 'Max Pro Rata'
-									: 'Max'}
-							</ActionBoxMax>
-						)}
-					</InputContainer>
-					<ActionBoxHeaderWrapper>
-						<ActionBoxHeader
-							isAcceptOrReject
-							isPool={false}
-							isSelected={isDealAccept}
-							onClick={() => setIsDealAccept(true)}
+				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
+				<InputContainer>
+					<ActionBoxInput
+						type="number"
+						value={inputValue}
+						placeholder={placeholder}
+						onChange={(e) => {
+							const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
+							setIsMaxValue(false);
+							setInputValue(value);
+						}}
+					/>
+					{maxValue && (
+						<ActionBoxMax
+							isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
+							onClick={handleMaxButtonClick}
 						>
-							<FlexDivCenterRow>
-								<>Accept Deal</>
-								<QuestionMark
-									text={`Choose accept to agree to the deal terms with up to the max amount based on your allocation this round`}
-								/>
-							</FlexDivCenterRow>
-						</ActionBoxHeader>
-						<ActionBoxHeader
-							isAcceptOrReject
-							isPool={false}
-							isSelected={!isDealAccept}
-							isWithdraw={isWithdraw}
-							onClick={() => setIsDealAccept(false)}
-						>
-							<FlexDivCenterRow>
-								<>Withdraw</>
-								<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
-							</FlexDivCenterRow>
-						</ActionBoxHeader>
-					</ActionBoxHeaderWrapper>
-				</>
+							{dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw
+								? 'Max Pro Rata'
+								: 'Max'}
+						</ActionBoxMax>
+					)}
+				</InputContainer>
+				<ActionBoxHeaderWrapper>
+					<ActionBoxHeader
+						isAcceptOrReject
+						isPool={false}
+						isSelected={isDealAccept}
+						onClick={() => setIsDealAccept(true)}
+					>
+						<FlexDivCenterRow>
+							Accept Deal
+							<QuestionMark
+								text={`Choose accept to agree to the deal terms with up to the max amount based on your allocation this round`}
+							/>
+						</FlexDivCenterRow>
+					</ActionBoxHeader>
+					<ActionBoxHeader
+						isAcceptOrReject
+						isPool={false}
+						isSelected={!isDealAccept}
+						isWithdraw={isWithdraw}
+						onClick={() => setIsDealAccept(false)}
+					>
+						<FlexDivCenterRow>
+							Withdraw
+							<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
+						</FlexDivCenterRow>
+					</ActionBoxHeader>
+				</ActionBoxHeaderWrapper>
 			</ContentContainer>
 			{poolId !== '0x7e135d4674406ca8f00f632be5c7a570060c0a15' && (
 				<ActionButton
@@ -205,9 +203,7 @@ const DealActionBox = ({
 				</ActionButton>
 			)}
 
-			{Number(maxValue ?? 0) < Number(inputValue ?? 0) && (
-				<ErrorNote>Max balance exceeded</ErrorNote>
-			)}
+			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 
 			{dealRedemptionData?.status === Status.ProRataRedemption &&
 				!isWithdraw &&
@@ -232,9 +228,13 @@ const DealActionBox = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
+				// @ts-ignore
 				onSubmit={modalContent[txType].onSubmit}
 			>
-				{modalContent[txType].heading}
+				{
+					// @ts-ignore
+					modalContent[txType].heading
+				}
 			</ConfirmTransactionModal>
 		</Container>
 	);
@@ -262,4 +262,4 @@ const InfoClick = styled.div`
 	display: inline;
 `;
 
-export default DealActionBox;
+export default AcceptOrRejectDealBox;
