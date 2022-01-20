@@ -69,7 +69,10 @@ const Stake = () => {
 							<Text>
 								To obtain G-UNI AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
 								on Uniswap via Sorbet.Finance. A full tutorial can be found on our blog{' '}
-								<Link href="https://medium.com/@aelinprotocol/b0f55bfc2976" passHref>
+								<Link
+									href="https://mirror.xyz/aelingov.eth/vWMW887qout1flAyGJZ0mPJdpfrdaPSQeRt9X6cQqkQ"
+									passHref
+								>
 									<StyledAnchor target="_blank">here</StyledAnchor>
 								</Link>
 								.
