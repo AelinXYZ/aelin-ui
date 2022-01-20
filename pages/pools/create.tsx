@@ -16,7 +16,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 
 import Radio from 'components/Radio';
 import Input from 'components/Input/Input';
-import Whitelist from 'components/WhiteList';
+import Whitelist from 'components/Whitelist';
 import QuestionMark from 'components/QuestionMark';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';

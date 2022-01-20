@@ -1,1 +1,1 @@
-export { default } from './WhiteList';
+export { default } from './Whitelist';

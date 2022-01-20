@@ -39,7 +39,7 @@ interface AcceptOrRejectDealBoxProps {
 	purchaseCurrency: string | null;
 	dealRedemptionData: {
 		status: Status;
-		maxProRata: string;
+		maxProRata: number;
 		isOpenEligible: boolean;
 		purchaseTokenTotalForDeal: number;
 		totalAmountAccepted: number;

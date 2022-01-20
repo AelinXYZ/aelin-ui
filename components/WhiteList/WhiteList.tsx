@@ -220,8 +220,4 @@ const Title = styled.span`
 	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
-const Subtitle = styled.span`
-	font-size: 1rem;
-`;
-
 export default Whitelist;
