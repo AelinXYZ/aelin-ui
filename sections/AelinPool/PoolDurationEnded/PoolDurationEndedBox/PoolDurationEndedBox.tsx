@@ -1,6 +1,7 @@
-import { useMemo, useEffect, useState } from 'react';
+import { FC, useMemo, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
@@ -16,13 +17,24 @@ import {
 } from '../../../shared/common';
 
 import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
 
-const PoolDurationEndedBox = ({
+interface PoolDurationEndedBoxProps {
+	onSubmit: () => void;
+	purchaseCurrency: string;
+	gasLimitEstimate: GasLimitEstimate;
+	input: any;
+}
+
+const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
+	onSubmit,
 	purchaseCurrency,
+	gasLimitEstimate,
 	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
-	transaction: { txType, txState, setTxType, setGasPrice, gasLimitEstimate, onSubmit },
 }: any) => {
 	const { walletAddress } = Connector.useContainer();
+	const { setGasPrice, txState, setTxType } = TransactionData.useContainer();
+
 	const [showTxModal, setShowTxModal] = useState(false);
 
 	useEffect(() => {
@@ -42,7 +54,7 @@ const PoolDurationEndedBox = ({
 				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
 				<InputContainer>
 					<ActionBoxInput
-						type={'number'}
+						type="number"
 						placeholder={placeholder}
 						value={inputValue}
 						onChange={(e) => {

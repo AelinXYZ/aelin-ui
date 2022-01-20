@@ -5,7 +5,7 @@ import Color from 'color';
 
 type ButtonProps = {
 	size?: 'sm' | 'md' | 'lg' | 'xl';
-	variant: 'primary' | 'secondary' | 'tertiary' | 'solid' | 'outline' | 'text' | 'round';
+	variant?: 'primary' | 'secondary' | 'tertiary' | 'solid' | 'outline' | 'text' | 'round';
 	isActive?: boolean;
 	isRounded?: boolean;
 };

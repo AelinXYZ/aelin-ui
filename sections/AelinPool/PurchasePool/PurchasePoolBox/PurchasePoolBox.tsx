@@ -1,6 +1,7 @@
-import { useMemo, useEffect, useState } from 'react';
+import { FC, useMemo, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 
 import QuestionMark from 'components/QuestionMark';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
@@ -21,59 +22,36 @@ import {
 
 import { swimmingPoolID } from 'constants/pool';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
 
-const actionBoxTypeToTitle = (
-	isPrivatePool: boolean,
-	privatePoolAmount: string,
-	currency: string
-) => {
-	const privatePoolText = (
-		<div>
-			<div>Private pool</div>
-			<div>{`${
-				privatePoolAmount && Number(privatePoolAmount) > 0
-					? `You may purchase up to ${privatePoolAmount} ${currency}`
-					: 'You have no allocation'
-			}`}</div>
-		</div>
-	);
-	const publicPoolText = 'Public pool';
+import { actionBoxTypeToTitle, getActionButtonLabel } from './helpers';
 
-	return isPrivatePool ? privatePoolText : publicPoolText;
-};
-
-const getActionButtonLabel = ({
-	allowance,
-	amount,
-	isPurchaseExpired,
-	isPrivatePoolAndNoAllocation,
-}: {
+interface PurchasePoolBoxProps {
+	poolId: string;
+	onSubmit: () => void;
+	onApprove: () => void;
 	allowance?: string;
-	amount: string | number;
-	isPurchaseExpired: boolean | undefined;
-	isPrivatePoolAndNoAllocation: boolean | undefined;
-}) => {
-	if (isPrivatePoolAndNoAllocation) {
-		return 'No Allocation';
-	}
+	gasLimitEstimate: GasLimitEstimate;
+	isPurchaseExpired: boolean;
+	purchaseCurrency: string;
+	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
+	input: any;
+}
 
-	if (Number(allowance ?? '0') < Number(amount) && !isPurchaseExpired) {
-		return 'Approve';
-	}
-
-	return isPurchaseExpired ? 'Purchase Expired' : 'Purchase';
-};
-
-const PurchasePoolBox = ({
+const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	poolId,
-	privatePoolDetails,
+	onSubmit,
+	onApprove,
+	allowance,
+	gasLimitEstimate,
 	isPurchaseExpired,
 	purchaseCurrency,
-	allowance,
-	transaction: { txType, txState, setTxType, setGasPrice, gasLimitEstimate, onSubmit, onApprove },
+	privatePoolDetails,
 	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
 }: any) => {
 	const { walletAddress } = Connector.useContainer();
+	const { setGasPrice, txState, txType, setTxType } = TransactionData.useContainer();
+
 	const [showTxModal, setShowTxModal] = useState(false);
 
 	useEffect(() => {
@@ -126,7 +104,7 @@ const PurchasePoolBox = ({
 				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
 				<InputContainer>
 					<ActionBoxInput
-						type={'number'}
+						type="number"
 						placeholder={placeholder}
 						value={inputValue}
 						onChange={(e) => {

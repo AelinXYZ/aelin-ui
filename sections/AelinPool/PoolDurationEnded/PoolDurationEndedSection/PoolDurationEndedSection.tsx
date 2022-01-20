@@ -37,14 +37,13 @@ interface PoolDurationEndedProps {
 const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
+	const { gasPrice, setTxState, setTxType } = TransactionData.useContainer();
+
+	const [inputValue, setInputValue] = useState<number>(0);
+	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
-		TransactionData.useContainer();
-	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
-
-	useEffect(() => setTxType(TransactionType.Withdraw), []);
+	useEffect(() => setTxType(TransactionType.Withdraw), [setTxType]);
 
 	const poolContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
@@ -203,7 +202,9 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 			<FlexDiv>
 				<Grid hasInputFields={false} gridItems={withdrawGridItems} />
 				<PoolDurationEndedBox
+					onSubmit={handleSubmit}
 					purchaseCurrency={purchaseTokenSymbol}
+					gasLimitEstimate={gasLimitEstimate}
 					input={{
 						placeholder: '0',
 						label: `Balance ${userPoolBalance} Pool Tokens`,
@@ -212,14 +213,6 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 						isMaxValue,
 						setInputValue,
 						setIsMaxValue,
-					}}
-					transaction={{
-						txType,
-						txState,
-						setTxType,
-						setGasPrice,
-						gasLimitEstimate,
-						onSubmit: handleSubmit,
 					}}
 				/>
 			</FlexDiv>

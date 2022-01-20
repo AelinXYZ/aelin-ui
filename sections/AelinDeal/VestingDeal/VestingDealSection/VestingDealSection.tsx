@@ -19,7 +19,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { GasLimitEstimate } from 'constants/networks';
 import { firstAelinPoolDealID } from 'constants/pool';
-import { TransactionStatus } from 'constants/transactions';
+import { TransactionStatus, TransactionType } from 'constants/transactions';
 
 import VestingDealBox from '../VestingDealBox';
 
@@ -42,9 +42,10 @@ const VestingDeal: FC<VestingDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState, gasPrice, setGasPrice, setTxType, txType } =
-		TransactionData.useContainer();
+	const { setTxState, gasPrice, setTxType } = TransactionData.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+
+	useEffect(() => setTxType(TransactionType.Vest), [setTxType]);
 
 	const dealVestingGridItems = useMemo(() => {
 		const claimedAmount = claims.reduce(
@@ -155,14 +156,9 @@ const VestingDeal: FC<VestingDealProps> = ({
 				<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
 				{deal?.id !== firstAelinPoolDealID && (
 					<VestingDealBox
+						onSubmit={handleSubmit}
 						maxValue={claimableUnderlyingTokens ?? 0}
-						transaction={{
-							txType,
-							setTxType,
-							setGasPrice,
-							gasLimitEstimate,
-							onSubmit: handleSubmit,
-						}}
+						gasLimitEstimate={gasLimitEstimate}
 					/>
 				)}
 			</FlexDiv>

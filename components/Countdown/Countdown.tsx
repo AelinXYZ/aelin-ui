@@ -5,8 +5,8 @@ import QuestionMark from 'components/QuestionMark';
 import { NetworkId } from 'constants/networks';
 
 interface CountdownProps {
-	time: number | null;
-	timeStart: number;
+	time: number;
+	timeStart: number | null;
 	networkId: NetworkId | null;
 }
 

@@ -1,21 +1,26 @@
-import { useMemo } from 'react';
+import { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import { Container, ContentContainer, ActionButton } from '../../../shared/common';
 
-import { TransactionType } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
 
-const VestingDealBox = ({
-	maxValue,
-	showTxModal,
-	setShowTxModal,
-	transaction: { txType, setTxType, setGasPrice, gasLimitEstimate, onSubmit },
-}: any) => {
+interface VestingDealProps {
+	maxValue: number;
+	onSubmit: Function;
+	gasLimitEstimate: GasLimitEstimate;
+}
+
+const VestingDealBox: FC<VestingDealProps> = ({ maxValue, onSubmit, gasLimitEstimate }) => {
 	const { walletAddress } = Connector.useContainer();
+	const { setGasPrice } = TransactionData.useContainer();
+
+	const [showTxModal, setShowTxModal] = useState(false);
 
 	const isDisabled: boolean = useMemo(() => {
 		return !walletAddress || !maxValue;
@@ -31,7 +36,6 @@ const VestingDealBox = ({
 				disabled={isDisabled}
 				isWithdraw={false}
 				onClick={() => {
-					setTxType(TransactionType.Vest);
 					setShowTxModal(true);
 				}}
 			>

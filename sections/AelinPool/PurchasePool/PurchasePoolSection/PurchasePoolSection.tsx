@@ -41,8 +41,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
-		TransactionData.useContainer();
+	const { gasPrice, setTxState } = TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(0);
 
@@ -436,19 +435,13 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			<Grid hasInputFields={false} gridItems={gridItems} />
 			<PurchasePoolBox
 				poolId={pool?.id}
-				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
+				onSubmit={handleSubmit}
+				onApprove={handleApprove}
+				allowance={purchaseTokenAllowance}
+				gasLimitEstimate={gasLimitEstimate}
 				isPurchaseExpired={isPurchaseExpired}
 				purchaseCurrency={purchaseTokenSymbol}
-				allowance={purchaseTokenAllowance}
-				transaction={{
-					txType,
-					txState,
-					setTxType,
-					setGasPrice,
-					gasLimitEstimate,
-					onApprove: handleApprove,
-					onSubmit: handleSubmit,
-				}}
+				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
 				input={{
 					placeholder: '0',
 					label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,

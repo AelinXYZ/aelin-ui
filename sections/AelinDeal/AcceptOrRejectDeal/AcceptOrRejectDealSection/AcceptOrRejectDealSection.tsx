@@ -46,8 +46,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer, network } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
-		TransactionData.useContainer();
+	const { setTxState, gasPrice, txType } = TransactionData.useContainer();
 
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
@@ -525,6 +524,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			<Grid hasInputFields={false} gridItems={gridItems} />
 			<AcceptOrRejectDealBox
 				poolId={pool?.id}
+				onSubmit={handleSubmit}
+				gasLimitEstimate={gasLimitEstimate}
+				purchaseCurrency={pool?.purchaseToken ?? null}
 				dealRedemptionData={{
 					status: dealRedemptionPeriod,
 					maxProRata: poolBalances?.maxProRata ?? 0,
@@ -536,15 +538,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							poolBalances?.purchaseTokenDecimals ?? 0
 						)
 					),
-				}}
-				purchaseCurrency={pool?.purchaseToken ?? null}
-				transaction={{
-					txType,
-					txState,
-					setTxType,
-					setGasPrice,
-					gasLimitEstimate,
-					onSubmit: handleSubmit,
 				}}
 				input={{
 					placeholder: '0',

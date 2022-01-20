@@ -1,16 +1,16 @@
 import Image from 'next/image';
 import styled from 'styled-components';
-import { useEffect, useState, useMemo } from 'react';
+import { FC, useEffect, useState, useMemo } from 'react';
 
 import Info from 'assets/svg/info.svg';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 
 import { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
+import { FlexDivRowCentered, Tooltip } from 'components/common';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-
-import { FlexDivRowCentered, Tooltip } from '../../../../components/common';
 
 import {
 	Container,
@@ -24,19 +24,40 @@ import {
 	ActionBoxHeader,
 	FlexDivCenterRow,
 	ActionButton,
-} from '../../../shared/common';
+} from 'sections/shared/common';
 
-import { TransactionType, TransactionStatus } from 'constants/transactions';
+import { GasLimitEstimate } from 'constants/networks';
 import { statusToText, swimmingPoolID } from 'constants/pool';
+import { TransactionType, TransactionStatus } from 'constants/transactions';
 
-const AcceptOrRejectDealBox = ({
+import AcceptOrRejectDealError from '../AcceptOrRejectDealError';
+
+interface AcceptOrRejectDealBoxProps {
+	poolId?: string;
+	onSubmit: () => void;
+	gasLimitEstimate: GasLimitEstimate;
+	purchaseCurrency: string | null;
+	dealRedemptionData: {
+		status: Status;
+		maxProRata: string;
+		isOpenEligible: boolean;
+		purchaseTokenTotalForDeal: number;
+		totalAmountAccepted: number;
+	};
+	input: any;
+}
+
+const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	poolId,
-	dealRedemptionData,
+	onSubmit,
+	gasLimitEstimate,
 	purchaseCurrency,
-	transaction: { txType, txState, setTxType, setGasPrice, gasLimitEstimate, onSubmit },
+	dealRedemptionData,
 	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
 }: any) => {
 	const { walletAddress } = Connector.useContainer();
+	const { txState, setGasPrice, txType, setTxType } = TransactionData.useContainer();
+
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [isDealAccept, setIsDealAccept] = useState(true);
@@ -181,15 +202,13 @@ const AcceptOrRejectDealBox = ({
 					disabled={isDisabled}
 					isWithdraw={isWithdraw}
 					onClick={() => {
-						const setCorrectTxnType = () => {
-							if (isDealAccept) {
-								return setTxType(TransactionType.Accept);
-							}
-							if (isWithdraw) {
-								return setTxType(TransactionType.Withdraw);
-							}
-						};
-						setCorrectTxnType();
+						if (isDealAccept) {
+							return setTxType(TransactionType.Accept);
+						}
+						if (isWithdraw) {
+							return setTxType(TransactionType.Withdraw);
+						}
+
 						setShowTxModal(true);
 					}}
 				>
@@ -202,6 +221,13 @@ const AcceptOrRejectDealBox = ({
 					)}
 				</ActionButton>
 			)}
+
+			<AcceptOrRejectDealError
+				inputValue={inputValue}
+				isWithdraw={isWithdraw}
+				isMaxBalanceExceeded={isMaxBalanceExceeded}
+				dealRedemptionData={dealRedemptionData}
+			/>
 
 			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 
