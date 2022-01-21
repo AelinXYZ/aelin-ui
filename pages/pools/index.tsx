@@ -6,23 +6,30 @@ import { CellProps } from 'react-table';
 import { useRouter } from 'next/router';
 import { FC, useMemo, useState, useEffect } from 'react';
 
+import Connector from 'containers/Connector';
+
 import { PageLayout } from 'sections/Layout';
 import FilterPool from 'sections/AelinPool/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';
+import Countdown from 'components/Countdown';
 import { FlexDivStart } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
-import { DEFAULT_DECIMALS, DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import {
+	DEFAULT_DECIMALS,
+	DEFAULT_PAGE_INDEX,
+	DEFAULT_REQUEST_REFRESH_INTERVAL,
+} from 'constants/defaults';
+import { filterList } from 'constants/poolFilterList';
 
 import { formatNumber } from 'utils/numbers';
-import Connector from 'containers/Connector';
-import { filterList } from 'constants/poolFilterList';
-import Countdown from 'components/Countdown';
+
+import useInterval from 'hooks/useInterval';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -31,7 +38,10 @@ const Pools: FC = () => {
 	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
 	const [nameFilter, setNameFilter] = useState<string | null>(null);
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
-	const [isPageOne, setIsPageOne] = useState<boolean>(true);
+
+	const [pageIndex, setPageIndex] = useState<number>(
+		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
+	);
 
 	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
 
@@ -40,20 +50,12 @@ const Pools: FC = () => {
 	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
-		let timer: ReturnType<typeof setInterval> | null = null;
-		if (isPageOne) {
-			timer = setInterval(() => {
-				poolsQuery.refetch();
-			}, DEFAULT_REQUEST_REFRESH_INTERVAL); // every 30s check for new pools
-		} else if (timer != null) {
-			clearInterval(timer);
-		}
-		return () => {
-			if (timer != null) {
-				clearInterval(timer);
-			}
-		};
-	}, [isPageOne, poolsQuery]);
+		setPageIndex(Number(router.query.page ?? DEFAULT_PAGE_INDEX));
+	}, [router.query.page]);
+
+	useInterval(() => {
+		poolsQuery.refetch();
+	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
 	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
 
@@ -281,8 +283,8 @@ const Pools: FC = () => {
 					status={statusFilter}
 				/>
 				<Table
+					pageIndex={pageIndex}
 					noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
-					setIsPageOne={setIsPageOne}
 					data={data && data.length > 0 ? data : []}
 					isLoading={poolsQuery.isLoading}
 					columns={columns}
