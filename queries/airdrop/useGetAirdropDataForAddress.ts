@@ -10,7 +10,7 @@ type AirdropRecord = {
 
 const useGetAirdropDataForAddress = () => {
 	const { walletAddress, isOVM, network } = Connector.useContainer();
-	const isOnMainnet = isMainnet(network?.id ?? NetworkId.Mainnet);
+	const isOnMainnet = isMainnet(network?.id ?? NetworkId['Optimism-Mainnet']);
 
 	return useQuery<AirdropRecord | null>(
 		['airdrop', 'data', walletAddress, network?.id],

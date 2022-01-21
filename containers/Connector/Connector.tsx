@@ -35,8 +35,8 @@ export async function getDefaultNetworkId(): Promise<NetworkId> {
 const useConnector = () => {
 	const [isOVM, setIsOVM] = useState<boolean>(false);
 	const [network, setNetwork] = useState<NetworkType>({
-		id: NetworkId.Mainnet,
-		name: NetworkName.Mainnet,
+		id: NetworkId['Optimism-Mainnet'],
+		name: NetworkName['Optimism-Mainnet'],
 	});
 	const [provider, setProvider] = useState<ethers.providers.Provider | undefined>(undefined);
 	const [signer, setSigner] = useState<ethers.Signer | null>(null);
@@ -47,10 +47,8 @@ const useConnector = () => {
 		LOCAL_STORAGE_KEYS.SELECTED_WALLET,
 		''
 	);
-	const [
-		transactionNotifier,
-		setTransactionNotifier,
-	] = useState<TransactionNotifierInterface | null>(null);
+	const [transactionNotifier, setTransactionNotifier] =
+		useState<TransactionNotifierInterface | null>(null);
 
 	const verifyIfOptimism = (networkId: NetworkId | null) => {
 		if (networkId) {

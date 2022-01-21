@@ -17,7 +17,7 @@ const useGetDealByIdQuery = ({ id, networkId }: { id: string; networkId?: Networ
 			poolAddress: true,
 		},
 		{},
-		networkId ? networkId : NetworkId.Mainnet
+		networkId ? networkId : NetworkId['Optimism-Mainnet']
 	);
 
 export const parseDeal = (deal: DealCreatedResult) => {

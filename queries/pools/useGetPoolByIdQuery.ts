@@ -26,7 +26,7 @@ const useGetPoolByIdQuery = ({ id, networkId }: { id: string; networkId?: Networ
 			dealAddress: true,
 		},
 		{},
-		networkId ? networkId : NetworkId.Mainnet
+		networkId ? networkId : NetworkId['Optimism-Mainnet']
 	);
 
 export default useGetPoolByIdQuery;

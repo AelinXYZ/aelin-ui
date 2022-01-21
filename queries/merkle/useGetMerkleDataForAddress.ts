@@ -10,7 +10,7 @@ type MerkleRecord = {
 
 const useGetMerkleDataForAddress = () => {
 	const { walletAddress, isOVM, network } = Connector.useContainer();
-	const isOnMainnet = isMainnet(network?.id ?? NetworkId.Mainnet);
+	const isOnMainnet = isMainnet(network?.id ?? NetworkId['Optimism-Mainnet']);
 
 	return useQuery<MerkleRecord | null>(
 		['merkle', 'data', walletAddress, network?.id],

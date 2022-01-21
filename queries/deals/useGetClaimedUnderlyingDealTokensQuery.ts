@@ -28,7 +28,7 @@ const useGetClaimedUnderlyingDealTokensQuery = ({
 			dealAddress: true,
 		},
 		{},
-		networkId ? networkId : NetworkId.Mainnet
+		networkId ? networkId : NetworkId['Optimism-Mainnet']
 	);
 
 export const parseClaimedResult = (claimedResult: ClaimedUnderlyingDealTokenResult) => ({

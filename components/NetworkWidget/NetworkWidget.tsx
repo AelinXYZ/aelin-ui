@@ -53,7 +53,7 @@ const NetworkWidget: FC = () => {
 
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const { isOVM, provider, network, walletAddress } = Connector.useContainer();
-	const [chain, setChain] = useState<Chain>(CHAINS[0]);
+	const [chain, setChain] = useState<Chain>(CHAINS[1]);
 
 	useEffect(() => {
 		const chain = CHAINS[isOVM ? 1 : 0];

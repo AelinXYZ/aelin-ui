@@ -31,7 +31,7 @@ const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
 			hasAllowList: true,
 		},
 		{},
-		networkId ? networkId : NetworkId.Mainnet
+		networkId ? networkId : NetworkId['Optimism-Mainnet']
 	);
 };
 

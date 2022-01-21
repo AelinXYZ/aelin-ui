@@ -24,7 +24,7 @@ const useGetDealDetailByIdQuery = ({ id, networkId }: { id: string; networkId?: 
 			isDealFunded: true,
 		},
 		{},
-		networkId ? networkId : NetworkId.Mainnet
+		networkId ? networkId : NetworkId['Optimism-Mainnet']
 	);
 
 export const parseDealDetail = (dealDetail: DealDetailResult) => ({

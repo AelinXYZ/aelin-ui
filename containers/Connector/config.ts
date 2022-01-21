@@ -36,7 +36,7 @@ export const initOnboard = (network: NetworkType, subscriptions: Subscriptions) 
 				},
 				{
 					walletName: 'walletConnect',
-					rpc: { [network ? network.id : Network.Mainnet]: infuraRpc },
+					rpc: { [network ? network.id : Network['Optimism-Mainnet']]: infuraRpc },
 					preferred: true,
 				},
 				{ walletName: 'walletLink', rpcUrl: infuraRpc, preferred: true },
