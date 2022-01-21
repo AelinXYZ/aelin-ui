@@ -25,20 +25,21 @@ type ColumnWithSorting<D extends object = {}> = Column<D> & {
 };
 
 type TableProps = {
-	palette?: TablePalette;
+	pageIndex: number;
+	columns: ColumnWithSorting<object>[];
 	data: object[];
 	hasLinksToPool: boolean;
-	columns: ColumnWithSorting<object>[];
 	options?: any;
-	className?: string;
-	isLoading?: boolean;
 	noResultsMessage?: React.ReactNode;
+	palette?: TablePalette;
+	isLoading?: boolean;
+	className?: string;
 	showPagination?: boolean;
 	maxRows?: number;
-	setIsPageOne?: (bool: boolean) => void;
 };
 
 export const Table: FC<TableProps> = ({
+	pageIndex,
 	columns = [],
 	data = [],
 	hasLinksToPool = false,
@@ -49,7 +50,6 @@ export const Table: FC<TableProps> = ({
 	className,
 	showPagination = false,
 	maxRows = MAX_RESULTS_PER_PAGE,
-	setIsPageOne,
 }) => {
 	const {
 		getTableProps,
@@ -71,12 +71,12 @@ export const Table: FC<TableProps> = ({
 		// @ts-ignore
 		previousPage,
 		// @ts-ignore
-		state: { pageIndex },
+		state: { pageIndex: pageIndexState },
 	} = useTable(
 		{
 			columns,
 			data,
-			initialState: { pageSize: showPagination ? maxRows : data.length },
+			initialState: { pageIndex: pageIndex - 1, pageSize: showPagination ? maxRows : data.length },
 			...options,
 		},
 		useSortBy,
@@ -156,10 +156,9 @@ export const Table: FC<TableProps> = ({
 				</ReactTable>
 			</TableContainer>
 			<NoResultsContainer>{noResultsMessage}</NoResultsContainer>
-			{showPagination ? (
+			{showPagination && (
 				<Pagination
-					setIsPageOne={setIsPageOne}
-					pageIndex={pageIndex}
+					pageIndex={pageIndexState + 1}
 					pageCount={pageCount}
 					canNextPage={canNextPage}
 					canPreviousPage={canPreviousPage}
@@ -167,7 +166,7 @@ export const Table: FC<TableProps> = ({
 					previousPage={previousPage}
 					nextPage={nextPage}
 				/>
-			) : undefined}
+			)}
 		</>
 	);
 };
