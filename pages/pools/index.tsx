@@ -36,12 +36,10 @@ const Pools: FC = () => {
 	const router = useRouter();
 	const { network } = Connector.useContainer();
 
-	const [poolList, setPoolList] = useState([]);
 	const [sponsorFilter, setSponsorFilter] = useState<string>('');
 	const [currencyFilter, setCurrencyFilter] = useState<string>('');
 	const [nameFilter, setNameFilter] = useState<string>('');
 	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
-
 	const [pageIndex, setPageIndex] = useState<number>(
 		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
 	);
@@ -70,53 +68,49 @@ const Pools: FC = () => {
 
 	const ensOrAddresses = useAddressesToEns(sponsors);
 
-	useEffect(() => {
-		const applyFilters = async () => {
-			let list = (poolsQuery?.data ?? [])
-				.filter(({ id }) => !filterList.includes(id))
-				.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
-					const parsedPool = parsePool({
-						sponsorFee,
-						purchaseTokenCap,
-						...pool,
-					});
-
-					return {
-						...parsedPool,
-						cap: purchaseTokenCap,
-						fee: sponsorFee,
-					};
+	const data = useMemo(() => {
+		let list = (poolsQuery?.data ?? [])
+			.filter(({ id }) => !filterList.includes(id))
+			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
+				const parsedPool = parsePool({
+					sponsorFee,
+					purchaseTokenCap,
+					...pool,
 				});
 
-			if (sponsorFilter.length) {
-				list = list.filter(
-					(_, index) =>
-						(!!ensOrAddresses.length &&
-							ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase())) ||
-						sponsors[index].toLowerCase().includes(sponsorFilter.toLowerCase())
-				);
-			}
+				return {
+					...parsedPool,
+					fee: sponsorFee,
+					cap: purchaseTokenCap,
+				};
+			});
 
-			if (currencyFilter.length) {
-				list = list.filter(({ purchaseToken }) =>
-					purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
-				);
-			}
+		if (sponsorFilter.length) {
+			list = list.filter(
+				(_, index) =>
+					(!!ensOrAddresses.length &&
+						ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase())) ||
+					sponsors[index].toLowerCase().includes(sponsorFilter.toLowerCase())
+			);
+		}
 
-			if (nameFilter.length) {
-				list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
-			}
+		if (currencyFilter.length) {
+			list = list.filter(({ purchaseToken }) =>
+				purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
+			);
+		}
 
-			if (statusFilter != null) {
-				list = list.filter(({ poolStatus }) =>
-					poolStatus.toLowerCase().includes(statusFilter.toLowerCase())
-				);
-			}
+		if (nameFilter.length) {
+			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
+		}
 
-			setPoolList(list);
-		};
+		if (statusFilter != null) {
+			list = list.filter(({ poolStatus }) =>
+				poolStatus.toLowerCase().includes(statusFilter.toLowerCase())
+			);
+		}
 
-		applyFilters();
+		return list;
 	}, [
 		poolsQuery?.data,
 		sponsorFilter,
