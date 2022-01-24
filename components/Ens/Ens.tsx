@@ -12,11 +12,7 @@ interface EnsProps {
 const Ens: FC<EnsProps> = ({ address }) => {
 	const [ensName] = useAddressesToEns([address]);
 
-	const hasEnsName = isEns(ensName);
-
-	if (hasEnsName) return <>{ensName}</>;
-
-	return <>{truncateAddress(address)}</>;
+	return <>{isEns(ensName) ? ensName : truncateAddress(address)}</>;
 };
 
 export default Ens;

@@ -41,11 +41,11 @@ export const useAddressesToEns = (addresses: string[]) => {
 
 	useEffect(() => {
 		const getEnsName = async () => {
-			const areAddresses = addresses.map(utils.isAddress).some(Boolean);
+			const areAddresses = addresses.map(utils.isAddress).every(Boolean);
 
 			if (!areAddresses) return;
 
-			const addresesToEns = await Promise.all(
+			const addressesToEns = await Promise.all(
 				addresses.map(async (address) => {
 					const resolvedEnsName = await provider?.lookupAddress(address);
 
@@ -61,7 +61,7 @@ export const useAddressesToEns = (addresses: string[]) => {
 				})
 			);
 
-			setEnsNames(addresesToEns);
+			setEnsNames(addressesToEns);
 		};
 		getEnsName();
 

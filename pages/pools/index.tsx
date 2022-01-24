@@ -47,7 +47,7 @@ const Pools: FC = () => {
 	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
 
 	useEffect(() => {
-		setSponsorFilter((router.query?.sponsorFilter ?? '') as string | null);
+		setSponsorFilter(router.query?.sponsorFilter ?? '');
 	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
