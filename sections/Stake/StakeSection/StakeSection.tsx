@@ -2,6 +2,7 @@ import { useState, FC, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
+import Image from 'next/image';
 
 import { StakeActionLabel } from '../constants';
 import StakeBox from '../StakeBox';
@@ -17,6 +18,9 @@ import { TransactionStatus } from 'constants/transactions';
 import useGetTokenBalance from 'queries/token/useGetTokenBalance';
 import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
 import { getGasEstimateWithBuffer } from 'utils/network';
+import { formatNumber } from 'utils/numbers';
+import Etherscan from 'containers/BlockExplorer';
+import EtherscanLogo from 'assets/svg/etherscan-logo.svg';
 
 type StakeSectionProps = {
 	header: string;
@@ -24,9 +28,19 @@ type StakeSectionProps = {
 	token: string;
 	contracts: StakingContracts | null;
 	apy: Number | null;
+	apyTooltip: string;
+	lpAssets: { etherAmount?: number; aelinAmount: number };
 };
 
-const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contracts, apy }) => {
+const StakeSection: FC<StakeSectionProps> = ({
+	header,
+	tooltipInfo,
+	token,
+	contracts,
+	apy,
+	apyTooltip,
+	lpAssets,
+}) => {
 	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [stakeAction, setStakeAction] = useState<StakeActionLabel>(StakeActionLabel.DEPOSIT);
@@ -35,6 +49,7 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 
 	const { txState, setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();
 	const { walletAddress } = Connector.useContainer();
+	const { blockExplorerInstance } = Etherscan.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const StakingContract = contracts?.StakingContract ?? null;
 	const TokenContract = contracts?.TokenContract ?? null;
@@ -205,10 +220,24 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 		<>
 			<HeaderSection>
 				<HeaderRow>
-					<Header>{header}</Header>
+					<Header>
+						<EtherscanLink
+							href={blockExplorerInstance?.addressLink(StakingContract?.address!)}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<Image width="20" height="20" src={EtherscanLogo} alt="etherscan logo" />
+						</EtherscanLink>
+						{header}
+					</Header>
 					<QuestionMark text={tooltipInfo} />
 				</HeaderRow>
-				<SubHeader>{apy === null ? 'APY: TBD' : `APY: ${apy?.toFixed(0) ?? 0}%`}</SubHeader>
+				<SubHeader>
+					<FlexDiv>
+						{apy === null ? 'APY: TBD' : `APY: ${formatNumber(apy?.toFixed(0) ?? 0, 0)}%`}
+						<QuestionMark text={apyTooltip} />
+					</FlexDiv>
+				</SubHeader>
 			</HeaderSection>
 			<StakeBox
 				onSubmit={handleSubmit}
@@ -230,9 +259,27 @@ const StakeSection: FC<StakeSectionProps> = ({ header, tooltipInfo, token, contr
 				setIsMaxValue={setIsMaxValue}
 			/>
 			<ClaimBox stakingContract={StakingContract} />
+			<SubHeader>
+				<FlexDiv>
+					{lpAssets?.etherAmount != null
+						? `$ETH in pool via G-UNI: ${formatNumber(lpAssets?.etherAmount, 2)}`
+						: null}
+				</FlexDiv>
+				<FlexDiv>
+					{lpAssets.aelinAmount != null
+						? lpAssets?.etherAmount == null
+							? `$AELIN staked: ${formatNumber(lpAssets?.aelinAmount, 2)}`
+							: `$AELIN in pool via G-UNI: ${formatNumber(lpAssets?.aelinAmount, 2)}`
+						: null}
+				</FlexDiv>
+			</SubHeader>
 		</>
 	);
 };
+
+const EtherscanLink = styled.a`
+	margin-right: 4px;
+`;
 
 const HeaderSection = styled(FlexDivColCentered)`
 	margin: 0 0 20px 0;

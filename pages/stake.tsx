@@ -10,6 +10,7 @@ import StakeSection from 'sections/Stake/StakeSection';
 import ContractsInterface from 'containers/ContractsInterface';
 
 import useGetStakingRewardsAPY from 'queries/stakingRewards/useGetStakingRewardsAPY';
+import useGetUniswapStakingRewardsAPY from 'queries/stakingRewards/useGetUniswapStakingRewardsAPY';
 
 const Stake = () => {
 	const { contracts } = ContractsInterface.useContainer();
@@ -18,8 +19,15 @@ const Stake = () => {
 		stakingRewardsContract: contracts?.AelinStaking?.StakingContract ?? null,
 		tokenContract: contracts?.AelinStaking?.TokenContract ?? null,
 	});
+	const aelinEthStakingRewardsAPYQuery = useGetUniswapStakingRewardsAPY({
+		stakingRewardsContract: contracts?.AelinEthStaking?.StakingContract ?? null,
+		tokenContract: contracts?.AelinEthStaking?.TokenContract ?? null,
+	});
 	const aelinPoolAPY = aelinStakingRewardsAPYQuery?.data?.apy ?? 0;
-	const aelinEthPoolAPY = null;
+	const aelinPoolAmount = aelinStakingRewardsAPYQuery?.data?.aelin ?? 0;
+	const aelinEthPoolAPY = aelinEthStakingRewardsAPYQuery?.data?.apy ?? 0;
+	const etherAmount = aelinEthStakingRewardsAPYQuery?.data?.eth ?? 0;
+	const aelinAmount = aelinEthStakingRewardsAPYQuery?.data?.aelin ?? 0;
 
 	return (
 		<>
@@ -37,6 +45,10 @@ const Stake = () => {
 							token={'AELIN'}
 							contracts={contracts?.AelinStaking ?? null}
 							apy={aelinPoolAPY}
+							lpAssets={{ aelinAmount: aelinPoolAmount }}
+							apyTooltip={
+								'Estimation based on the total amount of rewards for a year and the total value staked in the contract.'
+							}
 						/>
 					</PageSection>
 					<PageSection>
@@ -47,13 +59,20 @@ const Stake = () => {
 							}
 							token={'G-UNI'}
 							contracts={contracts?.AelinEthStaking ?? null}
-							apy={null}
+							apy={aelinEthPoolAPY}
+							lpAssets={{ etherAmount, aelinAmount }}
+							apyTooltip={
+								'Estimation based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.'
+							}
 						/>
 						<Section>
 							<Text>
 								To obtain G-UNI AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
 								on Uniswap via Sorbet.Finance. A full tutorial can be found on our blog{' '}
-								<Link href="https://medium.com/@aelinprotocol/b0f55bfc2976" passHref>
+								<Link
+									href="https://mirror.xyz/aelingov.eth/vWMW887qout1flAyGJZ0mPJdpfrdaPSQeRt9X6cQqkQ"
+									passHref
+								>
 									<StyledAnchor target="_blank">here</StyledAnchor>
 								</Link>
 								.

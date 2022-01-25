@@ -1,13 +1,16 @@
-import React, { FC, useEffect } from 'react';
-import styled from 'styled-components';
-
-import { GridDivCenteredCol, resetButtonCSS } from '../common';
 import Image from 'next/image';
+import styled from 'styled-components';
+import React, { FC, useEffect } from 'react';
+import router, { useRouter } from 'next/router';
+
+import { DEFAULT_PAGE_INDEX } from 'constants/defaults';
 
 import LeftArrowIcon from 'assets/svg/caret-left.svg';
 import LeftEndArrowIcon from 'assets/svg/caret-left-end.svg';
 import RightArrowIcon from 'assets/svg/caret-right.svg';
 import RightEndArrowIcon from 'assets/svg/caret-right-end.svg';
+
+import { GridDivCenteredCol, resetButtonCSS } from '../common';
 
 type PaginationProps = {
 	pageIndex: number;
@@ -17,7 +20,6 @@ type PaginationProps = {
 	setPage: (page: number) => void;
 	previousPage: () => void;
 	nextPage: () => void;
-	setIsPageOne: (bool: boolean) => void;
 };
 
 const Pagination: FC<PaginationProps> = ({
@@ -28,13 +30,22 @@ const Pagination: FC<PaginationProps> = ({
 	setPage,
 	nextPage,
 	previousPage,
-	setIsPageOne,
 }) => {
+	const { pathname } = useRouter();
+
 	useEffect(() => {
-		if (pageIndex === 0) {
-			setIsPageOne(true);
-		}
-	}, [pageIndex, setIsPageOne]);
+		if (pageCount === 0) return;
+
+		const page = pageIndex > pageCount ? DEFAULT_PAGE_INDEX : pageIndex;
+
+		router.push({
+			pathname,
+			query: { page },
+		});
+
+		setPage(page - 1);
+	}, [pageIndex, pageCount, pathname, setPage]);
+
 	return (
 		<PaginationContainer className="table-pagination">
 			<span>
@@ -45,7 +56,7 @@ const Pagination: FC<PaginationProps> = ({
 					<Image alt="" src={LeftArrowIcon} />
 				</ArrowButton>
 			</span>
-			<PageInfo>{`Page ${pageIndex + 1} of ${pageCount}`}</PageInfo>
+			<PageInfo>{`Page ${pageIndex} of ${pageCount}`}</PageInfo>
 			<span>
 				<ArrowButton onClick={() => nextPage()} disabled={!canNextPage}>
 					<Image alt="" src={RightArrowIcon} />
