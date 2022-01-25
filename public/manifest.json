@@ -1,6 +1,6 @@
 {
 	"name": "Aelin",
-	"iconPath": "images/aelin-logo.svg",
+	"iconPath": "images/aelin-logo.png",
 	"description": "A deal coordination protocol on Ethereum",
 	"providedBy": {
 		"name": "Aelin",
