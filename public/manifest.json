@@ -1,0 +1,9 @@
+{
+	"name": "Aelin",
+	"iconPath": "images/synthetix-logo.svg",
+	"description": "A deal coordination protocol on Ethereum",
+	"providedBy": {
+		"name": "Aelin",
+		"url": "https://aelin.xyz"
+	}
+}
