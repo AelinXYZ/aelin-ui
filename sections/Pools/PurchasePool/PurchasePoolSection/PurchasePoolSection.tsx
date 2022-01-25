@@ -28,7 +28,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
-import { TransactionStatus } from 'constants/transactions';
+import { TransactionType, TransactionStatus } from 'constants/transactions';
 
 import PurchasePoolBox from '../PurchasePoolBox';
 
@@ -41,9 +41,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setTxState } = TransactionData.useContainer();
+	const { gasPrice, setTxType, setTxState } = TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
+	const [inputValue, setInputValue] = useState('');
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -122,6 +122,14 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	]);
 
 	useEffect(() => {
+		setTxType(
+			Number(purchaseTokenAllowance ?? 0) < Number(inputValue === '' ? 0 : inputValue)
+				? TransactionType.Allowance
+				: TransactionType.Purchase
+		);
+	}, [purchaseTokenAllowance, inputValue, setTxType]);
+
+	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (
 				!poolContract ||
@@ -140,7 +148,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					if (!purchaseTokenDecimals) return;
 					const amount = isMaxValue
 						? maxValueBN.toBN()
-						: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+						: ethers.utils.parseUnits(
+								(inputValue === '' ? 0 : inputValue).toString(),
+								purchaseTokenDecimals
+						  );
 					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
 				}
 			} catch (e) {
@@ -351,7 +362,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		try {
 			const amount = isMaxValue
 				? maxValueBN.toBN()
-				: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+				: ethers.utils.parseUnits(
+						(inputValue === '' ? 0 : inputValue).toString(),
+						purchaseTokenDecimals
+				  );
 
 			const tx = await poolContract.purchasePoolTokens(amount, {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -437,19 +451,15 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				poolId={pool?.id}
 				onSubmit={handleSubmit}
 				onApprove={handleApprove}
-				allowance={purchaseTokenAllowance}
+				purchaseTokenAllowance={purchaseTokenAllowance}
 				gasLimitEstimate={gasLimitEstimate}
+				userPurchaseBalance={userPurchaseBalance}
 				isPurchaseExpired={isPurchaseExpired}
-				purchaseCurrency={purchaseTokenSymbol}
+				purchaseTokenSymbol={purchaseTokenSymbol}
 				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
-				input={{
-					placeholder: '0',
-					label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
-					inputValue,
-					maxValue,
-					setInputValue,
-					setIsMaxValue,
-				}}
+				inputValue={inputValue}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
 			/>
 		</FlexDiv>
 	);

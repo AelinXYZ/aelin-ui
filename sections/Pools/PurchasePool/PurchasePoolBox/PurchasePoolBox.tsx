@@ -1,4 +1,4 @@
-import { FC, useMemo, useEffect, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
@@ -21,7 +21,7 @@ import {
 } from '../../../shared/common';
 
 import { swimmingPoolID } from 'constants/pool';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { TransactionType } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 
 import { actionBoxTypeToTitle, getActionButtonLabel } from './helpers';
@@ -30,37 +30,41 @@ interface PurchasePoolBoxProps {
 	poolId: string;
 	onSubmit: () => void;
 	onApprove: () => void;
-	allowance?: string;
+	inputValue: number | string;
+	isMaxValue: boolean;
+	setInputValue: (val: number | string) => void;
+	setIsMaxValue: (val: boolean) => void;
+	userPurchaseBalance: string | null;
+	purchaseTokenAllowance?: string;
 	gasLimitEstimate: GasLimitEstimate;
 	isPurchaseExpired: boolean;
-	purchaseCurrency: string;
+	purchaseTokenSymbol: string;
 	privatePoolDetails?: { isPrivatePool: boolean; privatePoolAmount: string };
-	input: any;
 }
 
 const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	poolId,
 	onSubmit,
 	onApprove,
-	allowance,
+	inputValue,
+	isMaxValue,
+	setInputValue,
+	setIsMaxValue,
+	userPurchaseBalance,
+	purchaseTokenAllowance,
 	gasLimitEstimate,
 	isPurchaseExpired,
-	purchaseCurrency,
+	purchaseTokenSymbol,
 	privatePoolDetails,
-	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
-}: any) => {
+}: PurchasePoolBoxProps) => {
 	const { walletAddress } = Connector.useContainer();
-	const { setGasPrice, txState, txType, setTxType } = TransactionData.useContainer();
+	const { setGasPrice, txType } = TransactionData.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
 
-	useEffect(() => {
-		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
-	}, [txState, setShowTxModal]);
-
 	const isPoolDisabled = [swimmingPoolID].includes(poolId);
-	const isEmptyInput = inputValue === 0 || inputValue === null;
-	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
+	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
+	const isMaxBalanceExceeded = Number(userPurchaseBalance ?? 0) < Number(inputValue ?? 0);
 
 	const isDisabled: boolean = useMemo(() => {
 		return (
@@ -75,11 +79,11 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 				onSubmit: onApprove,
 			},
 			[TransactionType.Purchase]: {
-				heading: `You are purchasing ${inputValue} ${purchaseCurrency}`,
+				heading: `You are purchasing ${inputValue} ${purchaseTokenSymbol}`,
 				onSubmit,
 			},
 		}),
-		[inputValue, onApprove, onSubmit, purchaseCurrency]
+		[inputValue, onApprove, onSubmit, purchaseTokenSymbol]
 	);
 
 	const isPrivatePoolAndNoAllocation = useMemo(
@@ -88,32 +92,35 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	);
 
 	const handleMaxButtonClick = () => {
-		let max = maxValue;
+		let maxValue = Number(userPurchaseBalance);
 
 		if (privatePoolDetails?.isPrivatePool) {
-			max = Math.min(Number(privatePoolDetails?.privatePoolAmount ?? 0), Number(maxValue));
+			maxValue = Math.min(Number(privatePoolDetails?.privatePoolAmount ?? 0), maxValue);
 		}
 
 		setIsMaxValue(true);
-		setInputValue(Number(max));
+		setInputValue(maxValue);
 	};
 
 	return (
 		<Container>
 			<ContentContainer>
-				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
+				<ActionBoxInputLabel>
+					{`Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`}
+				</ActionBoxInputLabel>
 				<InputContainer>
 					<ActionBoxInput
 						type="number"
-						placeholder={placeholder}
+						placeholder="0"
+						max={userPurchaseBalance ?? undefined}
 						value={inputValue}
 						onChange={(e) => {
-							const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
+							const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
 							setIsMaxValue(false);
 							setInputValue(value);
 						}}
 					/>
-					{!!maxValue && (
+					{!!userPurchaseBalance && (
 						<ActionBoxMax isProRata={false} onClick={handleMaxButtonClick}>
 							Max
 						</ActionBoxMax>
@@ -125,44 +132,33 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 							{actionBoxTypeToTitle(
 								privatePoolDetails?.isPrivatePool ?? false,
 								privatePoolDetails?.privatePoolAmount ?? '0',
-								purchaseCurrency
+								purchaseTokenSymbol
 							)}
 						</FlexDivCenterRow>
 					</ActionBoxHeader>
 				</ActionBoxHeaderWrapper>
 			</ContentContainer>
 
-			{poolId !== '0x7e135d4674406ca8f00f632be5c7a570060c0a15' && (
-				<ActionButton
-					disabled={isDisabled}
-					isWithdraw={false}
-					onClick={() => {
-						const setCorrectTxnType = () => {
-							if (Number(allowance ?? 0) < Number(inputValue ?? 0)) {
-								return setTxType(TransactionType.Allowance);
-							}
+			<ActionButton
+				disabled={isDisabled}
+				isWithdraw={false}
+				onClick={() => {
+					setShowTxModal(true);
+				}}
+			>
+				{getActionButtonLabel({
+					allowance: purchaseTokenAllowance,
+					amount: inputValue,
+					isPurchaseExpired,
+					isPrivatePoolAndNoAllocation,
+				})}
 
-							return setTxType(TransactionType.Purchase);
-						};
-
-						setCorrectTxnType();
-						setShowTxModal(true);
-					}}
-				>
-					{getActionButtonLabel({
-						allowance,
-						amount: inputValue,
-						isPurchaseExpired,
-						isPrivatePoolAndNoAllocation,
-					})}
-
-					{isPoolDisabled && (
-						<div>
-							<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
-						</div>
-					)}
-				</ActionButton>
-			)}
+				{isPoolDisabled && (
+					<div>
+						<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
+					</div>
+				)}
+			</ActionButton>
 
 			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 

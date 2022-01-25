@@ -21,7 +21,7 @@ import { GasLimitEstimate } from 'constants/networks';
 import { firstAelinPoolDealID } from 'constants/pool';
 import { TransactionStatus, TransactionType } from 'constants/transactions';
 
-import VestingDealBox from '../VestingDealBox';
+import VestingDealBox from '../VestingBox';
 
 interface VestingDealProps {
 	deal: any;

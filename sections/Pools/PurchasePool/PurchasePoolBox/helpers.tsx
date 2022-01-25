@@ -1,14 +1,14 @@
 export const actionBoxTypeToTitle = (
 	isPrivatePool: boolean,
 	privatePoolAmount: string,
-	currency: string
+	purchaseTokenSymbol: string
 ) => {
 	const privatePoolText = (
 		<div>
 			<div>Private pool</div>
 			<div>{`${
 				privatePoolAmount && Number(privatePoolAmount) > 0
-					? `You may purchase up to ${privatePoolAmount} ${currency}`
+					? `You may purchase up to ${privatePoolAmount} ${purchaseTokenSymbol}`
 					: 'You have no allocation'
 			}`}</div>
 		</div>

@@ -27,13 +27,17 @@ import {
 
 import { GasLimitEstimate } from 'constants/networks';
 import { statusToText, swimmingPoolID } from 'constants/pool';
-import { TransactionType, TransactionStatus } from 'constants/transactions';
+import { TransactionType } from 'constants/transactions';
 
-import AcceptOrRejectDealError from '../AcceptOrRejectDealError';
+import AcceptOrRejectError from '../AcceptOrRejectError';
 
 interface AcceptOrRejectDealBoxProps {
 	poolId?: string;
 	onSubmit: () => void;
+	inputValue: number | string;
+	setInputValue: (val: number | string) => void;
+	setIsMaxValue: (val: boolean) => void;
+	userPoolBalance: string | null;
 	gasLimitEstimate: GasLimitEstimate;
 	purchaseCurrency: string | null;
 	dealRedemptionData: {
@@ -43,36 +47,63 @@ interface AcceptOrRejectDealBoxProps {
 		purchaseTokenTotalForDeal: number;
 		totalAmountAccepted: number;
 	};
-	input: any;
 }
 
 const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	poolId,
 	onSubmit,
+	inputValue,
+	setInputValue,
+	setIsMaxValue,
+	userPoolBalance,
 	gasLimitEstimate,
 	purchaseCurrency,
 	dealRedemptionData,
-	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
-}: any) => {
+}: AcceptOrRejectDealBoxProps) => {
 	const { walletAddress } = Connector.useContainer();
-	const { txState, setGasPrice, txType, setTxType } = TransactionData.useContainer();
+	const { setGasPrice, txType, setTxType } = TransactionData.useContainer();
 
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
 	const [isDealAccept, setIsDealAccept] = useState(true);
 
 	const isWithdraw = !isDealAccept;
-	const isPoolDisabled = [swimmingPoolID].includes(poolId);
-	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
+	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
+	const hasAmount = Number(isEmptyInput ? 0 : inputValue) > 0;
+	const isPoolDisabled = [swimmingPoolID].includes(poolId ?? '');
+	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(isEmptyInput ? 0 : inputValue);
+	const isRedemptionPeriodClosed = dealRedemptionData?.status === Status.Closed;
+	const isProRataRedemptionPeriod = dealRedemptionData?.status === Status.ProRataRedemption;
+	const isEligible =
+		dealRedemptionData?.status === Status.OpenRedemption && !dealRedemptionData.isOpenEligible;
+	const isProRataAmountExcceded =
+		Number(dealRedemptionData.maxProRata ?? 0) < Number(isEmptyInput ? 0 : inputValue);
 
 	const isDisabled: boolean = useMemo(
-		() => !walletAddress || !isWithdraw || isPoolDisabled,
-		[walletAddress, isWithdraw, isPoolDisabled]
+		() =>
+			!walletAddress ||
+			isPoolDisabled ||
+			isMaxBalanceExceeded ||
+			!hasAmount ||
+			(isProRataRedemptionPeriod && !isWithdraw && isProRataAmountExcceded) ||
+			(isRedemptionPeriodClosed && !isWithdraw && hasAmount) ||
+			(isEligible && !isWithdraw && hasAmount),
+		[
+			walletAddress,
+			isPoolDisabled,
+			isMaxBalanceExceeded,
+			isProRataRedemptionPeriod,
+			isWithdraw,
+			isProRataAmountExcceded,
+			isRedemptionPeriodClosed,
+			hasAmount,
+			isEligible,
+		]
 	);
 
 	useEffect(() => {
-		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
-	}, [txState, setShowTxModal]);
+		setTxType(isDealAccept ? TransactionType.Accept : TransactionType.Withdraw);
+	}, [setTxType, isDealAccept]);
 
 	const modalContent = useMemo(
 		() => ({
@@ -89,10 +120,10 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	);
 
 	const handleMaxButtonClick = () => {
-		let max = maxValue;
+		let maxValue = Number(userPoolBalance);
 
 		if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
-			max = Math.min(Number(max), Number(dealRedemptionData.maxProRata ?? 0));
+			maxValue = Math.min(Number(maxValue), Number(dealRedemptionData.maxProRata ?? 0));
 		}
 
 		if (
@@ -100,8 +131,8 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			dealRedemptionData.isOpenEligible &&
 			!isWithdraw
 		) {
-			max =
-				Number(max) >=
+			maxValue =
+				maxValue >=
 				dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
 					? dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
 					: 0;
@@ -113,11 +144,11 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 					!dealRedemptionData.isOpenEligible)) &&
 			!isWithdraw
 		) {
-			max = 0;
+			maxValue = 0;
 		}
 
 		setIsMaxValue(true);
-		setInputValue(Number(max));
+		setInputValue(maxValue);
 	};
 
 	return (
@@ -145,19 +176,20 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 				</RedemptionPeriodTooltip>
 			</RedemptionHeader>
 			<ContentContainer>
-				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
+				<ActionBoxInputLabel>{`Balance ${userPoolBalance ?? ''} Pool Tokens`}</ActionBoxInputLabel>
 				<InputContainer>
 					<ActionBoxInput
 						type="number"
 						value={inputValue}
-						placeholder={placeholder}
+						placeholder="0"
 						onChange={(e) => {
-							const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
+							const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
 							setIsMaxValue(false);
 							setInputValue(value);
 						}}
+						max={userPoolBalance ?? undefined}
 					/>
-					{maxValue && (
+					{userPoolBalance && (
 						<ActionBoxMax
 							isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
 							onClick={handleMaxButtonClick}
@@ -196,36 +228,31 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 					</ActionBoxHeader>
 				</ActionBoxHeaderWrapper>
 			</ContentContainer>
-			{poolId !== '0x7e135d4674406ca8f00f632be5c7a570060c0a15' && (
-				<ActionButton
-					disabled={isDisabled}
-					isWithdraw={isWithdraw}
-					onClick={() => {
-						if (isDealAccept) {
-							return setTxType(TransactionType.Accept);
-						}
-						if (isWithdraw) {
-							return setTxType(TransactionType.Withdraw);
-						}
 
-						setShowTxModal(true);
-					}}
-				>
-					{isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
-
-					{isPoolDisabled && (
-						<div>
-							<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
-						</div>
-					)}
-				</ActionButton>
-			)}
-
-			<AcceptOrRejectDealError
-				inputValue={inputValue}
+			<ActionButton
+				disabled={isDisabled}
 				isWithdraw={isWithdraw}
+				onClick={() => {
+					setShowTxModal(true);
+				}}
+			>
+				{isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
+
+				{isPoolDisabled && (
+					<div>
+						<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
+					</div>
+				)}
+			</ActionButton>
+
+			<AcceptOrRejectError
+				hasAmount={hasAmount}
+				isWithdraw={isWithdraw}
+				isEligible={isEligible}
 				isMaxBalanceExceeded={isMaxBalanceExceeded}
-				dealRedemptionData={dealRedemptionData}
+				isProRataAmountExcceded={isProRataAmountExcceded}
+				isRedemptionPeriodClosed={isRedemptionPeriodClosed}
+				isProRataRedemptionPeriod={isProRataRedemptionPeriod}
 			/>
 
 			<ConfirmTransactionModal
@@ -235,11 +262,11 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
 				// @ts-ignore
-				onSubmit={modalContent[txType].onSubmit}
+				onSubmit={modalContent[txType]?.onSubmit}
 			>
 				{
 					// @ts-ignore
-					modalContent[txType].heading
+					modalContent[txType]?.heading
 				}
 			</ConfirmTransactionModal>
 		</Container>

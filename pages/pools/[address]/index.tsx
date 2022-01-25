@@ -2,7 +2,7 @@
 import Head from 'next/head';
 import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import ViewPool from 'sections/AelinPool/ViewPool';
+import ViewPool from 'sections/Pools/ViewPool';
 
 import useGetPoolByIdQuery from 'queries/pools/useGetPoolByIdQuery';
 import { parsePool } from 'queries/pools/useGetPoolsQuery';

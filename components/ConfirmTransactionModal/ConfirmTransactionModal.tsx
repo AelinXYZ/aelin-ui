@@ -38,7 +38,10 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 					disabled={!gasLimitEstimate}
 					variant="text"
 					type="submit"
-					onClick={() => !!onSubmit && onSubmit()}
+					onClick={() => {
+						setIsModalOpen(false);
+						if (onSubmit) onSubmit();
+					}}
 				>
 					Submit
 				</SubmitButton>

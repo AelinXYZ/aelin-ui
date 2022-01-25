@@ -39,7 +39,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { gasPrice, setTxState, setTxType } = TransactionData.useContainer();
 
-	const [inputValue, setInputValue] = useState<number>(0);
+	const [inputValue, setInputValue] = useState<number | string>('');
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
@@ -192,36 +192,35 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 		]
 	);
 
-	return Number(userPoolBalance ?? 0) > 0 ? (
-		<SectionWrapper>
-			<ContentHeader>
-				<ContentTitle>
-					<SectionTitle address={dealID} title="Aelin Pool Unlocked" />
-				</ContentTitle>
-			</ContentHeader>
-			<FlexDiv>
-				<Grid hasInputFields={false} gridItems={withdrawGridItems} />
-				<PoolDurationEndedBox
-					onSubmit={handleSubmit}
-					purchaseCurrency={purchaseTokenSymbol}
-					gasLimitEstimate={gasLimitEstimate}
-					input={{
-						placeholder: '0',
-						label: `Balance ${userPoolBalance} Pool Tokens`,
-						maxValue: userPoolBalance ?? 0,
-						inputValue,
-						isMaxValue,
-						setInputValue,
-						setIsMaxValue,
-					}}
-				/>
-			</FlexDiv>
-			<Notice>
-				The duration for this AELIN pool has ended. You may withdraw your funds now although the
-				sponsor may still create a deal for you if you remain in the pool
-			</Notice>
-		</SectionWrapper>
-	) : null;
+	return (
+		<>
+			{Number(userPoolBalance ?? 0) > 0 && (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle address={dealID} title="Aelin Pool Unlocked" />
+						</ContentTitle>
+					</ContentHeader>
+					<FlexDiv>
+						<Grid hasInputFields={false} gridItems={withdrawGridItems} />
+						<PoolDurationEndedBox
+							onSubmit={handleSubmit}
+							inputValue={inputValue}
+							setInputValue={setInputValue}
+							setIsMaxValue={setIsMaxValue}
+							userPoolBalance={userPoolBalance}
+							gasLimitEstimate={gasLimitEstimate}
+							purchaseTokenSymbol={purchaseTokenSymbol}
+						/>
+					</FlexDiv>
+					<Notice>
+						The duration for this AELIN pool has ended. You may withdraw your funds now although the
+						sponsor may still create a deal for you if you remain in the pool
+					</Notice>
+				</SectionWrapper>
+			)}
+		</>
+	);
 };
 
 export default PoolDurationEnded;

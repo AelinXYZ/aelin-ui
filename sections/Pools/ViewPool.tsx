@@ -15,16 +15,17 @@ import useGetClaimedUnderlyingDealTokensQuery, {
 } from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
 
 import { PageLayout } from 'sections/Layout';
-import FundDeal from 'sections/AelinDeal/FundDeal';
-import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import SectionTitle from 'sections/shared/SectionTitle';
-import WithdrawExpiry from 'sections/AelinDeal/WithdrawExpiry';
-import PurchasePoolSection from 'sections/AelinPool/PurchasePool/PurchasePoolSection';
-import VestingDealSection from 'sections/AelinDeal/VestingDeal/VestingDealSection';
-import PoolDurationEndedSection from 'sections/AelinPool/PoolDurationEnded/PoolDurationEndedSection';
-import AcceptOrRejectDealSection from 'sections/AelinDeal/AcceptOrRejectDeal/AcceptOrRejectDealSection';
-
 import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
+import FundDeal from 'sections/Deals/FundDeal';
+import CreateDeal from 'sections/Deals/CreateDeal';
+import WithdrawExpiry from 'sections/Deals/WithdrawExpiry';
+import VestingDealSection from 'sections/Deals/Vesting/VestingDealSection';
+import AcceptOrRejectDealSection from 'sections/Deals/AcceptOrReject/AcceptOrRejectSection';
+
+import PurchasePoolSection from 'sections/Pools/PurchasePool/PurchasePoolSection';
+import PoolDurationEndedSection from 'sections/Pools/PoolDurationEnded/PoolDurationEndedSection';
 
 import { Status } from 'components/DealStatus';
 

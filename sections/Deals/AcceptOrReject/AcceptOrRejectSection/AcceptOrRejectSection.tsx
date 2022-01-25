@@ -4,8 +4,6 @@ import styled from 'styled-components';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
-// import SectionDetails from 'sections/shared/SectionDetails';
-
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
 import Countdown from 'components/Countdown';
@@ -29,7 +27,7 @@ import { formatNumber } from 'utils/numbers';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';
 
-import AcceptOrRejectDealBox from '../AcceptOrRejectDealBox';
+import AcceptOrRejectBox from '../AcceptOrRejectBox';
 
 interface AcceptOrRejectDealProps {
 	deal: any;
@@ -50,7 +48,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
+	const [inputValue, setInputValue] = useState<number | string>('');
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -58,6 +56,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	});
 
 	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
+	const isEmptyInput = useMemo(() => inputValue === '' || Number(inputValue) === 0, [inputValue]);
+
 	const totalAmountAccepted = Number(
 		ethers.utils.formatUnits(
 			poolBalances?.totalAmountAccepted ?? '0',
@@ -399,7 +399,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 					return contract.withdrawFromPool(
 						ethers.utils.parseUnits(
-							(inputValue ?? 0).toString(),
+							(inputValue === '' ? 0 : inputValue).toString(),
 							poolBalances?.purchaseTokenDecimals
 						),
 						{
@@ -417,7 +417,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 					return contract.acceptDealTokens(
 						ethers.utils.parseUnits(
-							(inputValue ?? 0).toString(),
+							(inputValue === '' ? 0 : inputValue).toString(),
 							poolBalances?.purchaseTokenDecimals
 						),
 						{
@@ -478,7 +478,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						wei(
 							await contract.estimateGas.withdrawFromPool(
 								ethers.utils.parseUnits(
-									(inputValue ?? 0).toString(),
+									(isEmptyInput ? 0 : inputValue).toString(),
 									poolBalances?.purchaseTokenDecimals ?? 0
 								)
 							),
@@ -495,7 +495,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						wei(
 							await contract.estimateGas.acceptDealTokens(
 								ethers.utils.parseUnits(
-									(inputValue ?? 0).toString(),
+									(isEmptyInput ? 0 : inputValue).toString(),
 									poolBalances?.purchaseTokenDecimals ?? 0
 								)
 							),
@@ -506,27 +506,32 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			};
 
 			// @ts-ignore
-			await txTypeOptions[txType];
+			if (typeof txTypeOptions[txType] === 'function') {
+				// @ts-ignore
+				txTypeOptions[txType]();
+			}
 		}
 		getGasLimitEstimate();
 	}, [
 		txType,
 		walletAddress,
 		signer,
-		deal?.poolAddress,
+		deal.poolAddress,
 		poolBalances?.purchaseTokenDecimals,
 		inputValue,
 		isMaxValue,
+		isEmptyInput,
 	]);
 
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
-			<AcceptOrRejectDealBox
+			<AcceptOrRejectBox
 				poolId={pool?.id}
 				onSubmit={handleSubmit}
 				gasLimitEstimate={gasLimitEstimate}
 				purchaseCurrency={pool?.purchaseToken ?? null}
+				userPoolBalance={poolBalances?.userPoolBalance ?? null}
 				dealRedemptionData={{
 					status: dealRedemptionPeriod,
 					maxProRata: poolBalances?.maxProRata ?? 0,
@@ -539,14 +544,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						)
 					),
 				}}
-				input={{
-					placeholder: '0',
-					label: `Balance ${poolBalances?.userPoolBalance} Pool Tokens`,
-					maxValue: poolBalances?.userPoolBalance,
-					inputValue,
-					setInputValue,
-					setIsMaxValue,
-				}}
+				inputValue={inputValue}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
 			/>
 		</FlexDiv>
 	);

@@ -21,28 +21,29 @@ import { GasLimitEstimate } from 'constants/networks';
 
 interface PoolDurationEndedBoxProps {
 	onSubmit: () => void;
-	purchaseCurrency: string;
+	inputValue: number | string;
+	setInputValue: (value: number | string) => void;
+	setIsMaxValue: (value: boolean) => void;
+	userPoolBalance: number;
 	gasLimitEstimate: GasLimitEstimate;
-	input: any;
+	purchaseTokenSymbol: string;
 }
 
 const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 	onSubmit,
-	purchaseCurrency,
+	userPoolBalance,
+	purchaseTokenSymbol,
 	gasLimitEstimate,
-	input: { placeholder, label, maxValue, inputValue, setInputValue, setIsMaxValue },
+	inputValue,
+	setInputValue,
+	setIsMaxValue,
 }: any) => {
 	const { walletAddress } = Connector.useContainer();
-	const { setGasPrice, txState, setTxType } = TransactionData.useContainer();
+	const { setGasPrice } = TransactionData.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
-
-	useEffect(() => {
-		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
-	}, [txState, setShowTxModal]);
-
-	const isEmptyInput = inputValue === 0 || inputValue === null;
-	const isMaxBalanceExceeded = Number(maxValue ?? 0) < Number(inputValue ?? 0);
+	const isEmptyInput = inputValue === '' || inputValue === 0;
+	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(inputValue ?? 0);
 
 	const isDisabled: boolean = useMemo(() => {
 		return !walletAddress || isMaxBalanceExceeded || isEmptyInput;
@@ -51,24 +52,24 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 	return (
 		<Container>
 			<ContentContainer>
-				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
+				<ActionBoxInputLabel>{`Balance ${userPoolBalance} Pool Tokens`}</ActionBoxInputLabel>
 				<InputContainer>
 					<ActionBoxInput
 						type="number"
-						placeholder={placeholder}
+						placeholder="0"
 						value={inputValue}
 						onChange={(e) => {
-							const value = !!e.target.value.length ? parseFloat(e.target.value) : null;
+							const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
 							setIsMaxValue(false);
 							setInputValue(value);
 						}}
 					/>
-					{!!maxValue && (
+					{!!userPoolBalance && (
 						<ActionBoxMax
 							isProRata={false}
 							onClick={() => {
 								setIsMaxValue(true);
-								setInputValue(Number(maxValue));
+								setInputValue(Number(userPoolBalance));
 							}}
 						>
 							Max
@@ -81,8 +82,6 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 				disabled={isDisabled}
 				isWithdraw={false}
 				onClick={() => {
-					setTxType(TransactionType.Withdraw);
-
 					setShowTxModal(true);
 				}}
 			>
@@ -99,7 +98,7 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 				gasLimitEstimate={gasLimitEstimate}
 				onSubmit={onSubmit}
 			>
-				{`You are withdrawing ${inputValue} ${purchaseCurrency}`}
+				{`You are withdrawing ${inputValue} ${purchaseTokenSymbol}`}
 			</ConfirmTransactionModal>
 		</Container>
 	);
