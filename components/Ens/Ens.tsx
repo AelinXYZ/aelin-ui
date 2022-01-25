@@ -1,11 +1,18 @@
-import { isEns, useAddressToEns } from 'hooks/ens';
 import { FC } from 'react';
+
+import { isEns } from 'utils/string';
 import { truncateAddress } from 'utils/crypto';
 
-const Ens: FC<{ address: string }> = ({ address }) => {
-	const ensName = useAddressToEns(address);
-	const hasEnsName = isEns(ensName);
-	return <>{hasEnsName ? ensName : truncateAddress(address)}</>;
+import { useAddressesToEns } from 'hooks/useEns';
+
+interface EnsProps {
+	address: string;
+}
+
+const Ens: FC<EnsProps> = ({ address }) => {
+	const [ensName] = useAddressesToEns([address]);
+
+	return <>{isEns(ensName) ? ensName : truncateAddress(address)}</>;
 };
 
 export default Ens;

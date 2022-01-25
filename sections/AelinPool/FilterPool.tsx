@@ -12,6 +12,7 @@ import StatusDropdown from 'sections/shared/StatusDropdown';
 import ROUTES from 'constants/routes';
 
 interface FilterPoolProps {
+	values: any;
 	setSponsor: (sponsor: string) => void;
 	setCurrency: (currency: string) => void;
 	setName: (name: string) => void;
@@ -20,12 +21,14 @@ interface FilterPoolProps {
 }
 
 const FilterPool: FC<FilterPoolProps> = ({
+	values,
 	setSponsor,
 	setCurrency,
 	setName,
 	setStatus,
 	status,
 }) => {
+	const { sponsorFilter, currencyFilter, nameFilter, statusFilter } = values;
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	return (
 		<Container>
@@ -43,16 +46,19 @@ const FilterPool: FC<FilterPoolProps> = ({
 			{isVisible ? (
 				<FlexDivRow>
 					<StyledTextInput
+						value={sponsorFilter}
 						width="22%"
 						placeholder="sponsor"
 						onChange={(e) => setSponsor(e.target.value)}
 					/>
 					<StyledTextInput
+						value={currencyFilter}
 						width="22%"
 						placeholder="currency"
 						onChange={(e) => setCurrency(e.target.value)}
 					/>
 					<StyledTextInput
+						value={nameFilter}
 						width="22%"
 						placeholder="name"
 						onChange={(e) => setName(e.target.value)}
@@ -61,7 +67,7 @@ const FilterPool: FC<FilterPoolProps> = ({
 						id="statusDropdown"
 						name="statusDropdown"
 						variant="outline"
-						selectedStatus={status}
+						selectedStatus={statusFilter}
 						onChange={setStatus}
 					/>
 				</FlexDivRow>
