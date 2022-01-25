@@ -19,6 +19,7 @@ import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
+import { useAddressesToEns } from 'hooks/useEns';
 
 import {
 	DEFAULT_DECIMALS,
@@ -34,11 +35,11 @@ import useInterval from 'hooks/useInterval';
 const Pools: FC = () => {
 	const router = useRouter();
 	const { network } = Connector.useContainer();
-	const [sponsorFilter, setSponsorFilter] = useState<string | null>(null);
-	const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
-	const [nameFilter, setNameFilter] = useState<string | null>(null);
-	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 
+	const [sponsorFilter, setSponsorFilter] = useState<string>('');
+	const [currencyFilter, setCurrencyFilter] = useState<string>('');
+	const [nameFilter, setNameFilter] = useState<string>('');
+	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [pageIndex, setPageIndex] = useState<number>(
 		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
 	);
@@ -46,7 +47,7 @@ const Pools: FC = () => {
 	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
 
 	useEffect(() => {
-		setSponsorFilter((router.query?.sponsorFilter ?? null) as string | null);
+		setSponsorFilter(router.query?.sponsorFilter ?? '');
 	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
@@ -57,63 +58,68 @@ const Pools: FC = () => {
 		poolsQuery.refetch();
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
-	const pools = useMemo(() => (poolsQuery?.data ?? []).map(parsePool), [poolsQuery?.data]);
+	const sponsors = useMemo(
+		() =>
+			(poolsQuery?.data ?? [])
+				.filter(({ id }) => !filterList.includes(id))
+				.map(({ sponsor }) => sponsor),
+		[poolsQuery?.data]
+	);
+
+	const ensOrAddresses = useAddressesToEns(sponsors);
 
 	const data = useMemo(() => {
-		let list = pools
+		let list = (poolsQuery?.data ?? [])
 			.filter(({ id }) => !filterList.includes(id))
-			.map(
-				({
+			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
+				const parsedPool = parsePool({
 					sponsorFee,
-					duration,
-					sponsor,
-					name,
-					id,
-					purchaseToken,
-					contributions,
 					purchaseTokenCap,
-					purchaseTokenDecimals,
-					timestamp,
-					purchaseExpiry,
-					poolStatus,
-					hasAllowList,
-				}) => ({
-					sponsor,
-					name,
-					id,
-					purchaseToken,
-					contributions,
-					cap: purchaseTokenCap,
-					purchaseTokenDecimals,
-					duration,
-					fee: sponsorFee,
-					purchaseExpiry,
-					timestamp,
-					poolStatus,
-					hasAllowList,
-				})
-			);
+					...pool,
+				});
 
-		if (sponsorFilter != null) {
-			list = list.filter(({ sponsor }) =>
-				sponsor.toLowerCase().includes(sponsorFilter.toLowerCase())
+				return {
+					...parsedPool,
+					fee: sponsorFee,
+					cap: purchaseTokenCap,
+				};
+			});
+
+		if (sponsorFilter.length) {
+			list = list.filter(
+				(_, index) =>
+					(!!ensOrAddresses.length &&
+						ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase())) ||
+					sponsors[index].toLowerCase().includes(sponsorFilter.toLowerCase())
 			);
 		}
-		if (currencyFilter != null) {
+
+		if (currencyFilter.length) {
 			list = list.filter(({ purchaseToken }) =>
 				purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
 			);
 		}
-		if (nameFilter != null) {
+
+		if (nameFilter.length) {
 			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
+
 		if (statusFilter != null) {
 			list = list.filter(({ poolStatus }) =>
 				poolStatus.toLowerCase().includes(statusFilter.toLowerCase())
 			);
 		}
+
 		return list;
-	}, [pools, sponsorFilter, currencyFilter, nameFilter, statusFilter]);
+	}, [
+		poolsQuery?.data,
+		sponsorFilter,
+		currencyFilter,
+		nameFilter,
+		statusFilter,
+		ensOrAddresses,
+		sponsors,
+	]);
 
 	const columns = useMemo(
 		() => [
@@ -268,6 +274,13 @@ const Pools: FC = () => {
 		[network.id]
 	);
 
+	const filterValues = {
+		sponsorFilter,
+		currencyFilter,
+		nameFilter,
+		statusFilter,
+	};
+
 	return (
 		<>
 			<Head>
@@ -276,11 +289,11 @@ const Pools: FC = () => {
 
 			<PageLayout title={<>All pools</>} subtitle="">
 				<FilterPool
+					values={filterValues}
 					setSponsor={setSponsorFilter}
 					setCurrency={setCurrencyFilter}
 					setName={setNameFilter}
 					setStatus={setStatusFilter}
-					status={statusFilter}
 				/>
 				<Table
 					pageIndex={pageIndex}
