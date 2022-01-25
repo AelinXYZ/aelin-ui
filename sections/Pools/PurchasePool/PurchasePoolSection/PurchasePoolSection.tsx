@@ -59,6 +59,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const isPrivatePool = poolBalances?.isPrivatePool ?? null;
 	const privatePoolAmount = poolBalances?.privatePoolAmount ?? null;
 
+	const isEmptyInput = useMemo(() => inputValue === '' || Number(inputValue) === 0, [inputValue]);
+
 	const tokenContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
 		return new ethers.Contract(pool.purchaseToken, erc20Abi, signer);
@@ -123,11 +125,11 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 
 	useEffect(() => {
 		setTxType(
-			Number(purchaseTokenAllowance ?? 0) < Number(inputValue === '' ? 0 : inputValue)
+			Number(purchaseTokenAllowance ?? 0) < Number(isEmptyInput ? 0 : inputValue)
 				? TransactionType.Allowance
 				: TransactionType.Purchase
 		);
-	}, [purchaseTokenAllowance, inputValue, setTxType]);
+	}, [purchaseTokenAllowance, inputValue, isEmptyInput, setTxType]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -149,7 +151,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					const amount = isMaxValue
 						? maxValueBN.toBN()
 						: ethers.utils.parseUnits(
-								(inputValue === '' ? 0 : inputValue).toString(),
+								(isEmptyInput ? 0 : inputValue).toString(),
 								purchaseTokenDecimals
 						  );
 					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
@@ -168,6 +170,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		tokenContract,
 		setGasLimitEstimate,
 		inputValue,
+		isEmptyInput,
 		isMaxValue,
 		maxValueBN,
 	]);
@@ -363,7 +366,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			const amount = isMaxValue
 				? maxValueBN.toBN()
 				: ethers.utils.parseUnits(
-						(inputValue === '' ? 0 : inputValue).toString(),
+						(isEmptyInput ? 0 : inputValue).toString(),
 						purchaseTokenDecimals
 				  );
 
@@ -398,6 +401,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		poolBalancesQuery,
 		poolContract,
 		setTxState,
+		isEmptyInput,
 		inputValue,
 		isMaxValue,
 		maxValueBN,

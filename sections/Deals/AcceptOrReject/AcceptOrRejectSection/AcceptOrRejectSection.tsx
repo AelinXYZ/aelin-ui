@@ -399,7 +399,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 					return contract.withdrawFromPool(
 						ethers.utils.parseUnits(
-							(inputValue === '' ? 0 : inputValue).toString(),
+							(isEmptyInput ? 0 : inputValue).toString(),
 							poolBalances?.purchaseTokenDecimals
 						),
 						{
@@ -417,7 +417,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 					return contract.acceptDealTokens(
 						ethers.utils.parseUnits(
-							(inputValue === '' ? 0 : inputValue).toString(),
+							(isEmptyInput ? 0 : inputValue).toString(),
 							poolBalances?.purchaseTokenDecimals
 						),
 						{
@@ -456,6 +456,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		gasLimitEstimate,
 		gasPrice,
 		txType,
+		isEmptyInput,
 		inputValue,
 		isMaxValue,
 		poolBalancesQuery,
