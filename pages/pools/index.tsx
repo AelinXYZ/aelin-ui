@@ -19,7 +19,9 @@ import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
+
 import { useAddressesToEns } from 'hooks/useEns';
+import useAddressesToSymbols from 'hooks/useAddressesToSymbols';
 
 import {
 	DEFAULT_DECIMALS,
@@ -66,7 +68,16 @@ const Pools: FC = () => {
 		[poolsQuery?.data]
 	);
 
+	const purchaseTokenAddresses = useMemo(
+		() =>
+			(poolsQuery?.data ?? [])
+				.filter(({ id }) => !filterList.includes(id))
+				.map(({ purchaseToken }) => purchaseToken),
+		[poolsQuery?.data]
+	);
+
 	const ensOrAddresses = useAddressesToEns(sponsors);
+	const currencySymbols = useAddressesToSymbols(purchaseTokenAddresses);
 
 	const data = useMemo(() => {
 		let list = (poolsQuery?.data ?? [])
@@ -95,8 +106,11 @@ const Pools: FC = () => {
 		}
 
 		if (currencyFilter.length) {
-			list = list.filter(({ purchaseToken }) =>
-				purchaseToken.toLowerCase().includes(currencyFilter.toLowerCase())
+			list = list.filter(
+				(_, index) =>
+					(!!currencySymbols.length &&
+						currencySymbols[index].toLowerCase().includes(currencyFilter.toLowerCase())) ||
+					purchaseTokenAddresses[index].toLowerCase().includes(currencyFilter.toLowerCase())
 			);
 		}
 
@@ -119,6 +133,8 @@ const Pools: FC = () => {
 		statusFilter,
 		ensOrAddresses,
 		sponsors,
+		currencySymbols,
+		purchaseTokenAddresses,
 	]);
 
 	const columns = useMemo(
