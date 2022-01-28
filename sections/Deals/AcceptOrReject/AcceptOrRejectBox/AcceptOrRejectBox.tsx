@@ -67,9 +67,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
-	const [isDealAccept, setIsDealAccept] = useState(true);
 
-	const isWithdraw = !isDealAccept;
 	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
 	const hasAmount = Number(isEmptyInput ? 0 : inputValue) > 0;
 	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(isEmptyInput ? 0 : inputValue);
@@ -79,6 +77,8 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 		dealRedemptionData?.status === Status.OpenRedemption && !dealRedemptionData.isOpenEligible;
 	const isProRataAmountExcceded =
 		Number(dealRedemptionData.maxProRata ?? 0) < Number(isEmptyInput ? 0 : inputValue);
+
+	const isWithdraw = txType === TransactionDealType.Withdraw;
 
 	const isButtonDisabled: boolean = useMemo(
 		() =>
@@ -99,10 +99,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			isEligibleForOpenRedemption,
 		]
 	);
-
-	useEffect(() => {
-		setTxType(isDealAccept ? TransactionDealType.AcceptDeal : TransactionDealType.Withdraw);
-	}, [setTxType, isDealAccept]);
 
 	const modalContent = useMemo(
 		() => ({
@@ -203,8 +199,8 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 					<ActionBoxHeader
 						isAcceptOrReject
 						isPool={false}
-						isSelected={isDealAccept}
-						onClick={() => setIsDealAccept(true)}
+						isSelected={!isWithdraw}
+						onClick={() => setTxType(TransactionDealType.AcceptDeal)}
 					>
 						<FlexDivCenterRow>
 							Accept Deal
@@ -216,9 +212,9 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 					<ActionBoxHeader
 						isAcceptOrReject
 						isPool={false}
-						isSelected={!isDealAccept}
+						isSelected={isWithdraw}
 						isWithdraw={isWithdraw}
-						onClick={() => setIsDealAccept(false)}
+						onClick={() => setTxType(TransactionDealType.Withdraw)}
 					>
 						<FlexDivCenterRow>
 							Withdraw
@@ -235,7 +231,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 					setShowTxModal(true);
 				}}
 			>
-				{isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
+				{!isWithdraw ? 'Accept Deal' : 'Withdraw from Pool'}
 			</ActionButton>
 
 			<AcceptOrRejectError
