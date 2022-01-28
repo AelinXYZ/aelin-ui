@@ -77,7 +77,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 		dealRedemptionData?.status === Status.OpenRedemption && !dealRedemptionData.isOpenEligible;
 	const isProRataAmountExcceded =
 		Number(dealRedemptionData.maxProRata ?? 0) < Number(isEmptyInput ? 0 : inputValue);
-
 	const isWithdraw = txType === TransactionDealType.Withdraw;
 
 	const isButtonDisabled: boolean = useMemo(
@@ -119,9 +118,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 
 		if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
 			maxValue = Math.min(Number(maxValue), Number(dealRedemptionData.maxProRata ?? 0));
-		}
-
-		if (
+		} else if (
 			dealRedemptionData?.status === Status.OpenRedemption &&
 			dealRedemptionData.isOpenEligible &&
 			!isWithdraw
@@ -131,9 +128,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 				dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
 					? dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
 					: maxValue;
-		}
-
-		if (
+		} else if (
 			(dealRedemptionData?.status === Status.Closed ||
 				(dealRedemptionData?.status === Status.OpenRedemption &&
 					!dealRedemptionData.isOpenEligible)) &&
@@ -237,11 +232,11 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			<AcceptOrRejectError
 				hasAmount={hasAmount}
 				isWithdraw={isWithdraw}
-				isEligibleForOpenRedemption={isEligibleForOpenRedemption}
 				isMaxBalanceExceeded={isMaxBalanceExceeded}
 				isProRataAmountExcceded={isProRataAmountExcceded}
 				isRedemptionPeriodClosed={isRedemptionPeriodClosed}
 				isProRataRedemptionPeriod={isProRataRedemptionPeriod}
+				isEligibleForOpenRedemption={isEligibleForOpenRedemption}
 			/>
 
 			<ConfirmTransactionModal

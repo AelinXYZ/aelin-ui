@@ -11,25 +11,25 @@ import { Container, ContentContainer, ActionButton } from '../../../shared/commo
 import { GasLimitEstimate } from 'constants/networks';
 
 interface VestingDealProps {
-	maxValue: number;
+	vestingAmount: number;
 	onSubmit: Function;
 	gasLimitEstimate: GasLimitEstimate;
 }
 
-const VestingDealBox: FC<VestingDealProps> = ({ maxValue, onSubmit, gasLimitEstimate }) => {
+const VestingDealBox: FC<VestingDealProps> = ({ vestingAmount, onSubmit, gasLimitEstimate }) => {
 	const { walletAddress } = Connector.useContainer();
 	const { setGasPrice } = TransactionData.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
 
 	const isButtonDisabled: boolean = useMemo(() => {
-		return !walletAddress || !maxValue;
-	}, [walletAddress, maxValue]);
+		return !walletAddress || !vestingAmount;
+	}, [walletAddress, vestingAmount]);
 
 	return (
 		<Container>
 			<ContentContainer>
-				<Paragraph>{maxValue || 0} Underlying Deal Tokens to vest</Paragraph>
+				<Paragraph>{vestingAmount || 0} Underlying Deal Tokens to vest</Paragraph>
 			</ContentContainer>
 
 			<ActionButton
@@ -50,7 +50,7 @@ const VestingDealBox: FC<VestingDealProps> = ({ maxValue, onSubmit, gasLimitEsti
 				gasLimitEstimate={gasLimitEstimate}
 				onSubmit={onSubmit}
 			>
-				{`You are vesting ${maxValue} underlying deal tokens`}
+				{`You are vesting ${vestingAmount} underlying deal tokens`}
 			</ConfirmTransactionModal>
 		</Container>
 	);

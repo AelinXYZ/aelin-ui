@@ -155,7 +155,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 				{deal?.id !== firstAelinPoolDealID && (
 					<VestingDealBox
 						onSubmit={handleSubmit}
-						maxValue={claimableUnderlyingTokens ?? 0}
+						vestingAmount={claimableUnderlyingTokens ?? 0}
 						gasLimitEstimate={gasLimitEstimate}
 					/>
 				)}
