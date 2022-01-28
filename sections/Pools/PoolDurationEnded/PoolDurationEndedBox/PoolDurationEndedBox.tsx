@@ -16,7 +16,6 @@ import {
 	ActionButton,
 } from '../../../shared/common';
 
-import { TransactionStatus, TransactionType } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 
 interface PoolDurationEndedBoxProps {
