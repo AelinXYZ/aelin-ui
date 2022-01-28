@@ -33,7 +33,7 @@ import useInterval from 'hooks/useInterval';
 
 import { getERC20Data } from 'utils/crypto';
 
-import { vAelinPoolID } from 'constants/pool';
+import { vAelinPoolID, swimmingPoolID } from 'constants/pool';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 interface ViewPoolProps {
@@ -52,10 +52,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		null
 	);
 	const [underlyingDealTokenSymbol, setUnderlyingDealTokenSymbol] = useState<string | null>(null);
+
 	const dealDetailsQuery = useGetDealDetailByIdQuery({
 		id: pool?.dealAddress ?? '',
 		networkId: network.id,
 	});
+
 	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '', networkId: network.id });
 
 	const deal = useMemo(() => {
@@ -136,6 +138,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		if (!pool || !now || !deal || !walletAddress) return false;
 		// If the connected wallet is not the sponsor, then we don't display the createDeal section
 		if (walletAddress !== pool.sponsor) return false;
+
+		// This pool shouldn't be able to create a deal
+		if (swimmingPoolID === pool.id) return false;
+
 		// If the Pool status is Open and PurchaseTokenCap is not null and is reached
 		if (
 			pool.poolStatus === Status.PoolOpen &&
@@ -147,13 +153,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		if (pool.poolStatus === Status.SeekingDeal) return true;
 		// If the Pool status is FundingDeal and HolderFundingExpiration is reached
 		if (pool.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) return true;
+
 		return false;
 	}, [deal, now, pool, walletAddress]);
 
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
 			<PurchasePoolSection pool={pool} />
-			{showCreateDealSection ? (
+			{showCreateDealSection && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
@@ -162,8 +169,8 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					</ContentHeader>
 					<CreateDeal poolAddress={poolAddress} purchaseToken={pool.purchaseToken} />
 				</SectionWrapper>
-			) : null}
-			{pool?.poolStatus === Status.FundingDeal && deal?.id != null ? (
+			)}
+			{pool?.poolStatus === Status.FundingDeal && deal?.id != null && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
@@ -180,8 +187,8 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						holderFundingExpiration={deal?.holderFundingExpiration}
 					/>
 				</SectionWrapper>
-			) : null}
-			{pool?.poolStatus === Status.DealOpen && deal?.id != null ? (
+			)}
+			{pool?.poolStatus === Status.DealOpen && deal?.id != null && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
@@ -195,42 +202,43 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						underlyingDealTokenSymbol={underlyingDealTokenSymbol}
 					/>
 				</SectionWrapper>
-			) : null}
+			)}
 			{pool?.poolStatus !== Status.FundingDeal &&
-			now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
-			pool?.id !== vAelinPoolID &&
-			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
-				<PoolDurationEndedSection pool={pool} dealID={deal.id} />
-			) : null}
+				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
+				pool?.id !== vAelinPoolID &&
+				!(pool?.poolStatus === Status.DealOpen && deal?.id != null) && (
+					<PoolDurationEndedSection pool={pool} dealID={deal.id} />
+				)}
 			{now >
 				(deal?.proRataRedemptionPeriodStart ?? 0) +
 					(deal?.proRataRedemptionPeriod ?? 0) +
-					(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder ? (
-				<WithdrawExpiry
-					holder={deal?.holder as string}
-					token={deal.underlyingDealToken}
-					dealAddress={deal.id}
-				/>
-			) : null}
+					(deal?.openRedemptionPeriod ?? 0) &&
+				walletAddress === deal?.holder && (
+					<WithdrawExpiry
+						holder={deal?.holder as string}
+						token={deal.underlyingDealToken}
+						dealAddress={deal.id}
+					/>
+				)}
 			{(deal?.id != null &&
 				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
-			(claimableUnderlyingTokens ?? 0) > 0 ? (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
-						</ContentTitle>
-					</ContentHeader>
-					<VestingDealSection
-						deal={deal}
-						dealBalance={dealBalance}
-						claims={claims}
-						dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
-						claimableUnderlyingTokens={claimableUnderlyingTokens}
-						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
-					/>
-				</SectionWrapper>
-			) : null}
+				((claimableUnderlyingTokens ?? 0) > 0 && (
+					<SectionWrapper>
+						<ContentHeader>
+							<ContentTitle>
+								<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
+							</ContentTitle>
+						</ContentHeader>
+						<VestingDealSection
+							deal={deal}
+							dealBalance={dealBalance}
+							claims={claims}
+							dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
+							claimableUnderlyingTokens={claimableUnderlyingTokens}
+							underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+						/>
+					</SectionWrapper>
+				))}
 		</PageLayout>
 	);
 };

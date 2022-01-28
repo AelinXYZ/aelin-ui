@@ -56,6 +56,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
+
 	const isValid = isValidForm && walletAddress ? true : false;
 
 	const summaryBoxGrid = (
