@@ -75,7 +75,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(isEmptyInput ? 0 : inputValue);
 	const isRedemptionPeriodClosed = dealRedemptionData?.status === Status.Closed;
 	const isProRataRedemptionPeriod = dealRedemptionData?.status === Status.ProRataRedemption;
-	const isEligible =
+	const isEligibleForOpenRedemption =
 		dealRedemptionData?.status === Status.OpenRedemption && !dealRedemptionData.isOpenEligible;
 	const isProRataAmountExcceded =
 		Number(dealRedemptionData.maxProRata ?? 0) < Number(isEmptyInput ? 0 : inputValue);
@@ -87,7 +87,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			!hasAmount ||
 			(isProRataRedemptionPeriod && !isWithdraw && isProRataAmountExcceded) ||
 			(isRedemptionPeriodClosed && !isWithdraw && hasAmount) ||
-			(isEligible && !isWithdraw && hasAmount),
+			(isEligibleForOpenRedemption && !isWithdraw && hasAmount),
 		[
 			walletAddress,
 			isMaxBalanceExceeded,
@@ -96,7 +96,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			isProRataAmountExcceded,
 			isRedemptionPeriodClosed,
 			hasAmount,
-			isEligible,
+			isEligibleForOpenRedemption,
 		]
 	);
 
@@ -134,7 +134,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 				maxValue >=
 				dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
 					? dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
-					: 0;
+					: maxValue;
 		}
 
 		if (
@@ -241,7 +241,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			<AcceptOrRejectError
 				hasAmount={hasAmount}
 				isWithdraw={isWithdraw}
-				isEligible={isEligible}
+				isEligibleForOpenRedemption={isEligibleForOpenRedemption}
 				isMaxBalanceExceeded={isMaxBalanceExceeded}
 				isProRataAmountExcceded={isProRataAmountExcceded}
 				isRedemptionPeriodClosed={isRedemptionPeriodClosed}

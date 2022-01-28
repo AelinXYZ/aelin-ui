@@ -5,7 +5,7 @@ import { ErrorNote } from 'sections/shared/common';
 interface AcceptOrRejectDealErrorProps {
 	isWithdraw: boolean;
 	hasAmount: boolean;
-	isEligible: boolean;
+	isEligibleForOpenRedemption: boolean;
 	isMaxBalanceExceeded: boolean;
 	isProRataAmountExcceded: boolean;
 	isRedemptionPeriodClosed: boolean;
@@ -15,7 +15,7 @@ interface AcceptOrRejectDealErrorProps {
 const AcceptOrRejectDealError: FC<AcceptOrRejectDealErrorProps> = ({
 	hasAmount,
 	isWithdraw,
-	isEligible,
+	isEligibleForOpenRedemption,
 	isMaxBalanceExceeded,
 	isProRataAmountExcceded,
 	isRedemptionPeriodClosed,
@@ -32,7 +32,7 @@ const AcceptOrRejectDealError: FC<AcceptOrRejectDealErrorProps> = ({
 			<ErrorNote>Redemption period is closed</ErrorNote>
 		)}
 
-		{isEligible && !isWithdraw && hasAmount && (
+		{isEligibleForOpenRedemption && !isWithdraw && hasAmount && (
 			<ErrorNote>You are not eligible for open redemption period</ErrorNote>
 		)}
 	</>

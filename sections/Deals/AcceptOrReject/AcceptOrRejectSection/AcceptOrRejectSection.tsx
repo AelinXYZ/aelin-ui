@@ -56,8 +56,8 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		purchaseToken: pool?.purchaseToken ?? null,
 	});
 
-	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
-	const isEmptyInput = useMemo(() => inputValue === '' || Number(inputValue) === 0, [inputValue]);
+	const poolBalances = poolBalancesQuery?.data ?? null;
+	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
 
 	const totalAmountAccepted = Number(
 		ethers.utils.formatUnits(
