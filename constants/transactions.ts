@@ -5,11 +5,12 @@ export enum TransactionStatus {
 	SUCCESS = 'SUCCESS',
 }
 
-export enum TransactionType {
+export enum TransactionDealType {
+	AcceptDeal = 'ACCEPT_DEAL',
+	Withdraw = 'WITHDRAW',
+}
+
+export enum TransactionPurchaseType {
 	Allowance = 'ALLOWANCE',
 	Purchase = 'PURCHASE',
-	Accept = 'ACCEPT',
-	Withdraw = 'WITHDRAW',
-	Vest = 'Vest',
-	Stake = 'STAKE',
 }

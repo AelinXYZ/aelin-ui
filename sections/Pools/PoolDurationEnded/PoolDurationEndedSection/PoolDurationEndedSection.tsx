@@ -25,7 +25,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
-import { TransactionType, TransactionStatus } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 
 import PoolDurationEndedBox from '../PoolDurationEndedBox';
 
@@ -37,13 +37,11 @@ interface PoolDurationEndedProps {
 const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { gasPrice, setTxState, setTxType } = TransactionData.useContainer();
+	const { gasPrice, setTxState } = TransactionData.useContainer();
 
 	const [inputValue, setInputValue] = useState<number | string>('');
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-
-	useEffect(() => setTxType(TransactionType.Withdraw), [setTxType]);
 
 	const poolContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;

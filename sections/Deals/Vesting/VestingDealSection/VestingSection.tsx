@@ -19,7 +19,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { GasLimitEstimate } from 'constants/networks';
 import { firstAelinPoolDealID } from 'constants/pool';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 
 import VestingDealBox from '../VestingBox';
 
@@ -42,10 +42,8 @@ const VestingDeal: FC<VestingDealProps> = ({
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { setTxState, gasPrice, setTxType } = TransactionData.useContainer();
+	const { setTxState, gasPrice } = TransactionData.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-
-	useEffect(() => setTxType(TransactionType.Vest), [setTxType]);
 
 	const dealVestingGridItems = useMemo(() => {
 		const claimedAmount = claims.reduce(

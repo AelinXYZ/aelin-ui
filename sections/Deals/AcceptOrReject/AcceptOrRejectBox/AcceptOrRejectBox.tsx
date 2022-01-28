@@ -26,13 +26,14 @@ import {
 } from 'sections/shared/common';
 
 import { GasLimitEstimate } from 'constants/networks';
-import { statusToText, swimmingPoolID } from 'constants/pool';
-import { TransactionType } from 'constants/transactions';
+import { TransactionDealType } from 'constants/transactions';
+import { statusToText } from 'constants/pool';
 
 import AcceptOrRejectError from '../AcceptOrRejectError';
 
 interface AcceptOrRejectDealBoxProps {
-	poolId?: string;
+	txType: TransactionDealType;
+	setTxType: (txType: TransactionDealType) => void;
 	onSubmit: () => void;
 	inputValue: number | string;
 	setInputValue: (val: number | string) => void;
@@ -50,7 +51,8 @@ interface AcceptOrRejectDealBoxProps {
 }
 
 const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
-	poolId,
+	txType,
+	setTxType,
 	onSubmit,
 	inputValue,
 	setInputValue,
@@ -59,9 +61,9 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	gasLimitEstimate,
 	purchaseCurrency,
 	dealRedemptionData,
-}: AcceptOrRejectDealBoxProps) => {
+}) => {
 	const { walletAddress } = Connector.useContainer();
-	const { setGasPrice, txType, setTxType } = TransactionData.useContainer();
+	const { setGasPrice } = TransactionData.useContainer();
 
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -70,7 +72,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	const isWithdraw = !isDealAccept;
 	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
 	const hasAmount = Number(isEmptyInput ? 0 : inputValue) > 0;
-	const isPoolDisabled = [swimmingPoolID].includes(poolId ?? '');
 	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(isEmptyInput ? 0 : inputValue);
 	const isRedemptionPeriodClosed = dealRedemptionData?.status === Status.Closed;
 	const isProRataRedemptionPeriod = dealRedemptionData?.status === Status.ProRataRedemption;
@@ -79,10 +80,9 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	const isProRataAmountExcceded =
 		Number(dealRedemptionData.maxProRata ?? 0) < Number(isEmptyInput ? 0 : inputValue);
 
-	const isDisabled: boolean = useMemo(
+	const isButtonDisabled: boolean = useMemo(
 		() =>
 			!walletAddress ||
-			isPoolDisabled ||
 			isMaxBalanceExceeded ||
 			!hasAmount ||
 			(isProRataRedemptionPeriod && !isWithdraw && isProRataAmountExcceded) ||
@@ -90,7 +90,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			(isEligible && !isWithdraw && hasAmount),
 		[
 			walletAddress,
-			isPoolDisabled,
 			isMaxBalanceExceeded,
 			isProRataRedemptionPeriod,
 			isWithdraw,
@@ -102,16 +101,16 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	);
 
 	useEffect(() => {
-		setTxType(isDealAccept ? TransactionType.Accept : TransactionType.Withdraw);
+		setTxType(isDealAccept ? TransactionDealType.AcceptDeal : TransactionDealType.Withdraw);
 	}, [setTxType, isDealAccept]);
 
 	const modalContent = useMemo(
 		() => ({
-			[TransactionType.Accept]: {
+			[TransactionDealType.AcceptDeal]: {
 				heading: `You are accepting ${inputValue} deal tokens`,
 				onSubmit,
 			},
-			[TransactionType.Withdraw]: {
+			[TransactionDealType.Withdraw]: {
 				heading: `You are withdrawing ${inputValue} ${purchaseCurrency}`,
 				onSubmit,
 			},
@@ -230,19 +229,13 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			</ContentContainer>
 
 			<ActionButton
-				disabled={isDisabled}
+				disabled={isButtonDisabled}
 				isWithdraw={isWithdraw}
 				onClick={() => {
 					setShowTxModal(true);
 				}}
 			>
 				{isDealAccept ? 'Accept Deal' : 'Withdraw from Pool'}
-
-				{isPoolDisabled && (
-					<div>
-						<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
-					</div>
-				)}
 			</ActionButton>
 
 			<AcceptOrRejectError
@@ -261,13 +254,9 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
-				// @ts-ignore
-				onSubmit={modalContent[txType]?.onSubmit}
+				onSubmit={modalContent[txType].onSubmit}
 			>
-				{
-					// @ts-ignore
-					modalContent[txType]?.heading
-				}
+				{modalContent[txType].heading}
 			</ConfirmTransactionModal>
 		</Container>
 	);

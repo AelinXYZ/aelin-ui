@@ -14,7 +14,7 @@ import QuestionMark from 'components/QuestionMark';
 import { statusToText } from 'constants/pool';
 import { GasLimitEstimate } from 'constants/networks';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
+import { TransactionStatus, TransactionDealType } from 'constants/transactions';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
@@ -44,11 +44,12 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer, network } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { setTxState, gasPrice, txType } = TransactionData.useContainer();
+	const { setTxState, gasPrice } = TransactionData.useContainer();
 
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState<number | string>('');
+	const [txType, setTxType] = useState<TransactionDealType>(TransactionDealType.AcceptDeal);
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -390,7 +391,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 		try {
 			const txOptions = {
-				[TransactionType.Withdraw]: () => {
+				[TransactionDealType.Withdraw]: () => {
 					if (isMaxValue)
 						return contract.withdrawMaxFromPool({
 							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -408,7 +409,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						}
 					);
 				},
-				[TransactionType.Accept]: () => {
+				[TransactionDealType.AcceptDeal]: () => {
 					if (isMaxValue)
 						return contract.acceptMaxDealTokens({
 							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -428,7 +429,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				},
 			};
 
-			// @ts-ignore
 			const tx: ethers.ContractTransaction = await txOptions[txType]();
 
 			setTxState(TransactionStatus.WAITING);
@@ -447,18 +447,18 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
-		deal?.poolAddress,
-		setTxState,
 		walletAddress,
 		signer,
-		monitorTransaction,
+		deal.poolAddress,
 		poolBalances?.purchaseTokenDecimals,
+		txType,
+		setTxState,
+		isMaxValue,
 		gasLimitEstimate,
 		gasPrice,
-		txType,
 		isEmptyInput,
 		inputValue,
-		isMaxValue,
+		monitorTransaction,
 		poolBalancesQuery,
 	]);
 
@@ -470,7 +470,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 
 			const txTypeOptions = {
-				[TransactionType.Withdraw]: async () => {
+				[TransactionDealType.Withdraw]: async () => {
 					if (isMaxValue) {
 						return setGasLimitEstimate(wei(await contract.estimateGas.withdrawMaxFromPool(), 0));
 					}
@@ -487,7 +487,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						)
 					);
 				},
-				[TransactionType.Accept]: async () => {
+				[TransactionDealType.AcceptDeal]: async () => {
 					if (isMaxValue) {
 						return setGasLimitEstimate(wei(await contract.estimateGas.acceptMaxDealTokens(), 0));
 					}
@@ -506,15 +506,10 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				},
 			};
 
-			// @ts-ignore
-			if (typeof txTypeOptions[txType] === 'function') {
-				// @ts-ignore
-				txTypeOptions[txType]();
-			}
+			txTypeOptions[txType]();
 		}
 		getGasLimitEstimate();
 	}, [
-		txType,
 		walletAddress,
 		signer,
 		deal.poolAddress,
@@ -522,13 +517,18 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		inputValue,
 		isMaxValue,
 		isEmptyInput,
+		txType,
 	]);
 
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
 			<AcceptOrRejectBox
-				poolId={pool?.id}
+				txType={txType}
+				setTxType={setTxType}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
+				inputValue={inputValue}
 				onSubmit={handleSubmit}
 				gasLimitEstimate={gasLimitEstimate}
 				purchaseCurrency={pool?.purchaseToken ?? null}
@@ -545,9 +545,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						)
 					),
 				}}
-				inputValue={inputValue}
-				setInputValue={setInputValue}
-				setIsMaxValue={setIsMaxValue}
 			/>
 		</FlexDiv>
 	);

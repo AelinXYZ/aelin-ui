@@ -21,17 +21,18 @@ import {
 } from '../../../shared/common';
 
 import { swimmingPoolID } from 'constants/pool';
-import { TransactionType } from 'constants/transactions';
+import { TransactionPurchaseType } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
 
 import { actionBoxTypeToTitle, getActionButtonLabel } from './helpers';
 
 interface PurchasePoolBoxProps {
 	poolId: string;
+	txType: TransactionPurchaseType;
 	onSubmit: () => void;
 	onApprove: () => void;
 	inputValue: number | string;
-	isMaxValue: boolean;
+	maxValue: number;
 	setInputValue: (val: number | string) => void;
 	setIsMaxValue: (val: boolean) => void;
 	userPurchaseBalance: string | null;
@@ -44,10 +45,11 @@ interface PurchasePoolBoxProps {
 
 const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	poolId,
+	txType,
 	onSubmit,
 	onApprove,
 	inputValue,
-	isMaxValue,
+	maxValue,
 	setInputValue,
 	setIsMaxValue,
 	userPurchaseBalance,
@@ -56,9 +58,9 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	isPurchaseExpired,
 	purchaseTokenSymbol,
 	privatePoolDetails,
-}: PurchasePoolBoxProps) => {
+}) => {
 	const { walletAddress } = Connector.useContainer();
-	const { setGasPrice, txType } = TransactionData.useContainer();
+	const { setGasPrice } = TransactionData.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
 
@@ -66,7 +68,7 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
 	const isMaxBalanceExceeded = Number(userPurchaseBalance ?? 0) < Number(inputValue ?? 0);
 
-	const isDisabled: boolean = useMemo(() => {
+	const isButtonDisabled: boolean = useMemo(() => {
 		return (
 			!walletAddress || isPurchaseExpired || isPoolDisabled || isMaxBalanceExceeded || isEmptyInput
 		);
@@ -74,11 +76,11 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 
 	const modalContent = useMemo(
 		() => ({
-			[TransactionType.Allowance]: {
+			[TransactionPurchaseType.Allowance]: {
 				heading: 'Confirm Approval',
 				onSubmit: onApprove,
 			},
-			[TransactionType.Purchase]: {
+			[TransactionPurchaseType.Purchase]: {
 				heading: `You are purchasing ${inputValue} ${purchaseTokenSymbol}`,
 				onSubmit,
 			},
@@ -92,14 +94,14 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 	);
 
 	const handleMaxButtonClick = () => {
-		let maxValue = Number(userPurchaseBalance);
+		let maxVal = maxValue;
 
 		if (privatePoolDetails?.isPrivatePool) {
-			maxValue = Math.min(Number(privatePoolDetails?.privatePoolAmount ?? 0), maxValue);
+			maxVal = Math.min(Number(privatePoolDetails?.privatePoolAmount ?? 0), maxValue);
 		}
 
 		setIsMaxValue(true);
-		setInputValue(maxValue);
+		setInputValue(maxVal);
 	};
 
 	return (
@@ -140,7 +142,7 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 			</ContentContainer>
 
 			<ActionButton
-				disabled={isDisabled}
+				disabled={isButtonDisabled}
 				isWithdraw={false}
 				onClick={() => {
 					setShowTxModal(true);
@@ -168,13 +170,9 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
-				// @ts-ignore
-				onSubmit={modalContent[txType]?.onSubmit}
+				onSubmit={modalContent[txType].onSubmit}
 			>
-				{
-					// @ts-ignore
-					modalContent[txType]?.heading
-				}
+				{modalContent[txType].heading}
 			</ConfirmTransactionModal>
 		</Container>
 	);

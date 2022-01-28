@@ -45,7 +45,7 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 	const isEmptyInput = inputValue === '' || inputValue === 0;
 	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(inputValue ?? 0);
 
-	const isDisabled: boolean = useMemo(() => {
+	const isButtonDisabled: boolean = useMemo(() => {
 		return !walletAddress || isMaxBalanceExceeded || isEmptyInput;
 	}, [walletAddress, isMaxBalanceExceeded, isEmptyInput]);
 
@@ -79,7 +79,7 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 			</ContentContainer>
 
 			<ActionButton
-				disabled={isDisabled}
+				disabled={isButtonDisabled}
 				isWithdraw={false}
 				onClick={() => {
 					setShowTxModal(true);

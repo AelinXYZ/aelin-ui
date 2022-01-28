@@ -22,7 +22,7 @@ const VestingDealBox: FC<VestingDealProps> = ({ maxValue, onSubmit, gasLimitEsti
 
 	const [showTxModal, setShowTxModal] = useState(false);
 
-	const isDisabled: boolean = useMemo(() => {
+	const isButtonDisabled: boolean = useMemo(() => {
 		return !walletAddress || !maxValue;
 	}, [walletAddress, maxValue]);
 
@@ -33,7 +33,7 @@ const VestingDealBox: FC<VestingDealProps> = ({ maxValue, onSubmit, gasLimitEsti
 			</ContentContainer>
 
 			<ActionButton
-				disabled={isDisabled}
+				disabled={isButtonDisabled}
 				isWithdraw={false}
 				onClick={() => {
 					setShowTxModal(true);
