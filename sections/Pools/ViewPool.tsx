@@ -220,25 +220,25 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						dealAddress={deal.id}
 					/>
 				)}
-			{(deal?.id != null &&
+			{((deal?.id != null &&
 				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
-				((claimableUnderlyingTokens ?? 0) > 0 && (
-					<SectionWrapper>
-						<ContentHeader>
-							<ContentTitle>
-								<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
-							</ContentTitle>
-						</ContentHeader>
-						<VestingDealSection
-							deal={deal}
-							dealBalance={dealBalance}
-							claims={claims}
-							dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
-							claimableUnderlyingTokens={claimableUnderlyingTokens}
-							underlyingDealTokenDecimals={underlyingDealTokenDecimals}
-						/>
-					</SectionWrapper>
-				))}
+				(claimableUnderlyingTokens ?? 0) > 0) && (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
+						</ContentTitle>
+					</ContentHeader>
+					<VestingDealSection
+						deal={deal}
+						dealBalance={dealBalance}
+						claims={claims}
+						dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
+						claimableUnderlyingTokens={claimableUnderlyingTokens}
+						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+					/>
+				</SectionWrapper>
+			)}
 		</PageLayout>
 	);
 };
