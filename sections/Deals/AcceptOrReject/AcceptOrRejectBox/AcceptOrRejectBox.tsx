@@ -123,11 +123,10 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			dealRedemptionData.isOpenEligible &&
 			!isWithdraw
 		) {
-			maxValue =
-				maxValue >=
-				dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
-					? dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted
-					: maxValue;
+			maxValue = Math.min(
+				dealRedemptionData?.purchaseTokenTotalForDeal - dealRedemptionData?.totalAmountAccepted,
+				maxValue
+			);
 		} else if (
 			(dealRedemptionData?.status === Status.Closed ||
 				(dealRedemptionData?.status === Status.OpenRedemption &&

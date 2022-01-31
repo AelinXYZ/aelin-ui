@@ -2,11 +2,7 @@ import { createContainer } from 'unstated-next';
 import { useState } from 'react';
 import Wei, { wei } from '@synthetixio/wei';
 
-import {
-	TransactionStatus,
-	TransactionDealType,
-	TransactionPurchaseType,
-} from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
 
 const useTransactionData = () => {
 	const [gasPrice, setGasPrice] = useState<Wei>(wei(0));
