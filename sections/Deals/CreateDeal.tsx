@@ -53,7 +53,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		purchaseToken: purchaseToken,
 	});
 
-	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
+	const poolBalances = poolBalancesQuery?.data ?? null;
 
 	const handleSubmit = async () => {
 		if (!walletAddress || !signer) return;

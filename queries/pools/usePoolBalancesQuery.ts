@@ -17,6 +17,7 @@ type PoolBalances = {
 	totalAmountAccepted: string;
 	userAmountAccepted: string;
 	userAmountWithdrawn: string;
+	totalAmountWithdrawn: string;
 	totalSupply: number;
 };
 

@@ -74,7 +74,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
 
-	const isDisabled: boolean = useMemo(() => {
+	const isButtonDisabled: boolean = useMemo(() => {
 		if (!isApproved) return false;
 		if (!walletAddress || !inputValue) return true;
 		if (balance?.toNumber() < inputValue) return true;
@@ -122,7 +122,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 
 			<ActionButton
 				isWithdraw={action === StakeActionLabel.WITHDRAW}
-				disabled={isDisabled}
+				disabled={isButtonDisabled}
 				onClick={(e) => {
 					setShowTxModal(true);
 				}}

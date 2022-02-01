@@ -5,34 +5,32 @@ import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
-import SectionDetails from 'sections/shared/SectionDetails';
-
 import Ens from 'components/Ens';
+import Grid from 'components/Grid';
 import { Status } from 'components/DealStatus';
-import { FlexDivStart } from 'components/common';
-import TokenDisplay from 'components/TokenDisplay';
-import { ActionBoxType } from 'components/ActionBox';
-import CopyToClipboard from 'components/CopyToClipboard';
-import QuestionMark from 'components/QuestionMark';
 import Countdown from 'components/Countdown';
+import QuestionMark from 'components/QuestionMark';
+import TokenDisplay from 'components/TokenDisplay';
+import CopyToClipboard from 'components/CopyToClipboard';
+import { FlexDivStart, FlexDiv } from 'components/common';
 
 import { erc20Abi } from 'contracts/erc20';
 
-import { TransactionStatus } from 'constants/transactions';
-
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
-import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
-
-import TransactionData from 'containers/TransactionData';
+import { formatShortDateWithTime } from 'utils/time';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { TransactionPurchaseType, TransactionStatus } from 'constants/transactions';
+
+import PurchasePoolBox from '../PurchasePoolBox';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -43,10 +41,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
-		TransactionData.useContainer();
+	const { gasPrice, setTxState } = TransactionData.useContainer();
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
+	const [inputValue, setInputValue] = useState<string | number>('');
+	const [txType, setTxType] = useState<TransactionPurchaseType>(TransactionPurchaseType.Allowance);
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
@@ -61,6 +59,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const userPoolBalance = poolBalances?.userPoolBalance ?? null;
 	const isPrivatePool = poolBalances?.isPrivatePool ?? null;
 	const privatePoolAmount = poolBalances?.privatePoolAmount ?? null;
+
+	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
+	const hasAllowance = Number(purchaseTokenAllowance ?? 0) < Number(isEmptyInput ? 0 : inputValue);
 
 	const tokenContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
@@ -125,6 +126,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	]);
 
 	useEffect(() => {
+		setTxType(hasAllowance ? TransactionPurchaseType.Allowance : TransactionPurchaseType.Purchase);
+	}, [hasAllowance, isEmptyInput, setTxType]);
+
+	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (
 				!poolContract ||
@@ -143,7 +148,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					if (!purchaseTokenDecimals) return;
 					const amount = isMaxValue
 						? maxValueBN.toBN()
-						: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+						: ethers.utils.parseUnits(
+								(isEmptyInput ? 0 : inputValue).toString(),
+								purchaseTokenDecimals
+						  );
 					setGasLimitEstimate(wei(await poolContract.estimateGas.purchasePoolTokens(amount), 0));
 				}
 			} catch (e) {
@@ -160,11 +168,12 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		tokenContract,
 		setGasLimitEstimate,
 		inputValue,
+		isEmptyInput,
 		isMaxValue,
 		maxValueBN,
 	]);
 
-	const poolGridItems = useMemo(
+	const gridItems = useMemo(
 		() => [
 			{
 				header: (
@@ -354,13 +363,18 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		try {
 			const amount = isMaxValue
 				? maxValueBN.toBN()
-				: ethers.utils.parseUnits((inputValue ?? 0).toString(), purchaseTokenDecimals);
+				: ethers.utils.parseUnits(
+						(isEmptyInput ? 0 : inputValue).toString(),
+						purchaseTokenDecimals
+				  );
 
 			const tx = await poolContract.purchasePoolTokens(amount, {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 				gasPrice: gasPrice.toBN(),
 			});
+
 			setTxState(TransactionStatus.WAITING);
+
 			if (tx) {
 				monitorTransaction({
 					txHash: tx.hash,
@@ -387,6 +401,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		poolBalancesQuery,
 		poolContract,
 		setTxState,
+		isEmptyInput,
 		inputValue,
 		isMaxValue,
 		maxValueBN,
@@ -434,33 +449,25 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	);
 
 	return (
-		<SectionDetails
-			privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
-			isPurchaseExpired={isPurchaseExpired}
-			actionBoxType={ActionBoxType.FundPool}
-			gridItems={poolGridItems}
-			input={{
-				placeholder: '0',
-				label: `Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`,
-				value: '0',
-				maxValue,
-				symbol: purchaseTokenSymbol,
-			}}
-			allowance={purchaseTokenAllowance}
-			onApprove={handleApprove}
-			onSubmit={handleSubmit}
-			txState={txState}
-			setTxState={setTxState}
-			setGasPrice={setGasPrice}
-			gasLimitEstimate={gasLimitEstimate}
-			txType={txType}
-			setTxType={setTxType}
-			setIsMaxValue={setIsMaxValue}
-			inputValue={inputValue}
-			setInputValue={setInputValue}
-			purchaseCurrency={purchaseTokenSymbol}
-			poolId={pool?.id}
-		/>
+		<FlexDiv>
+			<Grid hasInputFields={false} gridItems={gridItems} />
+			<PurchasePoolBox
+				poolId={pool?.id}
+				txType={txType}
+				inputValue={inputValue}
+				maxValue={maxValue}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
+				onSubmit={handleSubmit}
+				onApprove={handleApprove}
+				purchaseTokenAllowance={purchaseTokenAllowance}
+				gasLimitEstimate={gasLimitEstimate}
+				userPurchaseBalance={userPurchaseBalance}
+				isPurchaseExpired={isPurchaseExpired}
+				purchaseTokenSymbol={purchaseTokenSymbol}
+				privatePoolDetails={{ isPrivatePool, privatePoolAmount }}
+			/>
+		</FlexDiv>
 	);
 };
 
