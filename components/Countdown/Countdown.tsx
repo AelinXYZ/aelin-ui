@@ -6,7 +6,7 @@ import { NetworkId } from 'constants/networks';
 
 interface CountdownProps {
 	time: number;
-	timeStart: number;
+	timeStart: number | null;
 	networkId: NetworkId | null;
 }
 

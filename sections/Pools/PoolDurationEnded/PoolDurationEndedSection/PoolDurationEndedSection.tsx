@@ -1,32 +1,33 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
+import { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
-import { wei } from '@synthetixio/wei';
-import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
-import SectionTitle from 'sections/shared/SectionTitle';
 
-import { FlexDiv, Notice } from 'components/common';
+import SectionTitle from 'sections/shared/SectionTitle';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
 import Grid from 'components/Grid';
-import ActionBox, { ActionBoxType } from 'components/ActionBox';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
+import { FlexDiv, Notice } from 'components/common';
 
 import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
-import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
-
-import TransactionData from 'containers/TransactionData';
+import { formatShortDateWithTime } from 'utils/time';
+import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
-import { TransactionType, TransactionStatus } from 'constants/transactions';
+import { TransactionStatus } from 'constants/transactions';
+
+import PoolDurationEndedBox from '../PoolDurationEndedBox';
 
 interface PoolDurationEndedProps {
 	pool: PoolCreatedResult | null;
@@ -36,14 +37,11 @@ interface PoolDurationEndedProps {
 const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const { gasPrice, setTxState } = TransactionData.useContainer();
 
-	const { gasPrice, setGasPrice, txState, setTxState, txType, setTxType } =
-		TransactionData.useContainer();
+	const [inputValue, setInputValue] = useState<number | string>('');
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
-
-	useEffect(() => setTxType(TransactionType.Withdraw), []);
+	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const poolContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
@@ -192,40 +190,35 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 		]
 	);
 
-	return Number(userPoolBalance ?? 0) > 0 ? (
-		<SectionWrapper>
-			<ContentHeader>
-				<ContentTitle>
-					<SectionTitle address={dealID} title="Aelin Pool Unlocked" />
-				</ContentTitle>
-			</ContentHeader>
-			<FlexDiv>
-				<Grid hasInputFields={false} gridItems={withdrawGridItems} />
-				<ActionBox
-					actionBoxType={ActionBoxType.Withdraw}
-					onSubmit={() => handleSubmit()}
-					input={{
-						placeholder: '0',
-						label: `Balance ${userPoolBalance} Pool Tokens`,
-						maxValue: userPoolBalance ?? 0,
-					}}
-					inputValue={inputValue}
-					setInputValue={setInputValue}
-					setIsMaxValue={setIsMaxValue}
-					txState={txState}
-					setGasPrice={setGasPrice}
-					gasLimitEstimate={gasLimitEstimate}
-					txType={txType}
-					setTxType={setTxType}
-					purchaseCurrency={purchaseTokenSymbol}
-				/>
-			</FlexDiv>
-			<Notice>
-				The duration for this AELIN pool has ended. You may withdraw your funds now although the
-				sponsor may still create a deal for you if you remain in the pool
-			</Notice>
-		</SectionWrapper>
-	) : null;
+	return (
+		<>
+			{Number(userPoolBalance ?? 0) > 0 && (
+				<SectionWrapper>
+					<ContentHeader>
+						<ContentTitle>
+							<SectionTitle address={dealID} title="Aelin Pool Unlocked" />
+						</ContentTitle>
+					</ContentHeader>
+					<FlexDiv>
+						<Grid hasInputFields={false} gridItems={withdrawGridItems} />
+						<PoolDurationEndedBox
+							onSubmit={handleSubmit}
+							inputValue={inputValue}
+							setInputValue={setInputValue}
+							setIsMaxValue={setIsMaxValue}
+							userPoolBalance={userPoolBalance}
+							gasLimitEstimate={gasLimitEstimate}
+							purchaseTokenSymbol={purchaseTokenSymbol}
+						/>
+					</FlexDiv>
+					<Notice>
+						The duration for this AELIN pool has ended. You may withdraw your funds now although the
+						sponsor may still create a deal for you if you remain in the pool
+					</Notice>
+				</SectionWrapper>
+			)}
+		</>
+	);
 };
 
 export default PoolDurationEnded;

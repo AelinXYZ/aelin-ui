@@ -1,6 +1,5 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
-import styled from 'styled-components';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useState, useEffect } from 'react';
 
@@ -16,11 +15,17 @@ import useGetClaimedUnderlyingDealTokensQuery, {
 } from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
 
 import { PageLayout } from 'sections/Layout';
-import CreateDeal from 'sections/AelinDeal/CreateDeal';
 import SectionTitle from 'sections/shared/SectionTitle';
-import VestingDeal from 'sections/AelinDeal/VestingDeal';
-import AcceptOrRejectDeal from 'sections/AelinDeal/AcceptOrRejectDeal';
 import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
+import FundDeal from 'sections/Deals/FundDeal';
+import CreateDeal from 'sections/Deals/CreateDeal';
+import WithdrawExpiry from 'sections/Deals/WithdrawExpiry';
+import VestingDealSection from 'sections/Deals/Vesting/VestingDealSection';
+import AcceptOrRejectDealSection from 'sections/Deals/AcceptOrReject/AcceptOrRejectSection';
+
+import PurchasePoolSection from 'sections/Pools/PurchasePool/PurchasePoolSection';
+import PoolDurationEndedSection from 'sections/Pools/PoolDurationEnded/PoolDurationEndedSection';
 
 import { Status } from 'components/DealStatus';
 
@@ -28,14 +33,8 @@ import useInterval from 'hooks/useInterval';
 
 import { getERC20Data } from 'utils/crypto';
 
-import { vAelinPoolID } from 'constants/pool';
+import { vAelinPoolID, swimmingPoolID } from 'constants/pool';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
-
-import FundDeal from '../AelinDeal/FundDeal';
-
-import PurchasePool from './PurchasePool';
-import PoolDurationEnded from './PoolDurationEnded';
-import WithdrawExpiry from '../AelinDeal/WithdrawExpiry';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -53,10 +52,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		null
 	);
 	const [underlyingDealTokenSymbol, setUnderlyingDealTokenSymbol] = useState<string | null>(null);
+
 	const dealDetailsQuery = useGetDealDetailByIdQuery({
 		id: pool?.dealAddress ?? '',
 		networkId: network.id,
 	});
+
 	const dealQuery = useGetDealByIdQuery({ id: pool?.dealAddress ?? '', networkId: network.id });
 
 	const deal = useMemo(() => {
@@ -137,6 +138,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		if (!pool || !now || !deal || !walletAddress) return false;
 		// If the connected wallet is not the sponsor, then we don't display the createDeal section
 		if (walletAddress !== pool.sponsor) return false;
+
+		// This pool shouldn't be able to create a deal
+		if (swimmingPoolID === pool.id) return false;
+
 		// If the Pool status is Open and PurchaseTokenCap is not null and is reached
 		if (
 			pool.poolStatus === Status.PoolOpen &&
@@ -148,13 +153,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		if (pool.poolStatus === Status.SeekingDeal) return true;
 		// If the Pool status is FundingDeal and HolderFundingExpiration is reached
 		if (pool.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) return true;
+
 		return false;
 	}, [deal, now, pool, walletAddress]);
 
 	return (
 		<PageLayout title={<SectionTitle address={poolAddress} title="Aelin Pool" />} subtitle="">
-			<PurchasePool pool={pool} />
-			{showCreateDealSection ? (
+			<PurchasePoolSection pool={pool} />
+			{showCreateDealSection && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
@@ -163,8 +169,8 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					</ContentHeader>
 					<CreateDeal poolAddress={poolAddress} purchaseToken={pool.purchaseToken} />
 				</SectionWrapper>
-			) : null}
-			{pool?.poolStatus === Status.FundingDeal && deal?.id != null ? (
+			)}
+			{pool?.poolStatus === Status.FundingDeal && deal?.id != null && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
@@ -181,48 +187,49 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						holderFundingExpiration={deal?.holderFundingExpiration}
 					/>
 				</SectionWrapper>
-			) : null}
-			{pool?.poolStatus === Status.DealOpen && deal?.id != null ? (
+			)}
+			{pool?.poolStatus === Status.DealOpen && deal?.id != null && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
 							<SectionTitle address={deal?.id} title="Aelin Deal" />
 						</ContentTitle>
 					</ContentHeader>
-					<AcceptOrRejectDeal
+					<AcceptOrRejectDealSection
 						pool={pool}
 						deal={deal}
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
 						underlyingDealTokenSymbol={underlyingDealTokenSymbol}
 					/>
 				</SectionWrapper>
-			) : null}
+			)}
 			{pool?.poolStatus !== Status.FundingDeal &&
-			now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
-			pool?.id !== vAelinPoolID &&
-			!(pool?.poolStatus === Status.DealOpen && deal?.id != null) ? (
-				<PoolDurationEnded pool={pool} dealID={deal.id} />
-			) : null}
+				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
+				pool?.id !== vAelinPoolID &&
+				!(pool?.poolStatus === Status.DealOpen && deal?.id != null) && (
+					<PoolDurationEndedSection pool={pool} dealID={deal.id} />
+				)}
 			{now >
 				(deal?.proRataRedemptionPeriodStart ?? 0) +
 					(deal?.proRataRedemptionPeriod ?? 0) +
-					(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder ? (
-				<WithdrawExpiry
-					holder={deal?.holder as string}
-					token={deal.underlyingDealToken}
-					dealAddress={deal.id}
-				/>
-			) : null}
-			{(deal?.id != null &&
+					(deal?.openRedemptionPeriod ?? 0) &&
+				walletAddress === deal?.holder && (
+					<WithdrawExpiry
+						holder={deal?.holder as string}
+						token={deal.underlyingDealToken}
+						dealAddress={deal.id}
+					/>
+				)}
+			{((deal?.id != null &&
 				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
-			(claimableUnderlyingTokens ?? 0) > 0 ? (
+				(claimableUnderlyingTokens ?? 0) > 0) && (
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
 							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
 						</ContentTitle>
 					</ContentHeader>
-					<VestingDeal
+					<VestingDealSection
 						deal={deal}
 						dealBalance={dealBalance}
 						claims={claims}
@@ -231,7 +238,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
 					/>
 				</SectionWrapper>
-			) : null}
+			)}
 		</PageLayout>
 	);
 };

@@ -1,34 +1,39 @@
-//@ts-nocheck
-import { FC, useMemo, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import { ActionBoxType } from 'components/ActionBox';
-import SectionDetails from 'sections/shared/SectionDetails';
+import styled from 'styled-components';
+import { PoolCreatedResult } from 'subgraph';
+import { FC, useMemo, useCallback, useEffect, useState } from 'react';
+
+import Grid from 'components/Grid';
+import { FlexDiv } from 'components/common';
+import Countdown from 'components/Countdown';
 import { Status } from 'components/DealStatus';
-import { statusToText } from 'constants/pool';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
-import { TransactionStatus, TransactionType } from 'constants/transactions';
-import Connector from 'containers/Connector';
-import TransactionNotifier from 'containers/TransactionNotifier';
-import TransactionData from 'containers/TransactionData';
-import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
-import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
-import { PoolCreatedResult } from 'subgraph';
-import { GasLimitEstimate } from 'constants/networks';
-import { getGasEstimateWithBuffer } from 'utils/network';
-import { formatNumber } from 'utils/numbers';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
-import Countdown from 'components/Countdown';
 
+import { statusToText } from 'constants/pool';
+import { GasLimitEstimate } from 'constants/networks';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { TransactionStatus, TransactionDealType } from 'constants/transactions';
+
+import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
+import TransactionNotifier from 'containers/TransactionNotifier';
+import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
+
+import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
+
+import { formatNumber } from 'utils/numbers';
+import { getGasEstimateWithBuffer } from 'utils/network';
 import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';
+
+import AcceptOrRejectBox from '../AcceptOrRejectBox';
 
 interface AcceptOrRejectDealProps {
 	deal: any;
 	pool: PoolCreatedResult | null;
 	underlyingDealTokenDecimals: number | null;
-	underlyingDealTokenSymbol: string | null;
+	underlyingDealTokenSymbol: string | undefined;
 }
 
 const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
@@ -39,18 +44,21 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 }) => {
 	const { walletAddress, signer, network } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { txState, setTxState, setGasPrice, gasPrice, txType, setTxType } =
-		TransactionData.useContainer();
-	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(0);
+	const { setTxState, gasPrice } = TransactionData.useContainer();
+
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
+	const [inputValue, setInputValue] = useState<number | string>('');
+	const [txType, setTxType] = useState<TransactionDealType>(TransactionDealType.AcceptDeal);
 
 	const poolBalancesQuery = usePoolBalancesQuery({
 		poolAddress: pool?.id ?? null,
 		purchaseToken: pool?.purchaseToken ?? null,
 	});
 
-	const poolBalances = useMemo(() => poolBalancesQuery?.data ?? null, [poolBalancesQuery?.data]);
+	const poolBalances = poolBalancesQuery?.data ?? null;
+	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
+
 	const totalAmountAccepted = Number(
 		ethers.utils.formatUnits(
 			poolBalances?.totalAmountAccepted ?? '0',
@@ -100,7 +108,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		poolBalances?.purchaseTokenSymbol,
 	].every((val) => val !== null && val !== '');
 
-	const dealGridItems = useMemo(
+	const gridItems = useMemo(
 		() => [
 			{
 				header: 'Name',
@@ -382,42 +390,47 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			return;
 		const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 		try {
-			let tx: ethers.ContractTransaction;
-			if (txType === TransactionType.Withdraw && isMaxValue) {
-				tx = await contract.withdrawMaxFromPool({
-					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
-					gasPrice: gasPrice.toBN(),
-				});
-			} else if (txType === TransactionType.Withdraw) {
-				tx = await contract.withdrawFromPool(
-					ethers.utils.parseUnits(
-						(inputValue ?? 0).toString(),
-						poolBalances?.purchaseTokenDecimals
-					),
-					{
-						gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
-						gasPrice: gasPrice.toBN(),
-					}
-				);
-			} else if (txType === TransactionType.Accept && isMaxValue) {
-				tx = await contract.acceptMaxDealTokens({
-					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
-					gasPrice: gasPrice.toBN(),
-				});
-			} else if (txType === TransactionType.Accept) {
-				tx = await contract.acceptDealTokens(
-					ethers.utils.parseUnits(
-						(inputValue ?? 0).toString(),
-						poolBalances?.purchaseTokenDecimals
-					),
-					{
-						gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
-						gasPrice: gasPrice.toBN(),
-					}
-				);
-			} else {
-				throw new Error('unexpected tx type');
-			}
+			const txOptions = {
+				[TransactionDealType.Withdraw]: () => {
+					if (isMaxValue)
+						return contract.withdrawMaxFromPool({
+							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+							gasPrice: gasPrice.toBN(),
+						});
+
+					return contract.withdrawFromPool(
+						ethers.utils.parseUnits(
+							(isEmptyInput ? 0 : inputValue).toString(),
+							poolBalances?.purchaseTokenDecimals
+						),
+						{
+							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+							gasPrice: gasPrice.toBN(),
+						}
+					);
+				},
+				[TransactionDealType.AcceptDeal]: () => {
+					if (isMaxValue)
+						return contract.acceptMaxDealTokens({
+							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+							gasPrice: gasPrice.toBN(),
+						});
+
+					return contract.acceptDealTokens(
+						ethers.utils.parseUnits(
+							(isEmptyInput ? 0 : inputValue).toString(),
+							poolBalances?.purchaseTokenDecimals
+						),
+						{
+							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+							gasPrice: gasPrice.toBN(),
+						}
+					);
+				},
+			};
+
+			const tx: ethers.ContractTransaction = await txOptions[txType]();
+
 			setTxState(TransactionStatus.WAITING);
 			if (tx) {
 				monitorTransaction({
@@ -434,17 +447,18 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			setTxState(TransactionStatus.FAILED);
 		}
 	}, [
-		deal?.poolAddress,
-		setTxState,
 		walletAddress,
 		signer,
-		monitorTransaction,
+		deal.poolAddress,
 		poolBalances?.purchaseTokenDecimals,
+		txType,
+		setTxState,
+		isMaxValue,
 		gasLimitEstimate,
 		gasPrice,
-		txType,
+		isEmptyInput,
 		inputValue,
-		isMaxValue,
+		monitorTransaction,
 		poolBalancesQuery,
 	]);
 
@@ -452,84 +466,87 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		async function getGasLimitEstimate() {
 			if (!walletAddress || !signer || !deal?.poolAddress || !poolBalances?.purchaseTokenDecimals)
 				return setGasLimitEstimate(null);
+
 			const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
-			if (txType === TransactionType.Withdraw && isMaxValue) {
-				setGasLimitEstimate(wei(await contract.estimateGas.withdrawMaxFromPool(), 0));
-			} else if (txType === TransactionType.Withdraw) {
-				setGasLimitEstimate(
-					wei(
-						await contract.estimateGas.withdrawFromPool(
-							ethers.utils.parseUnits(
-								(inputValue ?? 0).toString(),
-								poolBalances?.purchaseTokenDecimals ?? 0
-							)
-						),
-						0
-					)
-				);
-			} else if (txType === TransactionType.Accept && isMaxValue) {
-				setGasLimitEstimate(wei(await contract.estimateGas.acceptMaxDealTokens(), 0));
-			} else if (txType === TransactionType.Accept) {
-				setGasLimitEstimate(
-					wei(
-						await contract.estimateGas.acceptDealTokens(
-							ethers.utils.parseUnits(
-								(inputValue ?? 0).toString(),
-								poolBalances?.purchaseTokenDecimals ?? 0
-							)
-						),
-						0
-					)
-				);
-			} else {
-				return setGasLimitEstimate(null);
-			}
+
+			const txTypeOptions = {
+				[TransactionDealType.Withdraw]: async () => {
+					if (isMaxValue) {
+						return setGasLimitEstimate(wei(await contract.estimateGas.withdrawMaxFromPool(), 0));
+					}
+
+					return setGasLimitEstimate(
+						wei(
+							await contract.estimateGas.withdrawFromPool(
+								ethers.utils.parseUnits(
+									(isEmptyInput ? 0 : inputValue).toString(),
+									poolBalances?.purchaseTokenDecimals ?? 0
+								)
+							),
+							0
+						)
+					);
+				},
+				[TransactionDealType.AcceptDeal]: async () => {
+					if (isMaxValue) {
+						return setGasLimitEstimate(wei(await contract.estimateGas.acceptMaxDealTokens(), 0));
+					}
+
+					return setGasLimitEstimate(
+						wei(
+							await contract.estimateGas.acceptDealTokens(
+								ethers.utils.parseUnits(
+									(isEmptyInput ? 0 : inputValue).toString(),
+									poolBalances?.purchaseTokenDecimals ?? 0
+								)
+							),
+							0
+						)
+					);
+				},
+			};
+
+			txTypeOptions[txType]();
 		}
 		getGasLimitEstimate();
 	}, [
-		txType,
 		walletAddress,
 		signer,
-		deal?.poolAddress,
+		deal.poolAddress,
 		poolBalances?.purchaseTokenDecimals,
 		inputValue,
 		isMaxValue,
+		isEmptyInput,
+		txType,
 	]);
 
 	return (
-		<SectionDetails
-			dealRedemptionData={{
-				status: dealRedemptionPeriod,
-				maxProRata: poolBalances?.maxProRata ?? 0,
-				isOpenEligible: poolBalances?.isOpenEligible ?? false,
-				totalAmountAccepted: totalAmountAccepted ?? 0,
-				purchaseTokenTotalForDeal: Number(
-					ethers.utils.formatUnits(
-						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-						poolBalances?.purchaseTokenDecimals ?? 0
-					)
-				),
-			}}
-			actionBoxType={ActionBoxType.AcceptOrRejectDeal}
-			gridItems={dealGridItems}
-			input={{
-				placeholder: '0',
-				label: `Balance ${poolBalances?.userPoolBalance} Pool Tokens`,
-				maxValue: poolBalances?.userPoolBalance,
-				symbol: pool?.symbol,
-			}}
-			txState={txState}
-			setTxState={setTxState}
-			onSubmit={handleSubmit}
-			setGasPrice={setGasPrice}
-			gasLimitEstimate={gasLimitEstimate}
-			txType={txType}
-			setTxType={setTxType}
-			setIsMaxValue={setIsMaxValue}
-			inputValue={inputValue}
-			setInputValue={setInputValue}
-			purchaseCurrency={pool?.purchaseToken ?? null}
-		/>
+		<FlexDiv>
+			<Grid hasInputFields={false} gridItems={gridItems} />
+			<AcceptOrRejectBox
+				txType={txType}
+				setTxType={setTxType}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
+				inputValue={inputValue}
+				onSubmit={handleSubmit}
+				gasLimitEstimate={gasLimitEstimate}
+				purchaseCurrency={pool?.purchaseToken ?? null}
+				userPoolBalance={poolBalances?.userPoolBalance ?? null}
+				dealRedemptionData={{
+					status: dealRedemptionPeriod,
+					maxProRata: poolBalances?.maxProRata ?? 0,
+					isOpenEligible: poolBalances?.isOpenEligible ?? false,
+					totalAmountAccepted: totalAmountAccepted ?? 0,
+					purchaseTokenTotalForDeal: Number(
+						ethers.utils.formatUnits(
+							deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+							poolBalances?.purchaseTokenDecimals ?? 0
+						)
+					),
+				}}
+			/>
+		</FlexDiv>
 	);
 };
 

@@ -9,7 +9,7 @@ import { FC, useMemo, useState, useEffect } from 'react';
 import Connector from 'containers/Connector';
 
 import { PageLayout } from 'sections/Layout';
-import FilterPool from 'sections/AelinPool/FilterPool';
+import FilterPool from 'sections/Pools/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';

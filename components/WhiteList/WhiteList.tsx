@@ -17,7 +17,7 @@ import Remove from 'assets/svg/remove.svg';
 
 import { IWhitelistComponent, IWhitelist, IStyleColumnProps, IStyleRowProps } from './types';
 
-const Whitelist: FC<IWhitelistComponent> = ({ formik }) => {
+const WhiteList: FC<IWhitelistComponent> = ({ formik }) => {
 	const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(false);
 	const [isClearDisabled, setIsClearDisabled] = useState<boolean>(true);
 
@@ -220,8 +220,4 @@ const Title = styled.span`
 	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
-const Subtitle = styled.span`
-	font-size: 1rem;
-`;
-
-export default Whitelist;
+export default WhiteList;
