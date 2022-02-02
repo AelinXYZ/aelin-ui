@@ -203,12 +203,13 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					/>
 				</SectionWrapper>
 			)}
-			{pool?.poolStatus !== Status.FundingDeal &&
+			{(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
+			(pool?.poolStatus !== Status.FundingDeal &&
 				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
 				pool?.id !== vAelinPoolID &&
-				!(pool?.poolStatus === Status.DealOpen && deal?.id != null) && (
-					<PoolDurationEndedSection pool={pool} dealID={deal.id} />
-				)}
+				!(pool?.poolStatus === Status.DealOpen && deal?.id != null)) ? (
+				<PoolDurationEndedSection pool={pool} dealID={deal.id} />
+			) : null}
 			{now >
 				(deal?.proRataRedemptionPeriodStart ?? 0) +
 					(deal?.proRataRedemptionPeriod ?? 0) +
