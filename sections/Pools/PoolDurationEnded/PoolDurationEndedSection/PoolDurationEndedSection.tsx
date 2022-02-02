@@ -212,8 +212,9 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 						/>
 					</FlexDiv>
 					<Notice>
-						The duration for this AELIN pool has ended. You may withdraw your funds now although the
-						sponsor may still create a deal for you if you remain in the pool
+						The duration for this AELIN pool has ended or a deal has been presented but not funded.
+						You may withdraw your funds now although the sponsor may still create a deal for you if
+						you remain in the pool
 					</Notice>
 				</SectionWrapper>
 			)}
