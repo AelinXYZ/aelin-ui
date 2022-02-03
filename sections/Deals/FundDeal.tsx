@@ -28,6 +28,7 @@ interface FundDealProps {
 	purchaseTokenTotalForDeal: any;
 	purchaseToken: string;
 	holder: string;
+	sponsor: string;
 	holderFundingExpiration: number;
 }
 
@@ -38,6 +39,7 @@ const FundDeal: FC<FundDealProps> = ({
 	purchaseToken,
 	purchaseTokenTotalForDeal,
 	holder,
+	sponsor,
 	holderFundingExpiration,
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
@@ -287,7 +289,11 @@ const FundDeal: FC<FundDealProps> = ({
 					{walletAddress != holder
 						? 'Only the holder funds the deal'
 						: !isEnough
-						? `Holder balance is only ${balance} but ${visibleAmount} is required to finalize the deal`
+						? `Holder balance is only ${balance} but ${visibleAmount} is required to fund the deal ${
+								holder === sponsor
+									? '. If you cancelled the pool do not fund this deal. After 30 minutes have passed your investors may withdraw.'
+									: ''
+						  }`
 						: isAllowance
 						? 'Approval is Required First'
 						: 'Finalize Deal'}
