@@ -1,66 +1,41 @@
-import Link from 'next/link';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 import styled from 'styled-components';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
+import ContractsInterface from 'containers/ContractsInterface';
 import TransactionNotifier from 'containers/TransactionNotifier';
 
-import VAelinTokenContract from 'containers/ContractsInterface/contracts/vAelinToken';
-import VAelinConverterContract from 'containers/ContractsInterface/contracts/VAelinConverter';
+import useGetTokenBalance from 'queries/token/useGetTokenBalance';
 
 import Button from 'components/Button';
 import { FlexDivColCentered } from 'components/common';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
-import ROUTES from 'constants/routes';
 import { GasLimitEstimate } from 'constants/networks';
-import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { TransactionStatus } from 'constants/transactions';
 
-import { getKeyValue } from 'utils/helpers';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
 const ConvertSection = () => {
 	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
-	const [hasVAelinBalance, setHasVAelinBalance] = useState<boolean>(false);
 	const [showConverterTxModal, setConverterTxModal] = useState<boolean>(false);
 	const [gasvAelinConverterLimitEstimate, setvAelinConverterGasLimitEstimate] =
 		useState<GasLimitEstimate>(null);
 
-	const { gasPrice, setGasPrice, setTxState } = TransactionData.useContainer();
+	const { contracts } = ContractsInterface.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const { walletAddress, network, signer } = Connector.useContainer();
+	const { walletAddress, network } = Connector.useContainer();
+	const { gasPrice, setGasPrice, setTxState } = TransactionData.useContainer();
 
-	const vAelinConverterContract = useMemo(() => {
-		if (!signer || !network?.id) return null;
+	const vAelinTokenContract = contracts?.vAelinConverter?.VAelinTokenContract ?? null;
+	const vAelinConverterContract = contracts?.vAelinConverter?.VAelinConverterContract ?? null;
 
-		const vAelinConverterContract = (getKeyValue(VAelinConverterContract) as any)(
-			network?.id ?? DEFAULT_NETWORK_ID
-		);
+	const tokenBalanceQuery = useGetTokenBalance({ tokenContract: vAelinTokenContract });
 
-		if (!vAelinConverterContract) return null;
-
-		return new ethers.Contract(
-			vAelinConverterContract.address,
-			vAelinConverterContract.abi,
-			signer
-		);
-	}, [signer, network?.id]);
-
-	const vAelinTokenContract = useMemo(() => {
-		if (!signer || !network?.id) return null;
-
-		const vAelinTokenContract = (getKeyValue(VAelinTokenContract) as any)(
-			network?.id ?? DEFAULT_NETWORK_ID
-		);
-
-		if (!vAelinTokenContract) return null;
-
-		return new ethers.Contract(vAelinTokenContract.address, vAelinTokenContract.abi, signer);
-	}, [signer, network?.id]);
+	const hasTokenBalance = !!(tokenBalanceQuery?.data ?? wei(0)).toNumber();
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -99,19 +74,7 @@ const ConvertSection = () => {
 		}
 	}, [vAelinTokenContract, vAelinConverterContract, walletAddress]);
 
-	const getVAelinBalance = useCallback(async () => {
-		if (!vAelinTokenContract || !walletAddress) return;
-
-		try {
-			const tx = await vAelinTokenContract.balanceOf(walletAddress);
-			setHasVAelinBalance(!!Number(ethers.utils.formatEther(tx)));
-		} catch (e) {
-			console.log(e);
-			setHasVAelinBalance(false);
-		}
-	}, [vAelinTokenContract, walletAddress]);
-
-	const handleConverAll = useCallback(async () => {
+	const handleConvertAll = useCallback(async () => {
 		if (!vAelinConverterContract || !vAelinTokenContract || !walletAddress) return;
 		try {
 			const tx = await vAelinConverterContract.convertAll({
@@ -126,7 +89,7 @@ const ConvertSection = () => {
 					onTxConfirmed: () => {
 						setTxState(TransactionStatus.SUCCESS);
 						setTimeout(() => {
-							getVAelinBalance();
+							tokenBalanceQuery.refetch();
 						}, 5 * 1000);
 					},
 				});
@@ -137,7 +100,7 @@ const ConvertSection = () => {
 	}, [
 		gasPrice,
 		gasvAelinConverterLimitEstimate,
-		getVAelinBalance,
+		tokenBalanceQuery,
 		monitorTransaction,
 		setTxState,
 		vAelinConverterContract,
@@ -186,25 +149,21 @@ const ConvertSection = () => {
 		getAllowance();
 	}, [getAllowance]);
 
-	useEffect(() => {
-		getVAelinBalance();
-	}, [getVAelinBalance]);
-
 	return (
 		<>
 			<Row>
 				<Header>Convert your vAELIN</Header>
-				{!hasVAelinBalance && (
+				{!hasTokenBalance && (
 					<SubmitButton disabled variant="text">
 						Nothing to Convert
 					</SubmitButton>
 				)}
-				{!hasAllowance && hasVAelinBalance && (
+				{!hasAllowance && hasTokenBalance && (
 					<SubmitButton onClick={() => setConverterTxModal(true)} variant="text">
 						Approve vAELIN
 					</SubmitButton>
 				)}
-				{hasVAelinBalance && (
+				{hasTokenBalance && (
 					<SubmitButton
 						disabled={!hasAllowance}
 						onClick={() => setConverterTxModal(true)}
@@ -219,18 +178,13 @@ const ConvertSection = () => {
 					the vAELIN pool
 				</Note>
 			</Row>
-			<Row>
-				<Link href={ROUTES.Pools.PoolView('0x3074306c0cc9200602bfc64beea955928dac56dd')} passHref>
-					<Anchor>Go to the vAELIN Pool</Anchor>
-				</Link>
-			</Row>
 			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setConverterTxModal}
 				isModalOpen={showConverterTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasvAelinConverterLimitEstimate}
-				onSubmit={!hasAllowance ? handleApprove : handleConverAll}
+				onSubmit={!hasAllowance ? handleApprove : handleConvertAll}
 			>
 				{!hasAllowance ? `Approval token` : `Conversion from vAELIN to AELIN`}
 			</ConfirmTransactionModal>
