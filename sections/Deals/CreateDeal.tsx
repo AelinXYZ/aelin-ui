@@ -18,7 +18,7 @@ import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
-import { FlexDivStart, FlexDivRow } from 'components/common';
+import { FlexDivStart, FlexDivRow, Notice } from 'components/common';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 
 import { formatNumber } from 'utils/numbers';
@@ -843,7 +843,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 						<SectionTitle address={null} title="Cancel Pool" />
 					</ContentTitle>
 				</ContentHeader>
-				<div>Pool Cancellation takes 30 minutes and then investors may withdraw their funds</div>
+				<StyledNotice>
+					Pool Cancellation takes 30 minutes, after which investors may withdraw their funds. After
+					sumbitting the cancel transaction no further action is needed. Simply wait 30 minutes and
+					then notify investors the pool is closed and they may withdraw
+				</StyledNotice>
 				<CancelButton onClick={() => setShowTxModal(true)}>Cancel Pool</CancelButton>
 				<ConfirmTransactionModal
 					title={`Confirm Pool Cancellation`}
@@ -862,6 +866,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 
 const ExchangeRate = styled.div`
 	margin-top: 10px;
+`;
+
+const StyledNotice = styled(Notice)`
+	max-width: 1200px;
+	background: transparent;
+	text-align: left;
+	border: 1px solid ${(props) => props.theme.colors.headerGrey};
+	color: ${(props) => props.theme.colors.black};
 `;
 
 const Dot = styled.div<{ isActive: boolean }>`

@@ -281,6 +281,11 @@ const FundDeal: FC<FundDealProps> = ({
 		[balance, visibleAmount]
 	);
 
+	const cancelText =
+		holder === sponsor
+			? '. We noticed you are the sponsor and the counter party. This is usually due to a pool cancellation unless you are sponsoring your own deal. If you cancelled the pool no further action is required.'
+			: '';
+
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
@@ -289,13 +294,9 @@ const FundDeal: FC<FundDealProps> = ({
 					{walletAddress != holder
 						? 'Only the holder funds the deal'
 						: !isEnough
-						? `Holder balance is only ${balance} but ${visibleAmount} is required to fund the deal ${
-								holder === sponsor
-									? '. If you cancelled the pool do not fund this deal. After 30 minutes have passed your investors may withdraw.'
-									: ''
-						  }`
+						? `Holder balance is only ${balance} but ${visibleAmount} is required to fund the deal${cancelText}`
 						: isAllowance
-						? 'Approval is Required First'
+						? `Approval is Required First${cancelText}`
 						: 'Finalize Deal'}
 				</Header>
 				<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
