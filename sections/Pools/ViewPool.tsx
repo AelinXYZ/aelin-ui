@@ -179,6 +179,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					</ContentHeader>
 					<FundDeal
 						holder={deal?.holder}
+						sponsor={pool?.sponsor}
 						dealAddress={deal?.id}
 						purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
 						purchaseToken={pool.purchaseToken}

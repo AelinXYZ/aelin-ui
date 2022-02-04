@@ -9,12 +9,16 @@ import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
+import SectionTitle from 'sections/shared/SectionTitle';
+import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
+
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import Input from 'components/Input/Input';
 import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
 import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
-import { FlexDivStart, FlexDivRow } from 'components/common';
+import { FlexDivStart, FlexDivRow, Notice } from 'components/common';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 
 import { formatNumber } from 'utils/numbers';
@@ -41,9 +45,12 @@ interface CreateDealProps {
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<string>('0');
+	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
+	const [cancelPoolGasLimitEstimate, setCancelPoolGasLimitEstimate] =
+		useState<GasLimitEstimate>(null);
 	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
 		TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -54,6 +61,55 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	});
 
 	const poolBalances = poolBalancesQuery?.data ?? null;
+
+	const handleCancelPool = useCallback(async () => {
+		if (!walletAddress || !signer) return;
+		try {
+			const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+			const decimals = await poolContract.decimals();
+			const thirtyMins = 30 * 60;
+			const tx = await poolContract!.createDeal(
+				purchaseToken,
+				ethers.utils.parseUnits(totalPoolSupply, decimals),
+				ethers.utils.parseUnits(totalPoolSupply, decimals),
+				thirtyMins,
+				thirtyMins,
+				thirtyMins,
+				0,
+				walletAddress,
+				thirtyMins,
+				{
+					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+					gasPrice: gasPrice.toBN(),
+				}
+			);
+
+			if (tx) {
+				setTxState(TransactionStatus.WAITING);
+				monitorTransaction({
+					txHash: tx.hash,
+					onTxConfirmed: () => {
+						setTxHash(tx.hash);
+						setTxState(TransactionStatus.SUCCESS);
+					},
+				});
+			}
+		} catch (e) {
+			console.log('cancel tx e', e);
+			setTxState(TransactionStatus.FAILED);
+		}
+	}, [
+		gasLimitEstimate,
+		gasPrice,
+		monitorTransaction,
+		poolAddress,
+		purchaseToken,
+		setTxHash,
+		totalPoolSupply,
+		signer,
+		walletAddress,
+		setTxState,
+	]);
 
 	const handleSubmit = async () => {
 		if (!walletAddress || !signer) return;
@@ -85,7 +141,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				openRedemptionDuration,
 				holder,
 				holderFundingDuration,
-				{ gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(), gasPrice: gasPrice.toBN() }
+				{
+					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+					gasPrice: gasPrice.toBN(),
+				}
 			);
 
 			if (tx) {
@@ -276,6 +335,44 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		setGasLimitEstimate,
 		totalPoolSupply,
 		network.id,
+	]);
+
+	useEffect(() => {
+		const getCancelPoolGasLimitEstimate = async () => {
+			if (!walletAddress || !signer) return setCancelPoolGasLimitEstimate(null);
+
+			try {
+				const thirtyMins = 30 * 60;
+				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+				const decimals = await poolContract.decimals();
+				let cancelGasEstimate = wei(
+					await poolContract!.estimateGas.createDeal(
+						purchaseToken,
+						ethers.utils.parseUnits(totalPoolSupply, decimals),
+						ethers.utils.parseUnits(totalPoolSupply, decimals),
+						thirtyMins,
+						thirtyMins,
+						thirtyMins,
+						0,
+						walletAddress,
+						thirtyMins
+					),
+					0
+				);
+				setCancelPoolGasLimitEstimate(cancelGasEstimate);
+			} catch (e) {
+				console.log('cancel deal estimating error', e);
+				setCancelPoolGasLimitEstimate(null);
+			}
+		};
+		getCancelPoolGasLimitEstimate();
+	}, [
+		signer,
+		walletAddress,
+		poolAddress,
+		setCancelPoolGasLimitEstimate,
+		purchaseToken,
+		totalPoolSupply,
 	]);
 
 	const gridItems = useMemo(
@@ -725,25 +822,58 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				text: formik.values.holder ? truncateAddress(formik.values.holder) : '',
 			},
 		],
-		[formik.values]
+		[formik.values, poolBalances?.purchaseTokenSymbol]
 	);
 
 	return (
-		<CreateForm
-			formik={formik}
-			gridItems={gridItems}
-			summaryItems={summaryItems}
-			txType={CreateTxType.CreateDeal}
-			txState={txState}
-			txHash={txHash}
-			setGasPrice={setGasPrice}
-			gasLimitEstimate={gasLimitEstimate}
-		/>
+		<div>
+			<CreateForm
+				formik={formik}
+				gridItems={gridItems}
+				summaryItems={summaryItems}
+				txType={CreateTxType.CreateDeal}
+				txState={txState}
+				txHash={txHash}
+				setGasPrice={setGasPrice}
+				gasLimitEstimate={gasLimitEstimate}
+			/>
+			<SectionWrapper>
+				<ContentHeader>
+					<ContentTitle>
+						<SectionTitle address={null} title="Cancel Pool" />
+					</ContentTitle>
+				</ContentHeader>
+				<StyledNotice>
+					Pool Cancellation takes 30 minutes, after which investors may withdraw their funds. After
+					sumbitting the cancel transaction no further action is needed. Simply wait 30 minutes and
+					then notify investors the pool is closed and they may withdraw
+				</StyledNotice>
+				<CancelButton onClick={() => setShowTxModal(true)}>Cancel Pool</CancelButton>
+				<ConfirmTransactionModal
+					title={`Confirm Pool Cancellation`}
+					setIsModalOpen={setShowTxModal}
+					isModalOpen={showTxModal}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={cancelPoolGasLimitEstimate}
+					onSubmit={handleCancelPool}
+				>
+					In 30 minutes purchasers in your pool will be able to withdraw
+				</ConfirmTransactionModal>
+			</SectionWrapper>
+		</div>
 	);
 };
 
 const ExchangeRate = styled.div`
 	margin-top: 10px;
+`;
+
+const StyledNotice = styled(Notice)`
+	max-width: 1200px;
+	background: transparent;
+	text-align: left;
+	border: 1px solid ${(props) => props.theme.colors.headerGrey};
+	color: ${(props) => props.theme.colors.black};
 `;
 
 const Dot = styled.div<{ isActive: boolean }>`
@@ -759,6 +889,22 @@ const Dot = styled.div<{ isActive: boolean }>`
 
 const AllocationRow = styled(FlexDivStart)`
 	margin-top: 10px;
+`;
+
+const CancelButton = styled.div`
+	cursor: pointer;
+	margin: 20px;
+	width: 20%;
+	height: 56px;
+	text-align: center;
+	padding-top: 16px;
+	font-size: 1.3rem;
+	background-color: ${(props) => props.theme.colors.statusRed};
+	border: none;
+	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	color: ${(props) => props.theme.colors.white};
+	bottom: 0;
+	border-radius: 8px;
 `;
 
 export default CreateDeal;
