@@ -35,7 +35,9 @@ const Header: FC = () => {
 			<Links>
 				{LINKS.map(({ label, pathname, query, isDisabled, newTab }) => {
 					return newTab ? (
-						<StyledExternalLink href={pathname}>{label}</StyledExternalLink>
+						<StyledExternalLink key={`link-${label}`} href={pathname}>
+							{label}
+						</StyledExternalLink>
 					) : (
 						<Link
 							href={query != null ? { pathname, query } : { pathname }}
