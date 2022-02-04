@@ -10,6 +10,7 @@ const colors = {
 	headerGrey: '#5B5B5B',
 	headerGreen: '#3F7923',
 	forestGreen: '#477830',
+	lightGreen: 'rgb(63, 121, 35, 0.08)',
 	background: '#DBDBDB',
 	modalBackground: '#DFDFDF',
 	cell: '#E2E2E2',

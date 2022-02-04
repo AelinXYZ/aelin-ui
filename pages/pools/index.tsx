@@ -17,6 +17,7 @@ import Countdown from 'components/Countdown';
 import { FlexDivStart } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
+import QuestionMark from 'components/QuestionMark';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
@@ -33,6 +34,7 @@ import { filterList } from 'constants/poolFilterList';
 import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
+import { NetworkId } from 'constants/networks';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -47,6 +49,7 @@ const Pools: FC = () => {
 	);
 
 	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
+	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
 
 	useEffect(() => {
 		setSponsorFilter(router.query?.sponsorFilter ?? '');
@@ -157,7 +160,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							<TokenDisplay displayAddress={true} symbol={undefined} address={cellProps.value} />
+							<TokenDisplay displayAddress={false} symbol={undefined} address={cellProps.value} />
 						</FlexDivStart>
 					);
 				},
@@ -205,8 +208,16 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				// TODO update this to be right
-				Header: 'Purchase window closes',
+				Header: (
+					<div>
+						Purchase window closes
+						{isOptimism && (
+							<QuestionMark
+								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+							/>
+						)}
+					</div>
+				),
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
 					if (
@@ -246,8 +257,16 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				// TODO update this to be right
-				Header: 'Pool duration',
+				Header: (
+					<div>
+						Pool duration
+						{isOptimism && (
+							<QuestionMark
+								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+							/>
+						)}
+					</div>
+				),
 				accessor: 'duration',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
@@ -268,7 +287,7 @@ const Pools: FC = () => {
 						Number(ethers.utils.formatEther(cellProps.value.toString())).toFixed(2)
 					)}%`;
 				},
-				width: 75,
+				width: 50,
 			},
 			{
 				Header: 'privacy',
@@ -284,7 +303,7 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
-				width: 75,
+				width: 100,
 			},
 		],
 		[network.id]

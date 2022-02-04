@@ -1,7 +1,5 @@
 //@ts-nocheck
 import { FC, useState, useEffect } from 'react';
-import QuestionMark from 'components/QuestionMark';
-
 import { NetworkId } from 'constants/networks';
 
 interface CountdownProps {
@@ -54,6 +52,14 @@ const Countdown: FC<CountdownProps> = ({ time, timeStart, networkId }) => {
 			return;
 		}
 
+		if (interval === 's' && !!timerComponents) {
+			return;
+		}
+
+		if (interval === 's' && !timerComponents) {
+			return '< 1m';
+		}
+
 		timerComponents.push(
 			<span>
 				{timeLeft[interval]}
@@ -62,19 +68,13 @@ const Countdown: FC<CountdownProps> = ({ time, timeStart, networkId }) => {
 		);
 	});
 	const estSymbol = networkId === NetworkId['Optimism-Mainnet'] ? '~' : '';
-	const questionMark =
-		networkId === NetworkId['Optimism-Mainnet'] ? (
-			<QuestionMark
-				text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-			/>
-		) : null;
+
 	return (
 		<div>
 			{timerComponents.length ? (
 				<>
 					<>{estSymbol}</>
 					<>{timerComponents}</>
-					<>{questionMark}</>
 				</>
 			) : (
 				<span>Ended</span>

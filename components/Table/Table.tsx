@@ -155,7 +155,8 @@ export const Table: FC<TableProps> = ({
 					) : null}
 				</ReactTable>
 			</TableContainer>
-			<NoResultsContainer>{noResultsMessage}</NoResultsContainer>
+			{(!data || data.length === 0) && <NoResultsContainer>{noResultsMessage}</NoResultsContainer>}
+
 			{showPagination && (
 				<Pagination
 					pageIndex={pageIndexState + 1}
@@ -223,7 +224,10 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 	height: 100%;
 	overflow-x: auto;
 	position: relative;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border-top: none;
 
 	${(props) =>
 		props.palette === 'primary' &&
@@ -233,6 +237,7 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 			}
 			${TableCell} {
 				font-size: 1rem;
+				justify-content: center;
 				height: ${CARD_HEIGHT};
 				border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
 				font-family: ${(props) => props.theme.fonts.ASMRegular};
@@ -247,26 +252,22 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 					background-color: ${(props) => props.theme.colors.cell};
 				}
 				&:hover {
-					background-color: ${(props) => props.theme.colors.forestGreen};
-					color: ${(props) => props.theme.colors.white};
+					background-color: ${(props) => props.theme.colors.lightGreen};
+					color: ${(props) => props.theme.colors.black};
 				}
 			}
 			${TableCellHead} {
 				color: ${(props) => props.theme.colors.headerGrey};
 				font-family: ${(props) => props.theme.fonts.ASMRegular};
 				color: ${(props) => props.theme.colors.white};
-				background-color: ${(props) => props.theme.colors.grey};
-				color: ${(props) => props.theme.colors.black};
-				text-transform: uppercase;
+				background-color: ${(props) => props.theme.colors.forestGreen};
+				text-transform: capitalize;
 				font-size: 1rem;
 			}
 			${TableBodyRow} {
 				background-color: ${(props) => props.theme.colors.grey};
 				&:last-child {
 					border-bottom: 0;
-				}
-				&:hover {
-					background-color: ${props.theme.colors.forestGreen};
 				}
 			}
 		`}

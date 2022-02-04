@@ -26,43 +26,36 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 	);
 };
 
-export const SectionWrapper = styled.div`
-	margin-top: 35px;
-`;
+const Container = styled.div``;
 
-export const Container = styled.div`
-	padding: 32px 42px 112px 42px;
-`;
-
-export const Content = styled.div`
+const Content = styled.div`
 	max-width: 1440px;
-	margin: 0 auto;
-	margin-top: 116px;
+	padding: 0 40px;
+	margin: 60px auto 0 auto;
 	display: flex;
 `;
 
-export const ContentHeader = styled.div`
+const ContentHeader = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	margin-bottom: 34px;
 `;
 
-export const ContentTitle = styled.h1`
+const ContentTitle = styled.h1`
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.8rem;
+	font-size: 1.4rem;
 	margin: 0;
 `;
 
-export const ContentSubtitle = styled.p`
+const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGrey};
 	font-size: 1.2rem;
 `;
 
-export const ContentBody = styled.div``;
+const ContentBody = styled.div``;
 
-export const ColCenter = styled.div`
+const ColCenter = styled.div`
 	width: 100%;
 `;
 
