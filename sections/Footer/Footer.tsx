@@ -29,9 +29,6 @@ const Footer: FC = () => {
 			{asPath === ROUTES.Home ? (
 				<NavRow>
 					<>
-						<Link href={ROUTES.Home} passHref>
-							<StyledA>HOME. </StyledA>
-						</Link>
 						<Link href={ROUTES.Pools.Home} passHref>
 							<StyledA>POOLS. </StyledA>
 						</Link>
@@ -41,11 +38,11 @@ const Footer: FC = () => {
 						<Link href={ROUTES.ClaimTokens} passHref>
 							<StyledA>CLAIM AELIN. </StyledA>
 						</Link>
-						<Link href={ROUTES.Docs} passHref>
-							<StyledA target="_blank">DOCS. </StyledA>
-						</Link>
 						<Link href={ROUTES.Stake} passHref>
 							<StyledA>STAKE. </StyledA>
+						</Link>
+						<Link href={ROUTES.Docs} passHref>
+							<StyledA target="_blank">DOCS. </StyledA>
 						</Link>
 					</>
 				</NavRow>

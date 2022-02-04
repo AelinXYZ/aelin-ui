@@ -15,8 +15,9 @@ const Header: FC = () => {
 		() => [
 			{ label: 'Pools', pathname: ROUTES.Pools.Home },
 			{ label: 'Claim Aelin', pathname: ROUTES.ClaimTokens },
-			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true },
 			{ label: 'Stake', pathname: ROUTES.Stake },
+			{ label: 'Uniswap Pool', pathname: ROUTES.UniswapPool, newTab: true },
+			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true },
 		],
 		[]
 	);
@@ -32,27 +33,21 @@ const Header: FC = () => {
 			</ImageContainer>
 
 			<Links>
-				{LINKS.map(({ label, pathname, query, isDisabled, newTab }) => (
-					<Link
-						href={query != null ? { pathname, query } : { pathname }}
-						key={`link-${label}`}
-						passHref
-					>
-						<StyledLink
-							className={isDisabled ? 'is-disabled' : ''}
-							target={newTab ? '_blank' : '_self'}
+				{LINKS.map(({ label, pathname, query, isDisabled, newTab }) => {
+					return newTab ? (
+						<StyledExternalLink href={pathname}>{label}</StyledExternalLink>
+					) : (
+						<Link
+							href={query != null ? { pathname, query } : { pathname }}
+							key={`link-${label}`}
+							passHref
 						>
-							{label}
-						</StyledLink>
-					</Link>
-				))}
-				<StyledExternalLink
-					href={
-						'https://info.uniswap.org/#/optimism/pools/0x5e8b0fc35065a5d980c11f96cb52381de390b13f'
-					}
-				>
-					Uniswap Pool
-				</StyledExternalLink>
+							<StyledLink className={isDisabled ? 'is-disabled' : ''} target="_self">
+								{label}
+							</StyledLink>
+						</Link>
+					);
+				})}
 			</Links>
 			<HeaderBlock>
 				<NetworkWidget />
