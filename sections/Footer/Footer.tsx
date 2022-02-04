@@ -41,9 +41,6 @@ const Footer: FC = () => {
 						<Link href={ROUTES.ClaimTokens} passHref>
 							<StyledA>CLAIM AELIN. </StyledA>
 						</Link>
-						<Link href={ROUTES.Docs} passHref>
-							<StyledA target="_blank">DOCS. </StyledA>
-						</Link>
 						<Link href={ROUTES.Stake} passHref>
 							<StyledA>STAKE. </StyledA>
 						</Link>
