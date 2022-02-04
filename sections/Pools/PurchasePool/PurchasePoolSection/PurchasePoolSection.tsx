@@ -380,6 +380,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					txHash: tx.hash,
 					onTxConfirmed: () => {
 						setTimeout(() => {
+							setInputValue('');
 							poolBalancesQuery.refetch();
 						}, 5 * 1000);
 						setTxState(TransactionStatus.SUCCESS);

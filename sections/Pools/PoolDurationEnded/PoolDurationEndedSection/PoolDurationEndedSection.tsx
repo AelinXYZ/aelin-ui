@@ -114,6 +114,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {
+						setInputValue('');
 						setTimeout(() => {
 							poolBalancesQuery.refetch();
 						}, 5 * 1000);
