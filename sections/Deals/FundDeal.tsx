@@ -216,8 +216,11 @@ const FundDeal: FC<FundDealProps> = ({
 								? `${symbol} / ${purchaseTokenSymbol}: `
 								: `Underlying / Purchase: `}
 							{formatNumber(
-								Number(amount?.toString() ?? '0') /
-									Number((purchaseTokenTotalForDeal ?? 0).toString()),
+								ethers.utils.formatUnits((amount ?? 0).toString(), decimals) /
+									ethers.utils.formatUnits(
+										(purchaseTokenTotalForDeal ?? 0).toString(),
+										purchaseTokenDecimals
+									),
 								DEFAULT_DECIMALS
 							)}
 						</ExchangeRate>
@@ -226,8 +229,10 @@ const FundDeal: FC<FundDealProps> = ({
 								? `${purchaseTokenSymbol} / ${symbol}: `
 								: `Purchase / Underlying: `}
 							{formatNumber(
-								Number((purchaseTokenTotalForDeal ?? 0).toString()) /
-									Number(amount?.toString() ?? '0'),
+								ethers.utils.formatUnits(
+									(purchaseTokenTotalForDeal ?? 0).toString(),
+									purchaseTokenDecimals
+								) / ethers.utils.formatUnits((amount ?? 0).toString(), decimals),
 								DEFAULT_DECIMALS
 							)}
 						</ExchangeRate>
@@ -263,16 +268,17 @@ const FundDeal: FC<FundDealProps> = ({
 			},
 		],
 		[
-			visibleAmount,
-			holderFundingExpiration,
-			symbol,
 			token,
-			purchaseToken,
-			purchaseTokenSymbol,
-			purchaseTokenTotalForDeal,
-			amount,
-			purchaseTokenDecimals,
+			symbol,
+			visibleAmount,
 			areTokenSymbolsAvailable,
+			purchaseTokenSymbol,
+			amount,
+			decimals,
+			purchaseTokenTotalForDeal,
+			purchaseTokenDecimals,
+			purchaseToken,
+			holderFundingExpiration,
 		]
 	);
 
