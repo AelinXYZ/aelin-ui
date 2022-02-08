@@ -17,7 +17,7 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 				<ColCenter>
 					<ContentHeader>
 						<ContentTitle>{title}</ContentTitle>
-						<ContentSubtitle>{subtitle}</ContentSubtitle>
+						{subtitle && <ContentSubtitle>{subtitle}</ContentSubtitle>}
 					</ContentHeader>
 					<ContentBody>{children}</ContentBody>
 				</ColCenter>
@@ -26,36 +26,40 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 	);
 };
 
-const Container = styled.div``;
+export const Container = styled.div``;
 
-const Content = styled.div`
+export const Content = styled.div`
 	max-width: 1440px;
-	padding: 0 40px;
+	padding: 0 40px 40px 40px;
 	margin: 60px auto 0 auto;
 	display: flex;
 `;
 
-const ContentHeader = styled.div`
+export const SectionWrapper = styled.div`
+	margin-top: 35px;
+`;
+
+export const ContentHeader = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 `;
 
-const ContentTitle = styled.h1`
+export const ContentTitle = styled.h1`
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 1.4rem;
-	margin: 0;
+	margin: 0 0 6px 0;
 `;
 
-const ContentSubtitle = styled.p`
+export const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGrey};
 	font-size: 1.2rem;
 `;
 
-const ContentBody = styled.div``;
+export const ContentBody = styled.div``;
 
-const ColCenter = styled.div`
+export const ColCenter = styled.div`
 	width: 100%;
 `;
 

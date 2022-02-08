@@ -13,7 +13,6 @@ import FilterPool from 'sections/Pools/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';
-import Countdown from 'components/Countdown';
 import { FlexDivStart } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
@@ -35,6 +34,7 @@ import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
 import { NetworkId } from 'constants/networks';
+import { showDateOrMessageIfClosed } from 'utils/time';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -248,18 +248,14 @@ const Pools: FC = () => {
 					) {
 						return <div>Cap Reached</div>;
 					}
-					return (
-						<div>
-							<Countdown timeStart={null} time={cellProps.value} networkId={network.id} />
-						</div>
-					);
+					return showDateOrMessageIfClosed(cellProps.value, 'Ended');
 				},
 				width: 125,
 			},
 			{
 				Header: (
 					<div>
-						Pool duration
+						Pool closes
 						{isOptimism && (
 							<QuestionMark
 								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
@@ -267,15 +263,9 @@ const Pools: FC = () => {
 						)}
 					</div>
 				),
-				accessor: 'duration',
+				accessor: 'poolExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
-					return (
-						<Countdown
-							timeStart={cellProps.row.original.purchaseExpiry}
-							time={cellProps.row.original.purchaseExpiry + cellProps.value}
-							networkId={network.id}
-						/>
-					);
+					return showDateOrMessageIfClosed(cellProps.value, 'Ended');
 				},
 				width: 125,
 			},
@@ -306,7 +296,7 @@ const Pools: FC = () => {
 				width: 100,
 			},
 		],
-		[network.id]
+		[isOptimism]
 	);
 
 	const filterValues = {

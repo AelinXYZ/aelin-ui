@@ -195,6 +195,7 @@ const TableBodyRow = styled(TableRow)`
 
 const TableCell = styled(FlexDivCentered)`
 	box-sizing: border-box;
+	text-align: center;
 	&:first-child {
 		padding-left: 18px;
 	}
