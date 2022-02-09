@@ -193,8 +193,7 @@ const abi = [
 
 const contract = {
 	10: {
-		// TODO: Use OP VAelinConverter address
-		address: '',
+		address: '0xf02a67988AdB4b92365911cD2522eF4dEB1c9BC9',
 		abi,
 	},
 	42: {
