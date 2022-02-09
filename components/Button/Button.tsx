@@ -60,7 +60,8 @@ const Button = styled.button<ButtonProps>`
 			height: 48px;
 			line-height: 48px;
 		`}
-		${(props) =>
+
+	${(props) =>
 		props.variant === 'round' &&
 		css`
 			color: ${(props) => props.theme.colors.white};
@@ -139,17 +140,23 @@ const Button = styled.button<ButtonProps>`
 		${(props) =>
 		props.variant === 'outline' &&
 		css`
-			color: ${(props) => props.theme.colors.white};
-			background: ${(props) => props.theme.colors.grey};
-			border: 1px solid ${(props) => props.theme.colors.headerGrey};
+			background: transparent;
+			color: ${(props) => props.theme.colors.forestGreen};
+			border: 1px solid ${(props) => props.theme.colors.forestGreen};
+
 			&:hover {
 				&:not(:disabled) {
+					color: ${(props) => props.theme.colors.white};
 					background: ${(props) => props.theme.colors.forestGreen};
 				}
 			}
+
 			&:disabled {
-				background: ${(props) => Color(props.theme.colors.grey).alpha(0.2).rgb().string()};
+				border: none;
 				opacity: 0.5;
+				color: ${(props) => props.theme.colors.headerGrey};
+				border: 1px solid ${(props) => props.theme.colors.headerGrey};
+				background: ${(props) => Color(props.theme.colors.grey).alpha(0.2).rgb().string()};
 			}
 		`}
 

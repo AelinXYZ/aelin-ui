@@ -1,11 +1,16 @@
-import { FC, useState, useEffect } from 'react';
 import { FormikProps } from 'formik';
-
 import styled from 'styled-components';
+import { FC, useState, useEffect } from 'react';
+
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+import Button from 'components/Button';
+
 import Connector from 'containers/Connector';
+
 import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus } from 'constants/transactions';
+import { Privacy } from 'constants/pool';
+import WhiteList from 'components/WhiteList';
 
 export type SummaryItem = {
 	label: string;
@@ -55,6 +60,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	gasLimitEstimate,
 }) => {
 	const { walletAddress } = Connector.useContainer();
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 
 	const isValid = isValidForm && walletAddress ? true : false;
@@ -75,10 +81,13 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	}, [txState]);
 
 	const isPurchaseButtonEnabled = isValid && txState !== TransactionStatus.WAITING;
+	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 	return (
 		<Container>
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>
+
 			{summaryBoxGrid}
+
 			<PurchaseButton
 				isValidForm={isPurchaseButtonEnabled}
 				onClick={() => {
@@ -89,6 +98,19 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			>
 				{txTypeToTitle(txType)}
 			</PurchaseButton>
+
+			{isPrivate && (
+				<Button size="lg" isRounded variant="outline" onClick={() => setIsModalOpen(!isModalOpen)}>
+					Add/Edit whitelisted addresses
+				</Button>
+			)}
+
+			<WhiteList
+				formik={formik}
+				isModalOpen={isModalOpen && isPrivate}
+				setIsModalOpen={setIsModalOpen}
+			/>
+
 			<ConfirmTransactionModal
 				title={`Confirm ${txTypeToTitle(txType)}`}
 				setIsModalOpen={setShowTxModal}

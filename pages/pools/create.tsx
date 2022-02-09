@@ -494,8 +494,6 @@ const Create: FC = () => {
 		[walletAddress, formik]
 	);
 
-	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
-
 	return (
 		<>
 			<Head>
@@ -514,7 +512,6 @@ const Create: FC = () => {
 						setGasPrice={setGasPrice}
 						gasLimitEstimate={gasLimitEstimate}
 					/>
-					{isPrivate && <WhiteList formik={formik} />}
 				</>
 			</PageLayout>
 		</>

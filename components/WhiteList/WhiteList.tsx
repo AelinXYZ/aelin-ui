@@ -7,8 +7,9 @@ import { FC, useEffect, useState } from 'react';
 import Button from 'components/Button';
 import Input from 'components/Input/Input';
 import UploadCSV from 'components/UploadCSV';
+import BaseModal from 'components/BaseModal';
 
-import { ColCenter, ContentTitle } from 'sections/Layout/PageLayout';
+import { ColCenter } from 'sections/Layout/PageLayout';
 
 import { Privacy, initialWhitelistValues } from 'constants/pool';
 
@@ -17,7 +18,7 @@ import Remove from 'assets/svg/remove.svg';
 
 import { IWhitelistComponent, IWhitelist, IStyleColumnProps, IStyleRowProps } from './types';
 
-const WhiteList: FC<IWhitelistComponent> = ({ formik }) => {
+const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpen }) => {
 	const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(false);
 	const [isClearDisabled, setIsClearDisabled] = useState<boolean>(true);
 
@@ -95,99 +96,96 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik }) => {
 	};
 
 	return (
-		<Container>
-			<ColCenter>
-				<HeaderRow>
-					<Column width="70">
-						<ContentTitle>Allowlist</ContentTitle>
-					</Column>
-					<Column width="30" justify="center" align="flex-end">
-						<UploadCSV onUploadCSV={handleUploadCSV} />
-					</Column>
-				</HeaderRow>
-				<ContentBody>
-					<Row>
-						<Column width="60">
-							<Title>Address</Title>
-						</Column>
-						<Column width="30">
-							<Title>Amount</Title>
-						</Column>
-					</Row>
-					<Row>
-						{formik.values.whitelist.map((_: string, index: number) => {
-							return (
-								<Row key={`row-${index}`} align="center">
-									<Column width="60" justify="center">
-										<Input
-											type="text"
-											disabled={formik.values.whitelist[index].isSaved}
-											placeholder="Add address"
-											name={`whitelist.${index}.address`}
-											value={formik.values.whitelist[index].address}
-											onChange={formik.handleChange}
-										/>
-									</Column>
-									<Column width="20" justify="center">
-										<Input
-											type="number"
-											placeholder="Max allocation"
-											disabled={formik.values.whitelist[index].isSaved}
-											name={`whitelist.${index}.amount`}
-											value={formik.values.whitelist[index].amount}
-											onChange={formik.handleChange}
-										/>
-									</Column>
-									<Column width="20" justify="center">
-										<Row align="center" justify="center">
-											<Pointer onClick={() => handleEditRow(index)}>
-												<Image src={Edit} alt="edit icon" />
-											</Pointer>
-											<Pointer onClick={() => handleRemoveRow(index)}>
-												<Image src={Remove} alt="remove icon" />
-											</Pointer>
-										</Row>
-									</Column>
+		<BaseModal title={'Whitelist'} setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}>
+			<div>
+				<ColCenter>
+					<ContentBody>
+						<Row>
+							<Column width="60">
+								<Row align="center">
+									<Title>Address</Title>
+									<UploadCSV onUploadCSV={handleUploadCSV} />
 								</Row>
-							);
-						})}
-					</Row>
-					<Row>
-						<Column>
-							<Button size="lg" variant="text" onClick={handleAddRows}>
-								+ Add more rows
+							</Column>
+							<Column width="30">
+								<Title>Amount</Title>
+							</Column>
+						</Row>
+						<Row>
+							{formik.values.whitelist.map((_: string, index: number) => {
+								return (
+									<Row key={`row-${index}`} align="center">
+										<Column width="60" justify="center">
+											<Input
+												type="text"
+												disabled={formik.values.whitelist[index].isSaved}
+												placeholder="Add address"
+												name={`whitelist.${index}.address`}
+												value={formik.values.whitelist[index].address}
+												onChange={formik.handleChange}
+											/>
+										</Column>
+										<Column width="25" justify="center">
+											<Input
+												type="number"
+												placeholder="Max allocation"
+												disabled={formik.values.whitelist[index].isSaved}
+												name={`whitelist.${index}.amount`}
+												value={formik.values.whitelist[index].amount}
+												onChange={formik.handleChange}
+											/>
+										</Column>
+										<Column width="15" justify="center">
+											<Row align="center" justify="flex-end">
+												<Pointer onClick={() => handleEditRow(index)}>
+													<Image src={Edit} alt="edit icon" />
+												</Pointer>
+												<Pointer onClick={() => handleRemoveRow(index)}>
+													<Image src={Remove} alt="remove icon" />
+												</Pointer>
+											</Row>
+										</Column>
+									</Row>
+								);
+							})}
+						</Row>
+						<Row>
+							<Column>
+								<Button size="lg" variant="text" onClick={handleAddRows}>
+									+ Add more rows
+								</Button>
+							</Column>
+						</Row>
+						<Row justify="flex-end">
+							<StyledButton
+								size="lg"
+								isRounded
+								variant="outline"
+								disabled={isClearDisabled}
+								onClick={handleClear}
+							>
+								Clear
+							</StyledButton>
+							<Button size="lg" variant="round" disabled={isSaveDisabled} onClick={handleSave}>
+								Save
 							</Button>
-						</Column>
-					</Row>
-					<Row>
-						<Button size="lg" variant="round" disabled={isSaveDisabled} onClick={handleSave}>
-							Save
-						</Button>
-						<Button size="lg" variant="round" disabled={isClearDisabled} onClick={handleClear}>
-							Clear
-						</Button>
-					</Row>
-				</ContentBody>
-			</ColCenter>
-		</Container>
+						</Row>
+					</ContentBody>
+				</ColCenter>
+			</div>
+		</BaseModal>
 	);
 };
 
-const Container = styled.div`
-	margin-top: 40px;
-`;
-
 const ContentBody = styled.div`
 	max-width: 621px;
-	padding: 20px;
 	border-radius: 8px;
-	background-color: #e2e2e2;
-	border: 1px solid #c4c4c4;
 `;
 
 const Pointer = styled.span`
 	cursor: pointer;
 	line-height: 1px;
+	margin: 0 2px;
 `;
 
 const Column = styled.div<IStyleColumnProps>`
@@ -209,15 +207,13 @@ const Row = styled.div<IStyleRowProps>`
 	align-items: ${(props) => props.align || 'flex-start'};
 `;
 
-const HeaderRow = styled(Row)`
-	max-width: 621px;
-	margin-bottom: 34px;
-`;
-
 const Title = styled.span`
 	font-size: 1.2rem;
-	margin-bottom: 5px;
 	color: ${(props) => props.theme.colors.forestGreen};
+`;
+
+const StyledButton = styled(Button)`
+	margin: 0 10px;
 `;
 
 export default WhiteList;

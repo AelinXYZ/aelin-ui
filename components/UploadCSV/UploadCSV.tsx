@@ -43,16 +43,16 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 			noClick
 		>
 			{() => (
-				<Button size="lg" variant="round" onClick={handleOpenDialog}>
+				<StyledButton size="sm" isRounded variant="outline" onClick={handleOpenDialog}>
 					Upload CSV
-				</Button>
+				</StyledButton>
 			)}
 		</CSVReader>
 	);
 };
 
 const StyledButton = styled(Button)`
-	background: #9e9e9e;
+	margin: 0 10px;
 `;
 
 export default UploadCSV;

@@ -39,6 +39,7 @@ const BaseModal: FC<BaseModalProps> = ({
 			>
 				<StyledModal>
 					<StyledModalHeader>
+						<StyledTitle>{title ?? ''}</StyledTitle>
 						<a
 							href="#"
 							onClick={() => {
@@ -51,7 +52,6 @@ const BaseModal: FC<BaseModalProps> = ({
 							<Image src={CloseIcon} alt="close" />
 						</a>
 					</StyledModalHeader>
-					{title != null ? <StyledTitle>{title}</StyledTitle> : null}
 					<StyledModalBody>{children}</StyledModalBody>
 				</StyledModal>
 			</OutsideClickHandler>
@@ -71,19 +71,20 @@ const StyledModalBody = styled.div`
 
 const StyledModalHeader = styled.div`
 	display: flex;
-	justify-content: flex-end;
+	justify-content: space-between;
 	font-size: 2rem;
 `;
 
 const StyledTitle = styled.div`
-	text-align: center;
-	font-size: 1.2rem;
+	text-align: left;
+	font-size: 1.6rem;
+	font-wight: bold;
 	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
 const StyledModal = styled.div`
 	background: ${(props) => props.theme.colors.modalBackground};
-	width: 500px;
+	min-width: 500px;
 	border-radius: 8px;
 	padding: 15px;
 `;

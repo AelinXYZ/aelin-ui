@@ -1,22 +1,24 @@
-import { FormikProps } from "formik";
+import { FormikProps } from 'formik';
 
 export interface IWhitelistComponent {
-  formik: FormikProps<any>;
-};
+	formik: FormikProps<any>;
+	setIsModalOpen: (isOpen: boolean) => void;
+	isModalOpen: boolean;
+}
 
 export interface IWhitelist {
-  address: string;
-  amount: number;
-  isSaved: boolean;
-};
+	address: string;
+	amount: number;
+	isSaved: boolean;
+}
 
 export interface IStyleColumnProps {
-  align?: string;
-  justify?: string;
-  width?: string;
-};
+	align?: string;
+	justify?: string;
+	width?: string;
+}
 
 export interface IStyleRowProps {
-  align?: string;
-  justify?: string;
+	align?: string;
+	justify?: string;
 }
