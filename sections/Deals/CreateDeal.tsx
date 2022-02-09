@@ -49,10 +49,17 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const [cancelPoolGasLimitEstimate, setCancelPoolGasLimitEstimate] =
-		useState<GasLimitEstimate>(null);
-	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
-		TransactionData.useContainer();
+	const [cancelPoolGasLimitEstimate, setCancelPoolGasLimitEstimate] = useState<GasLimitEstimate>(
+		null
+	);
+	const {
+		txHash,
+		setTxHash,
+		gasPrice,
+		setGasPrice,
+		txState,
+		setTxState,
+	} = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const poolBalancesQuery = usePoolBalancesQuery({

@@ -12,7 +12,6 @@ import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 import Ens from 'components/Ens';
 import Grid from 'components/Grid';
 import { Status } from 'components/DealStatus';
-import Countdown from 'components/Countdown';
 import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
 import CopyToClipboard from 'components/CopyToClipboard';
@@ -23,7 +22,7 @@ import { erc20Abi } from 'contracts/erc20';
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { formatNumber } from 'utils/numbers';
-import { formatShortDateWithTime } from 'utils/time';
+import { formatShortDateWithTime, showDateOrMessageIfClosed } from 'utils/time';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
@@ -31,6 +30,7 @@ import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { TransactionPurchaseType, TransactionStatus } from 'constants/transactions';
 
 import PurchasePoolBox from '../PurchasePoolBox';
+import { isAfter } from 'date-fns';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -294,8 +294,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<div>Cap Reached</div>
 					) : (
 						<>
-							<Countdown timeStart={null} time={pool?.purchaseExpiry ?? 0} networkId={network.id} />
-							<>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</>
+							<div>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</div>
+							<div>{!isAfter(new Date(pool?.purchaseExpiry ?? 0), new Date()) && 'Ended'}</div>
 						</>
 					),
 			},
@@ -310,7 +310,15 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<>
-						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
+						<div>
+							{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}
+						</div>
+						<div>
+							{!isAfter(
+								new Date((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)),
+								new Date()
+							) && 'Ended'}
+						</div>
 					</>
 				),
 			},
@@ -352,7 +360,6 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			userPurchaseBalance,
 			purchaseTokenSymbol,
 			purchaseTokenDecimals,
-			network.id,
 			poolBalances?.totalAmountWithdrawn,
 			poolBalances?.totalSupply,
 		]
@@ -444,10 +451,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(
-		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
-		[pool?.purchaseExpiry]
-	);
+	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
+		pool?.purchaseExpiry,
+	]);
 
 	return (
 		<FlexDiv>

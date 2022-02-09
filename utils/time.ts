@@ -1,4 +1,4 @@
-import { add, format, formatDistanceStrict } from 'date-fns';
+import { add, format, formatDistanceStrict, isAfter } from 'date-fns';
 import { ONE_DAY_IN_SECS, ONE_HOUR_IN_SECS, ONE_MINUTE_IN_SECS } from 'constants/time';
 import { Status } from 'components/DealStatus';
 export const convertToSeconds = ({
@@ -26,6 +26,17 @@ export const formatDuration = (days: number, hours: number, minutes: number) => 
 };
 
 export const formatShortDateWithTime = (date: Date | number) => format(date, 'MMM d, yyyy H:mma');
+
+export const showDateOrMessageIfClosed = (
+	date: Date | number,
+	message: string,
+	dateFormat: string
+) => {
+	if (isAfter(new Date(date), new Date())) {
+		return format(date, dateFormat || 'MMM d, yyyy H:mma');
+	}
+	return message;
+};
 
 export const calculateStatus = ({
 	poolStatus,
