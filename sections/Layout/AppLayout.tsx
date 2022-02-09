@@ -1,8 +1,6 @@
 import { FC, ReactNode, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 
-import Footer from '../Footer';
-
 type AppLayoutProps = {
 	children: ReactNode;
 };
@@ -11,7 +9,6 @@ const AppLayout: FC<AppLayoutProps> = ({ children }) => {
 	return (
 		<Container>
 			<Content>{children}</Content>
-			<Footer />
 		</Container>
 	);
 };

@@ -6,7 +6,6 @@ import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
 import Grid from 'components/Grid';
 import { FlexDiv } from 'components/common';
-import Countdown from 'components/Countdown';
 import { Status } from 'components/DealStatus';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
@@ -28,6 +27,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 import { formatShortDateWithTime, formatTimeDifference } from 'utils/time';
 
 import AcceptOrRejectBox from '../AcceptOrRejectBox';
+import { isAfter } from 'date-fns';
 
 interface AcceptOrRejectDealProps {
 	deal: any;
@@ -251,24 +251,20 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					<>
 						{deal?.proRataRedemptionPeriodStart != null && deal?.proRataRedemptionPeriod != null ? (
 							<>
-								<Countdown
-									timeStart={null}
-									time={deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod}
-									networkId={network.id}
-								/>
-								<>
+								<div>
 									{formatShortDateWithTime(
 										deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod
 									)}
-								</>
+								</div>
+								<div>
+									{!isAfter(
+										new Date(deal?.proRataRedemptionPeriodStart + deal?.proRataRedemptionPeriod),
+										new Date()
+									) && 'Ended'}
+								</div>
 							</>
 						) : (
 							<>
-								<Countdown
-									timeStart={null}
-									time={deal?.proRataRedemptionPeriod ?? 0}
-									networkId={network.id}
-								/>
 								<>{formatTimeDifference(deal?.proRataRedemptionPeriod ?? 0)}</>
 							</>
 						)}
@@ -291,11 +287,23 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						deal?.openRedemptionPeriod != null &&
 						deal?.openRedemptionPeriod > 0 ? (
 							<>
-								{formatShortDateWithTime(
-									deal?.proRataRedemptionPeriodStart +
-										deal?.proRataRedemptionPeriod +
-										deal?.openRedemptionPeriod
-								)}
+								<div>
+									{formatShortDateWithTime(
+										deal?.proRataRedemptionPeriodStart +
+											deal?.proRataRedemptionPeriod +
+											deal?.openRedemptionPeriod
+									)}
+								</div>
+								<div>
+									{!isAfter(
+										new Date(
+											deal?.proRataRedemptionPeriodStart +
+												deal?.proRataRedemptionPeriod +
+												deal?.openRedemptionPeriod
+										),
+										new Date()
+									) && 'Ended'}
+								</div>
 							</>
 						) : deal?.openRedemptionPeriod > 0 ? (
 							formatTimeDifference(deal?.openRedemptionPeriod)
@@ -372,7 +380,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			pool?.sponsorFee,
 			poolBalances?.purchaseTokenDecimals,
 			underlyingDealTokenSymbol,
-			network?.id,
 			poolBalances?.totalAmountAccepted,
 			poolBalances?.maxProRata,
 			poolBalances?.totalSupply,
