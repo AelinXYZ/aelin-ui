@@ -11,6 +11,7 @@ import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus } from 'constants/transactions';
 import { Privacy } from 'constants/pool';
 import WhiteList from 'components/WhiteList';
+import { IWhitelist } from 'components/WhiteList/types';
 
 export type SummaryItem = {
 	label: string;
@@ -82,6 +83,9 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 
 	const isPurchaseButtonEnabled = isValid && txState !== TransactionStatus.WAITING;
 	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
+
+	const filteredWhitelist = formik.values.whitelist.filter((row: IWhitelist) => row.address.length);
+
 	return (
 		<Container>
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>
@@ -100,9 +104,16 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			</PurchaseButton>
 
 			{isPrivate && (
-				<Button size="lg" isRounded variant="outline" onClick={() => setIsModalOpen(!isModalOpen)}>
-					Add/Edit whitelisted addresses
-				</Button>
+				<ButtonContainer>
+					<Button
+						size="lg"
+						isRounded
+						variant="outline"
+						onClick={() => setIsModalOpen(!isModalOpen)}
+					>
+						{`${!filteredWhitelist.length ? 'Add' : 'Edit'} whitelisted addresses`}
+					</Button>
+				</ButtonContainer>
 			)}
 
 			<WhiteList
@@ -130,6 +141,14 @@ const Container = styled.div`
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+`;
+
+const ButtonContainer = styled.div`
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	bottom: 70px;
+	position: absolute;
 `;
 
 const SummaryBoxHeader = styled.div`
