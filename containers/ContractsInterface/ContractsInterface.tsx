@@ -2,21 +2,24 @@ import { useEffect, useState, useMemo } from 'react';
 import { Contract } from 'ethers';
 import { createContainer } from 'unstated-next';
 
+import AelinTokenContract from './contracts/AelinToken';
+import VAelinTokenContract from './contracts/vAelinToken';
 import PoolFactoryContract from './contracts/AelinPoolFactory';
+import VAelinConverterContract from './contracts/VAelinConverter';
+import AelinEthLPTokenContract from './contracts/AelinEthLPToken';
 import AelinStakingRewardsContract from './contracts/AelinStakingRewards';
 import AelinEthStakingRewardsContract from './contracts/AelinEthStakingRewards';
-import AelinTokenContract from './contracts/AelinToken';
-import AelinEthLPTokenContract from './contracts/AelinEthLPToken';
 
 import Connector from 'containers/Connector';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { getKeyValue } from 'utils/helpers';
-import { StakingContracts } from './constants';
+import { StakingContracts, vAelinConverterContracts } from './constants';
 
 type AelinContracts = {
 	AelinPoolFactory: Contract | null;
 	AelinStaking: StakingContracts | null;
 	AelinEthStaking: StakingContracts | null;
+	vAelinConverter: vAelinConverterContracts | null;
 };
 
 const useContractsInterface = () => {
@@ -40,6 +43,12 @@ const useContractsInterface = () => {
 				network?.id ?? DEFAULT_NETWORK_ID
 			);
 			const aelinEthLPTokenContract = (getKeyValue(AelinEthLPTokenContract) as any)(
+				network?.id ?? DEFAULT_NETWORK_ID
+			);
+			const vAelinTokenContract = (getKeyValue(VAelinTokenContract) as any)(
+				network?.id ?? DEFAULT_NETWORK_ID
+			);
+			const vAelinConverterContract = (getKeyValue(VAelinConverterContract) as any)(
 				network?.id ?? DEFAULT_NETWORK_ID
 			);
 
@@ -66,6 +75,18 @@ const useContractsInterface = () => {
 					TokenContract: new Contract(
 						aelinEthLPTokenContract.address,
 						aelinEthLPTokenContract.abi,
+						signer
+					),
+				},
+				vAelinConverter: {
+					VAelinTokenContract: new Contract(
+						vAelinTokenContract.address,
+						vAelinTokenContract.abi,
+						signer
+					),
+					VAelinConverterContract: new Contract(
+						vAelinConverterContract.address,
+						vAelinConverterContract.abi,
 						signer
 					),
 				},
