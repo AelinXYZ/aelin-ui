@@ -95,8 +95,29 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 		formik.setFieldValue('whitelist', filteredWhitelist);
 	};
 
+	const handleClose = () => {
+		const whitelist = [...formik.values.whitelist];
+
+		const filteredWhitelist = whitelist.filter(
+			(row: IWhitelist) => row.address.length && row.isSaved
+		);
+
+		if (!filteredWhitelist.length) {
+			formik.setFieldValue('whitelist', initialWhitelistValues);
+
+			formik.setFieldValue('poolPrivacy', Privacy.PUBLIC);
+		}
+
+		formik.setFieldValue('whitelist', filteredWhitelist);
+	};
+
 	return (
-		<BaseModal title={'Whitelist'} setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}>
+		<BaseModal
+			title={'Whitelist'}
+			onClose={handleClose}
+			setIsModalOpen={setIsModalOpen}
+			isModalOpen={isModalOpen}
+		>
 			<div>
 				<ColCenter>
 					<ContentBody>
@@ -111,7 +132,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 								<Title>Amount</Title>
 							</Column>
 						</Row>
-						<Row>
+						<ContainerRow>
 							{formik.values.whitelist.map((_: string, index: number) => {
 								return (
 									<Row key={`row-${index}`} align="center">
@@ -148,7 +169,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 									</Row>
 								);
 							})}
-						</Row>
+						</ContainerRow>
 						<Row>
 							<Column>
 								<Button size="lg" variant="text" onClick={handleAddRows}>
@@ -205,6 +226,11 @@ const Row = styled.div<IStyleRowProps>`
 	padding: 3px 0;
 	justify-content: ${(props) => props.justify || 'flex-start'};
 	align-items: ${(props) => props.align || 'flex-start'};
+`;
+
+const ContainerRow = styled(Row)`
+	max-height: 400px;
+	overflow-y: scroll;
 `;
 
 const Title = styled.span`
