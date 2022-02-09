@@ -280,7 +280,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 				setIsMaxValue={setIsMaxValue}
 			/>
 			<ClaimBox stakingContract={StakingContract} />
-			<SubHeader>
+			{/* <SubHeader>
 				<FlexDiv>
 					{isLP && etherAmount !== null ? `ETH in pool: ${formatNumber(etherAmount, 2)}` : null}
 				</FlexDiv>
@@ -291,7 +291,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 							: `AELIN staked: ${formatNumber(aelinAmount, 2)}`
 						: null}
 				</FlexDiv>
-			</SubHeader>
+			</SubHeader> */}
 		</>
 	);
 };
