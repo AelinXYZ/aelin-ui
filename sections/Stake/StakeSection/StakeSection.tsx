@@ -12,7 +12,6 @@ import { FlexDiv, FlexDivColCentered } from 'components/common';
 import { GasLimitEstimate } from 'constants/networks';
 import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import { StakingContracts } from 'containers/ContractsInterface/constants';
 import Connector from 'containers/Connector';
 import { TransactionStatus } from 'constants/transactions';
 import useGetTokenBalance from 'queries/token/useGetTokenBalance';
