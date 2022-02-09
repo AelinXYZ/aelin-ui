@@ -220,3 +220,5 @@ export const erc20Abi = [
 		type: 'event',
 	},
 ];
+
+export default erc20Abi;
