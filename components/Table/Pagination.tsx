@@ -74,11 +74,12 @@ const PageInfo = styled.span`
 `;
 
 const PaginationContainer = styled(GridDivCenteredCol)`
+	margin-top: 12px;
 	grid-template-columns: auto 1fr auto;
 	background-color: ${(props) => props.theme.colors.grey};
 	padding: 13px 12px;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
 	justify-items: center;
 	font-size: 1rem;
 `;

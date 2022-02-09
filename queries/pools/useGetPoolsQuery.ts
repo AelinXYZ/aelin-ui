@@ -71,6 +71,7 @@ export const parsePool = ({
 		purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
 		purchaseToken,
 		purchaseExpiry: Number(purchaseExpiry) * 1000,
+		poolExpiry: 1000 * (Number(duration) + Number(purchaseExpiry)),
 		purchaseTokenCap,
 		sponsor,
 		contributions,

@@ -227,7 +227,7 @@ const Airdrop = () => {
 				<title>Aelin - Claim Tokens</title>
 			</Head>
 
-			<PageLayout title={<>$AELIN + $vAELIN Distribution</>} subtitle="">
+			<PageLayout title={<>AELIN & vAELIN Distribution</>} subtitle="">
 				<FlexDivRow>
 					<Row>
 						<Header>{`Allocation: ${ethers.utils.formatEther(merkleBalance ?? 0)} AELIN`}</Header>
@@ -316,7 +316,7 @@ const P = styled.p`
 const Header = styled.h3`
 	margin: 40px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.6rem;
+	font-size: 1.2rem;
 `;
 
 const SubmitButton = styled(Button)`
