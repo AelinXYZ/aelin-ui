@@ -75,6 +75,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 
 	const handleClear = () => {
 		clearAddresses();
+		setIsModalOpen(false);
 		setIsSaveDisabled(false);
 		formik.setFieldValue('poolPrivacy', Privacy.PUBLIC);
 	};
@@ -106,9 +107,11 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 			formik.setFieldValue('whitelist', initialWhitelistValues);
 
 			formik.setFieldValue('poolPrivacy', Privacy.PUBLIC);
+		} else {
+			formik.setFieldValue('whitelist', filteredWhitelist);
 		}
 
-		formik.setFieldValue('whitelist', filteredWhitelist);
+		setIsModalOpen(false);
 	};
 
 	return (
