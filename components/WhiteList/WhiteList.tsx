@@ -202,7 +202,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 };
 
 const ContentBody = styled.div`
-	max-width: 621px;
+	width: 610px;
 	border-radius: 8px;
 `;
 
