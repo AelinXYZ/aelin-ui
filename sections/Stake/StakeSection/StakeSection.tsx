@@ -65,10 +65,12 @@ const StakeSection: FC<StakeSectionProps> = ({
 		return new ethers.Contract(tokenContractAddress, erc20ABI, signer);
 	}, [tokenContractAddress, signer]);
 
-	const poolAPYQuery = apyQuery({
-		stakingRewardsContract: StakingContract ?? null,
-		tokenContract: TokenContract ?? null,
-	});
+	const poolAPYQuery = apyQuery
+		? apyQuery({
+				stakingRewardsContract: StakingContract ?? null,
+				tokenContract: TokenContract ?? null,
+		  })
+		: null;
 	const apy = poolAPYQuery?.data?.apy ?? null;
 	const etherAmount = poolAPYQuery?.data?.eth ?? 0;
 	const aelinAmount = poolAPYQuery?.data?.aelin ?? 0;
