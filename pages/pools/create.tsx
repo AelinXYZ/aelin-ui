@@ -430,12 +430,10 @@ const Create: FC = () => {
 				subText: 'Is the pool open or private',
 				formField: (
 					<FlexDivCol>
-						<>
-							<div role="group" aria-labelledby="pool-privacy">
-								<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
-								<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
-							</div>
-						</>
+						<div role="group" aria-labelledby="pool-privacy">
+							<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
+							<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
+						</div>
 					</FlexDivCol>
 				),
 				formError: formik.errors.whitelist,
@@ -452,11 +450,13 @@ const Create: FC = () => {
 		() => [
 			{
 				label: 'Invesment Token',
-				text: formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : '',
+				text: formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : '-',
 			},
 			{
 				label: 'Pool Cap',
-				text: formatNumber(formik.values.poolCap, DEFAULT_DECIMALS),
+				text: formik.values.poolCap
+					? formatNumber(formik.values.poolCap, DEFAULT_DECIMALS)
+					: 'Uncapped',
 			},
 			{
 				label: 'Investment deadline',
@@ -481,14 +481,18 @@ const Create: FC = () => {
 
 			{
 				label: 'Pool name',
-				text: formik.values.poolName,
+				text: formik.values.poolName ? formik.values.poolName : '-',
 			},
 			{
 				label: 'Pool symbol',
-				text: formik.values.poolSymbol,
+				text: formik.values.poolSymbol ? formik.values.poolSymbol : '-',
+			},
+			{
+				label: 'Pool privacy',
+				text: formik.values.poolPrivacy.replace(/^\w/, (c) => c.toUpperCase()),
 			},
 		],
-		[walletAddress, formik]
+		[formik]
 	);
 
 	return (

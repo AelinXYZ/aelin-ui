@@ -96,7 +96,8 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			<PurchaseButtonContainer>
 				<StyledButton
 					size="lg"
-					variant="round"
+					isRounded
+					variant="primary"
 					disabled={isPurchaseButtonDisabled}
 					onClick={() => {
 						setShowTxModal(true);
@@ -111,7 +112,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 					<StyledButton
 						size="lg"
 						isRounded
-						variant="outline"
+						variant="secondary"
 						onClick={() => setIsModalOpen(!isModalOpen)}
 					>
 						{`${!filteredWhitelist.length ? 'Add' : 'Edit'} whitelisted addresses`}
@@ -159,11 +160,11 @@ const PurchaseButtonContainer = styled(ButtonContainer)`
 `;
 
 const StyledButton = styled(Button)`
-	width: 350px;
+	width: 280px;
 `;
 
 const SummaryBoxHeader = styled.div`
-	padding: 20px 20px 0 35px;
+	padding: 20px 20px 0 30px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 1.2rem;
 `;
@@ -171,7 +172,7 @@ const SummaryBoxHeader = styled.div`
 const SummaryBoxGrid = styled.div`
 	display: grid;
 	grid-template-columns: auto auto;
-	padding: 20px;
+	padding: 20px 15px;
 	text-align: left;
 `;
 
@@ -185,30 +186,8 @@ const ItemLabel = styled.div`
 	margin-bottom: 3px;
 `;
 const ItemText = styled.div`
-	color: ${(props) => props.theme.colors.black};
 	font-size: 1rem;
-`;
-
-const PurchaseButton = styled.div<{ isValidForm: boolean }>`
-	cursor: pointer;
-	width: 100%;
-	height: 56px;
-	text-align: center;
-	padding-top: 16px;
-	font-size: 1.3rem;
-	background-color: transparent;
-	border: none;
-	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	color: ${(props) =>
-		props.isValidForm ? props.theme.colors.black : props.theme.colors.statusRed};
-	&:hover {
-		background-color: ${(props) =>
-			props.isValidForm ? props.theme.colors.forestGreen : props.theme.colors.statusRed};
-		color: ${(props) => props.theme.colors.white};
-	}
-	position: absolute;
-	bottom: 0;
-	border-radius: 0 0 8px 8px;
+	color: ${(props) => props.theme.colors.black};
 `;
 
 export default SummaryBox;
