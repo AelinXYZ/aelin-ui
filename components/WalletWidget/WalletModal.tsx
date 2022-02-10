@@ -187,6 +187,7 @@ const WalletAddress = styled.div`
 	margin: 6px;
 	font-family: ${(props) => props.theme.fonts.agrandir};
 	font-size: 1.2rem;
+	text-align: center;
 `;
 
 const ActionIcons = styled(FlexDivCentered)`
