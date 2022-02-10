@@ -17,6 +17,7 @@ const Button = styled.button<ButtonProps>`
 	white-space: nowrap;
 	cursor: pointer;
 	outline: none;
+	padding: 0 24px;
 	color: ${(props) => props.theme.colors.white};
 	text-transform: capitalize;
 
