@@ -11,6 +11,7 @@ import StakeSection from 'sections/Stake/StakeSection';
 import Connector from 'containers/Connector';
 
 import useGetStakingRewardsAPY from 'queries/stakingRewards/useGetStakingRewardsAPY';
+import useGetGelatoStakingRewardsAPY from 'queries/stakingRewards/useGetGelatoStakingRewardsAPY';
 import useGetUniswapStakingRewardsAPY from 'queries/stakingRewards/useGetUniswapStakingRewardsAPY';
 
 import { getKeyValue } from 'utils/helpers';
@@ -60,7 +61,7 @@ const Stake = () => {
 					token: 'G-UNI',
 					apyTooltip:
 						'Estimation based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.',
-					apyQuery: useGetUniswapStakingRewardsAPY,
+					apyQuery: useGetGelatoStakingRewardsAPY,
 					contracts: {
 						staking: LPStakingRewardAddresses[10],
 						token: LPTokenAddresses[10],
