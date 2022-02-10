@@ -4,7 +4,7 @@ const ROUTES = {
 	ClaimTokens: '/claim-tokens',
 	Docs: 'https://docs.aelin.xyz',
 	UniswapPoolOP:
-		'https://info.uniswap.org/#/optimism/pools/0x5e8b0fc35065a5d980c11f96cb52381de390b13f',
+		'https://app.uniswap.org/#/swap?outputCurrency=0x61BAADcF22d2565B0F471b291C475db5555e0b76&inputCurrency=ETH&chain=optimism',
 	UniswapPoolL1:
 		'https://app.uniswap.org/#/swap?outputCurrency=0xa9c125bf4c8bb26f299c00969532b66732b1f758&inputCurrency=ETH&chain=mainnet',
 	Pools: {
