@@ -99,7 +99,7 @@ const Stake = () => {
 				{
 					heading: 'AELIN/ETH staking',
 					headingTooltip:
-						'Staking AELIN/ETH LP gives a share of 50 AELIN/month in inflationary rewards + 1/3 of deal fees. Note deal fees are temporarily custodied by the Aelin Council and will be distributed in the future.',
+						'Staking AELIN/ETH LP gives a share of 50 AELIN/month in inflationary rewards.',
 					token: 'UNI-V2',
 					apyTooltip:
 						'Estimation based on the total amount of rewards for a year and the total value staked in the contract. Trading fees from Uniswap not included.',
