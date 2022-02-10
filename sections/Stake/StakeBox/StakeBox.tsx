@@ -157,7 +157,7 @@ const ActionTabElement = styled.div<{ selected: boolean }>`
 	justify-content: center;
 	font-size: 12px;
 	background-color: ${(props) =>
-		props.selected ? props.theme.colors.buttonStroke : props.theme.colors.cell};
+		props.selected ? props.theme.colors.cell : props.theme.colors.buttonStroke};
 	&:first-child {
 		border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
 		border-top-left-radius: 8px;

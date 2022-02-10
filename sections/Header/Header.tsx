@@ -17,7 +17,8 @@ const Header: FC = () => {
 			{ label: 'Pools', pathname: ROUTES.Pools.Home },
 			{ label: 'Stake', pathname: ROUTES.Stake },
 			{ label: 'Claim', pathname: ROUTES.ClaimTokens },
-			{ label: 'Buy Aelin', pathname: ROUTES.UniswapPool, newTab: true, image: UniswapLogo },
+			{ label: 'Buy Aelin OP', pathname: ROUTES.UniswapPoolOP, newTab: true, image: UniswapLogo },
+			{ label: 'Buy Aelin L1', pathname: ROUTES.UniswapPoolL1, newTab: true, image: UniswapLogo },
 			{ label: 'Docs', pathname: ROUTES.Docs, newTab: true, image: GitbookLogo },
 		],
 		[]
@@ -81,7 +82,7 @@ const StyledImage = styled(Image)`
 const Links = styled.div`
 	display: flex;
 	margin-left: 40px;
-	width: 360px;
+	width: 500px;
 	justify-content: space-between;
 	a {
 		&:hover {
