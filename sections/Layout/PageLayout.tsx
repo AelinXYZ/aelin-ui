@@ -43,11 +43,13 @@ export const ContentHeader = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	margin-bottom: 4rem;
 `;
 
 export const ContentTitle = styled.h1`
 	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.4rem;
+	font-size: 2rem;
+	font-weight: 400;
 	margin: 0 0 6px 0;
 `;
 

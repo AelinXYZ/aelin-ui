@@ -2,16 +2,17 @@ import { FormikProps } from 'formik';
 import styled from 'styled-components';
 import { FC, useState, useEffect } from 'react';
 
-import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import Button from 'components/Button';
+import WhiteList from 'components/WhiteList';
+import { IWhitelist } from 'components/WhiteList/types';
+import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import Connector from 'containers/Connector';
 
 import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus } from 'constants/transactions';
+
 import { Privacy } from 'constants/pool';
-import WhiteList from 'components/WhiteList';
-import { IWhitelist } from 'components/WhiteList/types';
 
 export type SummaryItem = {
 	label: string;
@@ -81,7 +82,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
 	}, [txState]);
 
-	const isPurchaseButtonEnabled = isValid && txState !== TransactionStatus.WAITING;
+	const isPurchaseButtonDisabled = !isValid || txState === TransactionStatus.WAITING;
 	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 
 	const filteredWhitelist = formik.values.whitelist.filter((row: IWhitelist) => row.address.length);
@@ -92,27 +93,29 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 
 			{summaryBoxGrid}
 
-			<PurchaseButton
-				isValidForm={isPurchaseButtonEnabled}
-				onClick={() => {
-					if (isPurchaseButtonEnabled) {
+			<PurchaseButtonContainer>
+				<StyledButton
+					size="lg"
+					variant="round"
+					disabled={isPurchaseButtonDisabled}
+					onClick={() => {
 						setShowTxModal(true);
-					}
-				}}
-			>
-				{txTypeToTitle(txType)}
-			</PurchaseButton>
+					}}
+				>
+					{txTypeToTitle(txType)}
+				</StyledButton>
+			</PurchaseButtonContainer>
 
 			{isPrivate && (
 				<ButtonContainer>
-					<Button
+					<StyledButton
 						size="lg"
 						isRounded
 						variant="outline"
 						onClick={() => setIsModalOpen(!isModalOpen)}
 					>
 						{`${!filteredWhitelist.length ? 'Add' : 'Edit'} whitelisted addresses`}
-					</Button>
+					</StyledButton>
 				</ButtonContainer>
 			)}
 
@@ -151,8 +154,16 @@ const ButtonContainer = styled.div`
 	position: absolute;
 `;
 
+const PurchaseButtonContainer = styled(ButtonContainer)`
+	bottom: 15px;
+`;
+
+const StyledButton = styled(Button)`
+	width: 350px;
+`;
+
 const SummaryBoxHeader = styled.div`
-	padding: 20px 20px 0 20px;
+	padding: 20px 20px 0 35px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 1.2rem;
 `;
@@ -161,11 +172,11 @@ const SummaryBoxGrid = styled.div`
 	display: grid;
 	grid-template-columns: auto auto;
 	padding: 20px;
-	text-align: center;
+	text-align: left;
 `;
 
 const Item = styled.div`
-	margin: 8px 3px 7px 0;
+	margin: 15px;
 `;
 
 const ItemLabel = styled.div`
