@@ -42,7 +42,9 @@ const FilterPool: FC<FilterPoolProps> = ({
 				</FlexDiv>
 				<FlexDiv>
 					<Link href={ROUTES.Pools.Create} passHref>
-						<StyledAnchor>Create Pool</StyledAnchor>
+						<Button size="md" isRounded variant="primary">
+							Create Pool
+						</Button>
 					</Link>
 				</FlexDiv>
 			</HeaderSection>

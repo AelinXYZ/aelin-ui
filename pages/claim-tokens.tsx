@@ -231,13 +231,14 @@ const Airdrop = () => {
 				<FlexDivRow>
 					<Row>
 						<Header>{`Allocation: ${ethers.utils.formatEther(merkleBalance ?? 0)} AELIN`}</Header>
-						<SubmitButton
+						<Button
+							size="lg"
+							variant="primary"
 							disabled={isMerkleSubmitButtonDisabled}
 							onClick={() => setShowAelinTxModal(true)}
-							variant="text"
 						>
 							{canClaimMerkle ? 'Claim' : !merkleBalance ? 'Nothing to Claim' : 'Already Claimed'}
-						</SubmitButton>
+						</Button>
 						<P>
 							{network.id !== NetworkId['Optimism-Mainnet']
 								? 'Please switch to the Optimism Network by clicking the network tab in the top right'
@@ -249,13 +250,14 @@ const Airdrop = () => {
 							<Header>{`Allocation: ${ethers.utils.formatEther(
 								airdropBalance ?? 0
 							)} vAELIN`}</Header>
-							<SubmitButton
+							<Button
+								size="lg"
+								variant="primary"
 								disabled={isSubmitButtonDisabled}
 								onClick={() => setShowvAelinTxModal(true)}
-								variant="text"
 							>
 								{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
-							</SubmitButton>
+							</Button>
 							<P>
 								{network.id !== NetworkId['Optimism-Mainnet']
 									? 'Please switch to the Optimism Network by clicking the network tab in the top right'
@@ -317,23 +319,6 @@ const Header = styled.h3`
 	margin: 40px 0 0 0;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-size: 1.2rem;
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	margin: 10px auto 0 auto;
-	padding: 0 8px;
-	&:disabled {
-		background-color: ${(props) => props.theme.colors.forestGreen};
-		opacity: 0.5;
-	}
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
 `;
 
 const Anchor = styled.a`

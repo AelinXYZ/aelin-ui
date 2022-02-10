@@ -21,9 +21,9 @@ import AuthereumIcon from 'assets/wallet-icons/authereum.png';
 import ImTokenIcon from 'assets/wallet-icons/imtoken.svg';
 
 import LinkIcon from 'assets/svg/link.svg';
+import ExitIcon from 'assets/svg/exit.svg';
 import WalletIcon from 'assets/svg/wallet.svg';
 import ArrowsChangeIcon from 'assets/svg/arrows-change.svg';
-import ExitIcon from 'assets/svg/exit.svg';
 
 import Connector from 'containers/Connector';
 import Etherscan from 'containers/BlockExplorer';
@@ -80,7 +80,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 	return (
 		<>
 			{walletAddress != null ? (
-				<>
+				<Container>
 					<WalletDetails>
 						<SelectedWallet>{getWalletIcon(selectedWallet?.toLowerCase())}</SelectedWallet>
 						<WalletAddress>{truncateAddress(walletAddress)}</WalletAddress>
@@ -96,83 +96,83 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 						</ActionIcons>
 					</WalletDetails>
 					<Buttons>
-						<StyledButton
+						<Button
+							fullWith
+							isRounded
+							size="lg"
+							variant="secondary"
 							onClick={() => {
 								onDismiss();
 								connectWallet();
 							}}
 						>
-							<Image src={WalletIcon} alt="change-wallet" /> Change wallet
-						</StyledButton>
+							<StyledImage src={WalletIcon} alt="change-wallet" /> Change wallet
+						</Button>
 						{isHardwareWallet() && (
-							<StyledButton
+							<Button
+								fullWith
+								isRounded
+								size="lg"
+								variant="secondary"
 								onClick={() => {
 									onDismiss();
 									switchAccounts();
 								}}
 							>
 								<Image src={ArrowsChangeIcon} alt="switch-account" /> Switch account
-							</StyledButton>
+							</Button>
 						)}
 					</Buttons>
-
-					<StyledButton
-						onClick={() => {
-							onDismiss();
-							disconnectWallet();
-						}}
-					>
-						<Image src={ExitIcon} alt="disconnect-wallet" /> Disconnect
-					</StyledButton>
-				</>
-			) : (
-				<WalletDetails>
 					<Buttons>
-						<StyledButton
+						<Button
+							fullWith
+							isRounded
+							size="lg"
+							variant="secondary"
 							onClick={() => {
 								onDismiss();
-								connectWallet();
+								disconnectWallet();
 							}}
-							data-testid="connect-wallet"
 						>
-							Connect Wallet
-						</StyledButton>
+							<StyledImage src={ExitIcon} alt="disconnect-wallet" /> Disconnect
+						</Button>
 					</Buttons>
-				</WalletDetails>
+				</Container>
+			) : (
+				<Container>
+					<WalletDetails>
+						<Buttons>
+							<Button
+								fullWith
+								isRounded
+								size="lg"
+								variant="secondary"
+								onClick={() => {
+									onDismiss();
+									connectWallet();
+								}}
+								data-testid="connect-wallet"
+							>
+								Connect Wallet
+							</Button>
+						</Buttons>
+					</WalletDetails>
+				</Container>
 			)}
 		</>
 	);
 };
 
-const StyledButton = styled(Button).attrs({
-	variant: 'outline',
-	size: 'lg',
-})`
-	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	padding: 0 8px;
-	width: 140px;
-	display: inline-grid;
-	grid-template-columns: auto 1fr;
-	align-items: center;
-	justify-items: center;
-	text-transform: uppercase;
-	color: ${(props) => props.theme.colors.black};
-	cursor: pointer;
+const Container = styled.div`
+	padding: 5px;
+`;
 
-	margin: 12px 0;
-
-	&:hover {
-		color: ${(props) => props.theme.colors.white};
-	}
-
-	svg {
-		margin-right: 5px;
-		color: ${(props) => props.theme.colors.black};
-	}
+const StyledImage = styled(Image)`
+	top: 3px !important;
 `;
 
 const WalletDetails = styled.div`
-	padding: 8px 0px;
+	padding: 5px 0px;
 `;
 
 const SelectedWallet = styled(FlexDivCentered)`
@@ -214,7 +214,8 @@ const LinkContainer = styled(FlexDiv)`
 `;
 
 const Buttons = styled(FlexDivCol)`
-	margin: 0px 8px;
+	margin: 5px 0;
+	width: 100%;
 `;
 
 export default WalletModal;

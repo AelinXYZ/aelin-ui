@@ -77,17 +77,17 @@ const Stake = () => {
 								</Link>
 								.
 							</Text>
-							<SubmitButton
+							<Button
 								onClick={() =>
 									window.open(
 										'https://www.sorbet.finance/#/pools/0x665d8D87ac09Bdbc1222B8B9E72Ddcb82f76B54A',
 										'blank'
 									)
 								}
-								variant="text"
+								variant="primary"
 							>
 								Go to Sorbet.Finance
-							</SubmitButton>
+							</Button>
 						</Section>
 					</PageSection>
 				</JustifiedLayout>

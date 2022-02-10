@@ -6,6 +6,7 @@ type ButtonProps = {
 	variant?: 'primary' | 'secondary' | 'tertiary';
 	isActive?: boolean;
 	isRounded?: boolean;
+	fullWith?: boolean;
 };
 
 const Button = styled.button<ButtonProps>`
@@ -14,12 +15,20 @@ const Button = styled.button<ButtonProps>`
 	font-size: 1rem;
 	border: none;
 	border-radius: ${(props) => (props.isRounded ? '100px' : '4px')};
+
 	white-space: nowrap;
 	cursor: pointer;
 	outline: none;
 	padding: 0 24px;
 	color: ${(props) => props.theme.colors.white};
 	text-transform: capitalize;
+
+	${(props) =>
+		props.fullWith &&
+		css`
+			display: block;
+			width: 100%;
+		`}
 
 	${(props) =>
 		props.size === 'sm' &&
@@ -72,7 +81,7 @@ const Button = styled.button<ButtonProps>`
 		${(props) =>
 		props.variant === 'secondary' &&
 		css`
-			background: transparent;
+			background: ${(props) => props.theme.colors.white};
 			border: 1px solid ${(props) => props.theme.colors.forestGreen};
 			color: ${(props) => props.theme.colors.forestGreen};
 
