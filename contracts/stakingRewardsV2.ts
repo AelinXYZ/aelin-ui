@@ -363,19 +363,4 @@ const abi = [
 	},
 ];
 
-const contract = {
-	42: {
-		address: '0xe46B0BDDbA9D16cfB66394173d91363f051bd6EE',
-		abi,
-	},
-	10: {
-		address: '0xFe757A40F3EdA520845b339c698b321663986a4d',
-		abi,
-	},
-	1: {
-		address: '0xe46B0BDDbA9D16cfB66394173d91363f051bd6EE',
-		abi,
-	},
-};
-
-export default contract;
+export default abi;

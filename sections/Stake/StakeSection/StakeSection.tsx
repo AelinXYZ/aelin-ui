@@ -12,7 +12,6 @@ import { FlexDiv, FlexDivColCentered } from 'components/common';
 import { GasLimitEstimate } from 'constants/networks';
 import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
-import { StakingContracts } from 'containers/ContractsInterface/constants';
 import Connector from 'containers/Connector';
 import { TransactionStatus } from 'constants/transactions';
 import useGetTokenBalance from 'queries/token/useGetTokenBalance';
@@ -21,25 +20,29 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 import { formatNumber } from 'utils/numbers';
 import Etherscan from 'containers/BlockExplorer';
 import EtherscanLogo from 'assets/svg/etherscan-logo.svg';
+import erc20ABI from 'contracts/erc20';
+import stakingRewardsABI from 'contracts/stakingRewardsV2';
 
 type StakeSectionProps = {
 	header: string;
 	tooltipInfo: string;
 	token: string;
-	contracts: StakingContracts | null;
-	apy: Number | null;
+	stakingContractAddress: string;
+	tokenContractAddress: string;
 	apyTooltip: string;
-	lpAssets: { etherAmount?: number; aelinAmount: number };
+	apyQuery: Function;
+	isLP: boolean;
 };
 
 const StakeSection: FC<StakeSectionProps> = ({
 	header,
 	tooltipInfo,
 	token,
-	contracts,
-	apy,
+	stakingContractAddress,
+	tokenContractAddress,
+	apyQuery,
 	apyTooltip,
-	lpAssets,
+	isLP,
 }) => {
 	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
@@ -48,11 +51,29 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 
 	const { txState, setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();
-	const { walletAddress } = Connector.useContainer();
+	const { walletAddress, signer } = Connector.useContainer();
 	const { blockExplorerInstance } = Etherscan.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
-	const StakingContract = contracts?.StakingContract ?? null;
-	const TokenContract = contracts?.TokenContract ?? null;
+
+	const StakingContract = useMemo(() => {
+		if (!stakingContractAddress || !signer) return null;
+		return new ethers.Contract(stakingContractAddress, stakingRewardsABI, signer);
+	}, [stakingContractAddress, signer]);
+
+	const TokenContract = useMemo(() => {
+		if (!tokenContractAddress || !signer) return null;
+		return new ethers.Contract(tokenContractAddress, erc20ABI, signer);
+	}, [tokenContractAddress, signer]);
+
+	const poolAPYQuery = apyQuery
+		? apyQuery({
+				stakingRewardsContract: StakingContract ?? null,
+				tokenContract: TokenContract ?? null,
+		  })
+		: null;
+	const apy = poolAPYQuery?.data?.apy ?? null;
+	const etherAmount = poolAPYQuery?.data?.eth ?? 0;
+	const aelinAmount = poolAPYQuery?.data?.aelin ?? 0;
 
 	const tokenBalanceQuery = useGetTokenBalance({ tokenContract: TokenContract });
 	const tokenBalance = tokenBalanceQuery?.data ?? wei(0);
@@ -261,15 +282,13 @@ const StakeSection: FC<StakeSectionProps> = ({
 			<ClaimBox stakingContract={StakingContract} />
 			<SubHeader>
 				<FlexDiv>
-					{lpAssets?.etherAmount != null
-						? `$ETH in pool via G-UNI: ${formatNumber(lpAssets?.etherAmount, 2)}`
-						: null}
+					{isLP && etherAmount !== null ? `ETH in pool: ${formatNumber(etherAmount, 2)}` : null}
 				</FlexDiv>
 				<FlexDiv>
-					{lpAssets.aelinAmount != null
-						? lpAssets?.etherAmount == null
-							? `$AELIN staked: ${formatNumber(lpAssets?.aelinAmount, 2)}`
-							: `$AELIN in pool via G-UNI: ${formatNumber(lpAssets?.aelinAmount, 2)}`
+					{aelinAmount !== null
+						? isLP
+							? `AELIN in pool: ${formatNumber(aelinAmount, 2)}`
+							: `AELIN staked: ${formatNumber(aelinAmount, 2)}`
 						: null}
 				</FlexDiv>
 			</SubHeader>
