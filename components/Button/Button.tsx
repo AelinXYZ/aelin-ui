@@ -6,7 +6,7 @@ type ButtonProps = {
 	variant?: 'primary' | 'secondary' | 'tertiary';
 	isActive?: boolean;
 	isRounded?: boolean;
-	fullWith?: boolean;
+	fullWidth?: boolean;
 };
 
 const Button = styled.button<ButtonProps>`
@@ -24,7 +24,7 @@ const Button = styled.button<ButtonProps>`
 	text-transform: capitalize;
 
 	${(props) =>
-		props.fullWith &&
+		props.fullWidth &&
 		css`
 			display: block;
 			width: 100%;
