@@ -115,17 +115,17 @@ const Stake = () => {
 								To obtain UNI-V2 AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH
 								pool on Uniswap.
 							</Text>
-							<SubmitButton
+							<Button
 								onClick={() =>
 									window.open(
 										'https://app.uniswap.org/#/add/v2/0xa9c125bf4c8bb26f299c00969532b66732b1f758/ETH?chain=mainnet',
 										'blank'
 									)
 								}
-								variant="text"
+								variant="primary"
 							>
 								Go to Uniswap
-							</SubmitButton>
+							</Button>
 						</Section>
 					),
 				},
@@ -212,19 +212,6 @@ const Text = styled.h3`
 	font-size: 14px;
 	margin: 20px 0;
 	padding: 0;
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	padding: 0 6px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
 `;
 
 export default Stake;
