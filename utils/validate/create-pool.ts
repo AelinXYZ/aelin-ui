@@ -42,7 +42,7 @@ const validateCreatePool = (values: CreatePoolValues, networkId?: NetworkId) => 
 
 	if (!values.poolSymbol) {
 		errors.poolSymbol = 'Required';
-	} else if (values.poolSymbol.length > 5) {
+	} else if (values.poolSymbol.length > 7) {
 		errors.poolSymbol = 'No more than 5 chars';
 	}
 
