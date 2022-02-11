@@ -313,7 +313,7 @@ const P = styled.p`
 	border: 1px solid ${(props) => props.theme.colors.headerGreen};
 	border-radius: 12px;
 	padding: 20px;
-	font-size: 1.2rem;
+	font-size: 1rem;
 	font-weight: 400;
 	margin: 40px 0;
 `;
