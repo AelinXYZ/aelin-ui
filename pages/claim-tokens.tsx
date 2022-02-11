@@ -301,7 +301,7 @@ const Row = styled(FlexDivColCentered)`
 	width: 660px;
 	height: 550px;
 	border-radius: 8px;
-	background-color: #f8f8f8;
+	background-color: ${(props) => props.theme.colors.rowBackground};
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
 

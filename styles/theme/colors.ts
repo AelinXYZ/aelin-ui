@@ -13,7 +13,7 @@ const colors = {
 	lightGreen: 'rgb(63, 121, 35, 0.08)',
 	background: '#DBDBDB',
 	modalBackground: '#DFDFDF',
-	cell: '#E2E2E2',
+	cell: '#E2E2E2',f8f8f8
 
 	statusBlue: '#4EB6F0',
 	statusGreen: '#7DD38C',
