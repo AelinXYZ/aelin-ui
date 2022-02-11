@@ -97,7 +97,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 					</WalletDetails>
 					<Buttons>
 						<Button
-							fullWith
+							fullWidth
 							isRounded
 							size="lg"
 							variant="secondary"
@@ -110,7 +110,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 						</Button>
 						{isHardwareWallet() && (
 							<Button
-								fullWith
+								fullWidth
 								isRounded
 								size="lg"
 								variant="secondary"
@@ -125,7 +125,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 					</Buttons>
 					<Buttons>
 						<Button
-							fullWith
+							fullWidth
 							isRounded
 							size="lg"
 							variant="secondary"
@@ -143,7 +143,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 					<WalletDetails>
 						<Buttons>
 							<Button
-								fullWith
+								fullWidth
 								isRounded
 								size="lg"
 								variant="secondary"
