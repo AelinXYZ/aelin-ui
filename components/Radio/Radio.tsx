@@ -55,12 +55,12 @@ const RadioButton = styled.input`
 	&:after {
 		content: '';
 		position: absolute;
-		top: -3px;
-		left: -3px;
+		top: -2px;
+		left: -2px;
 		width: 16px;
 		height: 16px;
 		background: #fff;
-		border: 2px solid #f2f2f2;
+		border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 		border-radius: 50%;
 	}
 `;
