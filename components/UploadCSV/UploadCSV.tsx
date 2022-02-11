@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import Button from 'components/Button';
 
-import { IUploadCSV, ICSVResponse, IWhitelist } from './types';
+import { IUploadCSV, ICSVResponse, WhitelistProps } from './types';
 
 const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 	const buttonRef = useRef();
@@ -23,7 +23,7 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 			});
 
 			return accum;
-		}, [] as IWhitelist[]);
+		}, [] as WhitelistProps[]);
 
 		onUploadCSV(whitelist);
 	};

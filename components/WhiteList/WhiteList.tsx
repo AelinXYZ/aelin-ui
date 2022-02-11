@@ -16,22 +16,22 @@ import { Privacy, initialWhitelistValues } from 'constants/pool';
 import Edit from 'assets/svg/edit.svg';
 import Remove from 'assets/svg/remove.svg';
 
-import { IWhitelistComponent, IWhitelist, IStyleColumnProps, IStyleRowProps } from './types';
+import { WhitelistComponentProps, WhitelistProps, StyleColumnProps, StyleRowProps } from './types';
 
-const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpen }) => {
+const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModalOpen }) => {
 	const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(false);
 	const [isClearDisabled, setIsClearDisabled] = useState<boolean>(true);
 
 	useEffect(() => {
 		const whitelist = [...formik.values.whitelist];
-		const filteredWhitelist = whitelist.filter((row: IWhitelist) => row.address.length);
+		const filteredWhitelist = whitelist.filter((row: WhitelistProps) => row.address.length);
 
 		if (!filteredWhitelist.length) {
 			setIsSaveDisabled(false);
 			return;
 		}
 
-		const isSaved = filteredWhitelist.every((row: IWhitelist) => row.isSaved);
+		const isSaved = filteredWhitelist.every((row: WhitelistProps) => row.isSaved);
 		setIsSaveDisabled(isSaved);
 	}, [formik.values.whitelist]);
 
@@ -69,7 +69,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 		formik.setFieldValue('whitelist', whitelist);
 	};
 
-	const handleUploadCSV = (whitelist: IWhitelist[]): void => {
+	const handleUploadCSV = (whitelist: WhitelistProps[]): void => {
 		formik.setFieldValue('whitelist', [...whitelist]);
 	};
 
@@ -83,11 +83,11 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 	const handleSave = (): void => {
 		const whitelist = [...formik.values.whitelist];
 
-		const filteredWhitelist = whitelist.filter((row: IWhitelist) => row.address.length);
+		const filteredWhitelist = whitelist.filter((row: WhitelistProps) => row.address.length);
 
 		if (!filteredWhitelist.length) return;
 
-		filteredWhitelist.forEach((row: IWhitelist) => {
+		filteredWhitelist.forEach((row: WhitelistProps) => {
 			row.isSaved = true;
 		});
 
@@ -100,7 +100,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 		const whitelist = [...formik.values.whitelist];
 
 		const filteredWhitelist = whitelist.filter(
-			(row: IWhitelist) => row.address.length && row.isSaved
+			(row: WhitelistProps) => row.address.length && row.isSaved
 		);
 
 		if (!filteredWhitelist.length) {
@@ -218,7 +218,7 @@ const Pointer = styled.span`
 	margin: 0 2px;
 `;
 
-const Column = styled.div<IStyleColumnProps>`
+const Column = styled.div<StyleColumnProps>`
 	display: flex;
 	flex-direction: column;
 	padding: 0 5px 0 0;
@@ -227,7 +227,7 @@ const Column = styled.div<IStyleColumnProps>`
 	align-items: ${(props) => props.align || 'flex-start'};
 `;
 
-const Row = styled.div<IStyleRowProps>`
+const Row = styled.div<StyleRowProps>`
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;

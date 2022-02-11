@@ -4,7 +4,7 @@ import { FC, useState, useEffect } from 'react';
 
 import Button from 'components/Button';
 import WhiteList from 'components/WhiteList';
-import { IWhitelist } from 'components/WhiteList/types';
+import { WhitelistProps } from 'components/WhiteList/types';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import Connector from 'containers/Connector';
@@ -85,7 +85,9 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	const isPurchaseButtonDisabled = !isValid || txState === TransactionStatus.WAITING;
 	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 
-	const filteredWhitelist = formik.values.whitelist.filter((row: IWhitelist) => row.address.length);
+	const filteredWhitelist = formik.values.whitelist.filter(
+		(row: WhitelistProps) => row.address.length
+	);
 
 	return (
 		<Container>
