@@ -1,28 +1,35 @@
-import Head from 'next/head';
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import styled from 'styled-components';
-import { ethers } from 'ethers';
 import Link from 'next/link';
+import Head from 'next/head';
+import { ethers } from 'ethers';
+import { wei } from '@synthetixio/wei';
+import styled from 'styled-components';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
-import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import useGetAirdropDataForAddress from 'queries/airdrop/useGetAirdropDataForAddress';
 import useGetCanClaimForAddress from 'queries/airdrop/useGetCanClaimForAddress';
 import useGetMerkleDataForAddress from 'queries/merkle/useGetMerkleDataForAddress';
 import useGetAddressCanClaimMerkle from 'queries/merkle/useGetAddressCanClaimMerkle';
-import { PageLayout } from 'sections/Layout';
-import { FlexDivColCentered, FlexDivRow } from 'components/common';
+
 import Button from 'components/Button';
-import { wei } from '@synthetixio/wei';
+import { FlexDivColCentered, FlexDivRow } from 'components/common';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
-import { GasLimitEstimate, NetworkId } from 'constants/networks';
+
 import TransactionData from 'containers/TransactionData';
 import Connector from 'containers/Connector';
-import { getGasEstimateWithBuffer } from 'utils/network';
+
 import TransactionNotifier from 'containers/TransactionNotifier';
 import DistributionContract from 'containers/ContractsInterface/contracts/AelinDistribution';
 import SecondDistributionContract from 'containers/ContractsInterface/contracts/SecondAelinDistribution';
+
 import { getKeyValue } from 'utils/helpers';
+import { getGasEstimateWithBuffer } from 'utils/network';
+
 import ROUTES from 'constants/routes';
+import { DEFAULT_NETWORK_ID } from 'constants/defaults';
+import { GasLimitEstimate, NetworkId } from 'constants/networks';
+
+import { PageLayout } from 'sections/Layout';
+import ConvertSection from 'sections/Claim/ConvertSection';
 
 const Airdrop = () => {
 	const [showAelinTxModal, setShowAelinTxModal] = useState<boolean>(false);
@@ -262,6 +269,7 @@ const Airdrop = () => {
 									: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Click claim to get your vAELIN. Once claimed you can convert vAELIN into AELIN via the vAELIN pool on the pools page.`}
 							</P>
 						</Row>
+						<ConvertSection />
 						<Row>
 							<Link
 								href={ROUTES.Pools.PoolView('0x3074306c0cc9200602bfc64beea955928dac56dd')}
