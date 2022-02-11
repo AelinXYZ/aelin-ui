@@ -95,13 +95,9 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract }) => {
 	return (
 		<RewardsBox>
 			<div>{`Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</div>
-			<SubmitButton
-				onClick={() => setShowTxModal(true)}
-				variant="text"
-				disabled={earned.eq(wei(0))}
-			>
+			<Button onClick={() => setShowTxModal(true)} variant="primary" disabled={earned.eq(wei(0))}>
 				Claim
-			</SubmitButton>
+			</Button>
 			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
@@ -127,19 +123,6 @@ const RewardsBox = styled.div`
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 120px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
 `;
 
 export default ClaimBox;

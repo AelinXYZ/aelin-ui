@@ -34,9 +34,10 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 					setGasPrice={setGasPrice}
 					gasLimitEstimate={gasLimitEstimate}
 				/>
-				<SubmitButton
+				<Button
 					disabled={!gasLimitEstimate}
-					variant="text"
+					size="md"
+					variant="primary"
 					type="submit"
 					onClick={() => {
 						setIsModalOpen(false);
@@ -44,7 +45,7 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 					}}
 				>
 					Submit
-				</SubmitButton>
+				</Button>
 			</ModalContainer>
 		</BaseModal>
 	);
@@ -52,19 +53,6 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 
 const ModalContainer = styled.div`
 	text-align: center;
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 120px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
 `;
 
 export default ConfirmTransactionModal;

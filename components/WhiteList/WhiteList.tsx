@@ -175,7 +175,7 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 						</ContainerRow>
 						<Row>
 							<Column>
-								<Button size="lg" variant="text" onClick={handleAddRows}>
+								<Button size="lg" variant="tertiary" onClick={handleAddRows}>
 									+ Add more rows
 								</Button>
 							</Column>
@@ -184,13 +184,19 @@ const WhiteList: FC<IWhitelistComponent> = ({ formik, isModalOpen, setIsModalOpe
 							<StyledButton
 								size="lg"
 								isRounded
-								variant="outline"
+								variant="secondary"
 								disabled={isClearDisabled}
 								onClick={handleClear}
 							>
 								Clear
 							</StyledButton>
-							<Button size="lg" variant="round" disabled={isSaveDisabled} onClick={handleSave}>
+							<Button
+								size="lg"
+								isRounded
+								variant="primary"
+								disabled={isSaveDisabled}
+								onClick={handleSave}
+							>
 								Save
 							</Button>
 						</Row>
