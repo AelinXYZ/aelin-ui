@@ -1,6 +1,4 @@
 const colors = {
-	black: '#252626',
-	white: '#FFFFFF',
 	error: '#FF8863',
 	success: '#D6FE90',
 	active: '#D0E9A4',
@@ -21,6 +19,22 @@ const colors = {
 	statusRed: '#FF7777',
 
 	gradientForest: 'linear-gradient(180deg, #48802D 0%, #407229 100%)',
+	// new
+	black: '#252626',
+	marine: '#121212',
+	redDark: '#e74c3c',
+	redLight: '#FF7777',
+	greenDark: '##3F7923',
+	greenLight: '#A3BC98',
+	greenFluo: '#07bc0c',
+	blueMedium: '#3498DB',
+	blueLight: '#A4F3FF',
+	yellow: '#f1c40f',
+	greyVDark: '#767676',
+	greyDark: '#C4C4C4',
+	greyMedium: '#E2E2E2',
+	greyLight: '#F8F8F8',
+	white: '#FFFFFF',
 };
 
 export default colors;
