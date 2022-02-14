@@ -6,4 +6,5 @@ export const filterList = [
 	'0x59158a5e8e32f4e514e05d170068a0a4a5f19d71',
 	'0x2b3b1259b0be38a172a3d5cd9ea4385dba0ccf4c',
 	'0xe009380daa262b5e80b5b4ec1116a9a42f2f3150',
+	'0xadabccd58d56596bfc23d6aaa1b24df90af2e021',
 ];
