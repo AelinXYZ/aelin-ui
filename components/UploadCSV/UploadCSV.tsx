@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import Button from 'components/Button';
 
-import { IUploadCSV, ICSVResponse, IWhitelist } from './types';
+import { IUploadCSV, ICSVResponse, WhitelistProps } from './types';
 
 const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 	const buttonRef = useRef();
@@ -23,7 +23,7 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 			});
 
 			return accum;
-		}, [] as IWhitelist[]);
+		}, [] as WhitelistProps[]);
 
 		onUploadCSV(whitelist);
 	};
@@ -43,16 +43,16 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 			noClick
 		>
 			{() => (
-				<Button size="lg" variant="round" onClick={handleOpenDialog}>
+				<StyledButton size="sm" isRounded variant="secondary" onClick={handleOpenDialog}>
 					Upload CSV
-				</Button>
+				</StyledButton>
 			)}
 		</CSVReader>
 	);
 };
 
 const StyledButton = styled(Button)`
-	background: #9e9e9e;
+	margin: 0 10px;
 `;
 
 export default UploadCSV;

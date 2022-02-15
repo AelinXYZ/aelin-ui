@@ -1,13 +1,13 @@
 export interface IUploadCSV {
-  onUploadCSV: Function;
-};
+	onUploadCSV: Function;
+}
 
 export interface ICSVResponse {
-  data: string[];
-};
+	data: string[];
+}
 
-export interface IWhitelist {
-  address: string;
-  amount: number | null;
-  isSaved: boolean;
-};
+export interface WhitelistProps {
+	address: string;
+	amount: number | null;
+	isSaved: boolean;
+}
