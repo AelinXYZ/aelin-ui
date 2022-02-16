@@ -6,14 +6,16 @@ import { Tooltip } from 'components/common';
 
 interface QuestionMarkProps {
 	text: string;
+	light?: boolean;
 }
 
-const QuestionMark: FC<QuestionMarkProps> = ({ text }) => {
+const QuestionMark: FC<QuestionMarkProps> = ({ text, light }) => {
 	const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
 
 	return (
 		<Tooltip visible={isTooltipOpen} allowHTML content={<div>{text}</div>}>
 			<StyledQuestionMark
+				light={light}
 				onMouseEnter={() => setIsTooltipOpen(true)}
 				onMouseLeave={() => setIsTooltipOpen(false)}
 			>
@@ -23,21 +25,21 @@ const QuestionMark: FC<QuestionMarkProps> = ({ text }) => {
 	);
 };
 
-const StyledQuestionMark = styled.span`
-	width: 18px;
-	height: 18px;
+const StyledQuestionMark = styled.span<{ light?: boolean }>`
+	width: 20px;
+	height: 20px;
 	margin: 0 5px;
-	font-size: 0.6rem;
 	font-weight: bold;
+	font-size: 9px;
+	line-height: 22px;
 	border-radius: 50%;
-	line-height: 1.2rem;
 	margin-right: 5px;
 	text-align: center;
 	display: inline-block;
 	cursor: pointer;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	color: ${(props) => props.theme.colors.textGrey};
-	background: ${(props) => props.theme.colors.grey};
+	color: ${(props) => props.theme.colors.headerGreen};
+	background: ${(props) => (props.light ? props.theme.colors.background : props.theme.colors.grey)};
+	font-family: ${(props) => props.theme.fonts.agrandir};
 `;
 
 export { QuestionMark };
