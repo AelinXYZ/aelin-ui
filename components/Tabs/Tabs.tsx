@@ -2,27 +2,23 @@ import React, { FC, useEffect, useState, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 
 interface TabsProps {
-	children?: React.ReactNode;
-	selected: number;
-	onSelect: (nextIndex: number) => void;
+	children: React.ReactNode;
+	defaultIndex: number;
+	onSelect?: (newIndex: number) => void;
 }
 
-const Tabs: FC<TabsProps> = ({ selected, onSelect, children }) => {
-	const [selectedIndex, setSelectedIndex] = useState<number>(selected ?? 0);
+const Tabs: FC<TabsProps> = ({ children, defaultIndex, onSelect }) => {
+	const [selectedIndex, setSelectedIndex] = useState<number>(defaultIndex ?? 0);
 	const [tabs, setTabs] = useState<any[]>(() => React.Children.toArray(children));
-
-	useEffect(() => {
-		if (selectedIndex === selected) return;
-		setSelectedIndex(selected);
-	}, [selected, selectedIndex]);
 
 	useEffect(() => {
 		setTabs(React.Children.toArray(children));
 	}, [children]);
 
 	const onChangeTab = (nextIndex: number) => {
-		if (selected === nextIndex) return;
-		onSelect(nextIndex);
+		if (selectedIndex === nextIndex) return;
+		setSelectedIndex(nextIndex);
+		if (onSelect) onSelect(nextIndex);
 	};
 
 	const tabWidth = useMemo(() => {
