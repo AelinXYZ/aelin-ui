@@ -1,5 +1,8 @@
+import { PageTitle } from 'components/Typography';
+import Typography, { TypographyVariant } from 'components/Typography/Typography';
 import { FC, ReactChildren, ReactChild } from 'react';
 import styled from 'styled-components';
+import theme from 'styles/theme';
 
 import Header from '../Header';
 
@@ -16,7 +19,9 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 			<Content>
 				<ColCenter>
 					<ContentHeader>
-						<ContentTitle>{title}</ContentTitle>
+						<PageTitle variant={TypographyVariant.h1} color={theme.colors.headerGreen}>
+							{title}
+						</PageTitle>
 						{subtitle && <ContentSubtitle>{subtitle}</ContentSubtitle>}
 					</ContentHeader>
 					<ContentBody>{children}</ContentBody>

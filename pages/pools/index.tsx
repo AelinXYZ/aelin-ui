@@ -312,7 +312,7 @@ const Pools: FC = () => {
 				<title>Aelin - Pools</title>
 			</Head>
 
-			<PageLayout title={<>All pools</>} subtitle="">
+			<PageLayout title="All pools" subtitle="">
 				<FilterPool
 					values={filterValues}
 					setSponsor={setSponsorFilter}
