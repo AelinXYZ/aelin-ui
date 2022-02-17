@@ -104,7 +104,7 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 				<P>{`$AELIN in pool via G-UNI: ${formatNumber(aelinAmount, 2)}`}</P>
 			)}
 
-			{!isLP && <P>{`Staked: ${aelinAmount !== null ? formatNumber(aelinAmount, 2) : 0}`}</P>}
+			{!isLP && <P>{`Staked: ${aelinAmount !== null ? formatNumber(aelinAmount, 2) : 0}`} AELIN </P>}
 
 			<P>{`Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</P>
 
