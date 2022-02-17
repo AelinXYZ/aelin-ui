@@ -82,7 +82,7 @@ const TabContent: FC<TabContentProps> = ({
 };
 
 const ContentContainer = styled.div`
-	padding-top: 30px;
+	padding-top: 26px;
 `;
 
 const InputContainer = styled.div`
