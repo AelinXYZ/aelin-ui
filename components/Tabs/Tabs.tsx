@@ -105,9 +105,7 @@ const TabLink = styled.button`
 		`};
 `;
 
-const Tab = styled.div`
-	padding-top: 1rem;
-`;
+const Tab = styled.div<{ label?: string }>``;
 
 export default Tabs;
 export { Tab };
