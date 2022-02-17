@@ -81,13 +81,15 @@ const Stake = () => {
 								.
 							</Text>
 							<Button
+								size="sm"
+								variant="primary"
+								isRounded
 								onClick={() =>
 									window.open(
 										'https://www.sorbet.finance/#/pools/0x665d8D87ac09Bdbc1222B8B9E72Ddcb82f76B54A',
 										'blank'
 									)
 								}
-								variant="primary"
 							>
 								Go to Sorbet.Finance
 							</Button>
@@ -116,13 +118,15 @@ const Stake = () => {
 								pool on Uniswap.
 							</Text>
 							<Button
+								size="sm"
+								variant="primary"
+								isRounded
 								onClick={() =>
 									window.open(
 										'https://app.uniswap.org/#/add/v2/0xa9c125bf4c8bb26f299c00969532b66732b1f758/ETH?chain=mainnet',
 										'blank'
 									)
 								}
-								variant="primary"
 							>
 								Go to Uniswap
 							</Button>
@@ -194,23 +198,27 @@ const Section = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	margin-top: 1rem;
+	padding: 10px;
+	border-radius: 14px;
+	border: 1px solid ${(props) => props.theme.colors.forestGreen};
 `;
 
 const PageSection = styled(FlexDivCol)`
-	flex: 1;
-	align-items: center;
+	margin: 0 40px;
 `;
 
 const JustifiedLayout = styled(Layout)`
-	justify-content: space-around;
+	justify-content: center;
 `;
 
-const Text = styled.h3`
+const Text = styled.p`
 	width: 400px;
-	padding: 20px;
+	padding: 20px 0;
 	color: ${(props) => props.theme.colors.headerGreen};
+	font-weight: 200;
 	font-size: 14px;
-	margin: 20px 0;
+	margin-top: 5px;
 	padding: 0;
 `;
 
