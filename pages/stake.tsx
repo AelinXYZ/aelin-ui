@@ -214,7 +214,7 @@ const JustifiedLayout = styled(Layout)`
 
 const Text = styled.p`
 	width: 400px;
-	padding: 20px 0;
+	padding: 0px 14.5px 0 14.5px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-weight: 200;
 	font-size: 14px;
