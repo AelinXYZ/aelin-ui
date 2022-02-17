@@ -21,19 +21,15 @@ export const InputGroup: FC<IInputGroup> = ({ icon, iconPosition = 'right', ...r
 			iconPosition={iconPosition}
 			iconSize={iconRef?.current?.getBoundingClientRect()?.width}
 		>
-			<StyledInput {...rest} />
-			<StyledIcon ref={iconRef as any}>{icon}</StyledIcon>
+			<Input {...rest} />
+			<div ref={iconRef as any}>{icon}</div>
 		</InputWrapper>
 	);
 };
 
-const StyledInput = styled(Input)``;
-
-const StyledIcon = styled.div``;
-
 const InputWrapper = styled.div<IInputWrapper>`
 	position: relative;
-	& > ${StyledIcon} {
+	& > div {
 		position: absolute;
 		display: flex;
 		${(props) =>
@@ -55,7 +51,7 @@ const InputWrapper = styled.div<IInputWrapper>`
 		font-family: ${(props) => props.theme.fonts.agrandir};
 	}
 
-	& > ${StyledInput} {
+	& > Input {
 		padding-right: ${(props) => (props.iconPosition === 'right' ? `${props.iconSize}px` : '8px')};
 		padding-left: ${(props) => (props.iconPosition === 'left' ? `${props.iconSize}px` : '8px')};
 	}
