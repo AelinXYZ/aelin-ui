@@ -3,19 +3,34 @@ import styled from 'styled-components';
 import { useState } from 'react';
 
 import { Tooltip } from 'components/common';
+import theme from 'styles/theme';
 
 interface QuestionMarkProps {
 	text: string;
-	light?: boolean;
+	bgColor?: string;
+	borderColor?: string;
+	fontColor?: string;
+	bold?: boolean;
 }
 
-const QuestionMark: FC<QuestionMarkProps> = ({ text, light }) => {
+interface IStyledQuestionMark extends Omit<QuestionMarkProps, 'text'> {}
+
+const QuestionMark: FC<QuestionMarkProps> = ({
+	text,
+	bgColor = theme.colors.buttonStroke,
+	fontColor = theme.colors.black,
+	borderColor = theme.colors.darkGrey,
+	bold = false,
+}) => {
 	const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
 
 	return (
 		<Tooltip visible={isTooltipOpen} allowHTML content={<div>{text}</div>}>
 			<StyledQuestionMark
-				light={light}
+				bold={bold}
+				bgColor={bgColor}
+				fontColor={fontColor}
+				borderColor={borderColor}
 				onMouseEnter={() => setIsTooltipOpen(true)}
 				onMouseLeave={() => setIsTooltipOpen(false)}
 			>
@@ -25,20 +40,21 @@ const QuestionMark: FC<QuestionMarkProps> = ({ text, light }) => {
 	);
 };
 
-const StyledQuestionMark = styled.span<{ light?: boolean }>`
+const StyledQuestionMark = styled.span<IStyledQuestionMark>`
 	width: 20px;
 	height: 20px;
 	margin: 0 5px;
-	font-weight: bold;
-	font-size: 9px;
-	line-height: 22px;
+	font-weight: ${(props) => (props.bold ? 'bold' : 'normal')};
+	font-size: 10px;
+	line-height: 20px;
 	border-radius: 50%;
 	margin-right: 5px;
 	text-align: center;
 	display: inline-block;
 	cursor: pointer;
-	color: ${(props) => props.theme.colors.headerGreen};
-	background: ${(props) => (props.light ? props.theme.colors.background : props.theme.colors.grey)};
+	color: ${(props) => props.fontColor};
+	background: ${(props) => props.bgColor};
+	border: 1px solid ${(props) => props.borderColor};
 	font-family: ${(props) => props.theme.fonts.agrandir};
 `;
 
