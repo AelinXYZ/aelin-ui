@@ -217,7 +217,9 @@ const Text = styled.p`
 	padding: 0px 14.5px 0 14.5px;
 	color: ${(props) => props.theme.colors.headerGreen};
 	font-weight: 200;
-	font-size: 14px;
+	font-size: 12px;
+        text-align: justify;
+	text-align-last: center;
 	margin-top: 5px;
 `;
 
