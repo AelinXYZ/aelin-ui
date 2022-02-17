@@ -18,7 +18,6 @@ export const InputGroup: FC<IInputGroup> = ({ icon, iconPosition = 'right', ...r
 
 	return (
 		<InputWrapper
-			className="inputGroup"
 			iconPosition={iconPosition}
 			iconSize={iconRef?.current?.getBoundingClientRect()?.width}
 		>
@@ -59,9 +58,5 @@ const InputWrapper = styled.div<IInputWrapper>`
 	& > ${StyledInput} {
 		padding-right: ${(props) => (props.iconPosition === 'right' ? `${props.iconSize}px` : '8px')};
 		padding-left: ${(props) => (props.iconPosition === 'left' ? `${props.iconSize}px` : '8px')};
-	}
-
-	&.inputGroup {
-		position: relative;
 	}
 `;
