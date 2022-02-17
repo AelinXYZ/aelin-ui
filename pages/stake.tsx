@@ -219,7 +219,6 @@ const Text = styled.p`
 	font-weight: 200;
 	font-size: 14px;
 	margin-top: 5px;
-	padding: 0;
 `;
 
 export default Stake;
