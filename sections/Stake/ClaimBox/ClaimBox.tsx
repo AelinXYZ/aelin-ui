@@ -34,6 +34,7 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 		stakingRewardsContract: stakingContract,
 	});
 
+	const balance = tokenStakedBalanceQuery?.data?.balance ?? wei(0);
 	const earned = tokenStakedBalanceQuery?.data?.earned ?? wei(0);
 
 	useEffect(() => {
@@ -104,9 +105,21 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 				<P>{`$AELIN in pool via G-UNI: ${formatNumber(aelinAmount, 2)}`}</P>
 			)}
 
-			{!isLP && <P>{`Staked: ${aelinAmount !== null ? formatNumber(aelinAmount, 2) : 0}`} AELIN </P>}
+			{isLP && (
+				<P>{`My Stake: ${balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'} G-UNI`}</P>
+			)}
 
-			<P>{`Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</P>
+			{!isLP && (
+				<P>
+					{`Total AELIN Staked: ${aelinAmount !== null ? formatNumber(aelinAmount, 2) : 0}`} AELIN{' '}
+				</P>
+			)}
+
+			{!isLP && (
+				<P>{`My Stake: ${balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'} AELIN`}</P>
+			)}
+
+			<P>{`My Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</P>
 
 			<Button
 				fullWidth

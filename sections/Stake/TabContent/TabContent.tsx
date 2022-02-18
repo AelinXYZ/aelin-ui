@@ -1,20 +1,19 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { wei } from '@synthetixio/wei';
+import Wei, { wei } from '@synthetixio/wei';
 
 import Button from 'components/Button';
 import { FlexDivColCentered } from 'components/common';
 
 interface TabContentProps {
-	balance: any;
+	balance: Wei;
 	label: string;
 	action: string;
-	isApproved: boolean;
 	placeholder: string;
 	inputValue: number;
-	setIsMaxValue: Function;
-	setInputValue: Function;
-	setShowTxModal: Function;
+	setIsMaxValue: (isMaxValue: boolean) => void;
+	setInputValue: (inputValue: number) => void;
+	setShowTxModal: (showTxModal: boolean) => void;
 	isApproveButtonDisabled: boolean;
 	isActionButtonDisabled: boolean;
 }
@@ -23,7 +22,6 @@ const TabContent: FC<TabContentProps> = ({
 	balance,
 	label,
 	action,
-	isApproved,
 	placeholder,
 	inputValue,
 	setIsMaxValue,
@@ -129,11 +127,10 @@ const ActionBoxMax = styled.div`
 `;
 
 const ErrorNote = styled.div`
-	position: absolute;
-	bottom: -18px;
-	left: 0;
 	color: ${(props) => props.theme.colors.statusRed};
-	font-size: 12px;
+	position: absolute;
+	margin-top: 2px;
+	font-size: 0.8rem;
 	font-weight: bold;
 `;
 

@@ -67,6 +67,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 				tokenContract: TokenContract ?? null,
 		  })
 		: null;
+
 	const apy = poolAPYQuery?.data?.apy ?? null;
 	const etherAmount = poolAPYQuery?.data?.eth ?? 0;
 	const aelinAmount = poolAPYQuery?.data?.aelin ?? 0;
@@ -77,6 +78,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const tokenStakedBalanceQuery = useGetStakingRewardsData({
 		stakingRewardsContract: StakingContract,
 	});
+
 	const tokenStakedBalance = tokenStakedBalanceQuery?.data?.balance ?? wei(0);
 
 	const totalBalance = useMemo(() => {
@@ -267,12 +269,5 @@ const StakeSection: FC<StakeSectionProps> = ({
 		</>
 	);
 };
-
-const SubHeader = styled.h4`
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.2rem;
-	margin: 0;
-	padding: 0;
-`;
 
 export default StakeSection;
