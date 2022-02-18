@@ -63,12 +63,12 @@ const Pool: FC = () => {
 	}, [poolNetworkId, provider]);
 
 	useEffect(() => {
-		if (pool == null) {
+		if (pool == null && (!poolQuery.isLoading || poolQuery.failureCount > 0)) {
 			setIsModalOpen(true);
 		} else {
 			setIsModalOpen(false);
 		}
-	}, [pool]);
+	}, [pool, poolQuery]);
 
 	return (
 		<>
