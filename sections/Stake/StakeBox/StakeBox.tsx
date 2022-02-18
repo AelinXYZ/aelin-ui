@@ -8,6 +8,7 @@ import Connector from 'containers/Connector';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import { GasLimitEstimate } from 'constants/networks';
 import { StakeActions, StakeActionLabel } from 'sections/Stake/constants';
+import { InputGroup } from 'components/Input/InputGroup';
 
 export type InputType = {
 	placeholder: string;
@@ -97,7 +98,19 @@ const ActionBox: FC<ActionBoxProps> = ({
 			<ContentContainer>
 				<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
 				<InputContainer>
-					<ActionBoxInput
+					<InputGroup
+						icon={
+							<div
+								onClick={() => {
+									if (balance?.gt(wei(0))) {
+										setInputValue(balance?.toNumber());
+										setIsMaxValue(true);
+									}
+								}}
+							>
+								Max
+							</div>
+						}
 						type={'number'}
 						placeholder={placeholder}
 						value={inputValue}
@@ -106,16 +119,6 @@ const ActionBox: FC<ActionBoxProps> = ({
 							setInputValue(parseFloat(e.target.value));
 						}}
 					/>
-					<ActionBoxMax
-						onClick={() => {
-							if (balance?.gt(wei(0))) {
-								setInputValue(balance?.toNumber());
-								setIsMaxValue(true);
-							}
-						}}
-					>
-						Max
-					</ActionBoxMax>
 					{balance?.toNumber() < inputValue ? <ErrorNote>Max balance exceeded</ErrorNote> : null}
 				</InputContainer>
 			</ContentContainer>
@@ -209,39 +212,6 @@ const ActionBoxInputLabel = styled.div`
 	color: ${(props) => props.theme.colors.textGrey};
 	font-size: 11px;
 	padding-bottom: 4px;
-`;
-
-const ActionBoxInput = styled.input`
-	outline: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: ${(props) => props.theme.colors.background};
-	border-radius: 4px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	height: 35px;
-	padding: 6px 12px;
-	&::placeholder {
-		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
-	}
-`;
-
-const ActionBoxMax = styled.div`
-	position: absolute;
-	height: 21px;
-	left: 180px;
-	text-align: center;
-	padding: 4px 6px 4px 4px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	border-radius: 100px;
-	&:hover {
-		cursor: pointer;
-	}
 `;
 
 const ActionButton = styled.button<{ isWithdraw: boolean }>`
