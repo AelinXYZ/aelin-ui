@@ -52,7 +52,6 @@ const Tabs: FC<TabsProps> = ({ children, defaultIndex, onSelect }) => {
 			{tabs[selectedIndex] &&
 				React.cloneElement(tabs[selectedIndex], {
 					role: 'tabpanel',
-					id: `${tabs[selectedIndex].props.label}-${selectedIndex}-tab`,
 					'aria-labelledby': `${tabs[selectedIndex].props.label}-${selectedIndex}`,
 				})}
 		</Tab>
