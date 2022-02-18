@@ -237,7 +237,7 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseToken">Purchase Currency</label>
+						<label htmlFor="purchaseToken">Investment token</label>
 						<QuestionMark text={`The currency used to purchase pool tokens`} />
 					</>
 				),
@@ -281,11 +281,11 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseDuration">Purchase Window</label>
+						<label htmlFor="purchaseDuration">Investment deadline</label>
 						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
-				subText: 'Time to purchase deal tokens',
+				subText: 'Time to purchase pool tokens',
 				formField: (
 					<FlexDivRow>
 						<Input
@@ -325,7 +325,7 @@ const Create: FC = () => {
 			{
 				header: (
 					<>
-						<label htmlFor="duration">Pool Duration</label>
+						<label htmlFor="duration">Deal deadline</label>
 						<QuestionMark
 							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
@@ -430,12 +430,10 @@ const Create: FC = () => {
 				subText: 'Is the pool open or private',
 				formField: (
 					<FlexDivCol>
-						<>
-							<div role="group" aria-labelledby="pool-privacy">
-								<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
-								<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
-							</div>
-						</>
+						<div role="group" aria-labelledby="pool-privacy">
+							<Radio name="poolPrivacy" value={Privacy.PUBLIC} formik={formik} />
+							<Radio name="poolPrivacy" value={Privacy.PRIVATE} formik={formik} />
+						</div>
 					</FlexDivCol>
 				),
 				formError: formik.errors.whitelist,
@@ -451,23 +449,25 @@ const Create: FC = () => {
 	const summaryItems = useMemo(
 		() => [
 			{
-				label: 'Sponsor',
-				text: !!walletAddress ? truncateAddress(walletAddress ?? '') : 'Connect Wallet',
+				label: 'Invesment Token',
+				text: formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : '-',
 			},
 			{
-				label: 'Cap',
-				text: formatNumber(formik.values.poolCap, DEFAULT_DECIMALS),
+				label: 'Pool Cap',
+				text: formik.values.poolCap
+					? formatNumber(formik.values.poolCap, DEFAULT_DECIMALS)
+					: 'Uncapped',
 			},
 			{
-				label: 'Currency',
-				text: formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : '',
+				label: 'Investment deadline',
+				text: formatDuration(
+					formik.values.purchaseDurationDays,
+					formik.values.purchaseDurationHours,
+					formik.values.purchaseDurationMinutes
+				),
 			},
 			{
-				label: 'Fee',
-				text: `${formik.values.sponsorFee ?? 0}%`,
-			},
-			{
-				label: 'Pool Locked Duration',
+				label: 'Deal deadline',
 				text: formatDuration(
 					formik.values.durationDays,
 					formik.values.durationHours,
@@ -475,26 +475,25 @@ const Create: FC = () => {
 				),
 			},
 			{
-				label: 'Name',
-				text: formik.values.poolName,
+				label: 'Sponsor Fee',
+				text: `${formik.values.sponsorFee ?? 0}%`,
+			},
+
+			{
+				label: 'Pool name',
+				text: formik.values.poolName ? formik.values.poolName : '-',
 			},
 			{
-				label: 'Symbol',
-				text: formik.values.poolSymbol,
+				label: 'Pool symbol',
+				text: formik.values.poolSymbol ? formik.values.poolSymbol : '-',
 			},
 			{
-				label: 'Enter the Pool Duration',
-				text: formatDuration(
-					formik.values.purchaseDurationDays,
-					formik.values.purchaseDurationHours,
-					formik.values.purchaseDurationMinutes
-				),
+				label: 'Pool privacy',
+				text: formik.values.poolPrivacy.replace(/^\w/, (c) => c.toUpperCase()),
 			},
 		],
-		[walletAddress, formik]
+		[formik]
 	);
-
-	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 
 	return (
 		<>
@@ -514,7 +513,6 @@ const Create: FC = () => {
 						setGasPrice={setGasPrice}
 						gasLimitEstimate={gasLimitEstimate}
 					/>
-					{isPrivate && <WhiteList formik={formik} />}
 				</>
 			</PageLayout>
 		</>
