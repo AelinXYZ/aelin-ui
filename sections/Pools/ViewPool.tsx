@@ -159,7 +159,9 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	return (
 		<PageLayout
-			title={<SectionTitle address={poolAddress} title={`${pool?.name} Pool`} subtitle="" />}
+			title={
+				<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} subtitle="" />
+			}
 		>
 			<PurchasePoolSection pool={pool} />
 			{showCreateDealSection && (
@@ -195,7 +197,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				<SectionWrapper>
 					<ContentHeader>
 						<ContentTitle>
-							<SectionTitle address={deal?.id} title={`${pool?.name} Deal`} />
+							<SectionTitle address={deal?.id} title={`${pool?.name ?? 'Aelin'} Deal`} />
 						</ContentTitle>
 					</ContentHeader>
 					<AcceptOrRejectDealSection
