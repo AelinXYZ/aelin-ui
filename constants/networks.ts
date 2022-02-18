@@ -32,3 +32,10 @@ export type GasLimitEstimate = Wei | null;
 
 export const isMainnet = (networkId: NetworkId) =>
 	[NetworkId.Mainnet, NetworkId['Optimism-Mainnet']].includes(networkId);
+
+export const nameToIdMapping: { [name: string]: NetworkId } = {
+	mainnet: 1,
+	kovan: 42,
+	optimism: 10,
+	'optimism-kovan': 69,
+};
