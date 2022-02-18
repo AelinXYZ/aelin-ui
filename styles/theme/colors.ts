@@ -14,6 +14,7 @@ const colors = {
 	background: '#DBDBDB',
 	modalBackground: '#DFDFDF',
 	cell: '#E2E2E2',
+	rowBackground: '#f8f8f8',
 
 	statusBlue: '#4EB6F0',
 	statusGreen: '#7DD38C',
