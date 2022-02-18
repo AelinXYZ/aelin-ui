@@ -16,6 +16,7 @@ import { nameToIdMapping } from 'constants/networks';
 const Pool: FC = () => {
 	const router = useRouter();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [userClosedModal, setUserClosedModal] = useState<boolean>(false);
 	const { network, provider } = Connector.useContainer();
 	const { poolData } = router.query;
 
@@ -63,12 +64,12 @@ const Pool: FC = () => {
 	}, [poolNetworkId, provider]);
 
 	useEffect(() => {
-		if (pool == null && (!poolQuery.isLoading || poolQuery.failureCount > 0)) {
+		if (pool == null && !userClosedModal && (!poolQuery.isLoading || poolQuery.failureCount > 0)) {
 			setIsModalOpen(true);
 		} else {
 			setIsModalOpen(false);
 		}
-	}, [pool, poolQuery]);
+	}, [pool, poolQuery, userClosedModal]);
 
 	return (
 		<>
@@ -77,7 +78,12 @@ const Pool: FC = () => {
 			</Head>
 
 			<ViewPool pool={pool} poolAddress={poolAddress} />
-			<BaseModal title="Switch Networks" setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}>
+			<BaseModal
+				onClose={() => setUserClosedModal(true)}
+				title="Switch Networks"
+				setIsModalOpen={setIsModalOpen}
+				isModalOpen={isModalOpen}
+			>
 				<ModalContainer>
 					<p>We noticed you are connected to the wrong network for this pool.</p>
 					{poolNetwork != null ? (
