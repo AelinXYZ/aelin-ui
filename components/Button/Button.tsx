@@ -3,7 +3,7 @@ import { resetButtonCSS } from 'components/common';
 
 type ButtonProps = {
 	size?: 'sm' | 'md' | 'lg' | 'xl';
-	variant?: 'primary' | 'secondary' | 'tertiary';
+	variant?: 'primary' | 'secondary' | 'tertiary' | 'black';
 	isActive?: boolean;
 	isRounded?: boolean;
 	fullWidth?: boolean;
@@ -108,6 +108,25 @@ const Button = styled.button<ButtonProps>`
 				&:not(:disabled) {
 					color: ${(props) => props.theme.colors.primary};
 				}
+			}
+		`}
+
+		${(props) =>
+		props.variant === 'black' &&
+		css`
+			background: ${(props) => props.theme.colors.black};
+			color: ${(props) => props.theme.colors.white};
+
+			&:hover {
+				&:not(:disabled) {
+					box-shadow: 0px 0px 10px rgba(46, 46, 46, 0.5);
+				}
+			}
+
+			&:disabled {
+				opacity: 0.5;
+				box-shadow: none;
+				cursor: not-allowed;
 			}
 		`}
 `;
