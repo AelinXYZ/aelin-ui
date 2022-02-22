@@ -4,6 +4,7 @@ import Wei, { wei } from '@synthetixio/wei';
 
 import Button from 'components/Button';
 import { FlexDivColCentered } from 'components/common';
+import { InputGroup } from 'components/Input/InputGroup';
 
 interface TabContentProps {
 	balance: Wei;
@@ -33,7 +34,7 @@ const TabContent: FC<TabContentProps> = ({
 	return (
 		<ContentContainer>
 			<InputContainer>
-				<ActionBoxInput
+				<InputGroup
 					type={'number'}
 					placeholder={placeholder}
 					value={inputValue}
@@ -41,17 +42,19 @@ const TabContent: FC<TabContentProps> = ({
 						setIsMaxValue(false);
 						setInputValue(parseFloat(e.target.value));
 					}}
+					icon={
+						<div
+							onClick={() => {
+								if (balance?.gt(wei(0))) {
+									setInputValue(balance?.toNumber());
+									setIsMaxValue(true);
+								}
+							}}
+						>
+							Max
+						</div>
+					}
 				/>
-				<ActionBoxMax
-					onClick={() => {
-						if (balance?.gt(wei(0))) {
-							setInputValue(balance?.toNumber());
-							setIsMaxValue(true);
-						}
-					}}
-				>
-					Max
-				</ActionBoxMax>
 				{balance?.toNumber() < inputValue && <ErrorNote>Max balance exceeded</ErrorNote>}
 			</InputContainer>
 			<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
