@@ -143,12 +143,14 @@ const StyledContainer = styled.div`
 
 const StyledGasDescription = styled.span`
 	color: ${(props) => props.theme.colors.textBody};
+	line-height: 2rem;
 	font-size: 1rem;
 	padding-right: 5px;
 `;
 
 const StyledGasPrice = styled.span`
 	color: ${(props) => props.theme.colors.textSmall};
+	line-height: 2rem;
 	font-size: 1rem;
 	margin-right: 15px;
 `;
