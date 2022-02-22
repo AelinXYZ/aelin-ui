@@ -1,24 +1,25 @@
 import { useState, FC, useEffect, useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
+
+import { GasLimitEstimate } from 'constants/networks';
+import { TransactionStatus } from 'constants/transactions';
+
+import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
+import TransactionNotifier from 'containers/TransactionNotifier';
+
+import useGetTokenBalance from 'queries/token/useGetTokenBalance';
+import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
+
+import { getGasEstimateWithBuffer } from 'utils/network';
+
+import erc20ABI from 'contracts/erc20';
+import stakingRewardsABI from 'contracts/stakingRewardsV2';
 
 import { StakeActionLabel } from '../constants';
 import StakeBox from '../StakeBox';
 import ClaimBox from '../ClaimBox';
-
-import { FlexDiv } from 'components/common';
-import { GasLimitEstimate } from 'constants/networks';
-import TransactionData from 'containers/TransactionData';
-import TransactionNotifier from 'containers/TransactionNotifier';
-import Connector from 'containers/Connector';
-import { TransactionStatus } from 'constants/transactions';
-import useGetTokenBalance from 'queries/token/useGetTokenBalance';
-import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
-import { getGasEstimateWithBuffer } from 'utils/network';
-import { formatNumber } from 'utils/numbers';
-import erc20ABI from 'contracts/erc20';
-import stakingRewardsABI from 'contracts/stakingRewardsV2';
 
 type StakeSectionProps = {
 	header: string;
@@ -44,7 +45,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [stakeAction, setStakeAction] = useState<StakeActionLabel>(StakeActionLabel.DEPOSIT);
-	const [inputValue, setInputValue] = useState<number>(0);
+	const [inputValue, setInputValue] = useState<number | string>('');
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 
 	const { setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();

@@ -19,7 +19,7 @@ import Connector from 'containers/Connector';
 import Etherscan from 'containers/BlockExplorer';
 
 import TabContent from '../TabContent';
-import { StakeActionLabel } from 'sections/Stake/constants';
+import { StakeActionLabel } from '../constants';
 
 export type InputType = {
 	placeholder: string;
@@ -38,8 +38,8 @@ interface ActionBoxProps {
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
 	setIsMaxValue: (isMax: boolean) => void;
-	inputValue: number;
-	setInputValue: (num: number) => void;
+	inputValue: number | string;
+	setInputValue: (inputValue: number | string) => void;
 	balance: Wei;
 	isApproved: boolean;
 	action: StakeActionLabel;
@@ -93,13 +93,13 @@ const ActionBox: FC<ActionBoxProps> = ({
 	}, [isApproved, onApprove, action, onSubmit, inputValue, symbol]);
 
 	const isActionButtonDisabled: boolean = useMemo(() => {
-		if (!walletAddress || !inputValue) return true;
+		if (!walletAddress && !inputValue) true;
 
-		if (!isApproved) return false;
+		if (!isApproved) return true;
 
-		if (balance?.toNumber() < inputValue) return true;
+		if (balance?.toNumber() < inputValue) return false;
 
-		return false;
+		return true;
 	}, [walletAddress, inputValue, isApproved, balance]);
 
 	const isApproveButtonDisabled: boolean = useMemo(() => {

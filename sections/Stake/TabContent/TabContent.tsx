@@ -11,9 +11,9 @@ interface TabContentProps {
 	label: string;
 	action: string;
 	placeholder: string;
-	inputValue: number;
+	inputValue: number | string;
 	setIsMaxValue: (isMaxValue: boolean) => void;
-	setInputValue: (inputValue: number) => void;
+	setInputValue: (inputValue: number | string) => void;
 	setShowTxModal: (showTxModal: boolean) => void;
 	isApproveButtonDisabled: boolean;
 	isActionButtonDisabled: boolean;
@@ -39,8 +39,9 @@ const TabContent: FC<TabContentProps> = ({
 					placeholder={placeholder}
 					value={inputValue}
 					onChange={(e) => {
+						const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
 						setIsMaxValue(false);
-						setInputValue(parseFloat(e.target.value));
+						setInputValue(value);
 					}}
 					icon={
 						<div
