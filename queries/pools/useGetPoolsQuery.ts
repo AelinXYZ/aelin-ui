@@ -1,38 +1,40 @@
 import { utils } from 'ethers';
-
 import { getGraphEndpoint } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 import { calculateStatus } from 'utils/time';
-import { NetworkId } from 'constants/networks';
+import { nameToIdMapping, NetworkId } from 'constants/networks';
 
-const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
-	return useGetPoolCreateds(
-		getGraphEndpoint(networkId),
-		{
-			orderBy: 'timestamp',
-			orderDirection: 'desc',
-		},
-		{
-			id: true,
-			name: true,
-			symbol: true,
-			purchaseTokenCap: true,
-			purchaseToken: true,
-			duration: true,
-			sponsorFee: true,
-			sponsor: true,
-			purchaseExpiry: true,
-			purchaseTokenDecimals: true,
-			timestamp: true,
-			poolStatus: true,
-			purchaseDuration: true,
-			contributions: true,
-			dealAddress: true,
-			hasAllowList: true,
-		},
-		{},
-		networkId ? networkId : NetworkId.Mainnet
-	);
+const useGetPoolsQuery = () => {
+	return Object.entries(nameToIdMapping).map(([networkName, networkId]) => ({
+		...useGetPoolCreateds(
+			getGraphEndpoint(networkId),
+			{
+				orderBy: 'timestamp',
+				orderDirection: 'desc',
+			},
+			{
+				id: true,
+				name: true,
+				symbol: true,
+				purchaseTokenCap: true,
+				purchaseToken: true,
+				duration: true,
+				sponsorFee: true,
+				sponsor: true,
+				purchaseExpiry: true,
+				purchaseTokenDecimals: true,
+				timestamp: true,
+				poolStatus: true,
+				purchaseDuration: true,
+				contributions: true,
+				dealAddress: true,
+				hasAllowList: true,
+			},
+			{},
+			networkId ? networkId : NetworkId.Mainnet
+		),
+		networkName,
+	}));
 };
 
 export const parsePool = ({
@@ -52,7 +54,8 @@ export const parsePool = ({
 	dealAddress,
 	purchaseTokenDecimals,
 	hasAllowList,
-}: PoolCreatedResult) => {
+	network,
+}: PoolCreatedResult & { network: string }) => {
 	let formattedName = '';
 	let formattedSymbol = '';
 	try {
@@ -80,6 +83,7 @@ export const parsePool = ({
 		poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
 		dealAddress,
 		hasAllowList,
+		network,
 	};
 };
 

@@ -48,7 +48,16 @@ const Pools: FC = () => {
 		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
 	);
 
-	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
+	const poolsQuery = useGetPoolsQuery();
+	const poolsQueryWithNetwork = useMemo(() => {
+		return poolsQuery
+			.filter((q) => !!q.data)
+			.reduce((prev, current) => {
+				return [...prev, ...current.data.map((d) => ({ ...d, network: current.networkName }))];
+			}, [])
+			.sort((a, b) => b.poolStatus.localeCompare(a.poolStatus));
+	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
+
 	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
 
 	useEffect(() => {
@@ -60,30 +69,30 @@ const Pools: FC = () => {
 	}, [router.query.page]);
 
 	useInterval(() => {
-		poolsQuery.refetch();
+		poolsQuery.forEach((q) => q.refetch());
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
 	const sponsors = useMemo(
 		() =>
-			(poolsQuery?.data ?? [])
-				.filter(({ id }) => !filterList.includes(id))
+			poolsQueryWithNetwork
+				?.filter(({ id }) => !filterList.includes(id))
 				.map(({ sponsor }) => sponsor),
-		[poolsQuery?.data]
+		[poolsQueryWithNetwork?.length]
 	);
 
 	const purchaseTokenAddresses = useMemo(
 		() =>
-			(poolsQuery?.data ?? [])
+			poolsQueryWithNetwork
 				.filter(({ id }) => !filterList.includes(id))
 				.map(({ purchaseToken }) => purchaseToken),
-		[poolsQuery?.data]
+		[poolsQueryWithNetwork?.length]
 	);
 
 	const ensOrAddresses = useAddressesToEns(sponsors);
 	const currencySymbols = useAddressesToSymbols(purchaseTokenAddresses);
 
 	const data = useMemo(() => {
-		let list = (poolsQuery?.data ?? [])
+		let list = poolsQueryWithNetwork
 			.filter(({ id }) => !filterList.includes(id))
 			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
 				const parsedPool = parsePool({
@@ -127,9 +136,13 @@ const Pools: FC = () => {
 			);
 		}
 
+		if (process.env.NODE_ENV === 'production') {
+			list = list.filter(({ network }) => network === 'mainnet' || network === 'optimism');
+		}
+
 		return list;
 	}, [
-		poolsQuery?.data,
+		poolsQueryWithNetwork,
 		sponsorFilter,
 		currencyFilter,
 		nameFilter,
@@ -322,9 +335,9 @@ const Pools: FC = () => {
 				/>
 				<Table
 					pageIndex={pageIndex}
-					noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
+					noResultsMessage={poolsQueryWithNetwork?.length === 0 ? 'no results' : null}
 					data={data && data.length > 0 ? data : []}
-					isLoading={poolsQuery.isLoading}
+					isLoading={!poolsQueryWithNetwork?.length}
 					columns={columns}
 					hasLinksToPool={true}
 					showPagination={true}
