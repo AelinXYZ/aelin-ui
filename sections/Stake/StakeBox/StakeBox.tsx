@@ -2,11 +2,10 @@ import { FC, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
-import Wei, { wei } from '@synthetixio/wei';
+import Wei from '@synthetixio/wei';
 
 import EtherscanLogo from 'assets/svg/etherscan-logo.svg';
 
-import Button from 'components/Button';
 import { Tab, Tabs } from 'components/Tabs';
 import QuestionMark from 'components/QuestionMark';
 import { FlexDiv, FlexDivColCentered } from 'components/common';
@@ -19,9 +18,8 @@ import { formatNumber } from 'utils/numbers';
 import Connector from 'containers/Connector';
 import Etherscan from 'containers/BlockExplorer';
 
-import { StakeActionLabel } from 'sections/Stake/constants';
-
 import TabContent from '../TabContent';
+import { StakeActionLabel } from 'sections/Stake/constants';
 
 export type InputType = {
 	placeholder: string;
@@ -226,68 +224,6 @@ const Container = styled.div`
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	position: relative;
-`;
-
-const InputContainer = styled.div`
-	position: relative;
-`;
-
-const ContentContainer = styled.div`
-	padding-top: 30px;
-`;
-
-const Buttons = styled(FlexDivColCentered)`
-	margin: 5px 0;
-	width: 100%;
-	gap: 1rem;
-`;
-
-const ErrorNote = styled.div`
-	position: absolute;
-	bottom: -18px;
-	left: 0;
-	color: ${(props) => props.theme.colors.statusRed};
-	font-size: 12px;
-	font-weight: bold;
-`;
-
-const ActionBoxInputLabel = styled.p`
-	color: ${(props) => props.theme.colors.forestGreen};
-	font-size: 1.2rem;
-	padding-bottom: 4px;
-`;
-
-const ActionBoxInput = styled.input`
-	outline: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: ${(props) => props.theme.colors.background};
-	border-radius: 4px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	height: 35px;
-	padding: 6px 12px;
-	&::placeholder {
-		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
-	}
-`;
-
-const ActionBoxMax = styled.div`
-	position: absolute;
-	height: 21px;
-	left: 180px;
-	text-align: center;
-	padding: 4px 6px 4px 4px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	border-radius: 100px;
-	&:hover {
-		cursor: pointer;
-	}
 `;
 
 export default ActionBox;
