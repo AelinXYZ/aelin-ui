@@ -33,8 +33,9 @@ import { filterList } from 'constants/poolFilterList';
 import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
-import { NetworkId } from 'constants/networks';
+import { Network, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
+import { Env } from 'constants/env';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -59,6 +60,7 @@ const Pools: FC = () => {
 	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
 
 	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
+	const isQueryLoading = poolsQuery.find((q) => q.status === 'loading');
 
 	useEffect(() => {
 		setSponsorFilter(router.query?.sponsorFilter ?? '');
@@ -72,13 +74,13 @@ const Pools: FC = () => {
 		poolsQuery.forEach((q) => q.refetch());
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
-	const sponsors = useMemo(
-		() =>
+	const sponsors = useMemo(() => {
+		if (!isQueryLoading) {
 			poolsQueryWithNetwork
 				?.filter(({ id }) => !filterList.includes(id))
-				.map(({ sponsor }) => sponsor),
-		[poolsQueryWithNetwork?.length]
-	);
+				.map(({ sponsor }) => sponsor);
+		}
+	}, [poolsQueryWithNetwork?.length]);
 
 	const purchaseTokenAddresses = useMemo(
 		() =>
@@ -136,8 +138,10 @@ const Pools: FC = () => {
 			);
 		}
 
-		if (process.env.NODE_ENV === 'production') {
-			list = list.filter(({ network }) => network === 'mainnet' || network === 'optimism');
+		if (process.env.NODE_ENV === Env.PROD) {
+			list = list.filter(
+				({ network }) => network === Network.Mainnet || network === Network['Optimism-Mainnet']
+			);
 		}
 
 		return list;
@@ -337,7 +341,7 @@ const Pools: FC = () => {
 					pageIndex={pageIndex}
 					noResultsMessage={poolsQueryWithNetwork?.length === 0 ? 'no results' : null}
 					data={data && data.length > 0 ? data : []}
-					isLoading={!poolsQueryWithNetwork?.length}
+					isLoading={isQueryLoading}
 					columns={columns}
 					hasLinksToPool={true}
 					showPagination={true}
