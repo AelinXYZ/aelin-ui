@@ -62,8 +62,8 @@ const Button = styled.button<ButtonProps>`
 	${(props) =>
 		props.variant === 'primary' &&
 		css`
-			color: ${(props) => props.theme.colors.white};
-			background: ${(props) => props.theme.colors.forestGreen};
+			color: ${(props) => props.theme.colors.textButton};
+			background: ${(props) => props.theme.colors.buttonPrimary};
 
 			&:hover {
 				&:not(:disabled) {
@@ -82,8 +82,8 @@ const Button = styled.button<ButtonProps>`
 		props.variant === 'secondary' &&
 		css`
 			background: ${(props) => props.theme.colors.white};
-			border: 1px solid ${(props) => props.theme.colors.forestGreen};
-			color: ${(props) => props.theme.colors.forestGreen};
+			border: 1px solid ${(props) => props.theme.colors.primary};
+			color: ${(props) => props.theme.colors.primary};
 
 			&:hover {
 				&:not(:disabled) {
@@ -102,11 +102,11 @@ const Button = styled.button<ButtonProps>`
 		props.variant === 'tertiary' &&
 		css`
 			${resetButtonCSS};
-			color: ${(props) => props.theme.colors.forestGreen};
+			color: ${(props) => props.theme.colors.primary};
 
 			&:hover {
 				&:not(:disabled) {
-					color: ${(props) => props.theme.colors.forestGreen};
+					color: ${(props) => props.theme.colors.primary};
 				}
 			}
 		`}
