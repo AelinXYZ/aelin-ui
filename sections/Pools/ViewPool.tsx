@@ -276,6 +276,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder
 	);
 
+	/*
 	console.log(
 		'PoolDurationEndedSection',
 		(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
@@ -284,6 +285,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				pool?.id !== vAelinPoolID &&
 				!(pool?.poolStatus === Status.DealOpen && deal?.id != null))
 	);
+	*/
 
 	return (
 		<PageLayout
