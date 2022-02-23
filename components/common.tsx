@@ -51,8 +51,8 @@ export const GridDivCenteredCol = styled(GridDivCentered)`
 `;
 
 export const Tooltip = styled(Tippy)`
-	background: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
+	background: ${(props) => props.theme.colors.tooltipBackground};
+	color: ${(props) => props.theme.colors.tooltipText};
 	border-radius: 4px;
 	max-width: 500px !important;
 
