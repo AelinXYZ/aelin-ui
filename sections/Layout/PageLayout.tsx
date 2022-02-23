@@ -47,7 +47,7 @@ export const ContentHeader = styled.div`
 `;
 
 export const ContentTitle = styled.h1`
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 2rem;
 	font-weight: 400;
 	margin: 0 0 6px 0;
@@ -55,7 +55,7 @@ export const ContentTitle = styled.h1`
 
 export const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
-	color: ${(props) => props.theme.colors.headerGrey};
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1.2rem;
 `;
 

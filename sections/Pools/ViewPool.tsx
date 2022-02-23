@@ -158,6 +158,22 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		return false;
 	}, [deal, now, pool, walletAddress]);
 
+	const isPoolDurationEnded = useMemo(() => {
+		return (
+			(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
+			(pool?.poolStatus !== Status.FundingDeal &&
+				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
+				!(pool?.poolStatus === Status.DealOpen && deal?.id != null))
+		);
+	}, [
+		deal.holderFundingExpiration,
+		deal?.id,
+		now,
+		pool?.duration,
+		pool?.poolStatus,
+		pool?.purchaseExpiry,
+	]);
+
 	const poolStages = {
 		OPEN_POOL: () => ({
 			title: 'Pool Info',
@@ -240,6 +256,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			stages.push('FUND_DEAL');
 		}
 
+		if (isPoolDurationEnded) {
+			stages.push('POOL_DURATION_ENDED');
+		}
+
 		if (pool?.poolStatus === Status.DealOpen) {
 			stages.push('ACCEPT_OR_REJECT_DEAL');
 		}
@@ -258,6 +278,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		claims,
 		deal?.id,
 		dealBalance,
+		isPoolDurationEnded,
 		pool?.poolStatus,
 		showCreateDealSection,
 	]);
@@ -293,12 +314,21 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			subtitle={pool?.hasAllowList ? 'Private pool' : 'Public pool'}
 		>
 			{isHolderAndSponsorEquals && currentStages[currentTab] === 'FUND_DEAL' && (
-				<Note>
+				<Notice>
 					We noticed you are the sponsor and the counter party. This is usually due to a pool
 					cancellation unless you are sponsoring your own deal. If you cancelled the pool no further
 					action is required
-				</Note>
+				</Notice>
 			)}
+
+			{isPoolDurationEnded && currentStages[currentTab] === 'POOL_DURATION_ENDED' && (
+				<Notice>
+					The duration for this AELIN pool has ended or a deal has been presented but not funded.
+					You may withdraw your funds now although the sponsor may still create a deal for you if
+					you remain in the pool
+				</Notice>
+			)}
+
 			<Tabs
 				defaultIndex={currentStages.length}
 				onSelect={(currentIndex) => setCurrentTab(currentIndex)}
@@ -313,10 +343,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	);
 };
 
-const Note = styled.p`
+const Notice = styled.p`
 	width: 690px;
-	color: ${(props) => props.theme.colors.statusRed};
-	border: 1px solid ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.red};
+	border: 1px solid ${(props) => props.theme.colors.red};
 	border-radius: 8px;
 	padding: 15px 20px;
 `;

@@ -164,15 +164,15 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 };
 
 const Container = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
 	width: 350px;
 	position: relative;
 	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 `;
 
 const CancelButton = styled(Button)`
-	color: ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.red};
 	font-size: 1.2rem;
 	position: absolute;
 	right: 0;
@@ -197,7 +197,7 @@ const StyledButton = styled(Button)`
 
 const SummaryBoxHeader = styled.div`
 	padding: 20px 20px 0 30px;
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
 `;
 
@@ -213,13 +213,14 @@ const Item = styled.div`
 `;
 
 const ItemLabel = styled.div`
-	color: ${(props) => props.theme.colors.headerGrey};
+	color: ${(props) => props.theme.colors.textBody};
 	font-size: 1.1rem;
 	margin-bottom: 3px;
 `;
+
 const ItemText = styled.div`
 	font-size: 1rem;
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.textSmall};
 `;
 
 export default SummaryBox;

@@ -35,9 +35,9 @@ const StyledQuestionMark = styled.span`
 	text-align: center;
 	display: inline-block;
 	cursor: pointer;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	color: ${(props) => props.theme.colors.textGrey};
-	background: ${(props) => props.theme.colors.grey};
+	border: 1px solid ${(props) => props.theme.colors.questionMarkBorders};
+	color: ${(props) => props.theme.colors.questionMarkText};
+	background: ${(props) => props.theme.colors.questionMarkBackground};
 `;
 
 export { QuestionMark };

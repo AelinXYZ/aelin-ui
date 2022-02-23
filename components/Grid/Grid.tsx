@@ -38,14 +38,14 @@ const Container = styled.div`
 	display: grid;
 	grid-template-columns: auto auto auto;
 	margin-right: 20px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 	border-radius: 8px;
 `;
 
 const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
-	background-color: ${(props) => props.theme.colors.cell};
-	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
+	border-bottom: 1px solid ${(props) => props.theme.colors.borders};
+	border-right: 1px solid ${(props) => props.theme.colors.borders};
 	padding: 20px;
 	height: ${(props) => (props.hasInputFields ? '180px' : '135px')};
 	width: 230px;
@@ -103,7 +103,7 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 `;
 
 const GridItemHeader = styled.div`
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
 	display: flex;
 	align-items: flex-start;
@@ -111,7 +111,7 @@ const GridItemHeader = styled.div`
 `;
 
 const GridItemSubText = styled.div`
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1rem;
 	margin: 5px 0;
 
@@ -121,7 +121,7 @@ const GridItemSubText = styled.div`
 `;
 
 const ErrorField = styled.div`
-	color: ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.red};
 	margin-top: 5px;
 	font-size: 1rem;
 	font-weight: bold;

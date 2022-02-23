@@ -8,7 +8,7 @@ const NotAllowedBox = () => (
 );
 
 const Title = styled.h3`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
 	font-weight: 400;
 `;

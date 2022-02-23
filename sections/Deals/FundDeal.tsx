@@ -347,23 +347,23 @@ const FundDeal: FC<FundDealProps> = ({
 };
 
 const Container = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
 	width: 300px;
 	height: fit-content;
 	position: relative;
 	border-radius: 8px;
 	padding: 20px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 `;
 
 const Title = styled.h3`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.primary};
 	font-size: 1.2rem;
 	font-weight: 400;
 `;
 
 const Bold = styled.span`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1rem;
 	font-weight: 600;
 `;

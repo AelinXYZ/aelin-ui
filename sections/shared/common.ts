@@ -4,16 +4,16 @@ import Button from 'components/Button';
 import { FlexDivRow } from 'components/common';
 
 export const Container = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
 	height: fit-content;
 	width: 350px;
 	position: relative;
 	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 `;
 
 export const ErrorNote = styled.div`
-	color: ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.red};
 	position: absolute;
 	margin-top: 60px;
 	font-size: 0.8rem;
@@ -25,7 +25,7 @@ export const ContentContainer = styled.div`
 `;
 
 export const ActionBoxInputLabel = styled.div`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.primary};
 	margin: 20px 0;
 	font-size: 1.1rem;
 	padding-bottom: 4px;
@@ -40,9 +40,9 @@ export const InputContainer = styled.div`
 export const ActionBoxInput = styled.input`
 	outline: none;
 	width: 150px;
-	background-color: ${(props) => props.theme.colors.background};
+	background-color: ${(props) => props.theme.colors.inputBackground};
 	border-radius: 4px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.inputBorders};
 	height: 35px;
 	padding: 6px 12px;
 	&::placeholder {
@@ -57,9 +57,9 @@ export const ActionBoxMax = styled.div<{ isProRata: boolean }>`
 	text-align: center;
 	padding: 2px 6px;
 	top: 7px;
-	color: ${(props) => props.theme.colors.textGrey};
+	color: ${(props) => props.theme.colors.textBody};
 	font-size: 1rem;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.inputBorders};
 	border-radius: 100px;
 	&:hover {
 		cursor: pointer;
@@ -81,14 +81,13 @@ export const ActionBoxHeader = styled(Button)<{
 	isWithdraw?: boolean;
 }>`
 	margin: 5px;
-	color: ${(props) =>
-		props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.headerGreen};
+	color: ${(props) => (props.isWithdraw ? props.theme.colors.red : props.theme.colors.primary)};
 	font-size: 1rem;
 
 	${(props) =>
 		props.isSelected &&
 		css`
-			background-color: ${props.theme.colors.grey};
+			background-color: ${props.theme.colors.grey6};
 		`}
 
 	${(props) =>
@@ -119,18 +118,16 @@ export const ActionButton = styled.button<{ isWithdraw: boolean }>`
 	border: none;
 	font-size: 1.2rem;
 	background-color: transparent;
-	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border-top: 1px solid ${(props) => props.theme.colors.inputBorders};
 	${(props) => {
 		if (props.disabled) {
-			return `color: ${props.theme.colors.textGrey};`;
+			return `color: ${props.theme.colors.textButton};`;
 		}
 		return `
   color: ${props.theme.colors.black};
   &:hover {
-    background-color: ${
-			props.isWithdraw ? props.theme.colors.statusRed : props.theme.colors.forestGreen
-		};
-    color: ${props.theme.colors.white};
+    background-color: ${props.isWithdraw ? props.theme.colors.red : props.theme.colors.grey4};
+    color: ${props.theme.colors.textHover};
   }
   `;
 	}}

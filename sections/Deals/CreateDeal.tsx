@@ -9,15 +9,12 @@ import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
-import Button from 'components/Button';
 import Input from 'components/Input/Input';
 import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
-import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { FlexDivStart, FlexDivRow, Notice } from 'components/common';
-import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+import { FlexDivStart, FlexDivRow } from 'components/common';
 
 import { formatNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
@@ -716,7 +713,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				),
 				subText: 'Address',
 				formField: (
-					<TextInput
+					<Input
+						type="text"
 						id="holder"
 						name="holder"
 						onChange={formik.handleChange}
@@ -844,23 +842,14 @@ const ExchangeRate = styled.div`
 	margin-top: 5px;
 `;
 
-const StyledNotice = styled(Notice)`
-	max-width: 1200px;
-	background: transparent;
-	text-align: left;
-	border: 1px solid ${(props) => props.theme.colors.headerGrey};
-	color: ${(props) => props.theme.colors.black};
-`;
-
 const Dot = styled.div<{ isActive: boolean }>`
 	margin-right: 3px;
 	width: 15px;
 	height: 15px;
 	cursor: pointer;
 	border-radius: 50%;
-	background: ${(props) =>
-		props.isActive ? props.theme.colors.headerGrey : props.theme.colors.cell};
-	border: 1px solid ${(props) => props.theme.colors.headerGrey};
+	background: ${(props) => (props.isActive ? props.theme.colors.grey5 : props.theme.colors.white)};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 `;
 
 const AllocationRow = styled(FlexDivStart)`
