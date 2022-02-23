@@ -21,9 +21,6 @@ import AuthereumIcon from 'assets/wallet-icons/authereum.png';
 import ImTokenIcon from 'assets/wallet-icons/imtoken.svg';
 
 import LinkIcon from 'assets/svg/link.svg';
-import ExitIcon from 'assets/svg/exit.svg';
-import WalletIcon from 'assets/svg/wallet.svg';
-import ArrowsChangeIcon from 'assets/svg/arrows-change.svg';
 
 import Connector from 'containers/Connector';
 import Etherscan from 'containers/BlockExplorer';
@@ -96,7 +93,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 						</ActionIcons>
 					</WalletDetails>
 					<Buttons>
-						<Button
+						<StyledButton
 							fullWidth
 							isRounded
 							size="lg"
@@ -106,10 +103,10 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 								connectWallet();
 							}}
 						>
-							<StyledImage src={WalletIcon} alt="change-wallet" /> Change wallet
-						</Button>
+							Change wallet
+						</StyledButton>
 						{isHardwareWallet() && (
-							<Button
+							<StyledButton
 								fullWidth
 								isRounded
 								size="lg"
@@ -119,12 +116,12 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 									switchAccounts();
 								}}
 							>
-								<Image src={ArrowsChangeIcon} alt="switch-account" /> Switch account
-							</Button>
+								Switch account
+							</StyledButton>
 						)}
 					</Buttons>
 					<Buttons>
-						<Button
+						<StyledButton
 							fullWidth
 							isRounded
 							size="lg"
@@ -134,15 +131,15 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 								disconnectWallet();
 							}}
 						>
-							<StyledImage src={ExitIcon} alt="disconnect-wallet" /> Disconnect
-						</Button>
+							Disconnect
+						</StyledButton>
 					</Buttons>
 				</Container>
 			) : (
 				<Container>
 					<WalletDetails>
 						<Buttons>
-							<Button
+							<StyledButton
 								fullWidth
 								isRounded
 								size="lg"
@@ -154,7 +151,7 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 								data-testid="connect-wallet"
 							>
 								Connect Wallet
-							</Button>
+							</StyledButton>
 						</Buttons>
 					</WalletDetails>
 				</Container>
@@ -163,8 +160,19 @@ const WalletModal: FC<WalletModalProps> = ({ onDismiss }) => {
 	);
 };
 
+const StyledButton = styled(Button)`
+	background: ${(props) => props.theme.colors.buttonSecondary};
+	color: ${(props) => props.theme.colors.textBody};
+	border-color: ${(props) => props.theme.colors.inputBorders};
+	font-size: 0.8rem;
+	font-family: ${(props) => props.theme.fonts.agrandir};
+	&:hover {
+		box-shadow: none !important;
+	}
+`;
+
 const Container = styled.div`
-	padding: 5px;
+	padding: 20px;
 `;
 
 const StyledImage = styled(Image)`
@@ -176,7 +184,6 @@ const WalletDetails = styled.div`
 `;
 
 const SelectedWallet = styled(FlexDivCentered)`
-	margin-top: 16px;
 	justify-content: center;
 	img {
 		width: 22px;
@@ -184,9 +191,8 @@ const SelectedWallet = styled(FlexDivCentered)`
 `;
 
 const WalletAddress = styled.div`
-	margin: 6px;
-	font-family: ${(props) => props.theme.fonts.agrandir};
-	font-size: 1.2rem;
+	margin: 6px 0;
+	font-size: 1rem;
 	text-align: center;
 `;
 

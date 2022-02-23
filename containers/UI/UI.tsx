@@ -1,7 +1,7 @@
 import { createContainer } from 'unstated-next';
 import useLocalStorage from 'hooks/useLocalStorage';
 
-import themeConfig, { ThemeMode } from 'styles/theme';
+import { ThemeMode } from 'styles/theme';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 
 const useUI = () => {
