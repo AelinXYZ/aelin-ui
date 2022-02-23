@@ -29,6 +29,7 @@ const useGetPoolsQuery = () => {
 				contributions: true,
 				dealAddress: true,
 				hasAllowList: true,
+				purchaseTokenSymbol: true
 			},
 			{},
 			networkId ? networkId : NetworkId.Mainnet
