@@ -1,13 +1,12 @@
 import styled, { css } from 'styled-components';
 
 import Button from 'components/Button';
-
 import { FlexDivRow } from 'components/common';
 
 export const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	min-height: 250px;
-	min-width: 300px;
+	height: fit-content;
+	width: 350px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
@@ -15,8 +14,9 @@ export const Container = styled.div`
 
 export const ErrorNote = styled.div`
 	color: ${(props) => props.theme.colors.statusRed};
-	padding-left: 20px;
-	font-size: 1rem;
+	position: absolute;
+	margin-top: 60px;
+	font-size: 0.8rem;
 	font-weight: bold;
 `;
 
@@ -25,8 +25,9 @@ export const ContentContainer = styled.div`
 `;
 
 export const ActionBoxInputLabel = styled.div`
-	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 1rem;
+	color: ${(props) => props.theme.colors.forestGreen};
+	margin: 20px 0;
+	font-size: 1.1rem;
 	padding-bottom: 4px;
 `;
 

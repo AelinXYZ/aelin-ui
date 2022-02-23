@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { FC, useEffect, useState, useCallback, useMemo } from 'react';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
@@ -24,11 +23,10 @@ import { DEFAULT_DECIMALS } from 'constants/defaults';
 interface FundDealProps {
 	token: string;
 	dealAddress: string;
-	amount: any;
-	purchaseTokenTotalForDeal: any;
+	amount: BigInt;
+	purchaseTokenTotalForDeal: BigInt;
 	purchaseToken: string;
 	holder: string;
-	sponsor: string;
 	holderFundingExpiration: number;
 }
 
@@ -39,7 +37,6 @@ const FundDeal: FC<FundDealProps> = ({
 	purchaseToken,
 	purchaseTokenTotalForDeal,
 	holder,
-	sponsor,
 	holderFundingExpiration,
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
@@ -94,7 +91,6 @@ const FundDeal: FC<FundDealProps> = ({
 	const handleSubmit = useCallback(async () => {
 		if (!walletAddress || !signer || !dealAddress || !decimals || !amount) return;
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
-		setShowTxModal(false);
 		try {
 			const tx = await contract.depositUnderlying(amount.toString(), {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -122,7 +118,7 @@ const FundDeal: FC<FundDealProps> = ({
 		gasPrice,
 	]);
 
-	const visibleAmount = useMemo(
+	const amountToFund = useMemo(
 		() => ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 0),
 		[amount, decimals]
 	);
@@ -130,7 +126,6 @@ const FundDeal: FC<FundDealProps> = ({
 	const handleApprove = useCallback(async () => {
 		if (!walletAddress || !signer || !dealAddress || !token) return;
 		const contract = new ethers.Contract(token, erc20Abi, signer);
-		setShowTxModal(false);
 		try {
 			const tx = await contract.approve(dealAddress, amount.toString(), {
 				gasLimit: gasLimitEstimate?.toBN(),
@@ -142,7 +137,7 @@ const FundDeal: FC<FundDealProps> = ({
 					onTxConfirmed: () => {
 						setTxState(TransactionStatus.SUCCESS);
 						setTimeout(() => {
-							setAllowance(Number(visibleAmount.toString()));
+							setAllowance(Number(amountToFund.toString()));
 						}, 5 * 1000);
 					},
 				});
@@ -161,23 +156,31 @@ const FundDeal: FC<FundDealProps> = ({
 		amount,
 		gasLimitEstimate,
 		gasPrice,
-		visibleAmount,
+		amountToFund,
 	]);
 
-	const isAllowance = useMemo(
-		() => Number(allowance ?? 0) < Number((visibleAmount ?? 0).toString()),
-		[visibleAmount, allowance]
+	const hasAllowance = useMemo(
+		() => Number(allowance ?? 0) >= Number((amountToFund ?? 0).toString()),
+
+		[amountToFund, allowance]
 	);
 
 	const areTokenSymbolsAvailable = [symbol, purchaseTokenSymbol].every(
 		(val) => val !== null && val !== ''
 	);
 
+	const isEnough = useMemo(
+		() => Number((balance ?? -1).toString()) >= Number(amountToFund.toString()),
+		[balance, amountToFund]
+	);
+
+	const isHolder = walletAddress === holder;
+
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
 			if (!token || !signer || !dealAddress) return;
 			try {
-				if (isAllowance) {
+				if (!hasAllowance) {
 					const contract = new ethers.Contract(token, erc20Abi, signer);
 					setGasLimitEstimate(
 						wei(await contract.estimateGas.approve(dealAddress, amount.toString()), 0)
@@ -185,6 +188,7 @@ const FundDeal: FC<FundDealProps> = ({
 				} else {
 					if (!purchaseTokenDecimals) return;
 					const contract = new ethers.Contract(dealAddress, dealAbi, signer);
+
 					setGasLimitEstimate(
 						wei(await contract.estimateGas.depositUnderlying(amount.toString()), 0)
 					);
@@ -195,17 +199,27 @@ const FundDeal: FC<FundDealProps> = ({
 			}
 		};
 		getGasLimitEstimate();
-	}, [isAllowance, dealAddress, setGasLimitEstimate, purchaseTokenDecimals, amount, token, signer]);
+	}, [
+		hasAllowance,
+		dealAddress,
+		setGasLimitEstimate,
+		purchaseTokenDecimals,
+		amount,
+		token,
+		signer,
+	]);
 
 	const gridItems = useMemo(
 		() => [
 			{
 				header: 'Token to deposit',
-				subText: <TokenDisplay address={token} displayAddress={true} symbol={symbol} />,
+				subText: (
+					<TokenDisplay address={token} displayAddress={true} symbol={symbol ?? undefined} />
+				),
 			},
 			{
 				header: 'Amount to deposit',
-				subText: formatNumber(visibleAmount, DEFAULT_DECIMALS),
+				subText: <>{formatNumber(amountToFund, DEFAULT_DECIMALS)}</>,
 			},
 			{
 				header: 'Exchange rates',
@@ -216,10 +230,12 @@ const FundDeal: FC<FundDealProps> = ({
 								? `${symbol} / ${purchaseTokenSymbol}: `
 								: `Underlying / Purchase: `}
 							{formatNumber(
-								ethers.utils.formatUnits((amount ?? 0).toString(), decimals) /
-									ethers.utils.formatUnits(
-										(purchaseTokenTotalForDeal ?? 0).toString(),
-										purchaseTokenDecimals
+								Number(ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 18)) /
+									Number(
+										ethers.utils.formatUnits(
+											(purchaseTokenTotalForDeal ?? 0).toString(),
+											purchaseTokenDecimals ?? 18
+										)
 									),
 								DEFAULT_DECIMALS
 							)}
@@ -229,10 +245,12 @@ const FundDeal: FC<FundDealProps> = ({
 								? `${purchaseTokenSymbol} / ${symbol}: `
 								: `Purchase / Underlying: `}
 							{formatNumber(
-								ethers.utils.formatUnits(
-									(purchaseTokenTotalForDeal ?? 0).toString(),
-									purchaseTokenDecimals
-								) / ethers.utils.formatUnits((amount ?? 0).toString(), decimals),
+								Number(
+									ethers.utils.formatUnits(
+										(purchaseTokenTotalForDeal ?? 0).toString(),
+										purchaseTokenDecimals ?? 18
+									)
+								) / Number(ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 18)),
 								DEFAULT_DECIMALS
 							)}
 						</ExchangeRate>
@@ -240,37 +258,34 @@ const FundDeal: FC<FundDealProps> = ({
 				),
 			},
 			{
-				header: 'Purchase token',
+				header: 'Investment token',
 				subText: (
 					<TokenDisplay
 						address={purchaseToken}
 						displayAddress={true}
-						symbol={purchaseTokenSymbol}
+						symbol={purchaseTokenSymbol ?? undefined}
 					/>
 				),
 			},
 			{
-				header: 'Purchase currency total',
+				header: 'Investment token amount',
 				subText: formatNumber(
 					ethers.utils.formatUnits(
 						(purchaseTokenTotalForDeal ?? 0).toString(),
-						purchaseTokenDecimals
+						purchaseTokenDecimals ?? 18
 					),
 					DEFAULT_DECIMALS
 				),
 			},
 			{
 				header: 'Funding deadline',
-				subText:
-					holderFundingExpiration == null ? null : (
-						<>{formatShortDateWithTime(holderFundingExpiration)}</>
-					),
+				subText: holderFundingExpiration && <>{formatShortDateWithTime(holderFundingExpiration)}</>,
 			},
 		],
 		[
 			token,
 			symbol,
-			visibleAmount,
+			amountToFund,
 			areTokenSymbolsAvailable,
 			purchaseTokenSymbol,
 			amount,
@@ -282,34 +297,38 @@ const FundDeal: FC<FundDealProps> = ({
 		]
 	);
 
-	const isEnough = useMemo(
-		() => Number((balance ?? -1).toString()) >= Number(visibleAmount.toString()),
-		[balance, visibleAmount]
-	);
-
-	const cancelText =
-		holder === sponsor
-			? '. We noticed you are the sponsor and the counter party. This is usually due to a pool cancellation unless you are sponsoring your own deal. If you cancelled the pool no further action is required.'
-			: '';
-
 	return (
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
 			<Container>
-				<Header>
-					{walletAddress != holder
-						? 'Only the holder funds the deal'
-						: !isEnough
-						? `Holder balance is only ${balance} but ${visibleAmount} is required to fund the deal${cancelText}`
-						: isAllowance
-						? `Approval is Required First${cancelText}`
-						: 'Finalize Deal'}
-				</Header>
-				<StyledButton disabled={walletAddress != holder} onClick={() => setShowTxModal(true)}>
-					{isAllowance
-						? `Approve ${visibleAmount} ${symbol}`
-						: `Deposit ${visibleAmount} ${symbol}`}
-				</StyledButton>
+				<Title>Fund Deal</Title>
+
+				{isHolder && !isEnough && (
+					<p>{`Holder balance is only ${balance} but ${amountToFund} is required to fund the deal`}</p>
+				)}
+
+				{!isHolder && <p>Only the holder funds the deal</p>}
+
+				{isHolder && isEnough && !hasAllowance && (
+					<p>{`Before funding the deal, you need to approve the pool to transfer your ${symbol}`}</p>
+				)}
+
+				{isHolder && isEnough && hasAllowance && (
+					<p>
+						Deal amount: <Bold>{`${amountToFund} ${symbol}`}</Bold>
+					</p>
+				)}
+
+				<Button
+					variant="primary"
+					size="lg"
+					isRounded
+					fullWidth
+					disabled={!isHolder || !isEnough}
+					onClick={() => setShowTxModal(true)}
+				>
+					{!hasAllowance ? `Approve` : `Fund ${amountToFund} ${symbol}`}
+				</Button>
 			</Container>
 			<ConfirmTransactionModal
 				title="Confirm Transaction"
@@ -317,38 +336,36 @@ const FundDeal: FC<FundDealProps> = ({
 				isModalOpen={showTxModal}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={isAllowance ? handleApprove : handleSubmit}
+				onSubmit={!hasAllowance ? handleApprove : handleSubmit}
 			>
-				{isAllowance
-					? `Confirm Approval of ${visibleAmount.toString()} ${symbol}`
-					: `Confirm Funding of ${visibleAmount.toString()} ${symbol}`}
+				{!hasAllowance
+					? `Confirm Approval of ${amountToFund.toString()} ${symbol}`
+					: `Confirm Funding of ${amountToFund.toString()} ${symbol}`}
 			</ConfirmTransactionModal>
 		</FlexDiv>
 	);
 };
 
-const StyledButton = styled(Button)`
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	height: 56px;
-	background-color: ${(props) => props.theme.colors.forestGreen};
-`;
-
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
-	max-height: 400px;
 	width: 300px;
+	height: fit-content;
 	position: relative;
 	border-radius: 8px;
+	padding: 20px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 `;
 
-const Header = styled.div`
+const Title = styled.h3`
 	color: ${(props) => props.theme.colors.forestGreen};
 	font-size: 1.2rem;
-	margin: 20px 0 50px 0;
-	padding-left: 20px;
+	font-weight: 400;
+`;
+
+const Bold = styled.span`
+	color: ${(props) => props.theme.colors.forestGreen};
+	font-size: 1rem;
+	font-weight: 600;
 `;
 
 const ExchangeRate = styled.div`

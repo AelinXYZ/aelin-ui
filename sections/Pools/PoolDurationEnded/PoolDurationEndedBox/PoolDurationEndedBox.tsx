@@ -1,4 +1,4 @@
-import { FC, useMemo, useEffect, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';

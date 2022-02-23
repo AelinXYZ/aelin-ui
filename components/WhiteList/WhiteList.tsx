@@ -136,7 +136,7 @@ const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModa
 							</Column>
 						</Row>
 						<ContainerRow>
-							{formik.values.whitelist.map((_: string, index: number) => {
+							{formik.values.whitelist?.map((_: string, index: number) => {
 								return (
 									<Row key={`row-${index}`} align="center">
 										<Column width="60" justify="center">

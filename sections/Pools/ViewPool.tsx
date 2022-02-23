@@ -16,25 +16,25 @@ import useGetClaimedUnderlyingDealTokensQuery, {
 
 import { PageLayout } from 'sections/Layout';
 import SectionTitle from 'sections/shared/SectionTitle';
-import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
 
 import FundDeal from 'sections/Deals/FundDeal';
 import CreateDeal from 'sections/Deals/CreateDeal';
 import WithdrawExpiry from 'sections/Deals/WithdrawExpiry';
 import VestingDealSection from 'sections/Deals/Vesting/VestingDealSection';
-import AcceptOrRejectDealSection from 'sections/Deals/AcceptOrReject/AcceptOrRejectSection';
-
 import PurchasePoolSection from 'sections/Pools/PurchasePool/PurchasePoolSection';
+import AcceptOrRejectDealSection from 'sections/Deals/AcceptOrReject/AcceptOrRejectSection';
 import PoolDurationEndedSection from 'sections/Pools/PoolDurationEnded/PoolDurationEndedSection';
 
+import { Tab, Tabs } from 'components/Tabs';
 import { Status } from 'components/DealStatus';
 
 import useInterval from 'hooks/useInterval';
 
 import { getERC20Data } from 'utils/crypto';
 
-import { vAelinPoolID, swimmingPoolID } from 'constants/pool';
+import { swimmingPoolID } from 'constants/pool';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import styled from 'styled-components';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -43,6 +43,7 @@ interface ViewPoolProps {
 
 const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const { walletAddress, provider, network } = Connector.useContainer();
+	const [currentTab, setCurrentTab] = useState<number>(0);
 	const [dealBalance, setDealBalance] = useState<number | null>(null);
 	const [claimableUnderlyingTokens, setClaimableUnderlyingTokens] = useState<number | null>(null);
 	const [underlyingPerDealExchangeRate, setUnderlyingPerDealExchangeRate] = useState<number | null>(
@@ -157,96 +158,165 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		return false;
 	}, [deal, now, pool, walletAddress]);
 
-	return (
-		<PageLayout
-			title={
-				<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} subtitle="" />
-			}
-		>
-			<PurchasePoolSection pool={pool} />
-			{showCreateDealSection && (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle address={null} title="Create Deal" />
-						</ContentTitle>
-					</ContentHeader>
-					<CreateDeal poolAddress={poolAddress} purchaseToken={pool.purchaseToken} />
-				</SectionWrapper>
-			)}
-			{pool?.poolStatus === Status.FundingDeal && deal?.id != null && (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle address={deal.id} title="Awaiting Funding of Proposed Deal" />
-						</ContentTitle>
-					</ContentHeader>
-					<FundDeal
-						holder={deal?.holder}
-						sponsor={pool?.sponsor}
-						dealAddress={deal?.id}
-						purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
-						purchaseToken={pool.purchaseToken}
-						token={deal?.underlyingDealToken}
-						amount={deal?.underlyingDealTokenTotal}
-						holderFundingExpiration={deal?.holderFundingExpiration}
-					/>
-				</SectionWrapper>
-			)}
-			{pool?.poolStatus === Status.DealOpen && deal?.id != null && (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle address={deal?.id} title={`${pool?.name ?? 'Aelin'} Deal`} />
-						</ContentTitle>
-					</ContentHeader>
-					<AcceptOrRejectDealSection
-						pool={pool}
-						deal={deal}
-						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
-						underlyingDealTokenSymbol={underlyingDealTokenSymbol}
-					/>
-				</SectionWrapper>
-			)}
-			{(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
+	const poolStages = {
+		OPEN_POOL: () => ({
+			title: 'Pool Info',
+			displayName: 'PoolInfo',
+			component: <PurchasePoolSection pool={pool} />,
+		}),
+		CREATE_DEAL: () => ({
+			title: 'Create Deal',
+			displayName: 'CreateDeal',
+			component: <CreateDeal poolAddress={poolAddress} purchaseToken={pool.purchaseToken} />,
+		}),
+		FUND_DEAL: () => ({
+			title: 'Fund Deal',
+			displayName: 'FundDeal',
+			component: (
+				<FundDeal
+					holder={deal?.holder}
+					sponsor={pool?.sponsor}
+					dealAddress={deal?.id}
+					purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
+					purchaseToken={pool.purchaseToken}
+					token={deal?.underlyingDealToken}
+					amount={deal?.underlyingDealTokenTotal}
+					holderFundingExpiration={deal?.holderFundingExpiration}
+				/>
+			),
+		}),
+		ACCEPT_OR_REJECT_DEAL: () => ({
+			title: 'Deal',
+			displayName: 'Deal',
+			component: (
+				<AcceptOrRejectDealSection
+					pool={pool}
+					deal={deal}
+					underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+					underlyingDealTokenSymbol={underlyingDealTokenSymbol}
+				/>
+			),
+		}),
+		POOL_DURATION_ENDED: () => ({
+			title: 'Withdraw',
+			displayName: 'Withdraw',
+			component: <PoolDurationEndedSection pool={pool} dealID={deal.id} />,
+		}),
+		WITHDRAW: () => ({
+			title: 'Withdraw',
+			displayName: 'Withdraw',
+			component: (
+				<WithdrawExpiry
+					holder={deal?.holder as string}
+					token={deal.underlyingDealToken}
+					dealAddress={deal.id}
+				/>
+			),
+		}),
+		VESTING_DEAL: () => ({
+			title: 'Vest',
+			displayName: 'Vest',
+			component: (
+				<VestingDealSection
+					deal={deal}
+					dealBalance={dealBalance}
+					claims={claims}
+					dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
+					claimableUnderlyingTokens={claimableUnderlyingTokens}
+					underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+				/>
+			),
+		}),
+	};
+
+	const currentStages = useMemo(() => {
+		let stages = ['OPEN_POOL'];
+
+		if (showCreateDealSection) {
+			stages.push('CREATE_DEAL');
+		}
+
+		if (pool?.poolStatus === Status.FundingDeal) {
+			stages.push('FUND_DEAL');
+		}
+
+		if (pool?.poolStatus === Status.DealOpen) {
+			stages.push('ACCEPT_OR_REJECT_DEAL');
+		}
+
+		if (
+			(deal?.id != null &&
+				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
+			(claimableUnderlyingTokens ?? 0) > 0
+		) {
+			stages.push('VESTING_DEAL');
+		}
+
+		return stages;
+	}, [
+		claimableUnderlyingTokens,
+		claims,
+		deal?.id,
+		dealBalance,
+		pool?.poolStatus,
+		showCreateDealSection,
+	]);
+
+	useEffect(() => {
+		setCurrentTab(currentStages.length - 1);
+	}, [setCurrentTab, currentStages.length]);
+
+	const isHolderAndSponsorEquals = pool?.sponsor === deal?.holder;
+
+	console.log(
+		'WithdrawExpiry',
+		now >
+			(deal?.proRataRedemptionPeriodStart ?? 0) +
+				(deal?.proRataRedemptionPeriod ?? 0) +
+				(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder
+	);
+
+	console.log(
+		'PoolDurationEndedSection',
+		(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
 			(pool?.poolStatus !== Status.FundingDeal &&
 				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
 				pool?.id !== vAelinPoolID &&
-				!(pool?.poolStatus === Status.DealOpen && deal?.id != null)) ? (
-				<PoolDurationEndedSection pool={pool} dealID={deal.id} />
-			) : null}
-			{now >
-				(deal?.proRataRedemptionPeriodStart ?? 0) +
-					(deal?.proRataRedemptionPeriod ?? 0) +
-					(deal?.openRedemptionPeriod ?? 0) &&
-				walletAddress === deal?.holder && (
-					<WithdrawExpiry
-						holder={deal?.holder as string}
-						token={deal.underlyingDealToken}
-						dealAddress={deal.id}
-					/>
-				)}
-			{((deal?.id != null &&
-				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
-				(claimableUnderlyingTokens ?? 0) > 0) && (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle addToMetamask={true} address={deal.id} title="Deal Claiming" />
-						</ContentTitle>
-					</ContentHeader>
-					<VestingDealSection
-						deal={deal}
-						dealBalance={dealBalance}
-						claims={claims}
-						dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
-						claimableUnderlyingTokens={claimableUnderlyingTokens}
-						underlyingDealTokenDecimals={underlyingDealTokenDecimals}
-					/>
-				</SectionWrapper>
+				!(pool?.poolStatus === Status.DealOpen && deal?.id != null))
+	);
+
+	return (
+		<PageLayout
+			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} />}
+			subtitle={pool?.hasAllowList ? 'Private pool' : 'Public pool'}
+		>
+			{isHolderAndSponsorEquals && currentStages[currentTab] === 'FUND_DEAL' && (
+				<Note>
+					We noticed you are the sponsor and the counter party. This is usually due to a pool
+					cancellation unless you are sponsoring your own deal. If you cancelled the pool no further
+					action is required
+				</Note>
 			)}
+			<Tabs
+				defaultIndex={currentStages.length}
+				onSelect={(currentIndex) => setCurrentTab(currentIndex)}
+			>
+				{currentStages.map((currentStage) => (
+					<Tab key={currentStage} label={poolStages[currentStage]().title}>
+						{poolStages[currentStage]().component}
+					</Tab>
+				))}
+			</Tabs>
 		</PageLayout>
 	);
 };
+
+const Note = styled.p`
+	width: 690px;
+	color: ${(props) => props.theme.colors.statusRed};
+	border: 1px solid ${(props) => props.theme.colors.statusRed};
+	border-radius: 8px;
+	padding: 15px 20px;
+`;
 
 export default ViewPool;

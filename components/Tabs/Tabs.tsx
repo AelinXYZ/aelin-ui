@@ -62,6 +62,7 @@ const TabList = styled.ul`
 	display: flex;
 	list-style: none;
 	padding: 0;
+	max-width: 690px;
 `;
 
 const TabListItem = styled.li`

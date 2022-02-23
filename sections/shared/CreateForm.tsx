@@ -19,6 +19,7 @@ export interface CreateFormProps {
 	txHash: string | null;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
+	cancelGasLimitEstimate: GasLimitEstimate;
 }
 
 const CreateForm: FC<CreateFormProps> = ({
@@ -30,6 +31,7 @@ const CreateForm: FC<CreateFormProps> = ({
 	txType,
 	setGasPrice,
 	gasLimitEstimate,
+	cancelGasLimitEstimate,
 }) => {
 	const isValidForm = useMemo(
 		() => Object.keys(formik?.errors ?? {}).length === 0,
@@ -48,6 +50,7 @@ const CreateForm: FC<CreateFormProps> = ({
 				txHash={txHash}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
+				cancelGasLimitEstimate={cancelGasLimitEstimate}
 			/>
 		</FlexDiv>
 	);

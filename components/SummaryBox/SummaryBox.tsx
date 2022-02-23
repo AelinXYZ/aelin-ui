@@ -31,7 +31,9 @@ interface SummaryBoxProps {
 	formik: FormikProps<any>;
 	txState: TransactionStatus;
 	setGasPrice: Function;
+	handleCancelPool: () => void;
 	gasLimitEstimate: GasLimitEstimate;
+	cancelPoolGasLimitEstimate: GasLimitEstimate;
 }
 
 const txTypeToTitle = (txType: CreateTxType) => {
@@ -59,11 +61,14 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	txType,
 	isValidForm,
 	setGasPrice,
+	handleCancelPool,
 	gasLimitEstimate,
+	cancelPoolGasLimitEstimate,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [showTxModal, setShowTxModal] = useState<boolean>(false);
+	const [showCancelTxModal, setShowCancelTxModal] = useState<boolean>(false);
 
 	const isValid = isValidForm && walletAddress ? true : false;
 
@@ -78,19 +83,20 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 		</SummaryBoxGrid>
 	);
 
-	useEffect(() => {
-		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
-	}, [txState]);
-
 	const isPurchaseButtonDisabled = !isValid || txState === TransactionStatus.WAITING;
 	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 
-	const filteredWhitelist = formik.values.whitelist.filter(
+	const filteredWhitelist = formik.values.whitelist?.filter(
 		(row: WhitelistProps) => row.address.length
 	);
 
 	return (
 		<Container>
+			{txType === CreateTxType.CreateDeal && (
+				<CancelButton variant="tertiary" size="lg" onClick={() => setShowCancelTxModal(true)}>
+					Cancel Pool
+				</CancelButton>
+			)}
 			<SummaryBoxHeader>{txTypeToHeader(txType)}</SummaryBoxHeader>
 
 			{summaryBoxGrid}
@@ -109,7 +115,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				</StyledButton>
 			</PurchaseButtonContainer>
 
-			{isPrivate && (
+			{txType === CreateTxType.CreatePool && isPrivate && (
 				<ButtonContainer>
 					<StyledButton
 						size="lg"
@@ -122,11 +128,13 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 				</ButtonContainer>
 			)}
 
-			<WhiteList
-				formik={formik}
-				isModalOpen={isModalOpen && isPrivate}
-				setIsModalOpen={setIsModalOpen}
-			/>
+			{txType === CreateTxType.CreatePool && (
+				<WhiteList
+					formik={formik}
+					isModalOpen={isModalOpen && isPrivate}
+					setIsModalOpen={setIsModalOpen}
+				/>
+			)}
 
 			<ConfirmTransactionModal
 				title={`Confirm ${txTypeToTitle(txType)}`}
@@ -138,15 +146,37 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 			>
 				{summaryBoxGrid}
 			</ConfirmTransactionModal>
+
+			{txType === CreateTxType.CreateDeal && (
+				<ConfirmTransactionModal
+					title={`Confirm Pool Cancellation`}
+					setIsModalOpen={setShowCancelTxModal}
+					isModalOpen={showCancelTxModal}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={cancelPoolGasLimitEstimate}
+					onSubmit={handleCancelPool}
+				>
+					In 30 minutes purchasers in your pool will be able to withdraw
+				</ConfirmTransactionModal>
+			)}
 		</Container>
 	);
 };
 
 const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.cell};
+	width: 350px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+`;
+
+const CancelButton = styled(Button)`
+	color: ${(props) => props.theme.colors.statusRed};
+	font-size: 1.2rem;
+	position: absolute;
+	right: 0;
+	top: -45px;
 `;
 
 const ButtonContainer = styled.div`
