@@ -13,7 +13,6 @@ import {
 	ErrorNote,
 	ContentContainer,
 	ActionBoxInputLabel,
-	InputContainer,
 } from '../../../shared/common';
 
 import { GasLimitEstimate } from 'constants/networks';
@@ -77,7 +76,9 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 
 				{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 
-				<ActionBoxInputLabel>{`Balance ${userPoolBalance} ${purchaseTokenSymbol}`}</ActionBoxInputLabel>
+				<ActionBoxInputLabel>
+					{`Balance ${Number(userPoolBalance).toFixed(2)} ${purchaseTokenSymbol}`}
+				</ActionBoxInputLabel>
 
 				<Button
 					variant="primary"

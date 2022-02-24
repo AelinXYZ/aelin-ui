@@ -108,7 +108,7 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 				{!hasAllowance && !isPurchaseExpired && (
 					<ApproveBox
 						purchaseToken={purchaseTokenSymbol ?? ''}
-						isButtonDisabled={isButtonDisabled}
+						isButtonDisabled={hasAllowance}
 						handleClick={handleButtonClick}
 					/>
 				)}

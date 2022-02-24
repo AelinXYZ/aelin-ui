@@ -2,14 +2,9 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 import Button from 'components/Button';
+import { InputGroup } from 'components/Input/InputGroup';
 
-import {
-	InputContainer,
-	ActionBoxInput,
-	ActionBoxMax,
-	ErrorNote,
-	ActionBoxInputLabel,
-} from 'sections/shared/common';
+import { ErrorNote, ActionBoxInputLabel } from 'sections/shared/common';
 
 interface DepositBoxProps {
 	placeholder: string;
@@ -39,22 +34,20 @@ const DepositBox: FC<DepositBoxProps> = ({
 	return (
 		<div>
 			<Title>Deposit Tokens</Title>
-			<InputContainer>
-				<ActionBoxInput
-					type={'number'}
-					placeholder={placeholder}
-					value={inputValue}
-					onChange={(e) => {
-						const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
-						setIsMaxValue(false);
-						setInputValue(value);
-					}}
-				/>
-				<ActionBoxMax isProRata={false} onClick={handleMaxButtonClick}>
-					Max
-				</ActionBoxMax>
-				{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
-			</InputContainer>
+
+			<InputGroup
+				type={'number'}
+				placeholder={placeholder}
+				value={inputValue}
+				onChange={(e) => {
+					const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
+					setIsMaxValue(false);
+					setInputValue(value);
+				}}
+				icon={<div onClick={handleMaxButtonClick}>Max</div>}
+			/>
+			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
+
 			<ActionBoxInputLabel>
 				Balance: {tokenBalance.toFixed(2)} {purchaseToken}
 			</ActionBoxInputLabel>

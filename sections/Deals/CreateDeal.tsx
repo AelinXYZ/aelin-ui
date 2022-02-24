@@ -822,19 +822,18 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	);
 
 	return (
-		<>
-			<CreateForm
-				formik={formik}
-				gridItems={gridItems}
-				summaryItems={summaryItems}
-				txType={CreateTxType.CreateDeal}
-				txState={txState}
-				txHash={txHash}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-				cancelGasLimitEstimate={cancelPoolGasLimitEstimate}
-			/>
-		</>
+		<CreateForm
+			formik={formik}
+			gridItems={gridItems}
+			summaryItems={summaryItems}
+			txType={CreateTxType.CreateDeal}
+			txState={txState}
+			txHash={txHash}
+			setGasPrice={setGasPrice}
+			gasLimitEstimate={gasLimitEstimate}
+			handleCancelPool={handleCancelPool}
+			cancelGasLimitEstimate={cancelPoolGasLimitEstimate}
+		/>
 	);
 };
 

@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { FC, useMemo } from 'react';
 import { FormikProps } from 'formik';
 
@@ -9,6 +8,7 @@ import { SummaryItem, CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { FlexDiv } from 'components/common';
 import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
+import { wei } from '@synthetixio/wei';
 
 export interface CreateFormProps {
 	formik: FormikProps<any>;
@@ -19,18 +19,19 @@ export interface CreateFormProps {
 	txHash: string | null;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
+	handleCancelPool: () => void;
 	cancelGasLimitEstimate: GasLimitEstimate;
 }
 
 const CreateForm: FC<CreateFormProps> = ({
 	txState,
-	txHash,
 	formik,
 	gridItems,
 	summaryItems,
 	txType,
 	setGasPrice,
 	gasLimitEstimate,
+	handleCancelPool,
 	cancelGasLimitEstimate,
 }) => {
 	const isValidForm = useMemo(
@@ -47,9 +48,9 @@ const CreateForm: FC<CreateFormProps> = ({
 				txType={txType}
 				summaryItems={summaryItems}
 				txState={txState}
-				txHash={txHash}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
+				handleCancelPool={handleCancelPool}
 				cancelGasLimitEstimate={cancelGasLimitEstimate}
 			/>
 		</FlexDiv>

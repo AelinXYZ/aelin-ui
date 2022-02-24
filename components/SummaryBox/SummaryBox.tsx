@@ -13,6 +13,7 @@ import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus } from 'constants/transactions';
 
 import { Privacy } from 'constants/pool';
+import { wei } from '@synthetixio/wei';
 
 export type SummaryItem = {
 	label: string;
@@ -31,9 +32,9 @@ interface SummaryBoxProps {
 	formik: FormikProps<any>;
 	txState: TransactionStatus;
 	setGasPrice: Function;
-	handleCancelPool: () => void;
 	gasLimitEstimate: GasLimitEstimate;
-	cancelPoolGasLimitEstimate: GasLimitEstimate;
+	handleCancelPool?: () => void;
+	cancelGasLimitEstimate?: GasLimitEstimate;
 }
 
 const txTypeToTitle = (txType: CreateTxType) => {
@@ -61,9 +62,9 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 	txType,
 	isValidForm,
 	setGasPrice,
-	handleCancelPool,
 	gasLimitEstimate,
-	cancelPoolGasLimitEstimate,
+	handleCancelPool,
+	cancelGasLimitEstimate,
 }) => {
 	const { walletAddress } = Connector.useContainer();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -153,7 +154,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 					setIsModalOpen={setShowCancelTxModal}
 					isModalOpen={showCancelTxModal}
 					setGasPrice={setGasPrice}
-					gasLimitEstimate={cancelPoolGasLimitEstimate}
+					gasLimitEstimate={cancelGasLimitEstimate ?? wei(0)}
 					onSubmit={handleCancelPool}
 				>
 					In 30 minutes purchasers in your pool will be able to withdraw
