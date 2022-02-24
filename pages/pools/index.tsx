@@ -14,7 +14,6 @@ import FilterPool from 'sections/Pools/FilterPool';
 import Ens from 'components/Ens';
 import Table from 'components/Table';
 import { FlexDivStart } from 'components/common';
-import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 
@@ -36,6 +35,7 @@ import useInterval from 'hooks/useInterval';
 import { Network, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
 import { Env } from 'constants/env';
+import NetworkLogoTable from 'components/NetworkLogoTable';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -172,14 +172,22 @@ const Pools: FC = () => {
 			},
 			{ Header: 'name', accessor: 'name', width: 100 },
 			{
-				Header: 'purchase currency',
-				accessor: 'purchaseToken',
+				Header: 'network',
+				accessor: 'network',
+				width: 100,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							<TokenDisplay displayAddress={false} symbol={undefined} address={cellProps.value} />
+							<NetworkLogoTable networkName={cellProps.value} />
 						</FlexDivStart>
 					);
+				},
+			},
+			{
+				Header: 'purchase currency',
+				accessor: 'purchaseTokenSymbol',
+				Cell: (cellProps: CellProps<any, any>) => {
+					return <FlexDivStart>{cellProps.value}</FlexDivStart>;
 				},
 			},
 			{

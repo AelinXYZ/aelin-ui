@@ -1,7 +1,9 @@
+//@ts-nocheck
 import { useQuery, UseQueryOptions } from "react-query";
 import Wei, { WeiSource, wei } from "@synthetixio/wei";
 import axios from "codegen-graph-ts/build/src/lib/axios";
 import generateGql from "codegen-graph-ts/build/src/lib/gql";
+import { NetworkId } from "constants/networks";
 export type SingleQueryOptions = {
     id: string;
     block?: {
@@ -379,7 +381,7 @@ export type ClaimedUnderlyingDealTokenFields = {
 export type ClaimedUnderlyingDealTokenArgs<K extends keyof ClaimedUnderlyingDealTokenResult> = {
     [Property in keyof Pick<ClaimedUnderlyingDealTokenFields, K>]: ClaimedUnderlyingDealTokenFields[Property];
 };
-export const useGetClaimedUnderlyingDealTokenById = <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options?: SingleQueryOptions, args?: ClaimedUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>> = {}) => {
+export const useGetClaimedUnderlyingDealTokenById = <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options?: SingleQueryOptions, args?: ClaimedUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options: SingleQueryOptions, args: ClaimedUnderlyingDealTokenArgs<K>): Promise<Pick<ClaimedUnderlyingDealTokenResult, K>> {
         const res = await axios.post(url, {
             query: generateGql("claimedUnderlyingDealToken", options, args)
@@ -403,12 +405,12 @@ export const useGetClaimedUnderlyingDealTokenById = <K extends keyof ClaimedUnde
         return formattedObj as Pick<ClaimedUnderlyingDealTokenResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealToken", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealToken", options, args) : null, networkId], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
 };
-export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options?: MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>, args?: ClaimedUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>[]> = {}) => {
+export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options?: MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>, args?: ClaimedUnderlyingDealTokenArgs<K>, queryOptions: UseQueryOptions<Pick<ClaimedUnderlyingDealTokenResult, K>[]> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof ClaimedUnderlyingDealTokenResult>(url: string, options: MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>, args: ClaimedUnderlyingDealTokenArgs<K>): Promise<Pick<ClaimedUnderlyingDealTokenResult, K>[]> {
         const paginatedOptions: Partial<MultiQueryOptions<ClaimedUnderlyingDealTokenFilter, ClaimedUnderlyingDealTokenResult>> = { ...options };
         let paginationKey: keyof ClaimedUnderlyingDealTokenFilter | null = null;
@@ -457,7 +459,7 @@ export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderly
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealTokens", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("ClaimedUnderlyingDealTokens", options, args) : null, networkId], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -529,7 +531,7 @@ export type DealCreatedFields = {
 export type DealCreatedArgs<K extends keyof DealCreatedResult> = {
     [Property in keyof Pick<DealCreatedFields, K>]: DealCreatedFields[Property];
 };
-export const useGetDealCreatedById = <K extends keyof DealCreatedResult>(url: string, options?: SingleQueryOptions, args?: DealCreatedArgs<K>, queryOptions: UseQueryOptions<Pick<DealCreatedResult, K>> = {}) => {
+export const useGetDealCreatedById = <K extends keyof DealCreatedResult>(url: string, options?: SingleQueryOptions, args?: DealCreatedArgs<K>, queryOptions: UseQueryOptions<Pick<DealCreatedResult, K>> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof DealCreatedResult>(url: string, options: SingleQueryOptions, args: DealCreatedArgs<K>): Promise<Pick<DealCreatedResult, K>> {
         const res = await axios.post(url, {
             query: generateGql("dealCreated", options, args)
@@ -553,7 +555,7 @@ export const useGetDealCreatedById = <K extends keyof DealCreatedResult>(url: st
         return formattedObj as Pick<DealCreatedResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("DealCreated", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("DealCreated", options, args) : null, networkId], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -769,7 +771,7 @@ export type DealDetailFields = {
 export type DealDetailArgs<K extends keyof DealDetailResult> = {
     [Property in keyof Pick<DealDetailFields, K>]: DealDetailFields[Property];
 };
-export const useGetDealDetailById = <K extends keyof DealDetailResult>(url: string, options?: SingleQueryOptions, args?: DealDetailArgs<K>, queryOptions: UseQueryOptions<Pick<DealDetailResult, K>> = {}) => {
+export const useGetDealDetailById = <K extends keyof DealDetailResult>(url: string, options?: SingleQueryOptions, args?: DealDetailArgs<K>, queryOptions: UseQueryOptions<Pick<DealDetailResult, K>> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof DealDetailResult>(url: string, options: SingleQueryOptions, args: DealDetailArgs<K>): Promise<Pick<DealDetailResult, K>> {
         const res = await axios.post(url, {
             query: generateGql("dealDetail", options, args)
@@ -813,7 +815,7 @@ export const useGetDealDetailById = <K extends keyof DealDetailResult>(url: stri
         return formattedObj as Pick<DealDetailResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("DealDetail", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("DealDetail", options, args) : null, networkId], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -1365,7 +1367,7 @@ export type PoolCreatedFields = {
 export type PoolCreatedArgs<K extends keyof PoolCreatedResult> = {
     [Property in keyof Pick<PoolCreatedFields, K>]: PoolCreatedFields[Property];
 };
-export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: string, options?: SingleQueryOptions, args?: PoolCreatedArgs<K>, queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>> = {}) => {
+export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: string, options?: SingleQueryOptions, args?: PoolCreatedArgs<K>, queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof PoolCreatedResult>(url: string, options: SingleQueryOptions, args: PoolCreatedArgs<K>): Promise<Pick<PoolCreatedResult, K>> {
         const res = await axios.post(url, {
             query: generateGql("poolCreated", options, args)
@@ -1413,12 +1415,12 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(url: st
         return formattedObj as Pick<PoolCreatedResult, K>;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("PoolCreated", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("PoolCreated", options, args) : null, networkId], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
 };
-export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: string, options?: MultiQueryOptions<PoolCreatedFilter, PoolCreatedResult>, args?: PoolCreatedArgs<K>, queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>[]> = {}) => {
+export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: string, options?: MultiQueryOptions<PoolCreatedFilter, PoolCreatedResult>, args?: PoolCreatedArgs<K>, queryOptions: UseQueryOptions<Pick<PoolCreatedResult, K>[]> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof PoolCreatedResult>(url: string, options: MultiQueryOptions<PoolCreatedFilter, PoolCreatedResult>, args: PoolCreatedArgs<K>): Promise<Pick<PoolCreatedResult, K>[]> {
         const paginatedOptions: Partial<MultiQueryOptions<PoolCreatedFilter, PoolCreatedResult>> = { ...options };
         let paginationKey: keyof PoolCreatedFilter | null = null;
@@ -1491,7 +1493,7 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(url: strin
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("PoolCreateds", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("PoolCreateds", options, args) : null, networkId], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });
@@ -1580,7 +1582,7 @@ export const useGetPurchasePoolTokenById = <K extends keyof PurchasePoolTokenRes
         enabled: !!options && !!args,
     });
 };
-export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult>(url: string, options?: MultiQueryOptions<PurchasePoolTokenFilter, PurchasePoolTokenResult>, args?: PurchasePoolTokenArgs<K>, queryOptions: UseQueryOptions<Pick<PurchasePoolTokenResult, K>[]> = {}) => {
+export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult>(url: string, options?: MultiQueryOptions<PurchasePoolTokenFilter, PurchasePoolTokenResult>, args?: PurchasePoolTokenArgs<K>, queryOptions: UseQueryOptions<Pick<PurchasePoolTokenResult, K>[]> = {}, networkId: NetworkId) => {
     const func = async function <K extends keyof PurchasePoolTokenResult>(url: string, options: MultiQueryOptions<PurchasePoolTokenFilter, PurchasePoolTokenResult>, args: PurchasePoolTokenArgs<K>): Promise<Pick<PurchasePoolTokenResult, K>[]> {
         const paginatedOptions: Partial<MultiQueryOptions<PurchasePoolTokenFilter, PurchasePoolTokenResult>> = { ...options };
         let paginationKey: keyof PurchasePoolTokenFilter | null = null;
@@ -1629,7 +1631,7 @@ export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult
         return options.first ? results.slice(0, options.first) : results;
     };
     const enabled = options && args;
-    return useQuery(["codegen-graphql", enabled ? generateGql("PurchasePoolTokens", options, args) : null], async () => func(url, options!, args!), {
+    return useQuery(["codegen-graphql", enabled ? generateGql("PurchasePoolTokens", options, args) : null, networkId    ], async () => func(url, options!, args!), {
         ...queryOptions,
         enabled: !!options && !!args,
     });

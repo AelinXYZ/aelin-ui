@@ -29,7 +29,7 @@ const useGetPoolsQuery = () => {
 				contributions: true,
 				dealAddress: true,
 				hasAllowList: true,
-				purchaseTokenSymbol: true
+				purchaseTokenSymbol: true,
 			},
 			{},
 			networkId ? networkId : NetworkId.Mainnet
@@ -45,6 +45,7 @@ export const parsePool = ({
 	symbol,
 	duration,
 	purchaseToken,
+	purchaseTokenSymbol,
 	purchaseExpiry,
 	purchaseDuration,
 	purchaseTokenCap,
@@ -74,6 +75,7 @@ export const parsePool = ({
 		duration: Number(duration) * 1000,
 		purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
 		purchaseToken,
+		purchaseTokenSymbol,
 		purchaseExpiry: Number(purchaseExpiry) * 1000,
 		poolExpiry: 1000 * (Number(duration) + Number(purchaseExpiry)),
 		purchaseTokenCap,
