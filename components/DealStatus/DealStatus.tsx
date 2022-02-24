@@ -59,13 +59,16 @@ const DealStatus: FC<DealStatusProps> = ({ status }) => {
 const Container = styled.div`
 	display: flex;
 	width: 100%;
-	justify-content: center;
+	justify-content: flex-start;
+	padding-left: 10px;
 	align-items: center;
 `;
 
 const StatusLabel = styled.span`
 	margin: 4px 0 0 6px;
 	text-transform: capitalize;
+	text-align: left;
+	padding-left: 5px;
 `;
 
 const Dot = styled.div<{ background: string }>`

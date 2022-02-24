@@ -186,6 +186,7 @@ const Pools: FC = () => {
 			{
 				Header: 'purchase currency',
 				accessor: 'purchaseTokenSymbol',
+				width: 75,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <FlexDivStart>{cellProps.value}</FlexDivStart>;
 				},
@@ -315,6 +316,7 @@ const Pools: FC = () => {
 			{
 				Header: 'status',
 				accessor: 'poolStatus',
+				width: 350,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
