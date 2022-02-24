@@ -98,7 +98,7 @@ const ActionBoxInput = styled.input`
 	align-items: center;
 	background-color: ${(props) => props.theme.colors.background};
 	border-radius: 4px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 	height: 35px;
 	padding: 6px 12px;
 	&::placeholder {
@@ -108,30 +108,13 @@ const ActionBoxInput = styled.input`
 `;
 
 const ActionBoxInputLabel = styled.p`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
 	padding-bottom: 4px;
 `;
 
-const ActionBoxMax = styled.div`
-	position: absolute;
-	height: 21px;
-	left: 180px;
-	text-align: center;
-	padding: 4px 6px 4px 4px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: ${(props) => props.theme.colors.textGrey};
-	font-size: 11px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	border-radius: 100px;
-	&:hover {
-		cursor: pointer;
-	}
-`;
-
 const ErrorNote = styled.div`
-	color: ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.textRequired};
 	position: absolute;
 	margin-top: 2px;
 	font-size: 0.8rem;
