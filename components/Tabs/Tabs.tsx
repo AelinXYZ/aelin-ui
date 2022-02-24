@@ -76,7 +76,7 @@ const TabListItem = styled.li`
 
 	&:last-child {
 		> button {
-			border-right: 1px solid ${(props) => props.theme.colors.forestGreen};
+			border-right: 1px solid ${(props) => props.theme.colors.heading};
 			border-top-right-radius: 8px;
 			border-bottom-right-radius: 8px;
 		}
@@ -84,22 +84,22 @@ const TabListItem = styled.li`
 `;
 
 const TabLink = styled.button`
-	background-color: ${(props) => props.theme.colors.white};
-	border-top: 1px solid ${(props) => props.theme.colors.forestGreen};
-	border-bottom: 1px solid ${(props) => props.theme.colors.forestGreen};
-	border-left: 1px solid ${(props) => props.theme.colors.forestGreen};
+	background-color: ${(props) => props.theme.colors.tertiary};
+	border-top: 1px solid ${(props) => props.theme.colors.heading};
+	border-bottom: 1px solid ${(props) => props.theme.colors.heading};
+	border-left: 1px solid ${(props) => props.theme.colors.heading};
 	border-right: 0;
 	width: 100%;
 	padding: 0.5rem 0;
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.heading};
 	cursor: pointer;
 
 	${(props) =>
 		props['aria-selected'] &&
 		css`
 			cursor: default;
-			background-color: ${(props) => props.theme.colors.forestGreen};
-			color: ${(props) => props.theme.colors.white};
+			background-color: ${(props) => props.theme.colors.heading};
+			color: ${(props) => props.theme.colors.buttonSecondary};
 			font-weight: 600;
 		`};
 `;

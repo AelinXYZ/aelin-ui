@@ -201,7 +201,7 @@ const HeaderRow = styled(FlexDiv)`
 `;
 
 const SubHeader = styled.h4`
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
 	font-weight: 400;
 	margin: 0;
@@ -210,7 +210,7 @@ const SubHeader = styled.h4`
 `;
 
 const Header = styled.h3`
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.6rem;
 	font-weight: 600;
 	margin: 0;
@@ -218,11 +218,11 @@ const Header = styled.h3`
 `;
 
 const Container = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
+	background-color: ${(props) => props.theme.colors.tablePrimary};
 	width: 420px;
 	padding: 30px 60px;
 	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 	position: relative;
 `;
 
