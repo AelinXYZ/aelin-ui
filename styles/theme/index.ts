@@ -21,6 +21,7 @@ export const darkTheme = {
 	questionMarkBorders: colors.white,
 	questionMarkBackground: colors.grey6,
 	tabBorders: colors.blue1,
+	tableBorders: colors.grey2,
 	tabText: colors.blue1,
 	tabBackground: colors.grey7,
 	selectedTabBackground: colors.blue1,

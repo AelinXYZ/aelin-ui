@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Head from 'next/head';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
@@ -24,7 +23,6 @@ import SecondDistributionContract from 'containers/ContractsInterface/contracts/
 import { getKeyValue } from 'utils/helpers';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
-import ROUTES from 'constants/routes';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { GasLimitEstimate, NetworkId } from 'constants/networks';
 
@@ -301,16 +299,16 @@ const Row = styled(FlexDivColCentered)`
 	width: 660px;
 	height: 550px;
 	border-radius: 8px;
-	background-color: ${(props) => props.theme.colors.rowBackground};
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	background-color: ${(props) => props.theme.colors.tableSecondary};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 `;
 
 const P = styled.p`
 	text-align: left;
 	width: 560px;
-	background-color: ${(props) => props.theme.colors.white};
-	color: ${(props) => props.theme.colors.forestGreen};
-	border: 1px solid ${(props) => props.theme.colors.headerGreen};
+	background-color: ${(props) => props.theme.colors.tablePrimary};
+	color: ${(props) => props.theme.colors.textBody};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 	border-radius: 12px;
 	padding: 20px;
 	font-size: 1rem;
@@ -320,15 +318,9 @@ const P = styled.p`
 
 const Header = styled.h3`
 	margin: 30px 0;
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.headerPrimary};
 	font-weight: 400;
 	font-size: 1.4rem;
-`;
-
-const Anchor = styled.a`
-	margin-top: 80px;
-	text-decoration: underline;
-	color: ${(props) => props.theme.colors.forestGreen};
 `;
 
 export default Airdrop;
