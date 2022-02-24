@@ -6,7 +6,7 @@ import { FlexDivRow } from 'components/common';
 export const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.boxesBackground};
 	height: fit-content;
-	width: 350px;
+	width: 300px;
 	position: relative;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.borders};

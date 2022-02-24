@@ -14,7 +14,13 @@ const ApprovedBox: FC<ApprovedBoxProps> = ({ handleClick, purchaseToken, isButto
 		<div>
 			<Title>Deposit Tokens</Title>
 			<p>{`Before you deposit, the pool needs your permission to transfer your ${purchaseToken}`}</p>
-			<Button variant="primary" size="lg" isRounded fullWidth onClick={handleClick}>
+			<Button
+				variant="primary"
+				size="lg"
+				isRounded
+				disabled={isButtonDisabled}
+				onClick={handleClick}
+			>
 				Approve
 			</Button>
 		</div>

@@ -1,8 +1,11 @@
 import { FC, useMemo, useState } from 'react';
+import styled from 'styled-components';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
 
+import Button from 'components/Button';
+import { InputGroup } from 'components/Input/InputGroup';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import {
@@ -11,9 +14,6 @@ import {
 	ContentContainer,
 	ActionBoxInputLabel,
 	InputContainer,
-	ActionBoxInput,
-	ActionBoxMax,
-	ActionButton,
 } from '../../../shared/common';
 
 import { GasLimitEstimate } from 'constants/networks';
@@ -51,56 +51,66 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 	return (
 		<Container>
 			<ContentContainer>
-				<ActionBoxInputLabel>{`Balance ${userPoolBalance} Pool Tokens`}</ActionBoxInputLabel>
-				<InputContainer>
-					<ActionBoxInput
-						type="number"
-						placeholder="0"
-						value={inputValue}
-						onChange={(e) => {
-							const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
-							setIsMaxValue(false);
-							setInputValue(value);
-						}}
-					/>
-					{!!userPoolBalance && (
-						<ActionBoxMax
-							isProRata={false}
+				<Title>Withdraw</Title>
+
+				<InputGroup
+					type="number"
+					placeholder="0"
+					value={inputValue}
+					width="100%"
+					onChange={(e) => {
+						const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
+						setIsMaxValue(false);
+						setInputValue(value);
+					}}
+					icon={
+						<div
 							onClick={() => {
 								setIsMaxValue(true);
 								setInputValue(Number(userPoolBalance));
 							}}
 						>
 							Max
-						</ActionBoxMax>
-					)}
-				</InputContainer>
+						</div>
+					}
+				/>
+
+				{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
+
+				<ActionBoxInputLabel>{`Balance ${userPoolBalance} ${purchaseTokenSymbol}`}</ActionBoxInputLabel>
+
+				<Button
+					variant="primary"
+					size="lg"
+					isRounded
+					fullWidth
+					disabled={isButtonDisabled}
+					onClick={() => {
+						setShowTxModal(true);
+					}}
+				>
+					Withdraw
+				</Button>
+
+				<ConfirmTransactionModal
+					title="Confirm Transaction"
+					setIsModalOpen={setShowTxModal}
+					isModalOpen={showTxModal}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+					onSubmit={onSubmit}
+				>
+					{`You are withdrawing ${inputValue} ${purchaseTokenSymbol}`}
+				</ConfirmTransactionModal>
 			</ContentContainer>
-
-			<ActionButton
-				disabled={isButtonDisabled}
-				isWithdraw={false}
-				onClick={() => {
-					setShowTxModal(true);
-				}}
-			>
-				Withdraw
-			</ActionButton>
-
-			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
-
-			<ConfirmTransactionModal
-				title="Confirm Transaction"
-				setIsModalOpen={setShowTxModal}
-				isModalOpen={showTxModal}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-				onSubmit={onSubmit}
-			>
-				{`You are withdrawing ${inputValue} ${purchaseTokenSymbol}`}
-			</ConfirmTransactionModal>
 		</Container>
 	);
 };
+
+const Title = styled.h3`
+	color: ${(props) => props.theme.colors.heading};
+	font-size: 1.2rem;
+	font-weight: 400;
+`;
 
 export default PoolDurationEndedBox;

@@ -20,6 +20,8 @@ import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 
+import { Container, ContentContainer } from 'sections/shared/common';
+
 interface FundDealProps {
 	token: string;
 	dealAddress: string;
@@ -301,34 +303,36 @@ const FundDeal: FC<FundDealProps> = ({
 		<FlexDiv>
 			<Grid hasInputFields={false} gridItems={gridItems} />
 			<Container>
-				<Title>Fund Deal</Title>
+				<ContentContainer>
+					<Title>Fund Deal</Title>
 
-				{isHolder && !isEnough && (
-					<p>{`Holder balance is only ${balance} but ${amountToFund} is required to fund the deal`}</p>
-				)}
+					{isHolder && !isEnough && (
+						<p>{`Holder balance is only ${balance} but ${amountToFund} is required to fund the deal`}</p>
+					)}
 
-				{!isHolder && <p>Only the holder funds the deal</p>}
+					{!isHolder && <p>Only the holder funds the deal</p>}
 
-				{isHolder && isEnough && !hasAllowance && (
-					<p>{`Before funding the deal, you need to approve the pool to transfer your ${symbol}`}</p>
-				)}
+					{isHolder && isEnough && !hasAllowance && (
+						<p>{`Before funding the deal, you need to approve the pool to transfer your ${symbol}`}</p>
+					)}
 
-				{isHolder && isEnough && hasAllowance && (
-					<p>
-						Deal amount: <Bold>{`${amountToFund} ${symbol}`}</Bold>
-					</p>
-				)}
+					{isHolder && isEnough && hasAllowance && (
+						<p>
+							Deal amount: <Bold>{`${amountToFund} ${symbol}`}</Bold>
+						</p>
+					)}
 
-				<Button
-					variant="primary"
-					size="lg"
-					isRounded
-					fullWidth
-					disabled={!isHolder || !isEnough}
-					onClick={() => setShowTxModal(true)}
-				>
-					{!hasAllowance ? `Approve` : `Fund ${amountToFund} ${symbol}`}
-				</Button>
+					<Button
+						variant="primary"
+						size="lg"
+						isRounded
+						fullWidth
+						disabled={!isHolder || !isEnough}
+						onClick={() => setShowTxModal(true)}
+					>
+						{!hasAllowance ? `Approve` : `Fund ${amountToFund} ${symbol}`}
+					</Button>
+				</ContentContainer>
 			</Container>
 			<ConfirmTransactionModal
 				title="Confirm Transaction"
@@ -345,16 +349,6 @@ const FundDeal: FC<FundDealProps> = ({
 		</FlexDiv>
 	);
 };
-
-const Container = styled.div`
-	background-color: ${(props) => props.theme.colors.boxesBackground};
-	width: 300px;
-	height: fit-content;
-	position: relative;
-	border-radius: 8px;
-	padding: 20px;
-	border: 1px solid ${(props) => props.theme.colors.borders};
-`;
 
 const Title = styled.h3`
 	color: ${(props) => props.theme.colors.primary};

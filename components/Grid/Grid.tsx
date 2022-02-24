@@ -40,6 +40,7 @@ const Container = styled.div`
 	margin-right: 20px;
 	border: 1px solid ${(props) => props.theme.colors.borders};
 	border-radius: 8px;
+	height: fit-content;
 `;
 
 const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
