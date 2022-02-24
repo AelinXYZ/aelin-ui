@@ -201,7 +201,7 @@ const Section = styled.div`
 	margin-top: 1rem;
 	padding: 10px;
 	border-radius: 14px;
-	border: 1px solid ${(props) => props.theme.colors.forestGreen};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 `;
 
 const PageSection = styled(FlexDivCol)`
@@ -215,10 +215,10 @@ const JustifiedLayout = styled(Layout)`
 const Text = styled.p`
 	width: 400px;
 	padding: 0px 14.5px 0 14.5px;
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.textBody};
 	font-weight: 200;
 	font-size: 12px;
-        text-align: justify;
+	text-align: justify;
 	text-align-last: center;
 	margin-top: 5px;
 `;

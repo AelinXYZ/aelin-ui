@@ -215,9 +215,10 @@ const SubmitButton = styled(Button)`
 `;
 
 const Header = styled.h3`
-	margin-top: 0;
-	color: ${(props) => props.theme.colors.headerPrimary};
-	font-size: 1.6rem;
+	margin: 10px 0 30px 0;
+	color: ${(props) => props.theme.colors.heading};
+	font-weight: 400;
+	font-size: 1.4rem;
 `;
 
 export default ConvertSection;

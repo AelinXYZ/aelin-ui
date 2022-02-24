@@ -318,7 +318,7 @@ const P = styled.p`
 
 const Header = styled.h3`
 	margin: 30px 0;
-	color: ${(props) => props.theme.colors.headerPrimary};
+	color: ${(props) => props.theme.colors.heading};
 	font-weight: 400;
 	font-size: 1.4rem;
 `;
