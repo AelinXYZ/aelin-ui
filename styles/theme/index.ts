@@ -6,6 +6,7 @@ export const darkTheme = {
 	primary: colors.blue1,
 	secondary: colors.white,
 	tertiary: colors.grey3,
+	pageBorder: colors.navy1,
 	heading: colors.white,
 	textBody: colors.grey3,
 	textSmall: colors.white,

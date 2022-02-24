@@ -91,22 +91,6 @@ const InputContainer = styled.div`
 	position: relative;
 `;
 
-const ActionBoxInput = styled.input`
-	outline: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: ${(props) => props.theme.colors.background};
-	border-radius: 4px;
-	border: 1px solid ${(props) => props.theme.colors.tableBorders};
-	height: 35px;
-	padding: 6px 12px;
-	&::placeholder {
-		font-display: ${(props) => props.theme.fonts.agrandir};
-		font-size: 12px;
-	}
-`;
-
 const ActionBoxInputLabel = styled.p`
 	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
