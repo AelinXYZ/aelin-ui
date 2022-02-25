@@ -84,6 +84,37 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		)
 	);
 
+	const exchangeRatePurchaseUnderlying = formatNumber(
+		Number(
+			ethers.utils.formatUnits(
+				deal?.underlyingDealTokenTotal?.toString() ?? '0',
+				underlyingDealTokenDecimals ?? 0
+			)
+		) /
+			Number(
+				ethers.utils.formatUnits(
+					deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+					poolBalances?.purchaseTokenDecimals ?? 0
+				)
+			),
+		DEFAULT_DECIMALS
+	);
+
+	const exchangeRateUnderlyingPurchase = formatNumber(
+		Number(
+			ethers.utils.formatUnits(
+				deal?.underlyingDealTokenTotal?.toString() ?? '0',
+				underlyingDealTokenDecimals ?? 0
+			)
+		) /
+			Number(
+				ethers.utils.formatUnits(
+					deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+					poolBalances?.purchaseTokenDecimals ?? 0
+				)
+			),
+		DEFAULT_DECIMALS
+	);
 	const dealRedemptionPeriod = useMemo(() => {
 		const now = Date.now();
 		if (
@@ -164,41 +195,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							{areTokenSymbolsAvailable
 								? `${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `
 								: `Underlying / Purchase: `}
-							{formatNumber(
-								Number(
-									ethers.utils.formatUnits(
-										deal?.underlyingDealTokenTotal?.toString() ?? '0',
-										underlyingDealTokenDecimals ?? 0
-									)
-								) /
-									Number(
-										ethers.utils.formatUnits(
-											deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-											poolBalances?.purchaseTokenDecimals ?? 0
-										)
-									),
-								DEFAULT_DECIMALS
-							)}
+							{exchangeRateUnderlyingPurchase}
 						</ExchangeRate>
 						<ExchangeRate>
 							{areTokenSymbolsAvailable
 								? `${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `
 								: `Purchase / Underlying: `}
-							{formatNumber(
-								Number(
-									ethers.utils.formatUnits(
-										deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-										poolBalances?.purchaseTokenDecimals ?? 0
-									)
-								) /
-									Number(
-										ethers.utils.formatUnits(
-											deal?.underlyingDealTokenTotal?.toString() ?? '0',
-											underlyingDealTokenDecimals ?? 0
-										)
-									),
-								DEFAULT_DECIMALS
-							)}
+							{exchangeRatePurchaseUnderlying}
 						</ExchangeRate>
 					</div>
 				),
@@ -541,6 +544,10 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				gasLimitEstimate={gasLimitEstimate}
 				purchaseCurrency={pool?.purchaseToken ?? null}
 				userPoolBalance={poolBalances?.userPoolBalance ?? null}
+				userPurchaseBalance={poolBalances?.userPurchaseBalance ?? null}
+				purchaseTokenSymbol={poolBalances?.purchaseTokenSymbol ?? null}
+				underlyingDealTokenSymbol={underlyingDealTokenSymbol ?? null}
+				exchangeRatePurchaseUnderlying={exchangeRatePurchaseUnderlying}
 				dealRedemptionData={{
 					status: dealRedemptionPeriod,
 					maxProRata: poolBalances?.maxProRata ?? 0,

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import styled from 'styled-components';
-import { FC, useEffect, useState, useMemo } from 'react';
+import { FC, useEffect, useState, useMemo, ChangeEvent } from 'react';
 
 import Info from 'assets/svg/info.svg';
 
@@ -30,6 +30,10 @@ import { TransactionDealType } from 'constants/transactions';
 import { statusToText } from 'constants/pool';
 
 import AcceptOrRejectError from '../AcceptOrRejectError';
+import { Tab, Tabs } from 'components/Tabs';
+import { InputGroup } from 'components/Input/InputGroup';
+import Button from 'components/Button';
+import { ethers } from 'ethers';
 
 interface AcceptOrRejectDealBoxProps {
 	txType: TransactionDealType;
@@ -39,8 +43,12 @@ interface AcceptOrRejectDealBoxProps {
 	setInputValue: (val: number | string) => void;
 	setIsMaxValue: (val: boolean) => void;
 	userPoolBalance: string | null;
+	userPurchaseBalance: string | null;
+	purchaseTokenSymbol: string | null;
+	underlyingDealTokenSymbol: string | null;
 	gasLimitEstimate: GasLimitEstimate;
 	purchaseCurrency: string | null;
+	exchangeRatePurchaseUnderlying: string | null;
 	dealRedemptionData: {
 		status: Status;
 		maxProRata: number;
@@ -58,10 +66,18 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	setInputValue,
 	setIsMaxValue,
 	userPoolBalance,
+	userPurchaseBalance,
+	purchaseTokenSymbol,
+	underlyingDealTokenSymbol,
 	gasLimitEstimate,
 	purchaseCurrency,
 	dealRedemptionData,
+	exchangeRatePurchaseUnderlying,
 }) => {
+	const [dealRedemptionEnded, setDealRedemptionEnded] = useState<boolean>(
+		dealRedemptionData?.status === Status.Closed
+	);
+
 	const { walletAddress } = Connector.useContainer();
 	const { setGasPrice } = TransactionData.useContainer();
 
@@ -99,6 +115,22 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 		]
 	);
 
+	const isAcceptDealDisabled: boolean = useMemo(
+		() =>
+			!walletAddress ||
+			(isProRataRedemptionPeriod && !isWithdraw && isProRataAmountExcceded) ||
+			(isRedemptionPeriodClosed && !isWithdraw) ||
+			(isEligibleForOpenRedemption && !isWithdraw),
+		[
+			walletAddress,
+			isProRataRedemptionPeriod,
+			isWithdraw,
+			isProRataAmountExcceded,
+			isRedemptionPeriodClosed,
+			isEligibleForOpenRedemption,
+		]
+	);
+
 	const modalContent = useMemo(
 		() => ({
 			[TransactionDealType.AcceptDeal]: {
@@ -114,7 +146,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	);
 
 	const handleMaxButtonClick = () => {
-		let maxValue = Number(userPoolBalance);
+		let maxValue = Number(Number(userPoolBalance) * Number(exchangeRatePurchaseUnderlying));
 
 		if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
 			maxValue = Math.min(Number(maxValue), Number(dealRedemptionData.maxProRata ?? 0));
@@ -140,104 +172,105 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 		setInputValue(maxValue);
 	};
 
-	return (
-		<Container>
-			<RedemptionHeader>
-				<RedemptionPeriodTooltip
-					visible={showTooltip}
-					appendTo="parent"
-					trigger="click"
-					allowHTML
-					interactive
-					content={
-						<div>
-							A max pro rata contribution makes you eligible for the open redemption period where
-							unredeemed deal tokens are available
-						</div>
-					}
-				>
-					<FlexDivRowCentered>
-						{statusToText(dealRedemptionData.status)}
-						<InfoClick onClick={() => setShowTooltip(!showTooltip)}>
-							<Image src={Info} alt="info icon" />
-						</InfoClick>
-					</FlexDivRowCentered>
-				</RedemptionPeriodTooltip>
-			</RedemptionHeader>
-			<ContentContainer>
-				<ActionBoxInputLabel>{`Balance ${userPoolBalance ?? ''} Pool Tokens`}</ActionBoxInputLabel>
-				<InputContainer>
-					<ActionBoxInput
-						type="number"
-						value={inputValue}
-						placeholder="0"
-						onChange={(e) => {
-							const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
-							setIsMaxValue(false);
-							setInputValue(value);
-						}}
-						max={userPoolBalance ?? undefined}
-					/>
-					{userPoolBalance && (
-						<ActionBoxMax
-							isProRata={dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw}
-							onClick={handleMaxButtonClick}
-						>
-							{dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw
-								? 'Max Pro Rata'
-								: 'Max'}
-						</ActionBoxMax>
-					)}
-				</InputContainer>
-				<ActionBoxHeaderWrapper>
-					<ActionBoxHeader
-						isAcceptOrReject
-						isPool={false}
-						isSelected={!isWithdraw}
-						onClick={() => setTxType(TransactionDealType.AcceptDeal)}
-					>
-						<FlexDivCenterRow>
-							Accept Deal
-							<QuestionMark
-								text={`Choose accept to agree to the deal terms with up to the max amount based on your allocation this round`}
-							/>
-						</FlexDivCenterRow>
-					</ActionBoxHeader>
-					<ActionBoxHeader
-						isAcceptOrReject
-						isPool={false}
-						isSelected={isWithdraw}
-						isWithdraw={isWithdraw}
-						onClick={() => setTxType(TransactionDealType.Withdraw)}
-					>
-						<FlexDivCenterRow>
-							Withdraw
-							<QuestionMark text="Withdraw a portion or all of your capital from the pool and receive your original purchase tokens back" />
-						</FlexDivCenterRow>
-					</ActionBoxHeader>
-				</ActionBoxHeaderWrapper>
-			</ContentContainer>
+	const handleMaxWithdrawButtonClick = () => setInputValue(userPoolBalance || 0);
+	const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const value = !!e?.target?.value.length ? parseFloat(e.target.value) : '';
+		setIsMaxValue(false);
+		setInputValue(value);
+	};
 
-			<ActionButton
-				disabled={isButtonDisabled}
-				isWithdraw={isWithdraw}
-				onClick={() => {
-					setShowTxModal(true);
+	return (
+		<Wrapper>
+			<Tabs
+				defaultIndex={Number(dealRedemptionEnded)}
+				onSelect={(selectedIndex: number) => {
+					if (selectedIndex === 0) return setTxType(TransactionDealType.AcceptDeal);
+					if (selectedIndex === 1) return setTxType(TransactionDealType.Withdraw);
+
+					throw new Error('Unexpected Index');
 				}}
 			>
-				{!isWithdraw ? 'Accept Deal' : 'Withdraw from Pool'}
-			</ActionButton>
-
-			<AcceptOrRejectError
-				hasAmount={hasAmount}
-				isWithdraw={isWithdraw}
-				isMaxBalanceExceeded={isMaxBalanceExceeded}
-				isProRataAmountExcceded={isProRataAmountExcceded}
-				isRedemptionPeriodClosed={isRedemptionPeriodClosed}
-				isProRataRedemptionPeriod={isProRataRedemptionPeriod}
-				isEligibleForOpenRedemption={isEligibleForOpenRedemption}
-			/>
-
+				<Tab label="Accept deal" disabled={isAcceptDealDisabled}>
+					<StyledContainer>
+						<Header>Deal allocation round 1</Header>
+						<Subtitle>
+							By clicking "accept deal" you are agreeing to the negotiated exchange rate
+						</Subtitle>
+						<InputGroup
+							type={'number'}
+							value={inputValue}
+							disabled={dealRedemptionEnded}
+							onChange={handleInputChange}
+							max={userPoolBalance ?? undefined}
+							icon={
+								<div onClick={handleMaxButtonClick}>
+									{dealRedemptionData?.status === Status.ProRataRedemption ? 'Max Pro Rata' : 'Max'}
+								</div>
+							}
+						/>
+						<ActionBoxInputLabelFede>
+							Balance {Number(userPoolBalance) * Number(exchangeRatePurchaseUnderlying) ?? ''}{' '}
+							{underlyingDealTokenSymbol}
+						</ActionBoxInputLabelFede>
+						<ButtonWrapper>
+							<StyledButton
+								variant="primary"
+								fullWidth
+								isRounded
+								disabled={isButtonDisabled}
+								onClick={() => {
+									setTxType(TransactionDealType.AcceptDeal);
+									setShowTxModal(true);
+								}}
+							>
+								Accept deal
+							</StyledButton>
+						</ButtonWrapper>
+					</StyledContainer>
+				</Tab>
+				<Tab label="Withdraw">
+					<StyledContainer>
+						<Header>Withdraw tokens</Header>
+						<Subtitle>
+							{dealRedemptionEnded
+								? 'Deal Closed'
+								: "If you didn't accept, or only partially accepted the deal you may withdraw your tokens from the pool"}
+						</Subtitle>
+						<InputGroup
+							type={'number'}
+							value={inputValue}
+							onChange={handleInputChange}
+							icon={<div onClick={handleMaxWithdrawButtonClick}>Max</div>}
+						/>
+						<ActionBoxInputLabelFede>
+							Balance {userPoolBalance ?? ''} {purchaseTokenSymbol}
+						</ActionBoxInputLabelFede>
+						<AcceptOrRejectError
+							hasAmount={hasAmount}
+							isWithdraw={isWithdraw}
+							isMaxBalanceExceeded={isMaxBalanceExceeded}
+							isProRataAmountExcceded={isProRataAmountExcceded}
+							isRedemptionPeriodClosed={isRedemptionPeriodClosed}
+							isProRataRedemptionPeriod={isProRataRedemptionPeriod}
+							isEligibleForOpenRedemption={isEligibleForOpenRedemption}
+						/>
+						<ButtonWrapper>
+							<StyledButton
+								variant="primary"
+								fullWidth
+								isRounded
+								disabled={isButtonDisabled}
+								onClick={() => {
+									setTxType(TransactionDealType.Withdraw);
+									setShowTxModal(true);
+								}}
+							>
+								Withdraw
+							</StyledButton>
+						</ButtonWrapper>
+					</StyledContainer>
+				</Tab>
+			</Tabs>
 			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
@@ -248,9 +281,53 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			>
 				{modalContent[txType].heading}
 			</ConfirmTransactionModal>
-		</Container>
+		</Wrapper>
 	);
 };
+
+const StyledContainer = styled(Container)`
+	display: flex;
+	flex-direction: column;
+	padding: 15px;
+	height: 250px;
+`;
+
+const Subtitle = styled.p``;
+
+const StyledButton = styled(Button)`
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
+	font-size: 0.85rem;
+`;
+
+const ButtonWrapper = styled.div`
+	position: absolute;
+	bottom: 15px;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+`;
+const Wrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	margin-top: -59px;
+`;
+
+const Header = styled.h3`
+	color: ${(props) => props.theme.colors.heading};
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin: 0;
+	padding: 0;
+`;
+
+const ActionBoxInputLabelFede = styled.p`
+	color: ${(props) => props.theme.colors.heading};
+	font-size: 1rem;
+	margin-top: 7.5px;
+	padding-bottom: 4px;
+`;
 
 const RedemptionHeader = styled.div`
 	background-color: ${(props) => props.theme.colors.forestGreen};

@@ -42,6 +42,7 @@ const Tabs: FC<TabsProps> = ({ children, defaultIndex, onSelect }) => {
 								aria-selected={tabIsSelected}
 								aria-controls={index + '-tab'}
 								onClick={() => onChangeTab(index)}
+								disabled={!!tab.props.disabled}
 							>
 								{tab.props.label}
 							</TabLink>
@@ -86,15 +87,18 @@ const TabListItem = styled.li`
 
 const TabLink = styled.button`
 	background-color: ${(props) => props.theme.colors.tabBackground};
-	border-top: 1px solid ${(props) => props.theme.colors.tabBorders};
-	border-bottom: 1px solid ${(props) => props.theme.colors.tabBorders};
-	border-left: 1px solid ${(props) => props.theme.colors.tabBorders};
+	border-top: 1px solid
+		${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabBorders)};
+	border-bottom: 1px solid
+		${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabBorders)};
+	border-left: 1px solid
+		${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabBorders)};
 	border-right: 0;
 	width: 100%;
 	padding: 0.5rem 0;
-	color: ${(props) => props.theme.colors.tabText};
+	color: ${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabText)};
 
-	cursor: pointer;
+	cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
 	${(props) =>
 		props['aria-selected'] &&
@@ -106,7 +110,7 @@ const TabLink = styled.button`
 		`};
 `;
 
-const Tab = styled.div<{ label?: string }>``;
+const Tab = styled.div<{ label?: string; disabled?: boolean }>``;
 
 export default Tabs;
 export { Tab };
