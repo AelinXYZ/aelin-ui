@@ -3,7 +3,7 @@ import { resetButtonCSS } from 'components/common';
 
 type ButtonProps = {
 	size?: 'sm' | 'md' | 'lg' | 'xl';
-	variant?: 'primary' | 'secondary' | 'tertiary' | 'black';
+	variant?: 'primary' | 'secondary' | 'tertiary' | 'quaternary';
 	isActive?: boolean;
 	isRounded?: boolean;
 	fullWidth?: boolean;
@@ -112,7 +112,7 @@ const Button = styled.button<ButtonProps>`
 		`}
 
 		${(props) =>
-		props.variant === 'black' &&
+		props.variant === 'quaternary' &&
 		css`
 			background: ${(props) => props.theme.colors.black};
 			color: ${(props) => props.theme.colors.white};
