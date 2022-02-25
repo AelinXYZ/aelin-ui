@@ -3,10 +3,13 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { CopyToClipboard as CopyToClipboardComponent } from 'react-copy-to-clipboard';
 
-import { Tooltip, FlexDiv } from 'components/common';
+import { FlexDiv } from 'components/common';
 
-import CopyIcon from 'assets/svg/copy.svg';
+import CopyIconWhite from 'assets/svg/copy-white.svg';
+import CopyIconBlack from 'assets/svg/copy-black.svg';
 import CheckIcon from 'assets/svg/check.svg';
+import UI from 'containers/UI';
+import { ThemeMode } from 'styles/theme';
 
 interface ICopyToClipboard {
 	text: string;
@@ -14,6 +17,7 @@ interface ICopyToClipboard {
 
 const CopyToClipboard = ({ text }: ICopyToClipboard) => {
 	const [copiedAddress, setCopiedAddress] = useState<boolean>(false);
+	const { theme } = UI.useContainer();
 
 	useEffect(() => {
 		if (!copiedAddress) return;
@@ -26,22 +30,20 @@ const CopyToClipboard = ({ text }: ICopyToClipboard) => {
 	}, [copiedAddress]);
 
 	return (
-		<Tooltip
-			hideOnClick={false}
-			arrow={true}
-			placement="top"
-			content={copiedAddress ? 'Copied' : 'Copy'}
-		>
-			<CopyClipboardContainer>
-				<CopyToClipboardComponent text={text} onCopy={() => setCopiedAddress(true)}>
-					{copiedAddress ? (
-						<StyledImage width={16} height={16} src={CheckIcon} alt="copied" />
-					) : (
-						<StyledImage width={16} height={16} src={CopyIcon} alt={`copy ${text}`} />
-					)}
-				</CopyToClipboardComponent>
-			</CopyClipboardContainer>
-		</Tooltip>
+		<CopyClipboardContainer>
+			<CopyToClipboardComponent text={text} onCopy={() => setCopiedAddress(true)}>
+				{copiedAddress ? (
+					<StyledImage width={16} height={16} src={CheckIcon} alt="copied" />
+				) : (
+					<StyledImage
+						width={16}
+						height={16}
+						src={theme === ThemeMode.LIGHT ? CopyIconBlack : CopyIconWhite}
+						alt={`copy ${text}`}
+					/>
+				)}
+			</CopyToClipboardComponent>
+		</CopyClipboardContainer>
 	);
 };
 

@@ -7,7 +7,7 @@ export const darkTheme = {
 	secondary: colors.white,
 	tertiary: colors.grey3,
 	heading: colors.white,
-	textBody: colors.grey3,
+	textBody: colors.white,
 	textSmall: colors.white,
 	textHover: colors.navy1,
 	textButton: colors.navy1,
@@ -23,6 +23,9 @@ export const darkTheme = {
 	inputBackground: colors.grey6,
 	inputBorders: colors.grey2,
 	headerPrimary: colors.navy0,
+	headerLinkBackgroundActive: colors.grey6,
+	headerLinkTextActive: colors.blue1,
+	headerDropdownHover: colors.grey6,
 };
 
 export const lightTheme = {
@@ -47,6 +50,9 @@ export const lightTheme = {
 	inputBackground: colors.grey1,
 	inputBorders: colors.grey4,
 	headerPrimary: colors.green0,
+	headerLinkBackgroundActive: colors.green4,
+	headerLinkTextActive: colors.white,
+	headerDropdownHover: colors.grey4,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };

@@ -6,7 +6,10 @@ import Image from 'next/image';
 import { zIndex } from 'constants/ui';
 import { FlexDivColCentered, FlexDiv } from 'components/common';
 
-import CaretDown from 'assets/svg/arrow-down.svg';
+import CaretDownWhite from 'assets/svg/caret-down-white.svg';
+import CaretDownBlack from 'assets/svg/caret-down-black.svg';
+import UI from 'containers/UI';
+import { ThemeMode } from 'styles/theme';
 
 type DropdownProps = {
 	children: ReactNode;
@@ -25,12 +28,18 @@ const Dropdown: FC<DropdownProps> = ({
 	isEnabled = true,
 	hideArrow = false,
 }) => {
+	const { theme } = UI.useContainer();
 	return (
 		<Container isEnabled={isEnabled} onClick={() => setIsOpen(!isOpen)}>
 			<OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
 				<StyledFlexDiv>
 					<Inner>{children}</Inner>
-					{!hideArrow && <StyledImage src={CaretDown} alt="caret down" />}
+					{!hideArrow && (
+						<StyledImage
+							src={theme === ThemeMode.LIGHT ? CaretDownBlack : CaretDownWhite}
+							alt="caret down"
+						/>
+					)}
 				</StyledFlexDiv>
 				{isOpen && <Content>{content}</Content>}
 			</OutsideClickHandler>
@@ -68,6 +77,7 @@ const Content = styled(FlexDivColCentered)`
 	transform: translateX(-50%);
 	width: 100%;
 	min-width: 150px;
+	z-index: 100;
 `;
 
 const StyledFlexDiv = styled(FlexDiv)`
