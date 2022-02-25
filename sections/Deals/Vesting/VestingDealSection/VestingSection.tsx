@@ -2,7 +2,7 @@ import { FC, useMemo, useCallback, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import { isBefore } from 'date-fns';
+import { isAfter } from 'date-fns';
 
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
@@ -57,12 +57,12 @@ const VestingDeal: FC<VestingDealProps> = ({
 	}, [claims, underlyingDealTokenDecimals]);
 
 	const isVestingCliffEnds = useMemo(() => {
-		return isBefore(
+		return isAfter(
+			new Date(),
 			Number(deal?.proRataRedemptionPeriodStart ?? 0) +
 				Number(deal?.proRataRedemptionPeriod ?? 0) +
 				Number(deal?.openRedemptionPeriod ?? 0) +
-				Number(deal?.vestingCliff ?? 0),
-			new Date()
+				Number(deal?.vestingCliff ?? 0)
 		);
 	}, [
 		deal?.openRedemptionPeriod,
@@ -72,13 +72,13 @@ const VestingDeal: FC<VestingDealProps> = ({
 	]);
 
 	const isVestingPeriodEnds = useMemo(() => {
-		return isBefore(
+		return isAfter(
+			new Date(),
 			Number(deal?.proRataRedemptionPeriodStart ?? 0) +
 				Number(deal?.proRataRedemptionPeriod ?? 0) +
 				Number(deal?.openRedemptionPeriod ?? 0) +
 				Number(deal?.vestingCliff ?? 0) +
-				Number(deal?.vestingPeriod ?? 0),
-			new Date()
+				Number(deal?.vestingPeriod ?? 0)
 		);
 	}, [
 		deal?.openRedemptionPeriod,
@@ -98,14 +98,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 				header: 'My Deal Token Balance',
 				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
-			...(!isVestingCliffEnds
-				? [
-						{
-							header: 'My Deal Token Balance',
-							subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
-						},
-				  ]
-				: []),
 			...(!isVestingCliffEnds
 				? [
 						{
