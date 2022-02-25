@@ -502,18 +502,16 @@ const Create: FC = () => {
 			</Head>
 
 			<PageLayout title={<>Create Pool</>} subtitle="">
-				<>
-					<CreateForm
-						formik={formik}
-						gridItems={gridItems}
-						summaryItems={summaryItems}
-						txType={CreateTxType.CreatePool}
-						txState={txState}
-						txHash={txHash}
-						setGasPrice={setGasPrice}
-						gasLimitEstimate={gasLimitEstimate}
-					/>
-				</>
+				<CreateForm
+					formik={formik}
+					gridItems={gridItems}
+					summaryItems={summaryItems}
+					txType={CreateTxType.CreatePool}
+					txState={txState}
+					txHash={txHash}
+					setGasPrice={setGasPrice}
+					gasLimitEstimate={gasLimitEstimate}
+				/>
 			</PageLayout>
 		</>
 	);

@@ -81,9 +81,9 @@ const Button = styled.button<ButtonProps>`
 		${(props) =>
 		props.variant === 'secondary' &&
 		css`
-			background: ${(props) => props.theme.colors.white};
-			border: 1px solid ${(props) => props.theme.colors.primary};
-			color: ${(props) => props.theme.colors.primary};
+			background: ${(props) => props.theme.colors.buttonSecondary};
+			border: 1px solid ${(props) => props.theme.colors.inputBorders};
+			color: ${(props) => props.theme.colors.textSecondaryButton};
 
 			&:hover {
 				&:not(:disabled) {

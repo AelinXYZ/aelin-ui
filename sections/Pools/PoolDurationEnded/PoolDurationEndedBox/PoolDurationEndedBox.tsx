@@ -52,6 +52,11 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 			<ContentContainer>
 				<Title>Withdraw</Title>
 
+				<p>
+					The duration for this pool has ended. You may withdraw your funds now although the sponsor
+					may still create a deal for you if you remain in the pool.
+				</p>
+
 				<InputGroup
 					type="number"
 					placeholder="0"

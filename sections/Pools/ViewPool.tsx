@@ -322,14 +322,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				</Notice>
 			)}
 
-			{isPoolDurationEnded && currentStages[currentTab] === 'POOL_DURATION_ENDED' && (
-				<Notice>
-					The duration for this AELIN pool has ended or a deal has been presented but not funded.
-					You may withdraw your funds now although the sponsor may still create a deal for you if
-					you remain in the pool
-				</Notice>
-			)}
-
 			<Tabs
 				defaultIndex={currentStages.length - 1}
 				onSelect={(currentIndex) => setCurrentTab(currentIndex)}
