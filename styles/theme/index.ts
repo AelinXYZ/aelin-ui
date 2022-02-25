@@ -37,6 +37,8 @@ export const darkTheme = {
 	inputBackground: colors.grey6,
 	inputBorders: colors.grey2,
 	headerPrimary: colors.navy0,
+	selectedHeaderButton: colors.blue1,
+	selectedHeaderButtonBackground: colors.grey8,
 };
 
 export const lightTheme = {
@@ -75,6 +77,8 @@ export const lightTheme = {
 	inputBackground: colors.grey1,
 	inputBorders: colors.grey4,
 	headerPrimary: colors.green0,
+	selectedHeaderButton: colors.white,
+	selectedHeaderButtonBackground: colors.green4,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
