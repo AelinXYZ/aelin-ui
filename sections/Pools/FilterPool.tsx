@@ -109,18 +109,4 @@ const HeaderSection = styled(FlexDiv)`
 	justify-content: space-between;
 `;
 
-const StyledAnchor = styled.a`
-	height: 32px;
-	line-height: 32px;
-	font-size: 1rem;
-	padding: 0 12px;
-	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 140px;
-	border-radius: 4px;
-	cursor: pointer;
-	text-align: center;
-`;
-
 export default FilterPool;
