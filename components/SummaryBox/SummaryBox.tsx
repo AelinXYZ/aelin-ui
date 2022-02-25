@@ -84,7 +84,7 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 		</SummaryBoxGrid>
 	);
 
-	const isPurchaseButtonDisabled = !isValid || txState === TransactionStatus.WAITING;
+	const isButtonDisabled = !isValid || txState === TransactionStatus.WAITING;
 	const isPrivate = formik.values.poolPrivacy === Privacy.PRIVATE;
 
 	const filteredWhitelist = formik.values.whitelist?.filter(
@@ -102,19 +102,19 @@ const SummaryBox: FC<SummaryBoxProps> = ({
 
 			{summaryBoxGrid}
 
-			<PurchaseButtonContainer>
+			<ActionButtonContainer>
 				<StyledButton
 					size="lg"
 					isRounded
 					variant="primary"
-					disabled={isPurchaseButtonDisabled}
+					disabled={isButtonDisabled}
 					onClick={() => {
 						setShowTxModal(true);
 					}}
 				>
 					{txTypeToTitle(txType)}
 				</StyledButton>
-			</PurchaseButtonContainer>
+			</ActionButtonContainer>
 
 			{txType === CreateTxType.CreatePool && isPrivate && (
 				<ButtonContainer>
@@ -188,7 +188,7 @@ const ButtonContainer = styled.div`
 	position: absolute;
 `;
 
-const PurchaseButtonContainer = styled(ButtonContainer)`
+const ActionButtonContainer = styled(ButtonContainer)`
 	bottom: 15px;
 `;
 

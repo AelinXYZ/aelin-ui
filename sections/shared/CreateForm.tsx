@@ -8,7 +8,6 @@ import { SummaryItem, CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { FlexDiv } from 'components/common';
 import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
-import { wei } from '@synthetixio/wei';
 
 export interface CreateFormProps {
 	formik: FormikProps<any>;

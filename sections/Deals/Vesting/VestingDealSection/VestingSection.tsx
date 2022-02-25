@@ -2,10 +2,11 @@ import { FC, useMemo, useCallback, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
+import { isBefore } from 'date-fns';
 
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
-import { FlexDiv, ExternalLink, Notice } from 'components/common';
+import { FlexDiv } from 'components/common';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
@@ -18,7 +19,6 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { GasLimitEstimate } from 'constants/networks';
-import { firstAelinPoolDealID } from 'constants/pool';
 import { TransactionStatus } from 'constants/transactions';
 
 import VestingDealBox from '../VestingBox';
@@ -45,12 +45,50 @@ const VestingDeal: FC<VestingDealProps> = ({
 	const { setTxState, gasPrice } = TransactionData.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
-	const dealVestingGridItems = useMemo(() => {
+	const totalVested = useMemo(() => {
 		const claimedAmount = claims.reduce(
 			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
 			0
 		);
 
+		return Number(
+			ethers.utils.formatUnits(claimedAmount.toString(), underlyingDealTokenDecimals ?? 0)
+		);
+	}, [claims, underlyingDealTokenDecimals]);
+
+	const isVestingCliffEnds = useMemo(() => {
+		return isBefore(
+			Number(deal?.proRataRedemptionPeriodStart ?? 0) +
+				Number(deal?.proRataRedemptionPeriod ?? 0) +
+				Number(deal?.openRedemptionPeriod ?? 0) +
+				Number(deal?.vestingCliff ?? 0),
+			new Date()
+		);
+	}, [
+		deal?.openRedemptionPeriod,
+		deal?.proRataRedemptionPeriod,
+		deal?.proRataRedemptionPeriodStart,
+		deal?.vestingCliff,
+	]);
+
+	const isVestingPeriodEnds = useMemo(() => {
+		return isBefore(
+			Number(deal?.proRataRedemptionPeriodStart ?? 0) +
+				Number(deal?.proRataRedemptionPeriod ?? 0) +
+				Number(deal?.openRedemptionPeriod ?? 0) +
+				Number(deal?.vestingCliff ?? 0) +
+				Number(deal?.vestingPeriod ?? 0),
+			new Date()
+		);
+	}, [
+		deal?.openRedemptionPeriod,
+		deal?.proRataRedemptionPeriod,
+		deal?.proRataRedemptionPeriodStart,
+		deal?.vestingCliff,
+		deal?.vestingPeriod,
+	]);
+
+	const dealVestingGridItems = useMemo(() => {
 		return [
 			{
 				header: 'Name',
@@ -60,15 +98,27 @@ const VestingDeal: FC<VestingDealProps> = ({
 				header: 'My Deal Token Balance',
 				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
-			{
-				header: 'Claiming Exchange Rate',
-				subText: (
-					<div>
-						<Subheader>Deal token / Underlying Deal Token</Subheader>
-						<div>{formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS)}</div>
-					</div>
-				),
-			},
+			...(!isVestingCliffEnds
+				? [
+						{
+							header: 'My Deal Token Balance',
+							subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
+						},
+				  ]
+				: []),
+			...(!isVestingCliffEnds
+				? [
+						{
+							header: 'Claiming Exchange Rate',
+							subText: (
+								<div>
+									<Subheader>Deal token / Underlying Deal Token</Subheader>
+									<div>{formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS)}</div>
+								</div>
+							),
+						},
+				  ]
+				: []),
 			{
 				header: 'Underlying Deal Token',
 				subText: <TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={true} />,
@@ -92,25 +142,27 @@ const VestingDeal: FC<VestingDealProps> = ({
 						Number(deal?.vestingPeriod ?? 0)
 				),
 			},
-			{
-				header: 'Total Underlying Claimed',
-				subText: Number(
-					ethers.utils.formatUnits(claimedAmount.toString(), underlyingDealTokenDecimals ?? 0)
-				),
-			},
+			...(!isVestingCliffEnds
+				? [
+						{
+							header: 'Total Underlying Claimed',
+							subText: totalVested,
+						},
+				  ]
+				: []),
 		];
 	}, [
-		claims,
 		deal?.name,
-		dealBalance,
 		deal?.underlyingDealToken,
-		deal?.vestingCliff,
-		deal?.vestingPeriod,
-		dealPerUnderlyingExchangeRate,
-		underlyingDealTokenDecimals,
 		deal?.proRataRedemptionPeriodStart,
 		deal?.proRataRedemptionPeriod,
 		deal?.openRedemptionPeriod,
+		deal?.vestingCliff,
+		deal?.vestingPeriod,
+		isVestingCliffEnds,
+		dealBalance,
+		dealPerUnderlyingExchangeRate,
+		totalVested,
 	]);
 
 	const handleSubmit = useCallback(async () => {
@@ -149,41 +201,23 @@ const VestingDeal: FC<VestingDealProps> = ({
 	}, [deal.id, signer]);
 
 	return (
-		<div>
-			<FlexDiv>
-				<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
-				{deal?.id !== firstAelinPoolDealID && (
-					<VestingDealBox
-						onSubmit={handleSubmit}
-						vestingAmount={claimableUnderlyingTokens ?? 0}
-						gasLimitEstimate={gasLimitEstimate}
-					/>
-				)}
-			</FlexDiv>
-			{deal?.id === firstAelinPoolDealID ? (
-				<Notice>
-					<>
-						Due to an issue in the open redemption period of the first AELIN pool, claiming has been
-						disabled. Instructions to claim your official $AELIN tokens will be added shortly. For
-						more information please see
-					</>{' '}
-					<StyledExternalLink
-						href={'https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md'}
-					>
-						AELIP-4
-					</StyledExternalLink>
-				</Notice>
-			) : null}
-		</div>
+		<FlexDiv>
+			<Grid hasInputFields={false} gridItems={dealVestingGridItems} />
+			<VestingDealBox
+				onSubmit={handleSubmit}
+				vestingAmount={claimableUnderlyingTokens ?? 0}
+				gasLimitEstimate={gasLimitEstimate}
+				isVestingCliffEnds={isVestingCliffEnds}
+				isVestingPeriodEnds={isVestingPeriodEnds}
+				totalVested={totalVested}
+				underlyingDealToken={deal?.underlyingDealToken ?? ''}
+			/>
+		</FlexDiv>
 	);
 };
 
-const StyledExternalLink = styled(ExternalLink)`
-	color: ${(props) => props.theme.colors.statusBlue};
-`;
-
 const Subheader = styled.div`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.textBody};
 	margin-bottom: 4px;
 `;
 

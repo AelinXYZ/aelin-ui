@@ -40,7 +40,6 @@ interface CreateDealProps {
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<string>('0');
-	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);

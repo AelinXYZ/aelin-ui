@@ -43,7 +43,7 @@ const FundDeal: FC<FundDealProps> = ({
 }) => {
 	const { provider, walletAddress, signer } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const { setTxState, setGasPrice, gasPrice } = TransactionData.useContainer();
+	const { setTxState, txState, setGasPrice, gasPrice } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const [showTxModal, setShowTxModal] = useState(false);
@@ -99,6 +99,7 @@ const FundDeal: FC<FundDealProps> = ({
 				gasPrice: gasPrice?.toBN(),
 			});
 			if (tx) {
+				setTxState(TransactionStatus.WAITING);
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => setTxState(TransactionStatus.SUCCESS),
@@ -134,6 +135,7 @@ const FundDeal: FC<FundDealProps> = ({
 				gasPrice: gasPrice?.toBN(),
 			});
 			if (tx) {
+				setTxState(TransactionStatus.WAITING);
 				monitorTransaction({
 					txHash: tx.hash,
 					onTxConfirmed: () => {
@@ -177,6 +179,10 @@ const FundDeal: FC<FundDealProps> = ({
 	);
 
 	const isHolder = walletAddress === holder;
+
+	const isApproveButtonDisabled = !isHolder || txState === TransactionStatus.WAITING;
+
+	const isFundButtomDisabled = !isHolder || !isEnough || txState === TransactionStatus.WAITING;
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -322,16 +328,31 @@ const FundDeal: FC<FundDealProps> = ({
 						</p>
 					)}
 
-					<Button
-						variant="primary"
-						size="lg"
-						isRounded
-						fullWidth
-						disabled={!isHolder || !isEnough}
-						onClick={() => setShowTxModal(true)}
-					>
-						{!hasAllowance ? `Approve` : `Fund ${amountToFund} ${symbol}`}
-					</Button>
+					{!hasAllowance && (
+						<Button
+							variant="primary"
+							size="lg"
+							isRounded
+							fullWidth
+							disabled={isApproveButtonDisabled}
+							onClick={() => setShowTxModal(true)}
+						>
+							Approve
+						</Button>
+					)}
+
+					{hasAllowance && (
+						<Button
+							variant="primary"
+							size="lg"
+							isRounded
+							fullWidth
+							disabled={isFundButtomDisabled}
+							onClick={() => setShowTxModal(true)}
+						>
+							{`Fund ${amountToFund} ${symbol}`}
+						</Button>
+					)}
 				</ContentContainer>
 			</Container>
 			<ConfirmTransactionModal
