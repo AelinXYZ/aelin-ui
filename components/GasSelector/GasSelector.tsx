@@ -121,7 +121,7 @@ const GasSelector: React.FC<IGasSelector> = ({
 					<StyledButton
 						isRounded
 						size="md"
-						variant="black"
+						variant="quaternary"
 						type="submit"
 						onClick={() => setIsOpen(!isOpen)}
 					>

@@ -85,19 +85,11 @@ const StyledTitle = styled.div`
 `;
 
 const StyledModal = styled.div`
-<<<<<<< HEAD
 	background: ${(props) => props.theme.colors.boxesBackground};
 	min-width: 500px;
 	border-radius: 8px;
 	border: 1px solid ${(props) => props.theme.colors.borders};
 	padding: 23px;
-=======
-	position: relative;
-	background: ${(props) => props.theme.colors.modalBackground};
-	min-width: 500px;
-	border-radius: 8px;
-	padding: 23px 40px;
->>>>>>> improved approve tx modal
 `;
 
 const StyledModalOverlay = styled.div`
