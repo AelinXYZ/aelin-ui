@@ -79,15 +79,16 @@ const StyledTitle = styled.div`
 	text-align: left;
 	font-size: 1.6rem;
 	font-wight: bold;
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.heading};
 `;
 
 const StyledModal = styled.div`
-	background: ${(props) => props.theme.colors.modalBackground};
+	background: ${(props) => props.theme.colors.boxesBackground};
 	min-width: 500px;
 	max-height: 600px;
 	border-radius: 8px;
 	padding: 15px;
+	border: 1px solid ${(props) => props.theme.colors.borders};
 `;
 const StyledModalOverlay = styled.div`
 	position: fixed;

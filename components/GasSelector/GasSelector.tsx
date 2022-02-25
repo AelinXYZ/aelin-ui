@@ -134,11 +134,12 @@ const StyledContainer = styled.div`
 `;
 
 const StyledGasDescription = styled.span`
-	color: #5b5b5b;
+	color: ${(props) => props.theme.colors.textBody};
 	font-size: 1rem;
 `;
 
 const StyledGasPrice = styled.span`
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1rem;
 	margin: 0 10px;
 `;
@@ -160,7 +161,8 @@ const StyledInput = styled.input`
 `;
 
 const EditGasEstimateTooltip = styled(Tooltip)`
-	background-color: ${(props) => props.theme.colors.background};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 
 	> div {
 		padding: 0 !important;
@@ -174,7 +176,7 @@ const StyledUl = styled.ul`
 const StyledLi = styled.li`
 	list-style-type: none;
 	padding: 15px;
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.textBody};
 	cursor: pointer;
 	letter-spacing: 1px;
 	font-weight: 300;
@@ -183,8 +185,8 @@ const StyledLi = styled.li`
 	justify-content: space-between;
 
 	&:hover {
-		color: ${(props) => props.theme.colors.white};
-		background-color: ${(props) => props.theme.colors.headerGreen};
+		color: ${(props) => props.theme.colors.buttonPrimary};
+		background-color: ${(props) => props.theme.colors.inputBackground};
 
 		&:last-child {
 			border-bottom-left-radius: 4px;
@@ -211,8 +213,12 @@ const StyledEditButton = styled.button`
 	border-radius: 4px;
 	cursor: pointer;
 	padding: 5px 15px;
-	color: ${(props) => props.theme.colors.white};
-	background-color: #5b5b5b;
+	color: ${(props) => props.theme.colors.textBody};
+	background-color: ${(props) => props.theme.colors.buttonSecondary};
+
+	&:hover {
+		color: ${(props) => props.theme.colors.buttonPrimary};
+	}
 `;
 
 export { GasSelector };

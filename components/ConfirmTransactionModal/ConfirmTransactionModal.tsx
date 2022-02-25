@@ -28,7 +28,6 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 		<BaseModal title={title} setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}>
 			<ModalContainer>
 				{children}
-				<hr />
 				<GasSelector
 					initialGasSpeed="fast"
 					setGasPrice={setGasPrice}
