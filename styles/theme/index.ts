@@ -28,6 +28,7 @@ export const darkTheme = {
 	tablePrimary: colors.grey6,
 	tableSecondary: colors.navy0,
 	tableHeaderText: colors.navy1,
+	tableBorders: colors.white,
 	tableHover: colors.blue1,
 	buttonPrimary: colors.blue1,
 	buttonSecondary: colors.grey6,

@@ -145,17 +145,17 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 };
 
 const RewardsBox = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
+	background-color: ${(props) => props.theme.colors.tablePrimary};
 	width: 420px;
 	margin-top: 1rem;
 	padding: 30px 60px;
 	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 	position: relative;
 `;
 
 const Header = styled.h3`
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.heading};
 	text-align: center;
 	font-size: 1.4rem;
 	font-weight: 600;
@@ -168,6 +168,7 @@ const P = styled.p`
 	text-align: center;
 	font-size: 1.2rem;
 	margin: 1rem 0;
+	color: ${(props) => props.theme.colors.heading};
 `;
 
 export default ClaimBox;

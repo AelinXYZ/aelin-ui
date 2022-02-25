@@ -20,6 +20,7 @@ const Container = styled.div`
 const Content = styled.div`
 	max-width: 100vw;
 	min-height: 100vh;
+	background-color: ${(props) => props.theme.colors.tableHeaderText};
 `;
 
 export default AppLayout;

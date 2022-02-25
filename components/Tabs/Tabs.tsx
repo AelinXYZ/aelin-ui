@@ -93,6 +93,7 @@ const TabLink = styled.button`
 	width: 100%;
 	padding: 0.5rem 0;
 	color: ${(props) => props.theme.colors.tabText};
+
 	cursor: pointer;
 
 	${(props) =>

@@ -206,7 +206,7 @@ const Note = styled.p`
 	padding: 20px;
 	margin: 20px 0;
 	border-radius: 8px;
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.textBody};
 `;
 
 const SubmitButton = styled(Button)`
@@ -215,9 +215,10 @@ const SubmitButton = styled(Button)`
 `;
 
 const Header = styled.h3`
-	margin-top: 0;
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.6rem;
+	margin: 10px 0 30px 0;
+	color: ${(props) => props.theme.colors.heading};
+	font-weight: 400;
+	font-size: 1.4rem;
 `;
 
 export default ConvertSection;
