@@ -52,7 +52,11 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 };
 
 const StyledButton = styled(Button)`
+	font-size: 0.8rem;
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
 	margin: 0 10px;
+	padding-left: 10px;
+	padding-right: 10px;
 `;
 
 export default UploadCSV;
