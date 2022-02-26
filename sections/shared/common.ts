@@ -21,7 +21,7 @@ export const ErrorNote = styled.div`
 `;
 
 export const ContentContainer = styled.div`
-	padding: 15px 20px;
+	padding: 20px;
 `;
 
 export const ActionBoxInputLabel = styled.div`

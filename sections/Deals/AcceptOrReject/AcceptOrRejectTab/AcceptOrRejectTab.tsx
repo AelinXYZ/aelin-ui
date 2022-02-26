@@ -20,7 +20,6 @@ interface AcceptOrRejectTabProps {
 	dealRedemptionData: any;
 	dealRedemptionEnded: any;
 	handleMaxButtonClick: () => void;
-	purchaseTokenSymbol: string | null;
 }
 
 const AcceptOrRejectTab: FC<AcceptOrRejectTabProps> = ({
@@ -35,8 +34,7 @@ const AcceptOrRejectTab: FC<AcceptOrRejectTabProps> = ({
 	dealRedemptionData,
 	dealRedemptionEnded,
 	handleMaxButtonClick,
-	purchaseTokenSymbol,
-}: any) => {
+}) => {
 	return (
 		<Container>
 			<ContentContainer>
@@ -56,7 +54,7 @@ const AcceptOrRejectTab: FC<AcceptOrRejectTabProps> = ({
 					}
 				/>
 				<ActionBoxInputLabel>
-					{`Balance ${Number(userPoolBalance ?? 0)} ${purchaseTokenSymbol}`}
+					{`Balance ${Number(userPoolBalance ?? 0)} Pool Tokens`}
 				</ActionBoxInputLabel>
 
 				<Button

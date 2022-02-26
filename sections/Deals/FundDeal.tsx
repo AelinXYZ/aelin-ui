@@ -375,6 +375,7 @@ const Title = styled.h3`
 	color: ${(props) => props.theme.colors.primary};
 	font-size: 1.2rem;
 	font-weight: 400;
+	margin-top: 0;
 `;
 
 const Bold = styled.span`

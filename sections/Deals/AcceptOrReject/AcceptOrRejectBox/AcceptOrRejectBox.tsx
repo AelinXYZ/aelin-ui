@@ -47,7 +47,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	setIsMaxValue,
 	userPoolBalance,
 	purchaseTokenSymbol,
-	underlyingDealTokenSymbol,
 	gasLimitEstimate,
 	dealRedemptionData,
 }) => {
@@ -66,6 +65,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 		dealRedemptionData?.status === Status.OpenRedemption && !dealRedemptionData.isOpenEligible;
 	const isProRataAmountExcceded =
 		Number(dealRedemptionData.maxProRata ?? 0) < Number(isEmptyInput ? 0 : inputValue);
+
 	const isWithdraw = txType === TransactionDealType.Withdraw;
 
 	const isButtonDisabled: boolean = useMemo(
@@ -91,7 +91,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	const modalContent = useMemo(
 		() => ({
 			[TransactionDealType.AcceptDeal]: {
-				heading: `You are accepting ${inputValue} ${purchaseTokenSymbol}`,
+				heading: `You are accepting ${inputValue} Pool Tokens`,
 				onSubmit,
 			},
 			[TransactionDealType.Withdraw]: {
@@ -165,7 +165,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 								userPoolBalance={userPoolBalance}
 								handleMaxButtonClick={handleMaxButtonClick}
 								dealRedemptionData={dealRedemptionData}
-								purchaseTokenSymbol={purchaseTokenSymbol}
 								isButtonDisabled={isButtonDisabled}
 							/>
 						)}
@@ -181,7 +180,6 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 								userPoolBalance={userPoolBalance}
 								handleMaxButtonClick={handleMaxButtonClick}
 								dealRedemptionData={dealRedemptionData}
-								purchaseTokenSymbol={purchaseTokenSymbol}
 								isButtonDisabled={isButtonDisabled}
 							/>
 						)}

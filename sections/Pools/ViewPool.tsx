@@ -36,6 +36,15 @@ import { getERC20Data } from 'utils/crypto';
 
 import { swimmingPoolID } from 'constants/pool';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
+import {
+	OPEN_POOL,
+	CREATE_DEAL,
+	FUND_DEAL,
+	ACCEPT_OR_REJECT_DEAL,
+	POOL_DURATION_ENDED,
+	UNREDEEMED_TOKENS,
+	VESTING_DEAL,
+} from 'constants/poolStages';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -201,17 +210,17 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	}, [claimableUnderlyingTokens, claims, deal?.id, dealBalance]);
 
 	const poolStages = {
-		OPEN_POOL: () => ({
+		[OPEN_POOL]: () => ({
 			title: 'Pool Info',
 			displayName: 'PoolInfo',
 			component: <PurchasePoolSection pool={pool} />,
 		}),
-		CREATE_DEAL: () => ({
+		[CREATE_DEAL]: () => ({
 			title: 'Create Deal',
 			displayName: 'CreateDeal',
 			component: <CreateDeal poolAddress={poolAddress} purchaseToken={pool.purchaseToken} />,
 		}),
-		FUND_DEAL: () => ({
+		[FUND_DEAL]: () => ({
 			title: 'Fund Deal',
 			displayName: 'FundDeal',
 			component: (
@@ -227,7 +236,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				/>
 			),
 		}),
-		ACCEPT_OR_REJECT_DEAL: () => ({
+		[ACCEPT_OR_REJECT_DEAL]: () => ({
 			title: 'Deal',
 			displayName: 'Deal',
 			component: (
@@ -239,12 +248,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				/>
 			),
 		}),
-		POOL_DURATION_ENDED: () => ({
+		[POOL_DURATION_ENDED]: () => ({
 			title: 'Withdraw',
 			displayName: 'Withdraw',
 			component: <PoolDurationEndedSection pool={pool} dealID={deal.id} />,
 		}),
-		UNREDEEMED_TOKENS: () => ({
+		[UNREDEEMED_TOKENS]: () => ({
 			title: 'Unredeemed Tokens',
 			displayName: 'UnredeemedTokens',
 			component: (
@@ -255,7 +264,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				/>
 			),
 		}),
-		VESTING_DEAL: () => ({
+		[VESTING_DEAL]: () => ({
 			title: 'Vest',
 			displayName: 'Vest',
 			component: (
@@ -272,30 +281,30 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	};
 
 	const currentStages = useMemo(() => {
-		let stages = ['OPEN_POOL'];
+		let stages = [OPEN_POOL];
 
 		if (showCreateDealSection) {
-			stages.push('CREATE_DEAL');
+			stages.push(CREATE_DEAL);
 		}
 
 		if (pool?.poolStatus === Status.FundingDeal) {
-			stages.push('FUND_DEAL');
+			stages.push(FUND_DEAL);
 		}
 
 		if (isPoolDurationEnded) {
-			stages.push('POOL_DURATION_ENDED');
+			stages.push(POOL_DURATION_ENDED);
 		}
 
 		if (pool?.poolStatus === Status.DealOpen) {
-			stages.push('ACCEPT_OR_REJECT_DEAL');
+			stages.push(ACCEPT_OR_REJECT_DEAL);
 		}
 
 		if (hasUnredeemedTokens) {
-			stages.push('UNREDEEMED_TOKENS');
+			stages.push(UNREDEEMED_TOKENS);
 		}
 
 		if (isVestingDeal) {
-			stages.push('VESTING_DEAL');
+			stages.push(VESTING_DEAL);
 		}
 
 		return stages;
@@ -313,32 +322,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	const isHolderAndSponsorEquals = pool?.sponsor === deal?.holder;
 
-	/*
-	console.log(
-		'WithdrawExpiry',
-		now >
-			(deal?.proRataRedemptionPeriodStart ?? 0) +
-				(deal?.proRataRedemptionPeriod ?? 0) +
-				(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder
-	);
-
-	
-	console.log(
-		'PoolDurationEndedSection',
-		(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
-			(pool?.poolStatus !== Status.FundingDeal &&
-				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
-				pool?.id !== vAelinPoolID &&
-				!(pool?.poolStatus === Status.DealOpen && deal?.id != null))
-	);
-	*/
-
 	return (
 		<PageLayout
 			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} />}
 			subtitle={pool?.hasAllowList ? 'Private pool' : 'Public pool'}
 		>
-			{isHolderAndSponsorEquals && currentStages[currentTab] === 'FUND_DEAL' && (
+			{isHolderAndSponsorEquals && currentStages[currentTab] === FUND_DEAL && (
 				<Notice>
 					We noticed you are the sponsor and the counter party. This is usually due to a pool
 					cancellation unless you are sponsoring your own deal. If you cancelled the pool no further
