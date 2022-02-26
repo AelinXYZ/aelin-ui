@@ -154,7 +154,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	]);
 
 	useEffect(() => {
-		if (Boolean(dealRedemptionPeriod)) {
+		if (Number(dealRedemptionPeriod)) {
 			setTxType(TransactionDealType.Withdraw);
 		} else {
 			setTxType(TransactionDealType.AcceptDeal);
