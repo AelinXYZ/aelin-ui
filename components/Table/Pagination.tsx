@@ -1,16 +1,11 @@
-import Image from 'next/image';
 import styled from 'styled-components';
 import React, { FC, useEffect } from 'react';
 import router, { useRouter } from 'next/router';
 
 import { DEFAULT_PAGE_INDEX } from 'constants/defaults';
 
-import LeftArrowIcon from 'assets/svg/caret-left.svg';
-import LeftEndArrowIcon from 'assets/svg/caret-left-end.svg';
-import RightArrowIcon from 'assets/svg/caret-right.svg';
-import RightEndArrowIcon from 'assets/svg/caret-right-end.svg';
-
 import { GridDivCenteredCol, resetButtonCSS } from '../common';
+import { LeftArrow, LeftEndArrow, RightArrow, RightEndArrow } from 'components/Svg';
 
 type PaginationProps = {
 	pageIndex: number;
@@ -50,19 +45,19 @@ const Pagination: FC<PaginationProps> = ({
 		<PaginationContainer className="table-pagination">
 			<span>
 				<ArrowButton onClick={() => setPage(0)} disabled={!canPreviousPage}>
-					<Image alt="" src={LeftEndArrowIcon} />
+					<StyledLeftEndArrow />
 				</ArrowButton>
 				<ArrowButton onClick={() => previousPage()} disabled={!canPreviousPage}>
-					<Image alt="" src={LeftArrowIcon} />
+					<StyledLeftArrow />
 				</ArrowButton>
 			</span>
 			<PageInfo>{`Page ${pageIndex} of ${pageCount}`}</PageInfo>
 			<span>
 				<ArrowButton onClick={() => nextPage()} disabled={!canNextPage}>
-					<Image alt="" src={RightArrowIcon} />
+					<StyledRightArrow />
 				</ArrowButton>
 				<ArrowButton onClick={() => setPage(pageCount - 1)} disabled={!canNextPage}>
-					<Image alt="" src={RightEndArrowIcon} />
+					<StyledRightEndArrow />
 				</ArrowButton>
 			</span>
 		</PaginationContainer>
@@ -70,13 +65,13 @@ const Pagination: FC<PaginationProps> = ({
 };
 
 const PageInfo = styled.span`
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.paginationText};
 `;
 
 const PaginationContainer = styled(GridDivCenteredCol)`
 	margin-top: 12px;
 	grid-template-columns: auto 1fr auto;
-	background-color: ${(props) => props.theme.colors.grey};
+	background-color: ${(props) => props.theme.colors.tablePrimary};
 	padding: 13px 12px;
 	border-bottom-left-radius: 8px;
 	border-bottom-right-radius: 8px;
@@ -87,17 +82,25 @@ const PaginationContainer = styled(GridDivCenteredCol)`
 const ArrowButton = styled.button`
 	${resetButtonCSS};
 	padding: 4px;
-	svg {
-		width: 14px;
-		height: 14px;
-		color: ${(props) => props.theme.colors.black};
-	}
 	&[disabled] {
 		cursor: not-allowed;
-		svg {
-			color: ${(props) => props.theme.colors.black};
-		}
 	}
+`;
+
+const StyledLeftEndArrow = styled(LeftEndArrow)`
+	fill: ${(props) => props.theme.colors.paginationText};
+`;
+
+const StyledLeftArrow = styled(LeftArrow)`
+	fill: ${(props) => props.theme.colors.paginationText};
+`;
+
+const StyledRightEndArrow = styled(RightEndArrow)`
+	fill: ${(props) => props.theme.colors.paginationText};
+`;
+
+const StyledRightArrow = styled(RightArrow)`
+	fill: ${(props) => props.theme.colors.paginationText};
 `;
 
 export default Pagination;
