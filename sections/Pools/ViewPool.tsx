@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
+import styled from 'styled-components';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useState, useEffect } from 'react';
 
@@ -19,8 +20,9 @@ import SectionTitle from 'sections/shared/SectionTitle';
 
 import FundDeal from 'sections/Deals/FundDeal';
 import CreateDeal from 'sections/Deals/CreateDeal';
-import WithdrawExpiry from 'sections/Deals/WithdrawExpiry';
+
 import VestingDealSection from 'sections/Deals/Vesting/VestingDealSection';
+import UnredeemedTokensSection from 'sections/Deals/UnredeemedTokens/UnredeemedTokensSection';
 import PurchasePoolSection from 'sections/Pools/PurchasePool/PurchasePoolSection';
 import AcceptOrRejectDealSection from 'sections/Deals/AcceptOrReject/AcceptOrRejectSection';
 import PoolDurationEndedSection from 'sections/Pools/PoolDurationEnded/PoolDurationEndedSection';
@@ -34,7 +36,6 @@ import { getERC20Data } from 'utils/crypto';
 
 import { swimmingPoolID } from 'constants/pool';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
-import styled from 'styled-components';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
@@ -135,6 +136,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
 	const now = Date.now();
+
 	const showCreateDealSection = useMemo(() => {
 		if (!pool || !now || !deal || !walletAddress) return false;
 		// If the connected wallet is not the sponsor, then we don't display the createDeal section
@@ -173,6 +175,32 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		pool?.poolStatus,
 		pool?.purchaseExpiry,
 	]);
+
+	const hasUnredeemedTokens = useMemo(() => {
+		return (
+			now >
+				(deal?.proRataRedemptionPeriodStart ?? 0) +
+					(deal?.proRataRedemptionPeriod ?? 0) +
+					(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder
+		);
+	}, [
+		deal?.holder,
+		deal?.openRedemptionPeriod,
+		deal?.proRataRedemptionPeriod,
+		deal?.proRataRedemptionPeriodStart,
+		now,
+		walletAddress,
+	]);
+
+	console.log('deal', deal);
+
+	const isVestingDeal = useMemo(() => {
+		return (
+			(deal?.id != null &&
+				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
+			(claimableUnderlyingTokens ?? 0) > 0
+		);
+	}, [claimableUnderlyingTokens, claims, deal?.id, dealBalance]);
 
 	const poolStages = {
 		OPEN_POOL: () => ({
@@ -218,11 +246,11 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			displayName: 'Withdraw',
 			component: <PoolDurationEndedSection pool={pool} dealID={deal.id} />,
 		}),
-		WITHDRAW: () => ({
-			title: 'Withdraw',
-			displayName: 'Withdraw',
+		UNREDEEMED_TOKENS: () => ({
+			title: 'Unredeemed Tokens',
+			displayName: 'UnredeemedTokens',
 			component: (
-				<WithdrawExpiry
+				<UnredeemedTokensSection
 					holder={deal?.holder as string}
 					token={deal.underlyingDealToken}
 					dealAddress={deal.id}
@@ -264,21 +292,19 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			stages.push('ACCEPT_OR_REJECT_DEAL');
 		}
 
-		if (
-			(deal?.id != null &&
-				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
-			(claimableUnderlyingTokens ?? 0) > 0
-		) {
+		if (hasUnredeemedTokens) {
+			stages.push('UNREDEEMED_TOKENS');
+		}
+
+		if (isVestingDeal) {
 			stages.push('VESTING_DEAL');
 		}
 
 		return stages;
 	}, [
-		claimableUnderlyingTokens,
-		claims,
-		deal?.id,
-		dealBalance,
+		hasUnredeemedTokens,
 		isPoolDurationEnded,
+		isVestingDeal,
 		pool?.poolStatus,
 		showCreateDealSection,
 	]);
