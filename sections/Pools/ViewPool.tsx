@@ -192,8 +192,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		walletAddress,
 	]);
 
-	console.log('deal', deal);
-
 	const isVestingDeal = useMemo(() => {
 		return (
 			(deal?.id != null &&

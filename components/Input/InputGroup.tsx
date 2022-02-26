@@ -11,13 +11,20 @@ interface IInputGroup extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
 interface IInputWrapper {
 	iconSize?: number;
 	iconPosition: 'right' | 'left';
+	disabled?: boolean;
 }
 
-export const InputGroup: FC<IInputGroup> = ({ icon, iconPosition = 'right', ...rest }) => {
+export const InputGroup: FC<IInputGroup> = ({
+	icon,
+	iconPosition = 'right',
+	disabled,
+	...rest
+}) => {
 	const iconRef = useRef<HTMLInputElement>();
 
 	return (
 		<InputWrapper
+			disabled={disabled}
 			iconPosition={iconPosition}
 			iconSize={iconRef?.current?.getBoundingClientRect()?.width}
 		>
@@ -46,12 +53,19 @@ const InputWrapper = styled.div<IInputWrapper>`
 		justify-content: center;
 		padding: 5px 10px 5px 10px;
 		cursor: pointer;
-		color: ${(props) => props.theme.colors.headerGrey};
+		color: ${(props) =>
+			props.disabled
+				? props.theme.colors.inputGroupIconDisabled
+				: props.theme.colors.inputGroupIcon};
 		font-size: 14px;
 		font-family: ${(props) => props.theme.fonts.agrandir};
 	}
 
 	& > Input {
+		color: ${(props) =>
+			props.disabled
+				? props.theme.colors.inputGroupIconDisabled
+				: props.theme.colors.inputGroupIcon};
 		padding-right: ${(props) => (props.iconPosition === 'right' ? `${props.iconSize}px` : '8px')};
 		padding-left: ${(props) => (props.iconPosition === 'left' ? `${props.iconSize}px` : '8px')};
 	}

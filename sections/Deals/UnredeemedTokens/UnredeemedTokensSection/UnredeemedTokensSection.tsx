@@ -11,7 +11,6 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
 import Grid from 'components/Grid';
-import Button from 'components/Button';
 import { FlexDiv } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 
