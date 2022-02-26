@@ -23,6 +23,7 @@ export const darkTheme = {
 	inputBackground: colors.grey6,
 	inputBorders: colors.grey2,
 	headerPrimary: colors.navy0,
+	paginationText: colors.grey2,
 };
 
 export const lightTheme = {
@@ -47,6 +48,7 @@ export const lightTheme = {
 	inputBackground: colors.grey1,
 	inputBorders: colors.grey4,
 	headerPrimary: colors.green0,
+	paginationText: colors.black,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
