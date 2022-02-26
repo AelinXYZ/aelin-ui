@@ -14,12 +14,17 @@ interface IInputWrapper {
 	disabled?: boolean;
 }
 
-export const InputGroup: FC<IInputGroup> = ({ icon, iconPosition = 'right', ...rest }) => {
+export const InputGroup: FC<IInputGroup> = ({
+	icon,
+	iconPosition = 'right',
+	disabled,
+	...rest
+}) => {
 	const iconRef = useRef<HTMLInputElement>();
 
 	return (
 		<InputWrapper
-			disabled={rest.disabled}
+			disabled={disabled}
 			iconPosition={iconPosition}
 			iconSize={iconRef?.current?.getBoundingClientRect()?.width}
 		>
