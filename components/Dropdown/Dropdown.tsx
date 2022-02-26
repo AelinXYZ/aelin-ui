@@ -1,12 +1,10 @@
 import { useState, FC, ReactNode } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import styled, { css } from 'styled-components';
-import Image from 'next/image';
 
-import { zIndex } from 'constants/ui';
 import { FlexDivColCentered, FlexDiv } from 'components/common';
 
-import CaretDown from 'assets/svg/arrow-down.svg';
+import { DownArrow } from 'components/Svg';
 
 type DropdownProps = {
 	children: ReactNode;
@@ -30,7 +28,7 @@ const Dropdown: FC<DropdownProps> = ({
 			<OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
 				<StyledFlexDiv>
 					<Inner>{children}</Inner>
-					{!hideArrow && <StyledImage src={CaretDown} alt="caret down" />}
+					{!hideArrow && <StyledImage />}
 				</StyledFlexDiv>
 				{isOpen && <Content>{content}</Content>}
 			</OutsideClickHandler>
@@ -74,8 +72,12 @@ const StyledFlexDiv = styled(FlexDiv)`
 	padding: 0 8px;
 `;
 
-const StyledImage = styled(Image)`
+const StyledImage = styled(DownArrow)`
 	height: 12px;
 	width: 12px;
+	display: flex;
+	align-self: center;
+	fill: ${(props) => props.theme.colors.paginationText};
 `;
+
 export default Dropdown;
