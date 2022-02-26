@@ -7,11 +7,12 @@ import Connector from 'containers/Connector';
 
 import DesktopWalletModal from './WalletModal';
 import Button from 'components/Button';
+import { FlexDiv, FlexDivCentered, FlexDivColCentered } from 'components/common';
+import { getWalletIcon } from './WalletModal';
 import { FlexDivCenterRow } from 'sections/shared/common';
-import { FlexDiv, FlexDivCentered } from 'components/common';
 
 const WalletWidget: FC = () => {
-	const { walletAddress, connectWallet } = Connector.useContainer();
+	const { walletAddress, connectWallet, selectedWallet } = Connector.useContainer();
 	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 	return (
 		<Dropdown
@@ -22,10 +23,10 @@ const WalletWidget: FC = () => {
 		>
 			<FlexDivCentered>
 				{!!walletAddress ? (
-					<>
-						<Dot isActive={!!walletAddress} />
+					<FlexDivCenterRow>
+						<WalletIcon>{getWalletIcon(selectedWallet?.toLocaleLowerCase())}</WalletIcon>
 						<Address>{!!walletAddress ? truncateAddress(walletAddress ?? '') : 'Connect'}</Address>
-					</>
+					</FlexDivCenterRow>
 				) : (
 					<StyledButton
 						fullWidth
@@ -45,6 +46,12 @@ const WalletWidget: FC = () => {
 	);
 };
 
+const WalletIcon = styled.div`
+	width: 20px;
+	height: 20px;
+	margin-right: 6px;
+`;
+
 const StyledButton = styled(Button)`
 	display: flex;
 	align-items: center;
@@ -62,14 +69,6 @@ const StyledButton = styled(Button)`
 const StyledFlexDiv = styled(FlexDiv)`
 	height: 100%;
 	align-items: center;
-`;
-
-const Dot = styled.div<{ isActive: boolean }>`
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	margin-right: 8px;
-	background-color: ${(props) => (props.isActive ? props.theme.colors.green3 : 'transparent')};
 `;
 
 const Address = styled.div``;
