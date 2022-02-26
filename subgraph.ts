@@ -1448,6 +1448,14 @@ export type PoolCreatedFilter = {
 	contributions_lte?: WeiSource | null;
 	contributions_in?: WeiSource[];
 	contributions_not_in?: WeiSource[];
+	totalSupply?: WeiSource | null;
+	totalSupply_not?: WeiSource | null;
+	totalSupply_gt?: WeiSource | null;
+	totalSupply_lt?: WeiSource | null;
+	totalSupply_gte?: WeiSource | null;
+	totalSupply_lte?: WeiSource | null;
+	totalSupply_in?: WeiSource[];
+	totalSupply_not_in?: WeiSource[];
 	dealAddress?: string | null;
 	dealAddress_not?: string | null;
 	dealAddress_in?: string[];
@@ -1471,6 +1479,7 @@ export type PoolCreatedResult = {
 	hasAllowList: boolean;
 	poolStatus: Partial<PoolStatusResult>;
 	contributions: Wei;
+	totalSupply: Wei;
 	dealAddress: string | null;
 };
 export type PoolCreatedFields = {
@@ -1489,6 +1498,7 @@ export type PoolCreatedFields = {
 	hasAllowList: true;
 	poolStatus: PoolStatusFields;
 	contributions: true;
+	totalSupply: true;
 	dealAddress: true;
 };
 export type PoolCreatedArgs<K extends keyof PoolCreatedResult> = {
@@ -1531,6 +1541,7 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(
 		if (obj['hasAllowList']) formattedObj['hasAllowList'] = obj['hasAllowList'];
 		if (obj['poolStatus']) formattedObj['poolStatus'] = obj['poolStatus'];
 		if (obj['contributions']) formattedObj['contributions'] = wei(obj['contributions'], 0);
+		if (obj["totalSupply"]) formattedObj["totalSupply"] = wei(obj["totalSupply"], 0);
 		if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
 		return formattedObj as Pick<PoolCreatedResult, K>;
 	};
@@ -1601,6 +1612,7 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(
 				if (obj['hasAllowList']) formattedObj['hasAllowList'] = obj['hasAllowList'];
 				if (obj['poolStatus']) formattedObj['poolStatus'] = obj['poolStatus'];
 				if (obj['contributions']) formattedObj['contributions'] = wei(obj['contributions'], 0);
+				if (obj["totalSupply"]) formattedObj["totalSupply"] = wei(obj["totalSupply"], 0);
 				if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
 				return formattedObj as Pick<PoolCreatedResult, K>;
 			});

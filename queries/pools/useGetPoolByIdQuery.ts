@@ -23,6 +23,7 @@ const useGetPoolByIdQuery = ({ id, networkId }: { id: string; networkId?: Networ
 			poolStatus: true,
 			purchaseDuration: true,
 			contributions: true,
+			totalSupply: true,
 			dealAddress: true,
 		},
 		{},
