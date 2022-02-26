@@ -39,6 +39,7 @@ const Dropdown: FC<DropdownProps> = ({
 };
 
 const Container = styled.div<{ isEnabled: boolean }>`
+	z-index: 999;
 	height: 100%;
 	position: relative;
 	display: flex;
