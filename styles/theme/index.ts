@@ -41,6 +41,7 @@ export const darkTheme = {
 	selectedHeaderButtonBackground: colors.grey8,
 	inputGroupIconDisabled: colors.grey8,
 	inputGroupIcon: colors.grey2,
+	paginationText: colors.grey2,
 };
 
 export const lightTheme = {
@@ -83,6 +84,7 @@ export const lightTheme = {
 	selectedHeaderButtonBackground: colors.green4,
 	inputGroupIconDisabled: colors.grey2,
 	inputGroupIcon: colors.black,
+	paginationText: colors.black,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
