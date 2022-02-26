@@ -3,7 +3,6 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import styled, { css } from 'styled-components';
 
 import { FlexDivColCentered, FlexDiv } from 'components/common';
-
 import { DownArrow } from 'components/Svg';
 
 type DropdownProps = {
@@ -66,13 +65,16 @@ const Content = styled(FlexDivColCentered)`
 	transform: translateX(-50%);
 	width: 100%;
 	min-width: 150px;
+	z-index: 100;
 `;
 
 const StyledFlexDiv = styled(FlexDiv)`
 	padding: 0 8px;
+	align-items: center;
 `;
 
 const StyledImage = styled(DownArrow)`
+	margin-top: 4px;
 	height: 12px;
 	width: 12px;
 	display: flex;

@@ -88,16 +88,6 @@ const Links = styled.div`
 	display: flex;
 	margin-left: 40px;
 	justify-content: space-between;
-	a {
-		&:hover {
-			color: ${(props) => props.theme.colors.headerGreen};
-		}
-	}
-	a.is-disabled {
-		text-decoration: none;
-		pointer-events: none;
-		opacity: 0.5;
-	}
 `;
 
 const HeaderBlock = styled.div`

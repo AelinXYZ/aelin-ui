@@ -42,6 +42,9 @@ export const darkTheme = {
 	inputGroupIconDisabled: colors.grey8,
 	inputGroupIcon: colors.grey2,
 	paginationText: colors.grey2,
+	headerLinkBackgroundActive: colors.grey6,
+	headerLinkTextActive: colors.blue1,
+	headerDropdownHover: colors.grey6,
 };
 
 export const lightTheme = {
@@ -85,6 +88,9 @@ export const lightTheme = {
 	inputGroupIconDisabled: colors.grey2,
 	inputGroupIcon: colors.black,
 	paginationText: colors.black,
+	headerLinkBackgroundActive: colors.green4,
+	headerLinkTextActive: colors.white,
+	headerDropdownHover: colors.grey4,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
