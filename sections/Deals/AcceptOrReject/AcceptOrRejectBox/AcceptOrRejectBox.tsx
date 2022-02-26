@@ -146,7 +146,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 	);
 
 	const handleMaxButtonClick = () => {
-		let maxValue = Number(Number(userPoolBalance) * Number(exchangeRatePurchaseUnderlying));
+let maxValue = Number(userPoolBalance);
 
 		if (dealRedemptionData?.status === Status.ProRataRedemption && !isWithdraw) {
 			maxValue = Math.min(Number(maxValue), Number(dealRedemptionData.maxProRata ?? 0));
