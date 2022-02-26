@@ -13,9 +13,9 @@ export const DownArrow = ({ className }: { className?: string }) => (
 
 export const MeatBall = ({ className }: { className?: string }) => (
 	<Icon viewBox="0 0 22 6" className={className}>
-		<circle cx="19" cy="3" r="2.75" transform="rotate(90 19 3)" stroke-width="0.5" />
-		<circle cx="11" cy="3" r="2.75" transform="rotate(90 11 3)" stroke-width="0.5" />
-		<circle cx="3" cy="3" r="2.75" transform="rotate(90 3 3)" stroke-width="0.5" />
+		<circle cx="19" cy="3" r="2.75" transform="rotate(90 19 3)" strokeWidth="0.5" />
+		<circle cx="11" cy="3" r="2.75" transform="rotate(90 11 3)" strokeWidth="0.5" />
+		<circle cx="3" cy="3" r="2.75" transform="rotate(90 3 3)" strokeWidth="0.5" />
 	</Icon>
 );
 
