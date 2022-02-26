@@ -116,8 +116,8 @@ const StyledLink = styled.a<{ isSelected: boolean }>`
 	${(props) =>
 		props.isSelected &&
 		css`
-			background-color: ${(props) => props.theme.colors.primary};
-			color: ${(props) => props.theme.colors.secondary};
+			background-color: ${(props) => props.theme.colors.selectedHeaderButtonBackground};
+			color: ${(props) => props.theme.colors.selectedHeaderButton};
 		`}}
 `;
 
