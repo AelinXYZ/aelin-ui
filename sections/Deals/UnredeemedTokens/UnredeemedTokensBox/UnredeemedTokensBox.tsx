@@ -2,12 +2,11 @@ import { FC, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from 'components/Button';
-import { InputGroup } from 'components/Input/InputGroup';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import TransactionData from 'containers/TransactionData';
 
-import { Container, ErrorNote, ContentContainer } from 'sections/shared/common';
+import { Container, ContentContainer } from 'sections/shared/common';
 
 import { GasLimitEstimate } from 'constants/networks';
 

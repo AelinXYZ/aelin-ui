@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
 
+import TokenDisplay from 'components/TokenDisplay';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 import { Container, ContentContainer } from 'sections/shared/common';
@@ -69,7 +70,7 @@ const VestingDealBox: FC<VestingDealProps> = ({
 							gasLimitEstimate={gasLimitEstimate}
 							onSubmit={onSubmit}
 						>
-							{`You are vesting ${vestingAmount} underlying deal tokens`}
+							{`You are vesting ${vestingAmount}`} <TokenDisplay address={underlyingDealToken} />
 						</ConfirmTransactionModal>
 					</>
 				)}
