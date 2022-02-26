@@ -10,7 +10,7 @@
 		"format": "prettier --write \"**/*.{ts,tsx}\"",
 		"lint:fix": "eslint . --ext ts,.tsx --fix",
 		"pull-manifest": "codegen-graph-ts pull $AELIN_SUBGRAPH_URL > manifest.json",
-		"codegen-ts": "codegen-graph-ts gen -m reactquery -s manifest.json -o subgraph-new.ts"
+		"codegen-ts": "codegen-graph-ts gen -m reactquery -s manifest.json -o subgraph.ts"
 	},
 	"dependencies": {
 		"@synthetixio/contracts-interface": "2.50.4-ovm-alpha",
