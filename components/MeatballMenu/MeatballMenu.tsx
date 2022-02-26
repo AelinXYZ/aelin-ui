@@ -15,6 +15,7 @@ import EthereumLogo from 'assets/svg/ethereum-logo.svg';
 import GitbookLogo from 'assets/svg/gitbook-logo.svg';
 import MoonIcon from 'assets/svg/moon.svg';
 import SunIcon from 'assets/svg/sun.svg';
+import { MeatBall } from 'components/Svg';
 
 const MeatballMenu = () => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -99,9 +100,9 @@ const ListElement = styled.li`
 	}
 `;
 
-const StyledImage = styled(Image)`
-	svg {
-		fill: white;
-	}
+const StyledImage = styled(MeatBall)`
+	width: 20px;
+	height: 20px;
+	fill: ${(props) => props.theme.colors.paginationText};
 `;
 export default MeatballMenu;
