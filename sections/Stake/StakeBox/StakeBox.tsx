@@ -122,12 +122,12 @@ const ActionBox: FC<ActionBoxProps> = ({
 						</EtherscanLink>
 						{header}
 					</Header>
-					<QuestionMark text={tooltipInfo} />
+					<QuestionMark solid text={tooltipInfo} />
 				</HeaderRow>
 				<SubHeader>
 					<FlexDiv>
 						{apy === null ? 'APY: TBD' : `APY: ${formatNumber(apy?.toFixed(0) ?? 0, 0)}%`}
-						<QuestionMark text={apyTooltip} />
+						<QuestionMark solid text={apyTooltip} />
 					</FlexDiv>
 				</SubHeader>
 			</HeaderSection>

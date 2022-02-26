@@ -214,9 +214,6 @@ const Pools: FC = () => {
 						Purchase window closes
 						{isOptimism && (
 							<QuestionMark
-								bgColor={theme.colors.background}
-								borderColor={theme.colors.background}
-								fontColor={theme.colors.headerGreen}
 								bold
 								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
 							/>
@@ -263,9 +260,6 @@ const Pools: FC = () => {
 						Pool closes
 						{isOptimism && (
 							<QuestionMark
-								bgColor={theme.colors.background}
-								borderColor={theme.colors.background}
-								fontColor={theme.colors.headerGreen}
 								bold
 								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
 							/>

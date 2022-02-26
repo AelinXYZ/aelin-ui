@@ -23,6 +23,9 @@ export const darkTheme = {
 	inputBackground: colors.grey6,
 	inputBorders: colors.grey2,
 	headerPrimary: colors.navy0,
+	questionMarkBorder: colors.white,
+	questionMarkText: colors.white,
+	questionMarkBody: colors.grey6,
 };
 
 export const lightTheme = {
@@ -47,6 +50,9 @@ export const lightTheme = {
 	inputBackground: colors.grey1,
 	inputBorders: colors.grey4,
 	headerPrimary: colors.green0,
+	questionMarkBorder: colors.grey5,
+	questionMarkBody: colors.grey4,
+	questionMarkText: colors.black,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
