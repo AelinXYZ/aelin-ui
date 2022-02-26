@@ -14,6 +14,7 @@ import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingReward
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { TransactionStatus } from 'constants/transactions';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
+import { CardSubTitleText, CardTitleText } from 'components/Typography';
 
 type ClaimBoxProps = {
 	stakingContract: ethers.Contract | null;
@@ -98,28 +99,34 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 			<Header>Claim rewards</Header>
 
 			{isLP && etherAmount !== null && (
-				<P>{`$ETH in pool via G-UNI: ${formatNumber(etherAmount, 2)}`}</P>
+				<SubHeader>{`$ETH in pool via G-UNI: ${formatNumber(etherAmount, 2)}`}</SubHeader>
 			)}
 
 			{isLP && aelinAmount !== null && (
-				<P>{`$AELIN in pool via G-UNI: ${formatNumber(aelinAmount, 2)}`}</P>
+				<SubHeader>{`$AELIN in pool via G-UNI: ${formatNumber(aelinAmount, 2)}`}</SubHeader>
 			)}
 
 			{isLP && (
-				<P>{`My Stake: ${balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'} G-UNI`}</P>
+				<SubHeader>{`My Stake: ${
+					balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'
+				} G-UNI`}</SubHeader>
 			)}
 
 			{!isLP && (
-				<P>
+				<SubHeader>
 					{`Total AELIN Staked: ${aelinAmount !== null ? formatNumber(aelinAmount, 2) : 0}`} AELIN{' '}
-				</P>
+				</SubHeader>
 			)}
 
 			{!isLP && (
-				<P>{`My Stake: ${balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'} AELIN`}</P>
+				<SubHeader>{`My Stake: ${
+					balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'
+				} AELIN`}</SubHeader>
 			)}
 
-			<P>{`My Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</P>
+			<SubHeader>{`My Rewards: ${
+				earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'
+			} AELIN`}</SubHeader>
 
 			<Button
 				fullWidth
@@ -154,19 +161,16 @@ const RewardsBox = styled.div`
 	position: relative;
 `;
 
-const Header = styled.h3`
+const Header = styled(CardTitleText)`
 	color: ${(props) => props.theme.colors.heading};
 	text-align: center;
-	font-size: 1.4rem;
-	font-weight: 600;
 	margin: 0;
 	margin-bottom: 1rem;
 	padding: 0;
 `;
 
-const P = styled.p`
+const SubHeader = styled(CardSubTitleText)`
 	text-align: center;
-	font-size: 1.2rem;
 	margin: 1rem 0;
 	color: ${(props) => props.theme.colors.heading};
 `;

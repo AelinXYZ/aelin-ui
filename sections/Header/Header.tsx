@@ -13,6 +13,7 @@ import MeatballMenu from 'components/MeatballMenu';
 import { FlexDivCentered } from 'components/common';
 import UI from 'containers/UI';
 import { ThemeMode } from 'styles/theme';
+import { HeaderLinkText } from 'components/Typography';
 
 const Header: FC = () => {
 	const router = useRouter();
@@ -45,7 +46,7 @@ const Header: FC = () => {
 							return (
 								<Link href={{ pathname }} key={`link-${label}`} passHref>
 									<StyledLink isSelected={router.pathname === pathname} target="_self">
-										{label}
+										<HeaderLinkText>{label}</HeaderLinkText>
 									</StyledLink>
 								</Link>
 							);
@@ -108,7 +109,6 @@ const HeaderBlock = styled.div`
 `;
 
 const StyledLink = styled.a<{ isSelected: boolean }>`
-	font-size: 1.1rem;
 	display: flex;
 	align-items: center;
 	padding: 6px 12px;

@@ -22,6 +22,7 @@ import {
 	LPStakingRewardAddresses,
 	LPTokenAddresses,
 } from 'constants/addresses';
+import { CardBodyText } from 'components/Typography';
 
 type PoolInfo = {
 	heading: string;
@@ -69,7 +70,7 @@ const Stake = () => {
 					isLP: true,
 					extraSection: (
 						<Section>
-							<Text>
+							<StyledCardBodyText>
 								To obtain G-UNI AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH pool
 								on Uniswap via Sorbet.Finance. A full tutorial can be found on our blog{' '}
 								<Link
@@ -79,7 +80,7 @@ const Stake = () => {
 									<StyledAnchor target="_blank">here</StyledAnchor>
 								</Link>
 								.
-							</Text>
+							</StyledCardBodyText>
 							<Button
 								size="sm"
 								variant="primary"
@@ -113,10 +114,10 @@ const Stake = () => {
 					isLP: true,
 					extraSection: (
 						<Section>
-							<Text>
+							<StyledCardBodyText>
 								To obtain UNI-V2 AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH
 								pool on Uniswap.
-							</Text>
+							</StyledCardBodyText>
 							<Button
 								size="sm"
 								variant="primary"
@@ -212,12 +213,10 @@ const JustifiedLayout = styled(Layout)`
 	justify-content: center;
 `;
 
-const Text = styled.p`
+const StyledCardBodyText = styled(CardBodyText)`
 	width: 400px;
 	padding: 0px 14.5px 0 14.5px;
 	color: ${(props) => props.theme.colors.textBody};
-	font-weight: 200;
-	font-size: 12px;
 	text-align: justify;
 	text-align-last: center;
 	margin-top: 5px;

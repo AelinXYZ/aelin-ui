@@ -5,6 +5,7 @@ import Wei, { wei } from '@synthetixio/wei';
 import Button from 'components/Button';
 import { FlexDivColCentered } from 'components/common';
 import { InputGroup } from 'components/Input/InputGroup';
+import { CardInputErrorText, CardInputLabelText } from 'components/Typography';
 
 interface TabContentProps {
 	balance: Wei;
@@ -56,7 +57,11 @@ const TabContent: FC<TabContentProps> = ({
 						</div>
 					}
 				/>
-				{balance?.toNumber() < inputValue && <ErrorNote>Max balance exceeded</ErrorNote>}
+				{balance?.toNumber() < inputValue && (
+					<ErrorNote>
+						<CardInputErrorText>Max balance exceeded</CardInputErrorText>
+					</ErrorNote>
+				)}
 			</InputContainer>
 			<ActionBoxInputLabel>{label}</ActionBoxInputLabel>
 			<Buttons>
@@ -91,9 +96,8 @@ const InputContainer = styled.div`
 	position: relative;
 `;
 
-const ActionBoxInputLabel = styled.p`
+const ActionBoxInputLabel = styled(CardInputLabelText)`
 	color: ${(props) => props.theme.colors.heading};
-	font-size: 1.2rem;
 	padding-bottom: 4px;
 `;
 
@@ -101,8 +105,6 @@ const ErrorNote = styled.div`
 	color: ${(props) => props.theme.colors.textRequired};
 	position: absolute;
 	margin-top: 2px;
-	font-size: 0.8rem;
-	font-weight: bold;
 `;
 
 const Buttons = styled(FlexDivColCentered)`

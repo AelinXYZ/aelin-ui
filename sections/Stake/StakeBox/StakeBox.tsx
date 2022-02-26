@@ -20,6 +20,7 @@ import Etherscan from 'containers/BlockExplorer';
 
 import TabContent from '../TabContent';
 import { StakeActionLabel } from '../constants';
+import { CardSubTitleText, CardTitleText } from 'components/Typography';
 
 export type InputType = {
 	placeholder: string;
@@ -112,24 +113,22 @@ const ActionBox: FC<ActionBoxProps> = ({
 		<Container>
 			<HeaderSection>
 				<HeaderRow>
-					<Header>
-						<EtherscanLink
-							href={blockExplorerInstance?.addressLink(stakingContract?.address!)}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<Image width="20" height="20" src={EtherscanLogo} alt="etherscan logo" />
-						</EtherscanLink>
-						{header}
-					</Header>
+					<EtherscanLink
+						href={blockExplorerInstance?.addressLink(stakingContract?.address!)}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Image width="20" height="20" src={EtherscanLogo} alt="etherscan logo" />
+					</EtherscanLink>
+					<StyledCardTitle>{header}</StyledCardTitle>
 					<QuestionMark text={tooltipInfo} />
 				</HeaderRow>
-				<SubHeader>
-					<FlexDiv>
+				<SubHeaderRow>
+					<StyledCardSubtitleText>
 						{apy === null ? 'APY: TBD' : `APY: ${formatNumber(apy?.toFixed(0) ?? 0, 0)}%`}
-						<QuestionMark text={apyTooltip} />
-					</FlexDiv>
-				</SubHeader>
+					</StyledCardSubtitleText>
+					<QuestionMark text={apyTooltip} />
+				</SubHeaderRow>
 			</HeaderSection>
 
 			<Tabs
@@ -186,6 +185,19 @@ const ActionBox: FC<ActionBoxProps> = ({
 	);
 };
 
+const StyledCardTitle = styled(CardTitleText)`
+	color: ${(props) => props.theme.colors.heading};
+	font-weight: 600;
+	margin: 0;
+	padding: 0;
+`;
+
+const StyledCardSubtitleText = styled(CardSubTitleText)`
+	color: ${(props) => props.theme.colors.heading};
+	margin: 0;
+	padding: 0;
+`;
+
 const EtherscanLink = styled.a`
 	position: absolute;
 	top: 15px;
@@ -200,21 +212,9 @@ const HeaderRow = styled(FlexDiv)`
 	align-items: center;
 `;
 
-const SubHeader = styled.h4`
-	color: ${(props) => props.theme.colors.heading};
-	font-size: 1.2rem;
-	font-weight: 400;
-	margin: 0;
+const SubHeaderRow = styled(FlexDiv)`
 	margin-top: 10px;
-	padding: 0;
-`;
-
-const Header = styled.h3`
-	color: ${(props) => props.theme.colors.heading};
-	font-size: 1.6rem;
-	font-weight: 600;
-	margin: 0;
-	padding: 0;
+	align-items: center;
 `;
 
 const Container = styled.div`

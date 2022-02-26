@@ -1,5 +1,4 @@
-import { PageTitle } from 'components/Typography';
-import Typography, { TypographyVariant } from 'components/Typography/Typography';
+import { PageTitleText } from 'components/Typography';
 import { FC, ReactChildren, ReactChild } from 'react';
 import styled from 'styled-components';
 import theme from 'styles/theme';
@@ -19,9 +18,7 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 			<Content>
 				<ColCenter>
 					<ContentHeader>
-						<PageTitle variant={TypographyVariant.h1} color={theme.colors.headerGreen}>
-							{title}
-						</PageTitle>
+						<StyledPageTitle>{title}</StyledPageTitle>
 						{subtitle && <ContentSubtitle>{subtitle}</ContentSubtitle>}
 					</ContentHeader>
 					<ContentBody>{children}</ContentBody>
@@ -30,6 +27,11 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 		</Container>
 	);
 };
+
+const StyledPageTitle = styled(PageTitleText)`
+	color: ${(props) => props.theme.colors.heading};
+	text-align: left;
+`;
 
 export const Container = styled.div`
 	background-color: ${(props) => props.theme.colors.tableHeaderText};

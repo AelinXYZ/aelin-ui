@@ -5,6 +5,7 @@ import Image from 'next/image';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 import CloseIcon from 'assets/svg/menu-close.svg';
+import { ModalHeaderText } from 'components/Typography';
 
 interface BaseModalProps {
 	isModalOpen: boolean;
@@ -39,7 +40,9 @@ const BaseModal: FC<BaseModalProps> = ({
 			>
 				<StyledModal>
 					<StyledModalHeader>
-						<StyledTitle>{title ?? ''}</StyledTitle>
+						<StyledTitle>
+							<ModalHeaderText>{title ?? ''}</ModalHeaderText>
+						</StyledTitle>
 						<a
 							href="#"
 							onClick={() => {
@@ -71,15 +74,11 @@ const StyledModalBody = styled.div`
 
 const StyledModalHeader = styled.div`
 	display: flex;
-	justify-content: space-between;
-	font-size: 2rem;
+	justify-content: center;
 `;
 
 const StyledTitle = styled.div`
-	text-align: left;
-	font-size: 1.6rem;
-	font-wight: bold;
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.heading};
 `;
 
 const StyledModal = styled.div`
