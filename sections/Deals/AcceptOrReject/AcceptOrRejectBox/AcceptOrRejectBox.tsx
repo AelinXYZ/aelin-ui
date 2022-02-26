@@ -165,7 +165,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 								userPoolBalance={userPoolBalance}
 								handleMaxButtonClick={handleMaxButtonClick}
 								dealRedemptionData={dealRedemptionData}
-								underlyingDealTokenSymbol={underlyingDealTokenSymbol}
+								purchaseTokenSymbol={underlyingDealTokenSymbol}
 								isButtonDisabled={isButtonDisabled}
 							/>
 						)}
@@ -181,7 +181,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 								userPoolBalance={userPoolBalance}
 								handleMaxButtonClick={handleMaxButtonClick}
 								dealRedemptionData={dealRedemptionData}
-								underlyingDealTokenSymbol={underlyingDealTokenSymbol}
+								purchaseTokenSymbol={underlyingDealTokenSymbol}
 								isButtonDisabled={isButtonDisabled}
 							/>
 						)}

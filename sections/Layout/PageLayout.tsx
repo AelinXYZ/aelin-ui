@@ -57,11 +57,7 @@ export const ContentTitle = styled.h1`
 
 export const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
-<<<<<<< HEAD
 	color: ${(props) => props.theme.colors.textSmall};
-=======
-	color: ${(props) => props.theme.colors.textBody};
->>>>>>> v1.0
 	font-size: 1.2rem;
 `;
 
