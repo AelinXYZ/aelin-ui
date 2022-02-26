@@ -39,7 +39,7 @@ const PoolDurationEndedBox: FC<PoolDurationEndedBoxProps> = ({
 	const { walletAddress } = Connector.useContainer();
 	const { setGasPrice } = TransactionData.useContainer();
 
-	const [showTxModal, setShowTxModal] = useState(false);
+	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const isEmptyInput = inputValue === '' || inputValue === 0;
 	const isMaxBalanceExceeded = Number(userPoolBalance ?? 0) < Number(inputValue ?? 0);
 
