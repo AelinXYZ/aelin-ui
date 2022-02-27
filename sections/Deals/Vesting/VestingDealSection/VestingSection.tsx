@@ -95,7 +95,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: deal?.name ?? '',
 			},
 			{
-				header: 'My Deal Token Balance',
+				header: <>`My {<TokenDisplay address={deal?.underlyingDealToken ?? ''} />} Balance`</>,
 				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
 			},
 			...(!isVestingCliffEnds
