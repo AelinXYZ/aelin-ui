@@ -83,7 +83,10 @@ const useConnector = () => {
 		if (isAppReady) {
 			const onboard = initOnboard(network, {
 				// @ts-ignore
-				address: setWalletAddress,
+				address: (address: string) => {
+					const formattedAddress = ether.getAddress(address);
+					setWalletAddress(formattedAddress);
+				},
 				network: (networkId: number) => {
 					// @ts-ignore
 					const isSupportedNetwork = chainIdMapping[networkId] ? true : false;
