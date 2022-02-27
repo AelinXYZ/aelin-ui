@@ -84,7 +84,7 @@ const useConnector = () => {
 			const onboard = initOnboard(network, {
 				// @ts-ignore
 				address: (address: string) => {
-					const formattedAddress = ether.getAddress(address);
+					const formattedAddress = ethers.utils.getAddress(address);
 					setWalletAddress(formattedAddress);
 				},
 				network: (networkId: number) => {
