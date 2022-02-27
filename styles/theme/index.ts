@@ -58,6 +58,7 @@ export const lightTheme = {
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
+
 export type ThemeInterface = {
 	colors: typeof darkTheme | typeof lightTheme;
 	fonts: typeof fonts;
