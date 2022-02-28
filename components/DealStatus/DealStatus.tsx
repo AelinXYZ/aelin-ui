@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import colors from 'styles/theme/colors';
 import { statusToText } from 'constants/pool';
+import { Circle } from 'components/Svg';
 
 // POOL OPEN (when the current time is less than the purchase expiry - track this in the client and show a timer)
 // SEEKING DEAL (when the current time is more than the purchase expiry but no deal has been presented yet)
@@ -38,19 +39,21 @@ const getBackground = (status: Status) => {
 	switch (status) {
 		case Status.PoolOpen:
 		case Status.DealOpen:
-			return colors.statusBlue;
+			return colors.blue2;
 		case Status.SeekingDeal:
 		case Status.FundingDeal:
-			return colors.statusYellow;
+			return colors.yellow;
 		case Status.Closed:
-			return colors.statusRed;
+			return colors.red;
 	}
 };
 
 const DealStatus: FC<DealStatusProps> = ({ status }) => {
 	return (
 		<Container>
-			<Dot background={getBackground(status)} />
+			<div>
+				<Dot background={getBackground(status)} />
+			</div>
 			<StatusLabel>{statusToText(status)}</StatusLabel>
 		</Container>
 	);
@@ -59,21 +62,21 @@ const DealStatus: FC<DealStatusProps> = ({ status }) => {
 const Container = styled.div`
 	display: flex;
 	width: 100%;
-	justify-content: center;
+	justify-content: flex-start;
+	padding-left: 10px;
 	align-items: center;
 `;
 
 const StatusLabel = styled.span`
 	margin: 4px 0 0 6px;
 	text-transform: capitalize;
+	text-align: left;
+	padding-left: 5px;
 `;
 
-const Dot = styled.div<{ background: string }>`
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: ${(props) => props.background};
-	border: 1px solid ${(props) => props.theme.colors.headerGrey};
+const Dot = styled(Circle)<{ background: string }>`
+	width: 8px;
+	height: 8px;
+	fill: ${(props) => props.background};
 `;
-
 export default DealStatus;
