@@ -56,3 +56,9 @@ export const EtherscanLinkIcon = ({ className }: { className?: string }) => (
 		<path d="M3.33333 3.33333V12.6667H12.6667V8H14V12.6667C14 13.4 13.4 14 12.6667 14H3.33333C2.59333 14 2 13.4 2 12.6667V3.33333C2 2.6 2.59333 2 3.33333 2H8V3.33333H3.33333ZM9.33333 3.33333V2H14V6.66667H12.6667V4.27333L6.11333 10.8267L5.17333 9.88667L11.7267 3.33333H9.33333Z" />
 	</Icon>
 );
+
+export const Circle = ({ className }: { className?: string }) => (
+	<Icon viewBox="0 0 120 120" className={className}>
+		<circle cx="60" cy="60" r="50" />
+	</Icon>
+);
