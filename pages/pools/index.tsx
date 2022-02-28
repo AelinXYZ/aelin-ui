@@ -13,8 +13,7 @@ import FilterPool from 'sections/Pools/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';
-import { FlexDivStart, FlexDivCol, FlexDivRow, FlexDivRowCentered } from 'components/common';
-import TokenDisplay from 'components/TokenDisplay';
+import { FlexDivStart, FlexDivCol, FlexDivRowCentered } from 'components/common';
 import DealStatus, { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 
@@ -35,7 +34,6 @@ import { formatNumber } from 'utils/numbers';
 import useInterval from 'hooks/useInterval';
 import { Network, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
-import theme from 'styles/theme';
 import { Env } from 'constants/env';
 import NetworkLogoTable from 'components/NetworkLogoTable';
 import styled from 'styled-components';
@@ -58,8 +56,7 @@ const Pools: FC = () => {
 			.filter((q) => !!q.data)
 			.reduce((prev, current) => {
 				return [...prev, ...current.data.map((d) => ({ ...d, network: current.networkName }))];
-			}, [])
-			.sort((a, b) => b.poolStatus.localeCompare(a.poolStatus));
+			}, []);
 	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
 
 	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
@@ -77,13 +74,13 @@ const Pools: FC = () => {
 		poolsQuery.forEach((q) => q.refetch());
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
-	const sponsors = useMemo(() => {
-		if (!isQueryLoading) {
+	const sponsors = useMemo(
+		() =>
 			poolsQueryWithNetwork
-				?.filter(({ id }) => !filterList.includes(id))
-				.map(({ sponsor }) => sponsor);
-		}
-	}, [poolsQueryWithNetwork?.length]);
+				.filter(({ id }) => !filterList.includes(id))
+				.map(({ sponsor }) => sponsor),
+		[poolsQueryWithNetwork?.length]
+	);
 
 	const purchaseTokenAddresses = useMemo(
 		() =>
@@ -111,7 +108,8 @@ const Pools: FC = () => {
 					fee: sponsorFee,
 					cap: purchaseTokenCap,
 				};
-			});
+			})
+			.sort((a, b) => b.timestamp < a.timestamp);
 
 		if (sponsorFilter.length) {
 			list = list.filter(
