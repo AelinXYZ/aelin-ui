@@ -45,7 +45,7 @@ const NotificationError = ({ failureReason }: NotificationProps) => {
 	return (
 		<NotificationContainer>
 			<IconContainer>
-				<Image width={35} src={Failure} alt="failed tx" />
+				<Image width={35} height={35} src={Failure} alt="failed tx" />
 			</IconContainer>
 			<TransactionInfo>
 				<TransactionInfoHeading>Transaction Failed</TransactionInfoHeading>
@@ -56,6 +56,7 @@ const NotificationError = ({ failureReason }: NotificationProps) => {
 };
 
 const NotificationContainer = styled(FlexDivCentered)``;
+
 const IconContainer = styled(FlexDivRowCentered)`
 	width: 35px;
 `;
@@ -66,7 +67,7 @@ const TransactionInfo = styled(FlexDivCol)`
 const TransactionInfoHeading = styled.h3`
 	margin: 0;
 	font-size: 1.2rem;
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.black};
 `;
 
 const TransactionInfoBody = styled.div<{ isFailureMessage?: boolean }>`
