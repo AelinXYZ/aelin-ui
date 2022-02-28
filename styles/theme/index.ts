@@ -30,6 +30,7 @@ export const darkTheme = {
 	headerLinkBackgroundActive: colors.grey6,
 	headerLinkTextActive: colors.blue1,
 	headerDropdownHover: colors.grey6,
+	notificationBackground: colors.blue1,
 };
 
 export const lightTheme = {
@@ -61,6 +62,7 @@ export const lightTheme = {
 	headerLinkBackgroundActive: colors.green4,
 	headerLinkTextActive: colors.white,
 	headerDropdownHover: colors.grey4,
+	notificationBackground: colors.white,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };

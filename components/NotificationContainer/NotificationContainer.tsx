@@ -14,9 +14,8 @@ const NotificationContainer = () => {
 
 const StyledToastContainer = styled(ToastContainer)`
 	.Toastify__toast {
-		background-color: ${(props) => props.theme.colors.cell};
+		background-color: ${(props) => props.theme.colors.notificationBackground};
 		color: ${(props) => props.theme.colors.black};
-		border: 1px solid ${(props) => props.theme.colors.buttonStroke};
 	}
 	.Toastify__toast-body {
 		font-family: ${(props) => props.theme.fonts.agrandir};
@@ -24,7 +23,7 @@ const StyledToastContainer = styled(ToastContainer)`
 		line-height: 1rem;
 	}
 	.Toastify__progress-bar {
-		background: ${(props) => props.theme.colors.headerGreen};
+		background: ${(props) => props.theme.colors.green4};
 		box-shadow: 0px 0px 15px rgb(0 209 255 / 60%);
 	}
 	.Toastify__close-button > svg {
