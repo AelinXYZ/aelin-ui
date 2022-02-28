@@ -9,7 +9,7 @@
 		"lint": "eslint . --ext ts,.tsx && tsc",
 		"format": "prettier --write \"**/*.{ts,tsx}\"",
 		"lint:fix": "eslint . --ext ts,.tsx --fix",
-		"pull-manifest": "codegen-graph-ts pull https://api.thegraph.com/subgraphs/name/0xlinus/aelin-optimism > manifest.json",
+		"pull-manifest": "codegen-graph-ts pull $AELIN_SUBGRAPH_URL > manifest.json",
 		"codegen-ts": "codegen-graph-ts gen -m reactquery -s manifest.json -o subgraph.ts"
 	},
 	"dependencies": {
