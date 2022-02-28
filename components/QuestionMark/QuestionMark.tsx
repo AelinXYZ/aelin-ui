@@ -49,7 +49,7 @@ const StyledQuestionMark = styled.span<IStyledQuestionMark>`
 	margin: 0 5px;
 	font-weight: ${(props) => (props.bold ? 'bold' : 'normal')};
 	font-size: 10px;
-	line-height: 20px;
+	line-height: 18px;
 	border-radius: 50%;
 	margin-right: 5px;
 	text-align: center;
