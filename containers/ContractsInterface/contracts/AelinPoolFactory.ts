@@ -200,8 +200,7 @@ const contract = {
 		abi,
 	},
 	5: {
-		// TODO: complete the address
-		address: '0x',
+		address: '0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb',
 		abi,
 	},
 };

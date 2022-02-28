@@ -200,6 +200,10 @@ const contract = {
 		address: '0x280953beF1eF7953Ed6c663ba15300F8D739d477',
 		abi,
 	},
+	5: {
+		address: '0x0000000000000000000000000000000000000000',
+		abi,
+	},
 };
 
 export default contract;

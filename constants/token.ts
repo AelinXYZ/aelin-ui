@@ -13,7 +13,6 @@ export type Token = {
 	logoURI: string;
 	name: string;
 	symbol: string;
-	tags: string[];
 };
 export type TokenListResponse = {
 	keywords: string[];
@@ -34,11 +33,10 @@ export const ether = {
 	logoURI: '',
 	name: 'Ethereum',
 	symbol: 'ETH',
-	tags: [],
 };
 
-export const TestnetTokens = {
-	Optimism: {
+export const TestnetTokens: { [networkId: number]: Token } = {
+	69: {
 		address: '0xaA5068dC2B3AADE533d3e52C6eeaadC6a8154c57',
 		chainId: 69,
 		decimals: 18,
@@ -46,13 +44,21 @@ export const TestnetTokens = {
 		name: 'sUSD',
 		symbol: 'sUSD',
 	},
-	Ethereum: {
+	42: {
 		address: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
 		chainId: 42,
 		decimals: 18,
 		logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 		name: 'DAI',
 		symbol: 'DAI',
+	},
+	5: {
+		address: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+		chainId: 5,
+		decimals: 18,
+		logoURI: 'https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png',
+		name: 'wETH',
+		symbol: 'wETH',
 	},
 };
 
@@ -79,7 +85,6 @@ export const validateErc20Address = async (
 			name,
 			decimals,
 			chainId: 1,
-			tags: [],
 			logoURI: '',
 		};
 
