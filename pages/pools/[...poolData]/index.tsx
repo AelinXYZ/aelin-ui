@@ -107,8 +107,8 @@ const Pool: FC = () => {
 const SubmitButton = styled(Button)`
 	background-color: ${(props) => props.theme.colors.forestGreen};
 	color: ${(props) => props.theme.colors.white};
-	width: 180px;
-	margin: 10px auto 0 auto;
+	padding: 0px 20px;
+	margin: 10px auto 20px auto;
 	&:hover {
 		&:not(:disabled) {
 			color: ${(props) => props.theme.colors.white};
