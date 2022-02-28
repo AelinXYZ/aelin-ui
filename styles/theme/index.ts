@@ -41,6 +41,9 @@ export const darkTheme = {
 	selectedHeaderButtonBackground: colors.grey8,
 	inputGroupIconDisabled: colors.grey8,
 	inputGroupIcon: colors.grey2,
+	questionMarkBorder: colors.white,
+	questionMarkText: colors.white,
+	questionMarkBody: colors.grey6,
 	paginationText: colors.grey2,
 	headerLinkBackgroundActive: colors.grey6,
 	headerLinkTextActive: colors.blue1,
@@ -87,6 +90,9 @@ export const lightTheme = {
 	selectedHeaderButtonBackground: colors.green4,
 	inputGroupIconDisabled: colors.grey2,
 	inputGroupIcon: colors.black,
+	questionMarkBorder: colors.grey5,
+	questionMarkBody: colors.grey4,
+	questionMarkText: colors.black,
 	paginationText: colors.black,
 	headerLinkBackgroundActive: colors.green4,
 	headerLinkTextActive: colors.white,
@@ -94,6 +100,7 @@ export const lightTheme = {
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };
+
 export type ThemeInterface = {
 	colors: typeof darkTheme | typeof lightTheme;
 	fonts: typeof fonts;
