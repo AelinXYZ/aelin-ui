@@ -35,6 +35,7 @@ import { formatNumber } from 'utils/numbers';
 import useInterval from 'hooks/useInterval';
 import { NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
+import theme from 'styles/theme';
 
 const Pools: FC = () => {
 	const router = useRouter();
