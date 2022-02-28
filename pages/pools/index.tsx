@@ -33,9 +33,11 @@ import { filterList } from 'constants/poolFilterList';
 import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
-import { NetworkId } from 'constants/networks';
+import { Network, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
 import theme from 'styles/theme';
+import { Env } from 'constants/env';
+import NetworkLogoTable from 'components/NetworkLogoTable';
 import styled from 'styled-components';
 
 const Pools: FC = () => {
@@ -50,8 +52,18 @@ const Pools: FC = () => {
 		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
 	);
 
-	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
+	const poolsQuery = useGetPoolsQuery();
+	const poolsQueryWithNetwork = useMemo(() => {
+		return poolsQuery
+			.filter((q) => !!q.data)
+			.reduce((prev, current) => {
+				return [...prev, ...current.data.map((d) => ({ ...d, network: current.networkName }))];
+			}, [])
+			.sort((a, b) => b.poolStatus.localeCompare(a.poolStatus));
+	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
+
 	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
+	const isQueryLoading = poolsQuery.find((q) => q.status === 'loading');
 
 	useEffect(() => {
 		setSponsorFilter(router.query?.sponsorFilter ?? '');
@@ -62,30 +74,30 @@ const Pools: FC = () => {
 	}, [router.query.page]);
 
 	useInterval(() => {
-		poolsQuery.refetch();
+		poolsQuery.forEach((q) => q.refetch());
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
-	const sponsors = useMemo(
-		() =>
-			(poolsQuery?.data ?? [])
-				.filter(({ id }) => !filterList.includes(id))
-				.map(({ sponsor }) => sponsor),
-		[poolsQuery?.data]
-	);
+	const sponsors = useMemo(() => {
+		if (!isQueryLoading) {
+			poolsQueryWithNetwork
+				?.filter(({ id }) => !filterList.includes(id))
+				.map(({ sponsor }) => sponsor);
+		}
+	}, [poolsQueryWithNetwork?.length]);
 
 	const purchaseTokenAddresses = useMemo(
 		() =>
-			(poolsQuery?.data ?? [])
+			poolsQueryWithNetwork
 				.filter(({ id }) => !filterList.includes(id))
 				.map(({ purchaseToken }) => purchaseToken),
-		[poolsQuery?.data]
+		[poolsQueryWithNetwork?.length]
 	);
 
 	const ensOrAddresses = useAddressesToEns(sponsors);
 	const currencySymbols = useAddressesToSymbols(purchaseTokenAddresses);
 
 	const data = useMemo(() => {
-		let list = (poolsQuery?.data ?? [])
+		let list = poolsQueryWithNetwork
 			.filter(({ id }) => !filterList.includes(id))
 			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
 				const parsedPool = parsePool({
@@ -129,9 +141,15 @@ const Pools: FC = () => {
 			);
 		}
 
+		if (process.env.NODE_ENV === Env.PROD) {
+			list = list.filter(
+				({ network }) => network === Network.Mainnet || network === Network['Optimism-Mainnet']
+			);
+		}
+
 		return list;
 	}, [
-		poolsQuery?.data,
+		poolsQueryWithNetwork,
 		sponsorFilter,
 		currencyFilter,
 		nameFilter,
@@ -165,6 +183,18 @@ const Pools: FC = () => {
 				width: 115,
 			},
 			{
+				Header: 'network',
+				accessor: 'network',
+				width: 100,
+				Cell: (cellProps: CellProps<any, any>) => {
+					return (
+						<FlexDivStart>
+							<NetworkLogoTable networkName={cellProps.value} />
+						</FlexDivStart>
+					);
+				},
+			},
+			{
 				Header: (
 					<FlexDivCol>
 						<div>
@@ -173,14 +203,7 @@ const Pools: FC = () => {
 						</div>
 					</FlexDivCol>
 				),
-				accessor: 'purchaseToken',
-				Cell: (cellProps: CellProps<any, any>) => {
-					return (
-						<FlexDivStart>
-							<TokenDisplay displayAddress={false} symbol={undefined} address={cellProps.value} />
-						</FlexDivStart>
-					);
-				},
+				accessor: 'purchaseTokenSymbol',
 				width: 100,
 			},
 			{
@@ -330,6 +353,7 @@ const Pools: FC = () => {
 			{
 				Header: 'Stage',
 				accessor: 'poolStatus',
+				width: 350,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
@@ -362,9 +386,9 @@ const Pools: FC = () => {
 				/>
 				<Table
 					pageIndex={pageIndex}
-					noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
+					noResultsMessage={poolsQueryWithNetwork?.length === 0 ? 'no results' : null}
 					data={data && data.length > 0 ? data : []}
-					isLoading={poolsQuery.isLoading}
+					isLoading={isQueryLoading}
 					columns={columns}
 					hasLinksToPool={true}
 					showPagination={true}
