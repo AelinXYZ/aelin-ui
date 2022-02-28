@@ -13,7 +13,7 @@ import FilterPool from 'sections/Pools/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';
-import { FlexDivStart } from 'components/common';
+import { FlexDivStart, FlexDivCol } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
@@ -144,7 +144,7 @@ const Pools: FC = () => {
 	const columns = useMemo(
 		() => [
 			{
-				Header: 'sponsor',
+				Header: 'Sponsor',
 				accessor: 'sponsor',
 				Cell: (cellProps: CellProps<any, string>) => {
 					return (
@@ -154,9 +154,14 @@ const Pools: FC = () => {
 					);
 				},
 			},
-			{ Header: 'name', accessor: 'name', width: 100 },
+			{ Header: 'Pool name', accessor: 'name', width: 100 },
 			{
-				Header: 'purchase currency',
+				Header: (
+					<FlexDivCol>
+						<div>Investment</div>
+						<div>token</div>
+					</FlexDivCol>
+				),
 				accessor: 'purchaseToken',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
@@ -167,8 +172,13 @@ const Pools: FC = () => {
 				},
 			},
 			{
-				Header: 'amount funded',
-				accessor: 'contributions',
+				Header: (
+					<FlexDivCol>
+						<div>Current</div>
+						<div>funding</div>
+					</FlexDivCol>
+				),
+				accessor: 'totalSupply',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
@@ -187,7 +197,7 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				Header: 'pool cap',
+				Header: 'Pool cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
@@ -210,15 +220,17 @@ const Pools: FC = () => {
 			},
 			{
 				Header: (
-					<div>
-						Purchase window closes
-						{isOptimism && (
-							<QuestionMark
-								bold
-								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-							/>
-						)}
-					</div>
+					<FlexDivCol>
+						<div>Investment</div>
+						<div>
+							deadline
+							{isOptimism && (
+								<QuestionMark
+									text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+								/>
+							)}
+						</div>
+					</FlexDivCol>
 				),
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
@@ -256,15 +268,17 @@ const Pools: FC = () => {
 			},
 			{
 				Header: (
-					<div>
-						Pool closes
-						{isOptimism && (
-							<QuestionMark
-								bold
-								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-							/>
-						)}
-					</div>
+					<FlexDivCol>
+						<div>Deal</div>
+						<div>
+							deadline
+							{isOptimism && (
+								<QuestionMark
+									text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+								/>
+							)}
+						</div>
+					</FlexDivCol>
 				),
 				accessor: 'poolExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
@@ -273,7 +287,12 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				Header: 'fee',
+				Header: (
+					<FlexDivCol>
+						<div>Sponsor</div>
+						<div>fee</div>
+					</FlexDivCol>
+				),
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return `${parseFloat(
@@ -283,7 +302,7 @@ const Pools: FC = () => {
 				width: 50,
 			},
 			{
-				Header: 'privacy',
+				Header: 'Privacy',
 				accessor: 'hasAllowList',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return !!cellProps.value ? 'Private' : 'Open';
@@ -291,7 +310,7 @@ const Pools: FC = () => {
 				width: 75,
 			},
 			{
-				Header: 'status',
+				Header: 'Stage',
 				accessor: 'poolStatus',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;

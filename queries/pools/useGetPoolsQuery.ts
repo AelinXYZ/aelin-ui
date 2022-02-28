@@ -27,6 +27,7 @@ const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
 			poolStatus: true,
 			purchaseDuration: true,
 			contributions: true,
+			totalSupply: true,
 			dealAddress: true,
 			hasAllowList: true,
 		},
@@ -51,6 +52,7 @@ export const parsePool = ({
 	contributions,
 	dealAddress,
 	purchaseTokenDecimals,
+	totalSupply,
 	hasAllowList,
 }: PoolCreatedResult) => {
 	let formattedName = '';
@@ -75,6 +77,7 @@ export const parsePool = ({
 		purchaseTokenCap,
 		sponsor,
 		contributions,
+		totalSupply,
 		purchaseDuration,
 		sponsorFee,
 		poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),

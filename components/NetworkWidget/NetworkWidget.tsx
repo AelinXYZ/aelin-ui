@@ -143,7 +143,7 @@ const ListElement = styled.li`
 	padding: 12px;
 	cursor: pointer;
 	&:hover {
-		background-color: ${(props) => props.theme.colors.inputBorders};
+		background-color: ${(props) => props.theme.colors.headerDropdownHover};
 	}
 `;
 

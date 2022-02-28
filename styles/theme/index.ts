@@ -7,7 +7,7 @@ export const darkTheme = {
 	secondary: colors.white,
 	tertiary: colors.grey3,
 	heading: colors.white,
-	textBody: colors.grey3,
+	textBody: colors.white,
 	textSmall: colors.white,
 	textHover: colors.navy1,
 	textButton: colors.navy1,
@@ -26,6 +26,10 @@ export const darkTheme = {
 	questionMarkBorder: colors.white,
 	questionMarkText: colors.white,
 	questionMarkBody: colors.grey6,
+	paginationText: colors.grey2,
+	headerLinkBackgroundActive: colors.grey6,
+	headerLinkTextActive: colors.blue1,
+	headerDropdownHover: colors.grey6,
 };
 
 export const lightTheme = {
@@ -53,6 +57,10 @@ export const lightTheme = {
 	questionMarkBorder: colors.grey5,
 	questionMarkBody: colors.grey4,
 	questionMarkText: colors.black,
+	paginationText: colors.black,
+	headerLinkBackgroundActive: colors.green4,
+	headerLinkTextActive: colors.white,
+	headerDropdownHover: colors.grey4,
 };
 
 const themeConfig = { darkTheme, lightTheme, fonts };

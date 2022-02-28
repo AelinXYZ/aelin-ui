@@ -9,12 +9,12 @@ import { FlexDivCentered } from 'components/common';
 import UI from 'containers/UI';
 import { ThemeMode } from 'styles/theme';
 
-import MeatballsIcon from 'assets/svg/meatballs-icon.svg';
 import OptimismLogo from 'assets/svg/optimism-logo.svg';
 import EthereumLogo from 'assets/svg/ethereum-logo.svg';
 import GitbookLogo from 'assets/svg/gitbook-logo.svg';
 import MoonIcon from 'assets/svg/moon.svg';
 import SunIcon from 'assets/svg/sun.svg';
+import { MeatBall } from 'components/Svg';
 
 const MeatballMenu = () => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -65,7 +65,7 @@ const MeatballMenu = () => {
 			content={MeatballMenuContent}
 			hideArrow={true}
 		>
-			<StyledImage src={MeatballsIcon} alt="meatball icon" />
+			<StyledImage />
 		</Dropdown>
 	);
 };
@@ -95,13 +95,13 @@ const ListElement = styled.li`
 	padding: 12px;
 	cursor: pointer;
 	&:hover {
-		background-color: ${(props) => props.theme.colors.inputBorders};
+		background-color: ${(props) => props.theme.colors.headerDropdownHover};
 	}
 `;
 
-const StyledImage = styled(Image)`
-	svg {
-		fill: white;
-	}
+const StyledImage = styled(MeatBall)`
+	width: 20px;
+	height: 20px;
+	fill: ${(props) => props.theme.colors.paginationText};
 `;
 export default MeatballMenu;
