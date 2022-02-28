@@ -121,7 +121,7 @@ export const Table: FC<TableProps> = ({
 					))}
 					{isLoading ? (
 						<SpinnerWrapper>
-							<Image src={Spinner} />
+							<Image src={Spinner} alt="Loading..." />
 						</SpinnerWrapper>
 					) : page.length > 0 ? (
 						<TableBody className="table-body" {...getTableBodyProps()}>

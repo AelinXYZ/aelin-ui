@@ -98,7 +98,7 @@ export const Notice = styled.div`
 	margin-top: 20px;
 	width: 100%;
 	max-width: 940px;
-	background-color: ${(props) => props.theme.colors.forestGreen};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
 	color: ${(props) => props.theme.colors.white};
 	text-align: center;
 	padding: 10px;

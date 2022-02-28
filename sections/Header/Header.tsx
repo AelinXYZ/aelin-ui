@@ -41,7 +41,7 @@ const Header: FC = () => {
 					</Link>
 
 					<Links>
-						{LINKS.map(({ label, pathname, newTab, image }) => {
+						{LINKS.map(({ label, pathname }) => {
 							return (
 								<Link href={{ pathname }} key={`link-${label}`} passHref>
 									<StyledLink isSelected={router.pathname === pathname} target="_self">
