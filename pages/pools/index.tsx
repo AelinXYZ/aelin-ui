@@ -56,7 +56,8 @@ const Pools: FC = () => {
 			.filter((q) => !!q.data)
 			.reduce((prev, current) => {
 				return [...prev, ...current.data.map((d) => ({ ...d, network: current.networkName }))];
-			}, []);
+			}, [])
+			.sort((a, b) => b.timestamp - a.timestamp);
 	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
 
 	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
@@ -108,8 +109,7 @@ const Pools: FC = () => {
 					fee: sponsorFee,
 					cap: purchaseTokenCap,
 				};
-			})
-			.sort((a, b) => b.timestamp < a.timestamp);
+			});
 
 		if (sponsorFilter.length) {
 			list = list.filter(
