@@ -40,6 +40,6 @@ export const nameToIdMapping: { [name: string]: NetworkId } = {
 	mainnet: 1,
 	kovan: 42,
 	goerli: 5,
-	optimism: 10,
+	'optimism-mainnet': 10,
 	'optimism-kovan': 69,
 };

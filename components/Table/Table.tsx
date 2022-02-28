@@ -145,7 +145,9 @@ export const Table: FC<TableProps> = ({
 									<Link
 										key={`tableRowLink-${i}`}
 										// @ts-ignore
-										href={ROUTES.Pools.PoolView(row?.original?.id ?? '')}
+										href={ROUTES.Pools.PoolView(
+											`${row?.original?.id}/${row?.original?.network}` ?? ''
+										)}
 									>
 										{tableBodyRow}
 									</Link>
@@ -208,6 +210,9 @@ const TableCell = styled(FlexDivCentered)`
 const TableCellHead = styled(TableCell)`
 	font-weight: bold;
 	user-select: none;
+	&:last-child {
+		padding-left: 10px;
+	}
 `;
 
 const SortIconContainer = styled.span`

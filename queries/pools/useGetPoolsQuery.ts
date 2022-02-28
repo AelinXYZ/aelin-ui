@@ -1,39 +1,42 @@
 import { utils } from 'ethers';
-
 import { getGraphEndpoint } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 import { calculateStatus } from 'utils/time';
-import { NetworkId } from 'constants/networks';
+import { nameToIdMapping, NetworkId } from 'constants/networks';
 
-const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
-	return useGetPoolCreateds(
-		getGraphEndpoint(networkId),
-		{
-			orderBy: 'timestamp',
-			orderDirection: 'desc',
-		},
-		{
-			id: true,
-			name: true,
-			symbol: true,
-			purchaseTokenCap: true,
-			purchaseToken: true,
-			duration: true,
-			sponsorFee: true,
-			sponsor: true,
-			purchaseExpiry: true,
-			purchaseTokenDecimals: true,
-			timestamp: true,
-			poolStatus: true,
-			purchaseDuration: true,
-			contributions: true,
-			totalSupply: true,
-			dealAddress: true,
-			hasAllowList: true,
-		},
-		{},
-		networkId ? networkId : NetworkId.Mainnet
-	);
+const useGetPoolsQuery = () => {
+	return Object.entries(nameToIdMapping).map(([networkName, networkId]) => ({
+		...useGetPoolCreateds(
+			getGraphEndpoint(networkId),
+			{
+				orderBy: 'timestamp',
+				orderDirection: 'desc',
+			},
+			{
+				id: true,
+				name: true,
+				symbol: true,
+				purchaseTokenCap: true,
+				purchaseToken: true,
+				duration: true,
+				sponsorFee: true,
+				sponsor: true,
+				purchaseExpiry: true,
+				purchaseTokenDecimals: true,
+				timestamp: true,
+				poolStatus: true,
+				purchaseDuration: true,
+				contributions: true,
+				dealAddress: true,
+				hasAllowList: true,
+				purchaseTokenSymbol: true,
+				totalSupply: true,
+			},
+			{},
+			networkId ? networkId : NetworkId.Mainnet
+		),
+		networkName,
+	}));
 };
 
 export const parsePool = ({
@@ -43,6 +46,7 @@ export const parsePool = ({
 	symbol,
 	duration,
 	purchaseToken,
+	purchaseTokenSymbol,
 	purchaseExpiry,
 	purchaseDuration,
 	purchaseTokenCap,
@@ -52,9 +56,10 @@ export const parsePool = ({
 	contributions,
 	dealAddress,
 	purchaseTokenDecimals,
-	totalSupply,
 	hasAllowList,
-}: PoolCreatedResult) => {
+	network,
+	totalSupply,
+}: PoolCreatedResult & { network: string }) => {
 	let formattedName = '';
 	let formattedSymbol = '';
 	try {
@@ -72,17 +77,19 @@ export const parsePool = ({
 		duration: Number(duration) * 1000,
 		purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
 		purchaseToken,
+		purchaseTokenSymbol,
 		purchaseExpiry: Number(purchaseExpiry) * 1000,
 		poolExpiry: 1000 * (Number(duration) + Number(purchaseExpiry)),
 		purchaseTokenCap,
 		sponsor,
 		contributions,
-		totalSupply,
 		purchaseDuration,
 		sponsorFee,
 		poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
 		dealAddress,
 		hasAllowList,
+		network,
+		totalSupply,
 	};
 };
 
