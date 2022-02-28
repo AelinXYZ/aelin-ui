@@ -41,7 +41,7 @@ const Header: FC = () => {
 					</Link>
 
 					<Links>
-						{LINKS.map(({ label, pathname, newTab, image }) => {
+						{LINKS.map(({ label, pathname }) => {
 							return (
 								<Link href={{ pathname }} key={`link-${label}`} passHref>
 									<StyledLink isSelected={router.pathname === pathname} target="_self">
@@ -106,8 +106,8 @@ const StyledLink = styled.a<{ isSelected: boolean }>`
 	${(props) =>
 		props.isSelected &&
 		css`
-			background-color: ${(props) => props.theme.colors.headerLinkBackgroundActive};
-			color: ${(props) => props.theme.colors.headerLinkTextActive};
+			background-color: ${(props) => props.theme.colors.selectedHeaderButtonBackground};
+			color: ${(props) => props.theme.colors.selectedHeaderButton};
 		`}}
 `;
 

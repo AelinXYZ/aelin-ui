@@ -136,7 +136,7 @@ const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModa
 							</Column>
 						</Row>
 						<ContainerRow>
-							{formik.values.whitelist.map((_: string, index: number) => {
+							{formik.values.whitelist?.map((_: string, index: number) => {
 								return (
 									<Row key={`row-${index}`} align="center">
 										<Column width="60" justify="center">
@@ -175,9 +175,9 @@ const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModa
 						</ContainerRow>
 						<Row>
 							<Column>
-								<Button size="lg" variant="tertiary" onClick={handleAddRows}>
+								<StyledButtonAddMore size="lg" variant="tertiary" onClick={handleAddRows}>
 									+ Add more rows
-								</Button>
+								</StyledButtonAddMore>
 							</Column>
 						</Row>
 						<Row justify="flex-end">
@@ -190,7 +190,7 @@ const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModa
 							>
 								Clear
 							</StyledButton>
-							<Button
+							<StyledButton
 								size="lg"
 								isRounded
 								variant="primary"
@@ -198,7 +198,7 @@ const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModa
 								onClick={handleSave}
 							>
 								Save
-							</Button>
+							</StyledButton>
 						</Row>
 					</ContentBody>
 				</ColCenter>
@@ -239,7 +239,7 @@ const Row = styled.div<StyleRowProps>`
 
 const ContainerRow = styled(Row)`
 	max-height: 400px;
-	overflow-y: scroll;
+	overflow-y: auto;
 `;
 
 const Title = styled.span`
@@ -248,7 +248,15 @@ const Title = styled.span`
 `;
 
 const StyledButton = styled(Button)`
-	margin: 0 10px;
+	margin: 0 5px;
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
+	padding: 0 40px;
+`;
+
+const StyledButtonAddMore = styled(Button)`
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
+	font-size: 1rem;
+	text-transform: none;
 `;
 
 export default WhiteList;

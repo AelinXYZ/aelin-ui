@@ -22,8 +22,10 @@ const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
 					hasInputFields={hasInputFields}
 					key={`${header}-${idx}`}
 				>
-					<GridItemHeader>{header}</GridItemHeader>
-					<GridItemSubText>{subText}</GridItemSubText>
+					<TextContainer>
+						<GridItemHeader>{header}</GridItemHeader>
+						<GridItemSubText>{subText}</GridItemSubText>
+					</TextContainer>
 					{formField}
 					<ErrorField>{formError}</ErrorField>
 				</GridItem>
@@ -36,18 +38,20 @@ const Container = styled.div`
 	display: grid;
 	grid-template-columns: auto auto auto;
 	margin-right: 20px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 	border-radius: 8px;
+	height: fit-content;
 `;
 
 const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
-	background-color: ${(props) => props.theme.colors.cell};
-	border-bottom: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	border-right: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
+	border-bottom: 1px solid ${(props) => props.theme.colors.borders};
+	border-right: 1px solid ${(props) => props.theme.colors.borders};
 	padding: 20px;
-	height: ${(props) => (props.hasInputFields ? '155px' : '135px')};
-	min-width: 207px;
+	height: ${(props) => (props.hasInputFields ? '180px' : '135px')};
+	width: 230px;
 	display: flex;
+	position: relative;
 	flex-direction: column;
 	${(props) =>
 		props.gridSize === 9 &&
@@ -100,24 +104,34 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 `;
 
 const GridItemHeader = styled.div`
-	color: ${(props) => props.theme.colors.headerGreen};
+	color: ${(props) => props.theme.colors.heading};
 	font-size: 1.2rem;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 `;
 
 const GridItemSubText = styled.div`
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1rem;
 	margin: 5px 0;
+
+	&:first-letter {
+		text-transform: uppercase;
+	}
 `;
 
 const ErrorField = styled.div`
-	color: ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.red};
 	margin-top: 5px;
 	font-size: 1rem;
 	font-weight: bold;
+	position: absolute;
+	bottom: 10px;
+`;
+
+const TextContainer = styled.div`
+	height: 80px;
 `;
 
 export default Grid;

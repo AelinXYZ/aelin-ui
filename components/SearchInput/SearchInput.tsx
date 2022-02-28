@@ -34,7 +34,7 @@ const Input = styled.input`
 	width: 152px;
 	background-color: ${(props) => props.theme.colors.background};
 	border-radius: 100px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.inputBorders};
 	height: 35px;
 	padding: 12px 30px;
 	&::placeholder {

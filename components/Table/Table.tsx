@@ -120,7 +120,9 @@ export const Table: FC<TableProps> = ({
 						</TableRow>
 					))}
 					{isLoading ? (
-						<StyledSpinner src={Spinner} />
+						<SpinnerWrapper>
+							<Image src={Spinner} alt="Loading..." />
+						</SpinnerWrapper>
 					) : page.length > 0 ? (
 						<TableBody className="table-body" {...getTableBodyProps()}>
 							{page.map((row: Row, i: number) => {
@@ -176,10 +178,10 @@ const TableContainer = styled.div`
 	overflow: auto;
 `;
 
-// @ts-ignore
-const StyledSpinner = styled(Image)`
-	display: block;
-	margin: 30px auto;
+const SpinnerWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	padding: 30px;
 `;
 
 export const TableRow = styled.div``;

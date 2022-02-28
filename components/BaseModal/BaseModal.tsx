@@ -40,7 +40,7 @@ const BaseModal: FC<BaseModalProps> = ({
 				<StyledModal>
 					<StyledModalHeader>
 						<StyledTitle>{title ?? ''}</StyledTitle>
-						<a
+						<StyledCloseIcon
 							href="#"
 							onClick={() => {
 								if (onClose != null) {
@@ -50,7 +50,7 @@ const BaseModal: FC<BaseModalProps> = ({
 							}}
 						>
 							<Image src={CloseIcon} alt="close" />
-						</a>
+						</StyledCloseIcon>
 					</StyledModalHeader>
 					<StyledModalBody>{children}</StyledModalBody>
 				</StyledModal>
@@ -76,19 +76,22 @@ const StyledModalHeader = styled.div`
 `;
 
 const StyledTitle = styled.div`
-	text-align: left;
+	width: 100%;
+	text-align: center;
+	padding-top: 10px;
 	font-size: 1.6rem;
-	font-wight: bold;
-	color: ${(props) => props.theme.colors.forestGreen};
+	font-weight: bold;
+	color: ${(props) => props.theme.colors.heading};
 `;
 
 const StyledModal = styled.div`
-	background: ${(props) => props.theme.colors.modalBackground};
+	background: ${(props) => props.theme.colors.boxesBackground};
 	min-width: 500px;
-	max-height: 600px;
 	border-radius: 8px;
-	padding: 15px;
+	border: 1px solid ${(props) => props.theme.colors.borders};
+	padding: 23px;
 `;
+
 const StyledModalOverlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -100,6 +103,13 @@ const StyledModalOverlay = styled.div`
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.5);
+`;
+
+const StyledCloseIcon = styled.a`
+	position: absolute;
+	display: flex;
+	top: 12px;
+	right: 12px;
 `;
 
 export default BaseModal;

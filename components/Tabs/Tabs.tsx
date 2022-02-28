@@ -42,6 +42,7 @@ const Tabs: FC<TabsProps> = ({ children, defaultIndex, onSelect }) => {
 								aria-selected={tabIsSelected}
 								aria-controls={index + '-tab'}
 								onClick={() => onChangeTab(index)}
+								disabled={!!tab.props.disabled}
 							>
 								{tab.props.label}
 							</TabLink>
@@ -62,6 +63,7 @@ const TabList = styled.ul`
 	display: flex;
 	list-style: none;
 	padding: 0;
+	max-width: 690px;
 `;
 
 const TabListItem = styled.li`
@@ -76,7 +78,7 @@ const TabListItem = styled.li`
 
 	&:last-child {
 		> button {
-			border-right: 1px solid ${(props) => props.theme.colors.heading};
+			border-right: 1px solid ${(props) => props.theme.colors.tabBorders};
 			border-top-right-radius: 8px;
 			border-bottom-right-radius: 8px;
 		}
@@ -84,27 +86,31 @@ const TabListItem = styled.li`
 `;
 
 const TabLink = styled.button`
-	background-color: ${(props) => props.theme.colors.tertiary};
-	border-top: 1px solid ${(props) => props.theme.colors.heading};
-	border-bottom: 1px solid ${(props) => props.theme.colors.heading};
-	border-left: 1px solid ${(props) => props.theme.colors.heading};
+	background-color: ${(props) => props.theme.colors.tabBackground};
+	border-top: 1px solid
+		${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabBorders)};
+	border-bottom: 1px solid
+		${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabBorders)};
+	border-left: 1px solid
+		${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabBorders)};
 	border-right: 0;
 	width: 100%;
 	padding: 0.5rem 0;
-	color: ${(props) => props.theme.colors.heading};
-	cursor: pointer;
+	color: ${(props) => (props.disabled ? props.theme.colors.grey5 : props.theme.colors.tabText)};
+
+	cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
 	${(props) =>
 		props['aria-selected'] &&
 		css`
 			cursor: default;
-			background-color: ${(props) => props.theme.colors.heading};
-			color: ${(props) => props.theme.colors.buttonSecondary};
+			background-color: ${(props) => props.theme.colors.selectedTabBackground};
+			color: ${(props) => props.theme.colors.selectedTabText};
 			font-weight: 600;
 		`};
 `;
 
-const Tab = styled.div<{ label?: string }>``;
+const Tab = styled.div<{ label?: string; disabled?: boolean }>``;
 
 export default Tabs;
 export { Tab };
