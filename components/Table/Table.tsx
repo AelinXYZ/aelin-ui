@@ -195,7 +195,6 @@ const TableBodyRow = styled(TableRow)`
 
 const TableCell = styled(FlexDivCentered)`
 	box-sizing: border-box;
-	text-align: center;
 	&:first-child {
 		padding-left: 18px;
 	}
@@ -205,6 +204,7 @@ const TableCell = styled(FlexDivCentered)`
 `;
 
 const TableCellHead = styled(TableCell)`
+	font-weight: bold;
 	user-select: none;
 `;
 
@@ -238,10 +238,11 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 			}
 			${TableCell} {
 				font-size: 1rem;
-				justify-content: center;
+				justify-content: left;
 				height: ${CARD_HEIGHT};
 				border-top: 1px solid ${(props) => props.theme.colors.tableBorders};
 				font-family: ${(props) => props.theme.fonts.ASMRegular};
+				padding-right: 5px;
 			}
 			${TableRow} {
 				cursor: pointer;

@@ -13,7 +13,7 @@ import FilterPool from 'sections/Pools/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';
-import { FlexDivStart, FlexDivCol } from 'components/common';
+import { FlexDivStart, FlexDivCol, FlexDivRow, FlexDivRowCentered } from 'components/common';
 import TokenDisplay from 'components/TokenDisplay';
 import DealStatus, { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
@@ -36,6 +36,7 @@ import useInterval from 'hooks/useInterval';
 import { NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
 import theme from 'styles/theme';
+import styled from 'styled-components';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -153,13 +154,23 @@ const Pools: FC = () => {
 						</FlexDivStart>
 					);
 				},
+				width: 150,
 			},
-			{ Header: 'Pool name', accessor: 'name', width: 100 },
+			{
+				Header: 'Pool name',
+				accessor: 'name',
+				Cell: (cellProps: CellProps<any, string>) => {
+					return <StyledTextWrapper>{cellProps.value}</StyledTextWrapper>;
+				},
+				width: 115,
+			},
 			{
 				Header: (
 					<FlexDivCol>
-						<div>Investment</div>
-						<div>token</div>
+						<div>
+							Investment <br />
+							token
+						</div>
 					</FlexDivCol>
 				),
 				accessor: 'purchaseToken',
@@ -170,12 +181,15 @@ const Pools: FC = () => {
 						</FlexDivStart>
 					);
 				},
+				width: 100,
 			},
 			{
 				Header: (
 					<FlexDivCol>
-						<div>Current</div>
-						<div>funding</div>
+						<div>
+							Current <br />
+							funding
+						</div>
 					</FlexDivCol>
 				),
 				accessor: 'totalSupply',
@@ -220,17 +234,17 @@ const Pools: FC = () => {
 			},
 			{
 				Header: (
-					<FlexDivCol>
-						<div>Investment</div>
+					<FlexDivRowCentered>
 						<div>
-							deadline
-							{isOptimism && (
-								<QuestionMark
-									text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-								/>
-							)}
+							Investment <br /> deadline
 						</div>
-					</FlexDivCol>
+						{isOptimism && (
+							<QuestionMark
+								variant="table-header"
+								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+							/>
+						)}
+					</FlexDivRowCentered>
 				),
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
@@ -268,17 +282,19 @@ const Pools: FC = () => {
 			},
 			{
 				Header: (
-					<FlexDivCol>
-						<div>Deal</div>
+					<FlexDivRowCentered>
 						<div>
+							Deal
+							<br />
 							deadline
-							{isOptimism && (
-								<QuestionMark
-									text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-								/>
-							)}
 						</div>
-					</FlexDivCol>
+						{isOptimism && (
+							<QuestionMark
+								variant="table-header"
+								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+							/>
+						)}
+					</FlexDivRowCentered>
 				),
 				accessor: 'poolExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
@@ -289,8 +305,10 @@ const Pools: FC = () => {
 			{
 				Header: (
 					<FlexDivCol>
-						<div>Sponsor</div>
-						<div>fee</div>
+						<div>
+							Sponsor <br />
+							fee
+						</div>
 					</FlexDivCol>
 				),
 				accessor: 'fee',
@@ -299,7 +317,7 @@ const Pools: FC = () => {
 						Number(ethers.utils.formatEther(cellProps.value.toString())).toFixed(2)
 					)}%`;
 				},
-				width: 50,
+				width: 85,
 			},
 			{
 				Header: 'Privacy',
@@ -355,5 +373,12 @@ const Pools: FC = () => {
 		</>
 	);
 };
+
+const StyledTextWrapper = styled.div`
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 100px;
+	overflow: hidden;
+`;
 
 export default Pools;

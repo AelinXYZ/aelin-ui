@@ -12,6 +12,7 @@ interface QuestionMarkProps {
 	fontColor?: string;
 	bold?: boolean;
 	solid?: boolean;
+	variant?: 'table-header';
 }
 
 interface IStyledQuestionMark extends Omit<QuestionMarkProps, 'text'> {}
@@ -23,6 +24,7 @@ const QuestionMark: FC<QuestionMarkProps> = ({
 	borderColor,
 	bold = false,
 	solid,
+	variant,
 }) => {
 	const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
 
@@ -34,6 +36,7 @@ const QuestionMark: FC<QuestionMarkProps> = ({
 				fontColor={fontColor}
 				borderColor={borderColor}
 				solid={solid}
+				variant={variant}
 				onMouseEnter={() => setIsTooltipOpen(true)}
 				onMouseLeave={() => setIsTooltipOpen(false)}
 			>
@@ -56,16 +59,22 @@ const StyledQuestionMark = styled.span<IStyledQuestionMark>`
 	display: inline-block;
 	cursor: pointer;
 	color: ${(props) =>
-		props.solid
+		props.variant === 'table-header'
+			? props.theme.colors.black
+			: props.solid
 			? props.theme.colors.textHover
 			: props.fontColor ?? props.theme.colors.questionMarkText};
 	background: ${(props) =>
-		props.solid
+		props.variant === 'table-header'
+			? props.theme.colors.white
+			: props.solid
 			? props.theme.colors.buttonPrimary
 			: props.bgColor ?? props.theme.colors.questionMarkBody};
 	border: 1px solid
 		${(props) =>
-			props.solid
+			props.variant === 'table-header'
+				? props.theme.colors.black
+				: props.solid
 				? props.theme.colors.buttonPrimary
 				: props.borderColor ?? props.theme.colors.questionMarkBorder};
 	font-family: ${(props) => props.theme.fonts.agrandir};
