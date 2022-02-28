@@ -199,6 +199,11 @@ const contract = {
 		address: '0x2C0979B0de5F99c2bde1E698AeCA13b55695951E',
 		abi,
 	},
+	5: {
+		// TODO: complete the address
+		address: '0x',
+		abi,
+	},
 };
 
 export default contract;

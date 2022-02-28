@@ -69,7 +69,7 @@ const validateCreateDeal = (
 		if (proRataRedemptionSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.proRataRedemptionMinutes = 'Max pro rata is 30 days';
 		} else if (
-			networkId === NetworkId.Kovan
+			networkId === NetworkId.Kovan || networkId === NetworkId.Goerli
 				? proRataRedemptionSeconds < ONE_MINUTE_IN_SECS * 1
 				: proRataRedemptionSeconds < ONE_MINUTE_IN_SECS * 30
 		) {
@@ -94,7 +94,7 @@ const validateCreateDeal = (
 		if (openRedemptionSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.openRedemptionMinutes = 'Max open is 30 days';
 		} else if (
-			networkId === NetworkId.Kovan
+			networkId === NetworkId.Kovan || networkId === NetworkId.Goerli
 				? openRedemptionSeconds < ONE_MINUTE_IN_SECS * 1 &&
 				  // @ts-ignore
 				  values.purchaseTokenTotal !== totalPoolSupply
@@ -121,7 +121,7 @@ const validateCreateDeal = (
 		if (holderFundingExpirySeconds > ONE_DAY_IN_SECS * 30) {
 			errors.holderFundingExpiryMinutes = 'Max holder funding is 30 days';
 		} else if (
-			networkId === NetworkId.Kovan
+			networkId === NetworkId.Kovan || networkId === NetworkId.Goerli
 				? holderFundingExpirySeconds < ONE_MINUTE_IN_SECS * 1
 				: holderFundingExpirySeconds < ONE_MINUTE_IN_SECS * 30
 		) {

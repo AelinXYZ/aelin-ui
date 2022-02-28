@@ -78,7 +78,7 @@ const validateCreatePool = (values: CreatePoolValues, networkId?: NetworkId) => 
 		if (purchaseDurationSeconds > ONE_DAY_IN_SECS * 30) {
 			errors.purchaseDurationMinutes = 'Max purchase expiry is 30 days';
 		} else if (
-			networkId === NetworkId.Kovan
+			networkId === NetworkId.Kovan || networkId === NetworkId.Goerli
 				? purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 1
 				: purchaseDurationSeconds < ONE_MINUTE_IN_SECS * 30
 		) {
