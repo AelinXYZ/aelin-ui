@@ -208,8 +208,8 @@ const Pools: FC = () => {
 				Header: (
 					<FlexDivCol>
 						<div>
-							Current <br />
-							funding
+							Amount in <br />
+							Pool
 						</div>
 					</FlexDivCol>
 				),
