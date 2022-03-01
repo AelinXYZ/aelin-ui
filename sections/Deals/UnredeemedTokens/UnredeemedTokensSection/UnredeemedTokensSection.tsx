@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import styled from 'styled-components';
 import { wei } from '@synthetixio/wei';
 import { FC, useEffect, useState, useCallback, useMemo } from 'react';
 
@@ -48,6 +47,7 @@ const UnredeemedTokensSection: FC<UnredeemedTokensSectionProps> = ({
 		if (provider && walletAddress === holder && dealAddress && token) {
 			const underlyingTokenContract = new ethers.Contract(token, erc20Abi, provider);
 			const dealContract = new ethers.Contract(dealAddress, dealAbi, provider);
+
 			const [
 				unformattedTotalSupply,
 				unformattedUnderlyingPerDealExchangeRate,
@@ -62,13 +62,16 @@ const UnredeemedTokensSection: FC<UnredeemedTokensSectionProps> = ({
 				underlyingTokenContract.balanceOf(dealAddress),
 			]);
 			const totalSupply = ethers.utils.formatEther(unformattedTotalSupply);
+
 			const underlyingPerDealExchangeRate = ethers.utils.formatEther(
 				unformattedUnderlyingPerDealExchangeRate
 			);
+
 			const underlyingBalance = ethers.utils.formatUnits(
 				unformattedUnderlyingBalance,
 				underlyingDecimals
 			);
+
 			const formattedAmount =
 				Number(underlyingBalance) - Number(totalSupply) * Number(underlyingPerDealExchangeRate);
 
