@@ -35,6 +35,7 @@ import useInterval from 'hooks/useInterval';
 import { getERC20Data } from 'utils/crypto';
 
 import { swimmingPoolID } from 'constants/pool';
+import { zeroAddress } from 'constants/token';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 import {
 	OPEN_POOL,
@@ -149,10 +150,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const showCreateDealSection = useMemo(() => {
 		if (!pool || !now || !deal || !walletAddress) return false;
 		// If the connected wallet is not the sponsor, then we don't display the createDeal section
-		if (walletAddress !== pool.sponsor) return false;
+		if (walletAddress !== ethers.utils.getAddress(pool.sponsor)) return false;
 
 		// This pool shouldn't be able to create a deal
-		if (swimmingPoolID === pool.id) return false;
+		if (ethers.utils.getAddress(swimmingPoolID) === ethers.utils.getAddress(pool.id)) return false;
 
 		// If the Pool status is Open and PurchaseTokenCap is not null and is reached
 		if (
@@ -225,9 +226,9 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			displayName: 'FundDeal',
 			component: (
 				<FundDeal
-					holder={deal?.holder}
-					sponsor={pool?.sponsor}
-					dealAddress={deal?.id}
+					holder={ethers.utils.getAddress(deal?.holder ?? zeroAddress)}
+					sponsor={ethers.utils.getAddress(pool?.sponsor ?? zeroAddress)}
+					dealAddress={ethers.utils.getAddress(deal?.id ?? zeroAddress)}
 					purchaseTokenTotalForDeal={deal?.purchaseTokenTotalForDeal}
 					purchaseToken={pool.purchaseToken}
 					token={deal?.underlyingDealToken}
@@ -251,16 +252,21 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		[POOL_DURATION_ENDED]: () => ({
 			title: 'Withdraw',
 			displayName: 'Withdraw',
-			component: <PoolDurationEndedSection pool={pool} dealID={deal.id} />,
+			component: (
+				<PoolDurationEndedSection
+					pool={pool}
+					dealID={ethers.utils.getAddress(deal.id ?? zeroAddress)}
+				/>
+			),
 		}),
 		[UNREDEEMED_TOKENS]: () => ({
 			title: 'Unredeemed Tokens',
 			displayName: 'UnredeemedTokens',
 			component: (
 				<UnredeemedTokensSection
-					holder={deal?.holder as string}
+					holder={ethers.utils.getAddress(deal?.holder ?? zeroAddress)}
 					token={deal.underlyingDealToken}
-					dealAddress={deal.id}
+					dealAddress={ethers.utils.getAddress(deal.id ?? zeroAddress)}
 				/>
 			),
 		}),
@@ -320,7 +326,13 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		setCurrentTab(currentStages.length - 1);
 	}, [setCurrentTab, currentStages.length, isPoolDurationEnded]);
 
-	const isHolderAndSponsorEquals = pool?.sponsor === deal?.holder;
+	const isHolderAndSponsorEquals = useMemo(() => {
+		try {
+			return ethers.utils.getAddress(pool?.sponsor) === ethers.utils.getAddress(deal?.holder);
+		} catch (err) {
+			return false;
+		}
+	}, [deal?.holder, pool?.sponsor]);
 
 	return (
 		<PageLayout
