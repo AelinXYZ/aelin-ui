@@ -60,7 +60,7 @@ const Pools: FC = () => {
 			.sort((a, b) => b.timestamp - a.timestamp);
 	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
 
-	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
+	const isOptimism = network?.id === NetworkId['Optimism'];
 	const isQueryLoading = poolsQuery.find((q) => q.status === 'loading');
 
 	useEffect(() => {
@@ -141,7 +141,11 @@ const Pools: FC = () => {
 
 		if (process.env.NODE_ENV === Env.PROD) {
 			list = list.filter(
-				({ network }) => network === Network.Mainnet || network === Network['Optimism-Mainnet']
+				({ network }) => network === Network.Mainnet || network === Network['Optimism']
+			);
+		} else {
+			list = list.filter(
+				({ network }) => network === Network.Kovan || network === Network['Optimism-Kovan']
 			);
 		}
 
