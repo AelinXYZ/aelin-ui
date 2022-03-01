@@ -14,7 +14,6 @@ import Grid from 'components/Grid';
 import { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
-import CopyToClipboard from 'components/CopyToClipboard';
 import { FlexDivStart, FlexDiv } from 'components/common';
 
 import { erc20Abi } from 'contracts/erc20';
@@ -31,6 +30,7 @@ import { TransactionPurchaseType, TransactionStatus } from 'constants/transactio
 
 import PurchasePoolBox from '../PurchasePoolBox';
 import { isAfter } from 'date-fns';
+import AddressLink from 'components/AddressLink';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
@@ -333,8 +333,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<FlexDivStart>
-						<Ens address={pool?.sponsor ?? ''} />
-						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
+						<AddressLink address={pool?.sponsor}>
+							<Ens link address={pool?.sponsor ?? ''} />
+						</AddressLink>
 					</FlexDivStart>
 				),
 			},
