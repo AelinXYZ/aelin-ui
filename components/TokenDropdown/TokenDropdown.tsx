@@ -19,7 +19,8 @@ const tokenToOption = (token: Token) => ({
 	value: token,
 	label: token.symbol,
 });
-const noSearchTermTokens = ['USDC', 'USDT', 'SNX', 'DAI', 'sUSD'];
+
+const noSearchTermTokens = ['USDC', 'USDT', 'SNX', 'DAI', 'sUSD', 'wETH'];
 
 type Option = { label: string; value: Token };
 type TokenDropdownProps = Props<Option, false> & {
@@ -38,6 +39,7 @@ function TokenDropdown(props: TokenDropdownProps) {
 
 	const hasCustomTokenSelected = customToken && props.selectedAddress === customToken.address;
 	const options = tokens.concat(hasCustomTokenSelected ? customToken : []).map(tokenToOption);
+
 	const getSelectedToken = () => {
 		if (!props.selectedAddress) return undefined;
 		const token = tokensByAddress[props.selectedAddress];

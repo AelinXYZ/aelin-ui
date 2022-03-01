@@ -199,6 +199,10 @@ const contract = {
 		address: '0x2C0979B0de5F99c2bde1E698AeCA13b55695951E',
 		abi,
 	},
+	5: {
+		address: '0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb',
+		abi,
+	},
 };
 
 export default contract;

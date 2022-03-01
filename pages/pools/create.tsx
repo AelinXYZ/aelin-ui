@@ -241,7 +241,7 @@ const Create: FC = () => {
 						<QuestionMark text={`The currency used to purchase pool tokens`} />
 					</>
 				),
-				subText: 'wETH, USDC, sUSD, etc...',
+				subText: 'USDC, wETH, sUSD, etc...',
 				formField: (
 					<TokenDropdown
 						id="purchaseToken"

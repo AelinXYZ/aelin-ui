@@ -7,7 +7,7 @@ import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
-import { FlexDiv, Notice } from 'components/common';
+import { FlexDiv } from 'components/common';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
