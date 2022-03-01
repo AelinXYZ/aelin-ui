@@ -32,7 +32,7 @@ import { filterList } from 'constants/poolFilterList';
 import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
-import { Network, NetworkId } from 'constants/networks';
+import { isMainnet, nameToIdMapping, Network, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
 import { Env } from 'constants/env';
 import NetworkLogoTable from 'components/NetworkLogoTable';
@@ -140,11 +140,9 @@ const Pools: FC = () => {
 		}
 
 		if (process.env.NODE_ENV === Env.PROD) {
-			list = list.filter(
-				({ network }) => network === Network.Mainnet || network === Network['Optimism-Mainnet']
-			);
+			list = list.filter(({ network }) => isMainnet(nameToIdMapping[network]));
 		} else {
-			list = list.filter(({ network }) => network === Network.Kovan || network === Network.Goerli);
+			list = list.filter(({ network }) => !isMainnet(nameToIdMapping[network]));
 		}
 
 		return list;
