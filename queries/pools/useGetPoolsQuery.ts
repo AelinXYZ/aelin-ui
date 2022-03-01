@@ -69,8 +69,9 @@ export const parsePool = ({
 		formattedName = name.split('-')[1];
 		formattedSymbol = symbol.split('-')[1];
 	}
+
 	return {
-		id: ethers.utils.getAddress(id),
+		id,
 		timestamp: Number(timestamp) * 1000,
 		name: formattedName,
 		symbol: formattedSymbol,
@@ -86,7 +87,7 @@ export const parsePool = ({
 		purchaseDuration,
 		sponsorFee,
 		poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
-		dealAddress: dealAddress ? ethers.utils.getAddress(dealAddress) : null,
+		dealAddress,
 		hasAllowList,
 		network,
 		totalSupply,

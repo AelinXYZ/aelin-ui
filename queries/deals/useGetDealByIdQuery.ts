@@ -34,7 +34,7 @@ export const parseDeal = (deal: DealCreatedResult) => {
 		...deal,
 		name,
 		symbol,
-		id: ethers.utils.getAddress(deal.id),
+		id: deal.id,
 		sponsor: ethers.utils.getAddress(deal.sponsor),
 		poolAddress: ethers.utils.getAddress(deal.poolAddress),
 	};

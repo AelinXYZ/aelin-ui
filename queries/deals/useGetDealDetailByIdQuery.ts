@@ -30,7 +30,7 @@ const useGetDealDetailByIdQuery = ({ id, networkId }: { id: string; networkId?: 
 
 export const parseDealDetail = (dealDetail: DealDetailResult) => ({
 	...dealDetail,
-	id: ethers.utils.getAddress(dealDetail.id),
+	id: dealDetail.id,
 	underlyingDealToken: ethers.utils.getAddress(dealDetail.underlyingDealToken),
 	holder: ethers.utils.getAddress(dealDetail.holder),
 	holderFundingExpiration: Number(dealDetail.holderFundingExpiration) * 1000,
