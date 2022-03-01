@@ -25,7 +25,6 @@ export type TokenListResponse = {
 };
 
 export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-export const zeroAddress = '0x0000000000000000000000000000000000000000';
 
 export const ether = {
 	address: ETH_ADDRESS,
