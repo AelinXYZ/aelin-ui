@@ -7,6 +7,8 @@ import { FC, useMemo, useState, useEffect } from 'react';
 import Connector from 'containers/Connector';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
+import { erc20Abi } from 'contracts/erc20';
+
 import useGetDealDetailByIdQuery, {
 	parseDealDetail,
 } from 'queries/deals/useGetDealDetailByIdQuery';
@@ -63,6 +65,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		null
 	);
 	const [underlyingDealTokenSymbol, setUnderlyingDealTokenSymbol] = useState<string | null>(null);
+	const [unredeemedTokensAmount, setUnredeemedTokensAmount] = useState<number>(0);
 
 	const dealDetailsQuery = useGetDealDetailByIdQuery({
 		id: pool?.dealAddress ?? '',
@@ -122,6 +125,50 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		}
 		getDealInfo();
 	}, [deal?.id, provider, walletAddress, deal?.underlyingDealToken]);
+
+	useEffect(() => {
+		const getUnredeemedTokens = async () => {
+			if (provider && walletAddress === deal?.holder && deal?.id && deal.underlyingDealToken) {
+				const underlyingTokenContract = new ethers.Contract(
+					deal.underlyingDealToken,
+					erc20Abi,
+					provider
+				);
+
+				const dealContract = new ethers.Contract(deal?.id, dealAbi, provider);
+
+				const [
+					unformattedTotalSupply,
+					unformattedUnderlyingPerDealExchangeRate,
+					underlyingDecimals,
+					unformattedUnderlyingBalance,
+				] = await Promise.all([
+					dealContract.totalSupply(),
+					dealContract.underlyingPerDealExchangeRate(),
+					underlyingTokenContract.decimals(),
+					underlyingTokenContract.balanceOf(deal?.id),
+				]);
+
+				const totalSupply = ethers.utils.formatEther(unformattedTotalSupply);
+
+				const underlyingPerDealExchangeRate = ethers.utils.formatEther(
+					unformattedUnderlyingPerDealExchangeRate
+				);
+
+				const underlyingBalance = ethers.utils.formatUnits(
+					unformattedUnderlyingBalance,
+					underlyingDecimals
+				);
+
+				const formattedAmount =
+					Number(underlyingBalance) - Number(totalSupply) * Number(underlyingPerDealExchangeRate);
+
+				setUnredeemedTokensAmount(formattedAmount);
+			}
+		};
+
+		getUnredeemedTokens();
+	}, [deal?.holder, deal?.id, deal.underlyingDealToken, provider, walletAddress]);
 
 	useInterval(() => {
 		async function getClaimableTokens() {
@@ -190,14 +237,17 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			now >
 				(deal?.proRataRedemptionPeriodStart ?? 0) +
 					(deal?.proRataRedemptionPeriod ?? 0) +
-					(deal?.openRedemptionPeriod ?? 0) && walletAddress === deal?.holder
+					(deal?.openRedemptionPeriod ?? 0) &&
+			walletAddress === deal?.holder &&
+			unredeemedTokensAmount > 0
 		);
 	}, [
+		now,
 		deal?.holder,
 		deal?.openRedemptionPeriod,
 		deal?.proRataRedemptionPeriod,
 		deal?.proRataRedemptionPeriodStart,
-		now,
+		unredeemedTokensAmount,
 		walletAddress,
 	]);
 
