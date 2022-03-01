@@ -143,6 +143,8 @@ const Pools: FC = () => {
 			list = list.filter(
 				({ network }) => network === Network.Mainnet || network === Network['Optimism-Mainnet']
 			);
+		} else {
+			list = list.filter(({ network }) => network === Network.Kovan || network === Network.Goerli);
 		}
 
 		return list;

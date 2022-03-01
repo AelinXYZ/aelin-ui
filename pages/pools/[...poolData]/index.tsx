@@ -48,6 +48,7 @@ const Pool: FC = () => {
 		const formattedChainId = ethers.utils.hexStripZeros(
 			BigNumber.from(poolNetworkId).toHexString()
 		);
+
 		try {
 			await web3Provider.provider.request({
 				method: 'wallet_switchEthereumChain',
@@ -69,7 +70,7 @@ const Pool: FC = () => {
 		} else {
 			setIsModalOpen(false);
 		}
-	}, [pool, poolQuery, userClosedModal]);
+	}, [network.id, pool, poolNetworkId, poolQuery, userClosedModal]);
 
 	return (
 		<>

@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { ethers } from 'ethers';
 import { getGraphEndpoint } from 'constants/endpoints';
 import { DealCreatedResult, useGetDealCreatedById } from '../../subgraph';
 import { NetworkId } from 'constants/networks';
@@ -24,8 +24,8 @@ export const parseDeal = (deal: DealCreatedResult) => {
 	let name = '';
 	let symbol = '';
 	try {
-		name = utils.parseBytes32String(deal.name.split('-')[1]);
-		symbol = utils.parseBytes32String(deal.symbol.split('-')[1]);
+		name = ethers.utils.parseBytes32String(deal.name.split('-')[1]);
+		symbol = ethers.utils.parseBytes32String(deal.symbol.split('-')[1]);
 	} catch (e) {
 		name = deal.name.split('-')[1];
 		symbol = deal.symbol.split('-')[1];
@@ -34,6 +34,9 @@ export const parseDeal = (deal: DealCreatedResult) => {
 		...deal,
 		name,
 		symbol,
+		id: deal.id,
+		sponsor: ethers.utils.getAddress(deal.sponsor),
+		poolAddress: ethers.utils.getAddress(deal.poolAddress),
 	};
 };
 

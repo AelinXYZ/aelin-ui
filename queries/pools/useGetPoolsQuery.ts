@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { ethers } from 'ethers';
 import { getGraphEndpoint } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 import { calculateStatus } from 'utils/time';
@@ -63,12 +63,13 @@ export const parsePool = ({
 	let formattedName = '';
 	let formattedSymbol = '';
 	try {
-		formattedName = utils.parseBytes32String(name.split('-')[1]);
-		formattedSymbol = utils.parseBytes32String(symbol.split('-')[1]);
+		formattedName = ethers.utils.parseBytes32String(name.split('-')[1]);
+		formattedSymbol = ethers.utils.parseBytes32String(symbol.split('-')[1]);
 	} catch (e) {
 		formattedName = name.split('-')[1];
 		formattedSymbol = symbol.split('-')[1];
 	}
+
 	return {
 		id,
 		timestamp: Number(timestamp) * 1000,
@@ -76,12 +77,12 @@ export const parsePool = ({
 		symbol: formattedSymbol,
 		duration: Number(duration) * 1000,
 		purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
-		purchaseToken,
+		purchaseToken: ethers.utils.getAddress(purchaseToken),
 		purchaseTokenSymbol,
 		purchaseExpiry: Number(purchaseExpiry) * 1000,
 		poolExpiry: 1000 * (Number(duration) + Number(purchaseExpiry)),
 		purchaseTokenCap,
-		sponsor,
+		sponsor: ethers.utils.getAddress(sponsor),
 		contributions,
 		purchaseDuration,
 		sponsorFee,
