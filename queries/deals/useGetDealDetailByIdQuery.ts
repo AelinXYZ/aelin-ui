@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { getGraphEndpoint } from 'constants/endpoints';
 import { NetworkId } from 'constants/networks';
 import { DealDetailResult, useGetDealDetailById } from '../../subgraph';
@@ -29,6 +30,9 @@ const useGetDealDetailByIdQuery = ({ id, networkId }: { id: string; networkId?: 
 
 export const parseDealDetail = (dealDetail: DealDetailResult) => ({
 	...dealDetail,
+	id: ethers.utils.getAddress(dealDetail.id),
+	underlyingDealToken: ethers.utils.getAddress(dealDetail.underlyingDealToken),
+	holder: ethers.utils.getAddress(dealDetail.holder),
 	holderFundingExpiration: Number(dealDetail.holderFundingExpiration) * 1000,
 	proRataRedemptionPeriod: Number(dealDetail.proRataRedemptionPeriod) * 1000,
 	openRedemptionPeriod: Number(dealDetail.openRedemptionPeriod) * 1000,
