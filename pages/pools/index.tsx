@@ -261,12 +261,10 @@ const Pools: FC = () => {
 						<div>
 							Investment <br /> deadline
 						</div>
-						{isOptimism && (
-							<QuestionMark
-								variant="table-header"
-								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-							/>
-						)}
+						<QuestionMark
+							variant="table-header"
+							text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+						/>
 					</FlexDivRowCentered>
 				),
 				accessor: 'purchaseExpiry',
@@ -311,12 +309,10 @@ const Pools: FC = () => {
 							<br />
 							deadline
 						</div>
-						{isOptimism && (
-							<QuestionMark
-								variant="table-header"
-								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-							/>
-						)}
+						<QuestionMark
+							variant="table-header"
+							text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+						/>
 					</FlexDivRowCentered>
 				),
 				accessor: 'poolExpiry',
