@@ -7,7 +7,7 @@ import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 const useUI = () => {
 	const [theme, setTheme] = useLocalStorage<ThemeMode>(
 		LOCAL_STORAGE_KEYS.SELECTED_THEME,
-		ThemeMode.LIGHT
+		ThemeMode.DARK
 	);
 
 	return { theme, setTheme };
