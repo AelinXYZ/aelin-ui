@@ -141,7 +141,14 @@ const Pools: FC = () => {
 
 		if (process.env.NODE_ENV === Env.PROD) {
 			list = list.filter(
-				({ network }) => network === Network.Mainnet || network === Network['Optimism-Mainnet']
+				({ network }) => network === Network.Mainnet || network === Network['Optimism']
+			);
+		} else {
+			list = list.filter(
+				({ network }) =>
+					network === Network.Kovan ||
+					network === Network['Optimism-Kovan'] ||
+					network === Network.Goerli
 			);
 		}
 
