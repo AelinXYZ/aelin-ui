@@ -229,8 +229,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		return (
 			(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
 			(pool?.poolStatus !== Status.FundingDeal &&
+				pool?.purchaseExpiry != null &&
+				deal?.id != null &&
 				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
-				!(pool?.poolStatus === Status.DealOpen && deal?.id != null))
+				!(pool?.poolStatus === Status.DealOpen))
 		);
 	}, [
 		deal.holderFundingExpiration,
