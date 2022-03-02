@@ -5,6 +5,13 @@ const Icon = styled.svg`
 	height: 14px;
 `;
 
+export const MenuClose = ({ className }: { className?: string }) => (
+	<Icon viewBox="0 0 19 19" className={className}>
+		<rect x="0.414062" y="17" width="24" height="2" rx="1" transform="rotate(-45 0.414062 17)" />
+		<rect x="1.41406" width="24" height="2" rx="1" transform="rotate(45 1.41406 0)" />
+	</Icon>
+);
+
 export const DownArrow = ({ className }: { className?: string }) => (
 	<Icon viewBox="0 0 14 14" className={className}>
 		<path d="M6 9L0.803847 -2.51245e-08L11.1962 8.834e-07L6 9Z" />
