@@ -49,7 +49,7 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 	border-right: 1px solid ${(props) => props.theme.colors.borders};
 	padding: 20px;
 	height: ${(props) => (props.hasInputFields ? '180px' : '135px')};
-	width: 230px;
+	width: 240px;
 	display: flex;
 	position: relative;
 	flex-direction: column;

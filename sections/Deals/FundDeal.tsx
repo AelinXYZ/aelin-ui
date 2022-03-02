@@ -18,7 +18,7 @@ import { formatShortDateWithTime } from 'utils/time';
 import { formatNumber } from 'utils/numbers';
 import { GasLimitEstimate } from 'constants/networks';
 import { getGasEstimateWithBuffer } from 'utils/network';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { DEFAULT_DECIMALS, EXCHANGE_DECIMALS } from 'constants/defaults';
 
 import { Container, ContentContainer } from 'sections/shared/common';
 
@@ -245,7 +245,7 @@ const FundDeal: FC<FundDealProps> = ({
 											purchaseTokenDecimals ?? 18
 										)
 									),
-								DEFAULT_DECIMALS
+								EXCHANGE_DECIMALS
 							)}
 						</ExchangeRate>
 						<ExchangeRate>
@@ -259,7 +259,7 @@ const FundDeal: FC<FundDealProps> = ({
 										purchaseTokenDecimals ?? 18
 									)
 								) / Number(ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 18)),
-								DEFAULT_DECIMALS
+								EXCHANGE_DECIMALS
 							)}
 						</ExchangeRate>
 					</div>

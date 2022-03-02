@@ -28,7 +28,7 @@ import CreateForm from 'sections/shared/CreateForm';
 
 import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { EXCHANGE_DECIMALS } from 'constants/defaults';
 import { Allocation } from 'constants/pool';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
@@ -765,7 +765,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								{formatNumber(
 									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
-									DEFAULT_DECIMALS
+									EXCHANGE_DECIMALS
 								)}{' '}
 								<TokenDisplay address={formik.values.underlyingDealToken} /> per{' '}
 								{poolBalances?.purchaseTokenSymbol}:{' '}
@@ -774,7 +774,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
 										Number(formik.values?.underlyingDealTokenTotal ?? 0),
-									DEFAULT_DECIMALS
+									EXCHANGE_DECIMALS
 								)}{' '}
 								{poolBalances?.purchaseTokenSymbol} per{' '}
 								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
