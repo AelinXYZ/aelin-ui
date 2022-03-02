@@ -400,7 +400,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseTokenTotal">Underlying Deal Token Total</label>
+						<label htmlFor="purchaseTokenTotal">Total Purchase Tokens</label>
 						<QuestionMark
 							text={`The total amount of purchase tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
 						/>
@@ -455,7 +455,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="underlyingDealTokenTotal">Total Purchase Tokens</label>
+						<label htmlFor="underlyingDealTokenTotal">Underlying Deal Token Total</label>
 						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
 					</>
 				),
@@ -738,7 +738,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					: '',
 			},
 			{
-				label: 'Purchase currency total',
+				label: 'Total purchase tokens',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
@@ -762,22 +762,22 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					) : (
 						<div>
 							<ExchangeRate>
-								<TokenDisplay address={formik.values.underlyingDealToken} /> /{' '}
-								{poolBalances?.purchaseTokenSymbol}:{' '}
 								{formatNumber(
 									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
 									DEFAULT_DECIMALS
-								)}
+								)}{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} /> per{' '}
+								{poolBalances?.purchaseTokenSymbol}:{' '}
 							</ExchangeRate>
 							<ExchangeRate>
-								{poolBalances?.purchaseTokenSymbol} /{' '}
-								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
 										Number(formik.values?.underlyingDealTokenTotal ?? 0),
 									DEFAULT_DECIMALS
-								)}
+								)}{' '}
+								{poolBalances?.purchaseTokenSymbol} per{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
 							</ExchangeRate>
 						</div>
 					),

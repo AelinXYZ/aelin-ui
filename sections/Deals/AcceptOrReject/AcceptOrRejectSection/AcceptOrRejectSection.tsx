@@ -228,16 +228,16 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
+							{exchangeRateUnderlyingPurchase} {` `}
 							{areTokenSymbolsAvailable
-								? `${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `
+								? `${underlyingDealTokenSymbol} per ${poolBalances?.purchaseTokenSymbol}`
 								: `Underlying / Purchase: `}
-							{exchangeRateUnderlyingPurchase}
 						</ExchangeRate>
 						<ExchangeRate>
+							{exchangeRatePurchaseUnderlying} {` `}
 							{areTokenSymbolsAvailable
-								? `${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `
+								? `${poolBalances?.purchaseTokenSymbol} per ${underlyingDealTokenSymbol}`
 								: `Purchase / Underlying: `}
-							{exchangeRatePurchaseUnderlying}
 						</ExchangeRate>
 					</div>
 				),
@@ -360,7 +360,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							Remaining Pro-rata Allocation:{' '}
 							{formatNumber(poolBalances?.maxProRata ?? 0, DEFAULT_DECIMALS)}
 						</div>
-						<div>Redeemed: {formatNumber(userAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
 						<div>Withdrawn: {formatNumber(userAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>
 					</div>
 				),
@@ -424,7 +423,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			poolBalances?.totalAmountAccepted,
 			exchangeRateUnderlyingPurchase,
 			exchangeRatePurchaseUnderlying,
-			userAmountAccepted,
 			userAmountWithdrawn,
 			totalAmountAccepted,
 			totalAmountWithdrawn,
