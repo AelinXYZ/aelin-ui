@@ -91,7 +91,7 @@ const FundDeal: FC<FundDealProps> = ({
 	}, [provider, walletAddress, token, dealAddress, purchaseToken]);
 
 	const handleSubmit = useCallback(async () => {
-		if (!walletAddress || !signer || !dealAddress || !decimals || !amount) return;
+		if (!walletAddress || !signer || !dealAddress || !decimals || !amount) {return;}
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 		try {
 			const tx = await contract.depositUnderlying(amount.toString(), {
@@ -127,7 +127,7 @@ const FundDeal: FC<FundDealProps> = ({
 	);
 
 	const handleApprove = useCallback(async () => {
-		if (!walletAddress || !signer || !dealAddress || !token) return;
+		if (!walletAddress || !signer || !dealAddress || !token) {return;}
 		const contract = new ethers.Contract(token, erc20Abi, signer);
 		try {
 			const tx = await contract.approve(dealAddress, amount.toString(), {
@@ -186,7 +186,7 @@ const FundDeal: FC<FundDealProps> = ({
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!token || !signer || !dealAddress) return;
+			if (!token || !signer || !dealAddress) {return;}
 			try {
 				if (!hasAllowance) {
 					const contract = new ethers.Contract(token, erc20Abi, signer);
@@ -194,7 +194,7 @@ const FundDeal: FC<FundDealProps> = ({
 						wei(await contract.estimateGas.approve(dealAddress, amount.toString()), 0)
 					);
 				} else {
-					if (!purchaseTokenDecimals) return;
+					if (!purchaseTokenDecimals) {return;}
 					const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 
 					setGasLimitEstimate(

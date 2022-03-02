@@ -15,7 +15,7 @@ const UploadCSV: FC<IUploadCSV> = ({ onUploadCSV }) => {
 		const whitelist = csv.reduce((accum, curr: ICSVResponse) => {
 			const [address, amount] = curr.data;
 
-			if (!utils.isAddress(address)) return accum;
+			if (!utils.isAddress(address)) {return accum;}
 
 			accum.push({
 				address,

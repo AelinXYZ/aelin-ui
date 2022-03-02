@@ -41,10 +41,10 @@ function TokenDropdown(props: TokenDropdownProps) {
 	const options = tokens.concat(hasCustomTokenSelected ? customToken : []).map(tokenToOption);
 
 	const getSelectedToken = () => {
-		if (!props.selectedAddress) return undefined;
+		if (!props.selectedAddress) {return undefined;}
 		const token = tokensByAddress[props.selectedAddress];
-		if (token) return tokenToOption(token);
-		if (customToken) return tokenToOption(customToken);
+		if (token) {return tokenToOption(token);}
+		if (customToken) {return tokenToOption(customToken);}
 		return undefined;
 	};
 
@@ -83,7 +83,7 @@ function TokenDropdown(props: TokenDropdownProps) {
 				formatCreateLabel={(inputString) => 'Add Custom Token: ' + inputString}
 				isValidNewOption={(searchTerm) => {
 					const isAddress = utils.isAddress(searchTerm);
-					if (!isAddress) return false;
+					if (!isAddress) {return false;}
 					const tokenExists = tokensByAddress[searchTerm];
 					return !tokenExists;
 				}}

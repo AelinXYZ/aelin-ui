@@ -121,13 +121,13 @@ export const useGetAcceptDealById = <K extends keyof AcceptDealResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['purchaser']) formattedObj['purchaser'] = obj['purchaser'];
-		if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
-		if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
-		if (obj['sponsorFee']) formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);
-		if (obj['aelinFee']) formattedObj['aelinFee'] = wei(obj['aelinFee'], 0);
-		if (obj['poolTokenAmount']) formattedObj['poolTokenAmount'] = wei(obj['poolTokenAmount'], 0);
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['purchaser']) {formattedObj['purchaser'] = obj['purchaser'];}
+		if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
+		if (obj['dealAddress']) {formattedObj['dealAddress'] = obj['dealAddress'];}
+		if (obj['sponsorFee']) {formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);}
+		if (obj['aelinFee']) {formattedObj['aelinFee'] = wei(obj['aelinFee'], 0);}
+		if (obj['poolTokenAmount']) {formattedObj['poolTokenAmount'] = wei(obj['poolTokenAmount'], 0);}
 		return formattedObj as Pick<AcceptDealResult, K>;
 	};
 	const enabled = options && args;
@@ -167,7 +167,7 @@ export const useGetAcceptDeals = <K extends keyof AcceptDealResult>(
 		let results: Pick<AcceptDealResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('acceptDeals', paginatedOptions, args),
 			});
@@ -178,14 +178,14 @@ export const useGetAcceptDeals = <K extends keyof AcceptDealResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['purchaser']) formattedObj['purchaser'] = obj['purchaser'];
-				if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
-				if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
-				if (obj['sponsorFee']) formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);
-				if (obj['aelinFee']) formattedObj['aelinFee'] = wei(obj['aelinFee'], 0);
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['purchaser']) {formattedObj['purchaser'] = obj['purchaser'];}
+				if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
+				if (obj['dealAddress']) {formattedObj['dealAddress'] = obj['dealAddress'];}
+				if (obj['sponsorFee']) {formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);}
+				if (obj['aelinFee']) {formattedObj['aelinFee'] = wei(obj['aelinFee'], 0);}
 				if (obj['poolTokenAmount'])
-					formattedObj['poolTokenAmount'] = wei(obj['poolTokenAmount'], 0);
+					{formattedObj['poolTokenAmount'] = wei(obj['poolTokenAmount'], 0);}
 				return formattedObj as Pick<AcceptDealResult, K>;
 			});
 			results = results.concat(newResults);
@@ -289,10 +289,10 @@ export const useGetAelinTokenById = <K extends keyof AelinTokenResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['name']) formattedObj['name'] = obj['name'];
-		if (obj['symbol']) formattedObj['symbol'] = obj['symbol'];
-		if (obj['decimals']) formattedObj['decimals'] = obj['decimals'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['name']) {formattedObj['name'] = obj['name'];}
+		if (obj['symbol']) {formattedObj['symbol'] = obj['symbol'];}
+		if (obj['decimals']) {formattedObj['decimals'] = obj['decimals'];}
 		return formattedObj as Pick<AelinTokenResult, K>;
 	};
 	const enabled = options && args;
@@ -332,7 +332,7 @@ export const useGetAelinTokens = <K extends keyof AelinTokenResult>(
 		let results: Pick<AelinTokenResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('aelinTokens', paginatedOptions, args),
 			});
@@ -343,10 +343,10 @@ export const useGetAelinTokens = <K extends keyof AelinTokenResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['name']) formattedObj['name'] = obj['name'];
-				if (obj['symbol']) formattedObj['symbol'] = obj['symbol'];
-				if (obj['decimals']) formattedObj['decimals'] = obj['decimals'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['name']) {formattedObj['name'] = obj['name'];}
+				if (obj['symbol']) {formattedObj['symbol'] = obj['symbol'];}
+				if (obj['decimals']) {formattedObj['decimals'] = obj['decimals'];}
 				return formattedObj as Pick<AelinTokenResult, K>;
 			});
 			results = results.concat(newResults);
@@ -448,13 +448,13 @@ export const useGetClaimedUnderlyingDealTokenById = <
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
 		if (obj['underlyingDealTokenAddress'])
-			formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];
-		if (obj['recipient']) formattedObj['recipient'] = obj['recipient'];
+			{formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];}
+		if (obj['recipient']) {formattedObj['recipient'] = obj['recipient'];}
 		if (obj['underlyingDealTokensClaimed'])
-			formattedObj['underlyingDealTokensClaimed'] = wei(obj['underlyingDealTokensClaimed'], 0);
-		if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
+			{formattedObj['underlyingDealTokensClaimed'] = wei(obj['underlyingDealTokensClaimed'], 0);}
+		if (obj['dealAddress']) {formattedObj['dealAddress'] = obj['dealAddress'];}
 		return formattedObj as Pick<ClaimedUnderlyingDealTokenResult, K>;
 	};
 	const enabled = options && args;
@@ -501,7 +501,7 @@ export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderly
 		let results: Pick<ClaimedUnderlyingDealTokenResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('claimedUnderlyingDealTokens', paginatedOptions, args),
 			});
@@ -512,13 +512,13 @@ export const useGetClaimedUnderlyingDealTokens = <K extends keyof ClaimedUnderly
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
 				if (obj['underlyingDealTokenAddress'])
-					formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];
-				if (obj['recipient']) formattedObj['recipient'] = obj['recipient'];
+					{formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];}
+				if (obj['recipient']) {formattedObj['recipient'] = obj['recipient'];}
 				if (obj['underlyingDealTokensClaimed'])
-					formattedObj['underlyingDealTokensClaimed'] = wei(obj['underlyingDealTokensClaimed'], 0);
-				if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
+					{formattedObj['underlyingDealTokensClaimed'] = wei(obj['underlyingDealTokensClaimed'], 0);}
+				if (obj['dealAddress']) {formattedObj['dealAddress'] = obj['dealAddress'];}
 				return formattedObj as Pick<ClaimedUnderlyingDealTokenResult, K>;
 			});
 			results = results.concat(newResults);
@@ -633,11 +633,11 @@ export const useGetDealCreatedById = <K extends keyof DealCreatedResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['name']) formattedObj['name'] = obj['name'];
-		if (obj['symbol']) formattedObj['symbol'] = obj['symbol'];
-		if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
-		if (obj['sponsor']) formattedObj['sponsor'] = obj['sponsor'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['name']) {formattedObj['name'] = obj['name'];}
+		if (obj['symbol']) {formattedObj['symbol'] = obj['symbol'];}
+		if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
+		if (obj['sponsor']) {formattedObj['sponsor'] = obj['sponsor'];}
 		return formattedObj as Pick<DealCreatedResult, K>;
 	};
 	const enabled = options && args;
@@ -677,7 +677,7 @@ export const useGetDealCreateds = <K extends keyof DealCreatedResult>(
 		let results: Pick<DealCreatedResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('dealCreateds', paginatedOptions, args),
 			});
@@ -688,11 +688,11 @@ export const useGetDealCreateds = <K extends keyof DealCreatedResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['name']) formattedObj['name'] = obj['name'];
-				if (obj['symbol']) formattedObj['symbol'] = obj['symbol'];
-				if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
-				if (obj['sponsor']) formattedObj['sponsor'] = obj['sponsor'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['name']) {formattedObj['name'] = obj['name'];}
+				if (obj['symbol']) {formattedObj['symbol'] = obj['symbol'];}
+				if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
+				if (obj['sponsor']) {formattedObj['sponsor'] = obj['sponsor'];}
 				return formattedObj as Pick<DealCreatedResult, K>;
 			});
 			results = results.concat(newResults);
@@ -893,31 +893,31 @@ export const useGetDealDetailById = <K extends keyof DealDetailResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
 		if (obj['underlyingDealToken'])
-			formattedObj['underlyingDealToken'] = obj['underlyingDealToken'];
+			{formattedObj['underlyingDealToken'] = obj['underlyingDealToken'];}
 		if (obj['underlyingDealTokenSymbol'])
-			formattedObj['underlyingDealTokenSymbol'] = obj['underlyingDealTokenSymbol'];
+			{formattedObj['underlyingDealTokenSymbol'] = obj['underlyingDealTokenSymbol'];}
 		if (obj['underlyingDealTokenDecimals'])
-			formattedObj['underlyingDealTokenDecimals'] = obj['underlyingDealTokenDecimals'];
+			{formattedObj['underlyingDealTokenDecimals'] = obj['underlyingDealTokenDecimals'];}
 		if (obj['purchaseTokenTotalForDeal'])
-			formattedObj['purchaseTokenTotalForDeal'] = wei(obj['purchaseTokenTotalForDeal'], 0);
+			{formattedObj['purchaseTokenTotalForDeal'] = wei(obj['purchaseTokenTotalForDeal'], 0);}
 		if (obj['underlyingDealTokenTotal'])
-			formattedObj['underlyingDealTokenTotal'] = wei(obj['underlyingDealTokenTotal'], 0);
-		if (obj['vestingPeriod']) formattedObj['vestingPeriod'] = wei(obj['vestingPeriod'], 0);
-		if (obj['vestingCliff']) formattedObj['vestingCliff'] = wei(obj['vestingCliff'], 0);
+			{formattedObj['underlyingDealTokenTotal'] = wei(obj['underlyingDealTokenTotal'], 0);}
+		if (obj['vestingPeriod']) {formattedObj['vestingPeriod'] = wei(obj['vestingPeriod'], 0);}
+		if (obj['vestingCliff']) {formattedObj['vestingCliff'] = wei(obj['vestingCliff'], 0);}
 		if (obj['proRataRedemptionPeriod'])
-			formattedObj['proRataRedemptionPeriod'] = wei(obj['proRataRedemptionPeriod'], 0);
+			{formattedObj['proRataRedemptionPeriod'] = wei(obj['proRataRedemptionPeriod'], 0);}
 		if (obj['proRataRedemptionPeriodStart'])
-			formattedObj['proRataRedemptionPeriodStart'] = wei(obj['proRataRedemptionPeriodStart'], 0);
+			{formattedObj['proRataRedemptionPeriodStart'] = wei(obj['proRataRedemptionPeriodStart'], 0);}
 		if (obj['openRedemptionPeriod'])
-			formattedObj['openRedemptionPeriod'] = wei(obj['openRedemptionPeriod'], 0);
-		if (obj['holder']) formattedObj['holder'] = obj['holder'];
-		if (obj['isDealFunded']) formattedObj['isDealFunded'] = obj['isDealFunded'];
+			{formattedObj['openRedemptionPeriod'] = wei(obj['openRedemptionPeriod'], 0);}
+		if (obj['holder']) {formattedObj['holder'] = obj['holder'];}
+		if (obj['isDealFunded']) {formattedObj['isDealFunded'] = obj['isDealFunded'];}
 		if (obj['holderFundingExpiration'])
-			formattedObj['holderFundingExpiration'] = wei(obj['holderFundingExpiration'], 0);
+			{formattedObj['holderFundingExpiration'] = wei(obj['holderFundingExpiration'], 0);}
 		if (obj['holderFundingDuration'])
-			formattedObj['holderFundingDuration'] = wei(obj['holderFundingDuration'], 0);
+			{formattedObj['holderFundingDuration'] = wei(obj['holderFundingDuration'], 0);}
 		return formattedObj as Pick<DealDetailResult, K>;
 	};
 	const enabled = options && args;
@@ -957,7 +957,7 @@ export const useGetDealDetails = <K extends keyof DealDetailResult>(
 		let results: Pick<DealDetailResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('dealDetails', paginatedOptions, args),
 			});
@@ -968,34 +968,34 @@ export const useGetDealDetails = <K extends keyof DealDetailResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
 				if (obj['underlyingDealToken'])
-					formattedObj['underlyingDealToken'] = obj['underlyingDealToken'];
+					{formattedObj['underlyingDealToken'] = obj['underlyingDealToken'];}
 				if (obj['underlyingDealTokenSymbol'])
-					formattedObj['underlyingDealTokenSymbol'] = obj['underlyingDealTokenSymbol'];
+					{formattedObj['underlyingDealTokenSymbol'] = obj['underlyingDealTokenSymbol'];}
 				if (obj['underlyingDealTokenDecimals'])
-					formattedObj['underlyingDealTokenDecimals'] = obj['underlyingDealTokenDecimals'];
+					{formattedObj['underlyingDealTokenDecimals'] = obj['underlyingDealTokenDecimals'];}
 				if (obj['purchaseTokenTotalForDeal'])
-					formattedObj['purchaseTokenTotalForDeal'] = wei(obj['purchaseTokenTotalForDeal'], 0);
+					{formattedObj['purchaseTokenTotalForDeal'] = wei(obj['purchaseTokenTotalForDeal'], 0);}
 				if (obj['underlyingDealTokenTotal'])
-					formattedObj['underlyingDealTokenTotal'] = wei(obj['underlyingDealTokenTotal'], 0);
-				if (obj['vestingPeriod']) formattedObj['vestingPeriod'] = wei(obj['vestingPeriod'], 0);
-				if (obj['vestingCliff']) formattedObj['vestingCliff'] = wei(obj['vestingCliff'], 0);
+					{formattedObj['underlyingDealTokenTotal'] = wei(obj['underlyingDealTokenTotal'], 0);}
+				if (obj['vestingPeriod']) {formattedObj['vestingPeriod'] = wei(obj['vestingPeriod'], 0);}
+				if (obj['vestingCliff']) {formattedObj['vestingCliff'] = wei(obj['vestingCliff'], 0);}
 				if (obj['proRataRedemptionPeriod'])
-					formattedObj['proRataRedemptionPeriod'] = wei(obj['proRataRedemptionPeriod'], 0);
+					{formattedObj['proRataRedemptionPeriod'] = wei(obj['proRataRedemptionPeriod'], 0);}
 				if (obj['proRataRedemptionPeriodStart'])
-					formattedObj['proRataRedemptionPeriodStart'] = wei(
+					{formattedObj['proRataRedemptionPeriodStart'] = wei(
 						obj['proRataRedemptionPeriodStart'],
 						0
-					);
+					);}
 				if (obj['openRedemptionPeriod'])
-					formattedObj['openRedemptionPeriod'] = wei(obj['openRedemptionPeriod'], 0);
-				if (obj['holder']) formattedObj['holder'] = obj['holder'];
-				if (obj['isDealFunded']) formattedObj['isDealFunded'] = obj['isDealFunded'];
+					{formattedObj['openRedemptionPeriod'] = wei(obj['openRedemptionPeriod'], 0);}
+				if (obj['holder']) {formattedObj['holder'] = obj['holder'];}
+				if (obj['isDealFunded']) {formattedObj['isDealFunded'] = obj['isDealFunded'];}
 				if (obj['holderFundingExpiration'])
-					formattedObj['holderFundingExpiration'] = wei(obj['holderFundingExpiration'], 0);
+					{formattedObj['holderFundingExpiration'] = wei(obj['holderFundingExpiration'], 0);}
 				if (obj['holderFundingDuration'])
-					formattedObj['holderFundingDuration'] = wei(obj['holderFundingDuration'], 0);
+					{formattedObj['holderFundingDuration'] = wei(obj['holderFundingDuration'], 0);}
 				return formattedObj as Pick<DealDetailResult, K>;
 			});
 			results = results.concat(newResults);
@@ -1105,16 +1105,16 @@ export const useGetDealFullyFundedById = <K extends keyof DealFullyFundedResult>
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
 		if (obj['proRataRedemptionStart'])
-			formattedObj['proRataRedemptionStart'] = wei(obj['proRataRedemptionStart'], 0);
+			{formattedObj['proRataRedemptionStart'] = wei(obj['proRataRedemptionStart'], 0);}
 		if (obj['openRedemptionStart'])
-			formattedObj['openRedemptionStart'] = wei(obj['openRedemptionStart'], 0);
+			{formattedObj['openRedemptionStart'] = wei(obj['openRedemptionStart'], 0);}
 		if (obj['proRataRedemptionExpiry'])
-			formattedObj['proRataRedemptionExpiry'] = wei(obj['proRataRedemptionExpiry'], 0);
+			{formattedObj['proRataRedemptionExpiry'] = wei(obj['proRataRedemptionExpiry'], 0);}
 		if (obj['openRedemptionExpiry'])
-			formattedObj['openRedemptionExpiry'] = wei(obj['openRedemptionExpiry'], 0);
+			{formattedObj['openRedemptionExpiry'] = wei(obj['openRedemptionExpiry'], 0);}
 		return formattedObj as Pick<DealFullyFundedResult, K>;
 	};
 	const enabled = options && args;
@@ -1154,7 +1154,7 @@ export const useGetDealFullyFundeds = <K extends keyof DealFullyFundedResult>(
 		let results: Pick<DealFullyFundedResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('dealFullyFundeds', paginatedOptions, args),
 			});
@@ -1165,16 +1165,16 @@ export const useGetDealFullyFundeds = <K extends keyof DealFullyFundedResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
 				if (obj['proRataRedemptionStart'])
-					formattedObj['proRataRedemptionStart'] = wei(obj['proRataRedemptionStart'], 0);
+					{formattedObj['proRataRedemptionStart'] = wei(obj['proRataRedemptionStart'], 0);}
 				if (obj['openRedemptionStart'])
-					formattedObj['openRedemptionStart'] = wei(obj['openRedemptionStart'], 0);
+					{formattedObj['openRedemptionStart'] = wei(obj['openRedemptionStart'], 0);}
 				if (obj['proRataRedemptionExpiry'])
-					formattedObj['proRataRedemptionExpiry'] = wei(obj['proRataRedemptionExpiry'], 0);
+					{formattedObj['proRataRedemptionExpiry'] = wei(obj['proRataRedemptionExpiry'], 0);}
 				if (obj['openRedemptionExpiry'])
-					formattedObj['openRedemptionExpiry'] = wei(obj['openRedemptionExpiry'], 0);
+					{formattedObj['openRedemptionExpiry'] = wei(obj['openRedemptionExpiry'], 0);}
 				return formattedObj as Pick<DealFullyFundedResult, K>;
 			});
 			results = results.concat(newResults);
@@ -1270,13 +1270,13 @@ export const useGetDepositDealTokenById = <K extends keyof DepositDealTokenResul
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
 		if (obj['underlyingDealTokenAddress'])
-			formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];
-		if (obj['depositor']) formattedObj['depositor'] = obj['depositor'];
-		if (obj['dealContract']) formattedObj['dealContract'] = obj['dealContract'];
+			{formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];}
+		if (obj['depositor']) {formattedObj['depositor'] = obj['depositor'];}
+		if (obj['dealContract']) {formattedObj['dealContract'] = obj['dealContract'];}
 		if (obj['underlyingDealTokenAmount'])
-			formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);
+			{formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);}
 		return formattedObj as Pick<DepositDealTokenResult, K>;
 	};
 	const enabled = options && args;
@@ -1318,7 +1318,7 @@ export const useGetDepositDealTokens = <K extends keyof DepositDealTokenResult>(
 		let results: Pick<DepositDealTokenResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('depositDealTokens', paginatedOptions, args),
 			});
@@ -1329,13 +1329,13 @@ export const useGetDepositDealTokens = <K extends keyof DepositDealTokenResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
 				if (obj['underlyingDealTokenAddress'])
-					formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];
-				if (obj['depositor']) formattedObj['depositor'] = obj['depositor'];
-				if (obj['dealContract']) formattedObj['dealContract'] = obj['dealContract'];
+					{formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];}
+				if (obj['depositor']) {formattedObj['depositor'] = obj['depositor'];}
+				if (obj['dealContract']) {formattedObj['dealContract'] = obj['dealContract'];}
 				if (obj['underlyingDealTokenAmount'])
-					formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);
+					{formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);}
 				return formattedObj as Pick<DepositDealTokenResult, K>;
 			});
 			results = results.concat(newResults);
@@ -1572,26 +1572,26 @@ export const useGetPoolCreatedById = <K extends keyof PoolCreatedResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['name']) formattedObj['name'] = obj['name'];
-		if (obj['symbol']) formattedObj['symbol'] = obj['symbol'];
-		if (obj['purchaseTokenCap']) formattedObj['purchaseTokenCap'] = wei(obj['purchaseTokenCap'], 0);
-		if (obj['purchaseToken']) formattedObj['purchaseToken'] = obj['purchaseToken'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['name']) {formattedObj['name'] = obj['name'];}
+		if (obj['symbol']) {formattedObj['symbol'] = obj['symbol'];}
+		if (obj['purchaseTokenCap']) {formattedObj['purchaseTokenCap'] = wei(obj['purchaseTokenCap'], 0);}
+		if (obj['purchaseToken']) {formattedObj['purchaseToken'] = obj['purchaseToken'];}
 		if (obj['purchaseTokenSymbol'])
-			formattedObj['purchaseTokenSymbol'] = obj['purchaseTokenSymbol'];
-		if (obj['duration']) formattedObj['duration'] = wei(obj['duration'], 0);
-		if (obj['sponsorFee']) formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);
-		if (obj['sponsor']) formattedObj['sponsor'] = obj['sponsor'];
-		if (obj['purchaseDuration']) formattedObj['purchaseDuration'] = wei(obj['purchaseDuration'], 0);
-		if (obj['purchaseExpiry']) formattedObj['purchaseExpiry'] = wei(obj['purchaseExpiry'], 0);
+			{formattedObj['purchaseTokenSymbol'] = obj['purchaseTokenSymbol'];}
+		if (obj['duration']) {formattedObj['duration'] = wei(obj['duration'], 0);}
+		if (obj['sponsorFee']) {formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);}
+		if (obj['sponsor']) {formattedObj['sponsor'] = obj['sponsor'];}
+		if (obj['purchaseDuration']) {formattedObj['purchaseDuration'] = wei(obj['purchaseDuration'], 0);}
+		if (obj['purchaseExpiry']) {formattedObj['purchaseExpiry'] = wei(obj['purchaseExpiry'], 0);}
 		if (obj['purchaseTokenDecimals'])
-			formattedObj['purchaseTokenDecimals'] = obj['purchaseTokenDecimals'];
-		if (obj['timestamp']) formattedObj['timestamp'] = wei(obj['timestamp'], 0);
-		if (obj['hasAllowList']) formattedObj['hasAllowList'] = obj['hasAllowList'];
-		if (obj['poolStatus']) formattedObj['poolStatus'] = obj['poolStatus'];
-		if (obj['contributions']) formattedObj['contributions'] = wei(obj['contributions'], 0);
-		if (obj['totalSupply']) formattedObj['totalSupply'] = wei(obj['totalSupply'], 0);
-		if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
+			{formattedObj['purchaseTokenDecimals'] = obj['purchaseTokenDecimals'];}
+		if (obj['timestamp']) {formattedObj['timestamp'] = wei(obj['timestamp'], 0);}
+		if (obj['hasAllowList']) {formattedObj['hasAllowList'] = obj['hasAllowList'];}
+		if (obj['poolStatus']) {formattedObj['poolStatus'] = obj['poolStatus'];}
+		if (obj['contributions']) {formattedObj['contributions'] = wei(obj['contributions'], 0);}
+		if (obj['totalSupply']) {formattedObj['totalSupply'] = wei(obj['totalSupply'], 0);}
+		if (obj['dealAddress']) {formattedObj['dealAddress'] = obj['dealAddress'];}
 		return formattedObj as Pick<PoolCreatedResult, K>;
 	};
 	const enabled = options && args;
@@ -1632,7 +1632,7 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(
 		let results: Pick<PoolCreatedResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('poolCreateds', paginatedOptions, args),
 			});
@@ -1643,28 +1643,28 @@ export const useGetPoolCreateds = <K extends keyof PoolCreatedResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['name']) formattedObj['name'] = obj['name'];
-				if (obj['symbol']) formattedObj['symbol'] = obj['symbol'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['name']) {formattedObj['name'] = obj['name'];}
+				if (obj['symbol']) {formattedObj['symbol'] = obj['symbol'];}
 				if (obj['purchaseTokenCap'])
-					formattedObj['purchaseTokenCap'] = wei(obj['purchaseTokenCap'], 0);
-				if (obj['purchaseToken']) formattedObj['purchaseToken'] = obj['purchaseToken'];
+					{formattedObj['purchaseTokenCap'] = wei(obj['purchaseTokenCap'], 0);}
+				if (obj['purchaseToken']) {formattedObj['purchaseToken'] = obj['purchaseToken'];}
 				if (obj['purchaseTokenSymbol'])
-					formattedObj['purchaseTokenSymbol'] = obj['purchaseTokenSymbol'];
-				if (obj['duration']) formattedObj['duration'] = wei(obj['duration'], 0);
-				if (obj['sponsorFee']) formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);
-				if (obj['sponsor']) formattedObj['sponsor'] = obj['sponsor'];
+					{formattedObj['purchaseTokenSymbol'] = obj['purchaseTokenSymbol'];}
+				if (obj['duration']) {formattedObj['duration'] = wei(obj['duration'], 0);}
+				if (obj['sponsorFee']) {formattedObj['sponsorFee'] = wei(obj['sponsorFee'], 0);}
+				if (obj['sponsor']) {formattedObj['sponsor'] = obj['sponsor'];}
 				if (obj['purchaseDuration'])
-					formattedObj['purchaseDuration'] = wei(obj['purchaseDuration'], 0);
-				if (obj['purchaseExpiry']) formattedObj['purchaseExpiry'] = wei(obj['purchaseExpiry'], 0);
+					{formattedObj['purchaseDuration'] = wei(obj['purchaseDuration'], 0);}
+				if (obj['purchaseExpiry']) {formattedObj['purchaseExpiry'] = wei(obj['purchaseExpiry'], 0);}
 				if (obj['purchaseTokenDecimals'])
-					formattedObj['purchaseTokenDecimals'] = obj['purchaseTokenDecimals'];
-				if (obj['timestamp']) formattedObj['timestamp'] = wei(obj['timestamp'], 0);
-				if (obj['hasAllowList']) formattedObj['hasAllowList'] = obj['hasAllowList'];
-				if (obj['poolStatus']) formattedObj['poolStatus'] = obj['poolStatus'];
-				if (obj['contributions']) formattedObj['contributions'] = wei(obj['contributions'], 0);
-				if (obj['totalSupply']) formattedObj['totalSupply'] = wei(obj['totalSupply'], 0);
-				if (obj['dealAddress']) formattedObj['dealAddress'] = obj['dealAddress'];
+					{formattedObj['purchaseTokenDecimals'] = obj['purchaseTokenDecimals'];}
+				if (obj['timestamp']) {formattedObj['timestamp'] = wei(obj['timestamp'], 0);}
+				if (obj['hasAllowList']) {formattedObj['hasAllowList'] = obj['hasAllowList'];}
+				if (obj['poolStatus']) {formattedObj['poolStatus'] = obj['poolStatus'];}
+				if (obj['contributions']) {formattedObj['contributions'] = wei(obj['contributions'], 0);}
+				if (obj['totalSupply']) {formattedObj['totalSupply'] = wei(obj['totalSupply'], 0);}
+				if (obj['dealAddress']) {formattedObj['dealAddress'] = obj['dealAddress'];}
 				return formattedObj as Pick<PoolCreatedResult, K>;
 			});
 			results = results.concat(newResults);
@@ -1762,12 +1762,12 @@ export const useGetPurchasePoolTokenById = <K extends keyof PurchasePoolTokenRes
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['purchaser']) formattedObj['purchaser'] = obj['purchaser'];
-		if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['purchaser']) {formattedObj['purchaser'] = obj['purchaser'];}
+		if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
 		if (obj['purchaseTokenAmount'])
-			formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);
-		if (obj['timestamp']) formattedObj['timestamp'] = wei(obj['timestamp'], 0);
+			{formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);}
+		if (obj['timestamp']) {formattedObj['timestamp'] = wei(obj['timestamp'], 0);}
 		return formattedObj as Pick<PurchasePoolTokenResult, K>;
 	};
 	const enabled = options && args;
@@ -1810,7 +1810,7 @@ export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult
 		let results: Pick<PurchasePoolTokenResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('purchasePoolTokens', paginatedOptions, args),
 			});
@@ -1821,12 +1821,12 @@ export const useGetPurchasePoolTokens = <K extends keyof PurchasePoolTokenResult
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['purchaser']) formattedObj['purchaser'] = obj['purchaser'];
-				if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['purchaser']) {formattedObj['purchaser'] = obj['purchaser'];}
+				if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
 				if (obj['purchaseTokenAmount'])
-					formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);
-				if (obj['timestamp']) formattedObj['timestamp'] = wei(obj['timestamp'], 0);
+					{formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);}
+				if (obj['timestamp']) {formattedObj['timestamp'] = wei(obj['timestamp'], 0);}
 				return formattedObj as Pick<PurchasePoolTokenResult, K>;
 			});
 			results = results.concat(newResults);
@@ -1900,8 +1900,8 @@ export const useGetSetHolderById = <K extends keyof SetHolderResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['holder']) formattedObj['holder'] = obj['holder'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['holder']) {formattedObj['holder'] = obj['holder'];}
 		return formattedObj as Pick<SetHolderResult, K>;
 	};
 	const enabled = options && args;
@@ -1941,7 +1941,7 @@ export const useGetSetHolders = <K extends keyof SetHolderResult>(
 		let results: Pick<SetHolderResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('setHolders', paginatedOptions, args),
 			});
@@ -1952,8 +1952,8 @@ export const useGetSetHolders = <K extends keyof SetHolderResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['holder']) formattedObj['holder'] = obj['holder'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['holder']) {formattedObj['holder'] = obj['holder'];}
 				return formattedObj as Pick<SetHolderResult, K>;
 			});
 			results = results.concat(newResults);
@@ -2023,8 +2023,8 @@ export const useGetSetSponsorById = <K extends keyof SetSponsorResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['sponsor']) formattedObj['sponsor'] = obj['sponsor'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['sponsor']) {formattedObj['sponsor'] = obj['sponsor'];}
 		return formattedObj as Pick<SetSponsorResult, K>;
 	};
 	const enabled = options && args;
@@ -2064,7 +2064,7 @@ export const useGetSetSponsors = <K extends keyof SetSponsorResult>(
 		let results: Pick<SetSponsorResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('setSponsors', paginatedOptions, args),
 			});
@@ -2075,8 +2075,8 @@ export const useGetSetSponsors = <K extends keyof SetSponsorResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['sponsor']) formattedObj['sponsor'] = obj['sponsor'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['sponsor']) {formattedObj['sponsor'] = obj['sponsor'];}
 				return formattedObj as Pick<SetSponsorResult, K>;
 			});
 			results = results.concat(newResults);
@@ -2148,8 +2148,8 @@ export const useGetTotalPoolsCreatedById = <K extends keyof TotalPoolsCreatedRes
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['count']) formattedObj['count'] = wei(obj['count'], 0);
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['count']) {formattedObj['count'] = wei(obj['count'], 0);}
 		return formattedObj as Pick<TotalPoolsCreatedResult, K>;
 	};
 	const enabled = options && args;
@@ -2191,7 +2191,7 @@ export const useGetTotalPoolsCreateds = <K extends keyof TotalPoolsCreatedResult
 		let results: Pick<TotalPoolsCreatedResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('totalPoolsCreateds', paginatedOptions, args),
 			});
@@ -2202,8 +2202,8 @@ export const useGetTotalPoolsCreateds = <K extends keyof TotalPoolsCreatedResult
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['count']) formattedObj['count'] = wei(obj['count'], 0);
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['count']) {formattedObj['count'] = wei(obj['count'], 0);}
 				return formattedObj as Pick<TotalPoolsCreatedResult, K>;
 			});
 			results = results.concat(newResults);
@@ -2291,10 +2291,10 @@ export const useGetTransferById = <K extends keyof TransferResult>(
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['from']) formattedObj['from'] = obj['from'];
-		if (obj['to']) formattedObj['to'] = obj['to'];
-		if (obj['value']) formattedObj['value'] = wei(obj['value'], 0);
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['from']) {formattedObj['from'] = obj['from'];}
+		if (obj['to']) {formattedObj['to'] = obj['to'];}
+		if (obj['value']) {formattedObj['value'] = wei(obj['value'], 0);}
 		return formattedObj as Pick<TransferResult, K>;
 	};
 	const enabled = options && args;
@@ -2334,7 +2334,7 @@ export const useGetTransfers = <K extends keyof TransferResult>(
 		let results: Pick<TransferResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('transfers', paginatedOptions, args),
 			});
@@ -2345,10 +2345,10 @@ export const useGetTransfers = <K extends keyof TransferResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['from']) formattedObj['from'] = obj['from'];
-				if (obj['to']) formattedObj['to'] = obj['to'];
-				if (obj['value']) formattedObj['value'] = wei(obj['value'], 0);
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['from']) {formattedObj['from'] = obj['from'];}
+				if (obj['to']) {formattedObj['to'] = obj['to'];}
+				if (obj['value']) {formattedObj['value'] = wei(obj['value'], 0);}
 				return formattedObj as Pick<TransferResult, K>;
 			});
 			results = results.concat(newResults);
@@ -2436,11 +2436,11 @@ export const useGetWithdrawFromPoolById = <K extends keyof WithdrawFromPoolResul
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
-		if (obj['purchaser']) formattedObj['purchaser'] = obj['purchaser'];
-		if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
+		if (obj['purchaser']) {formattedObj['purchaser'] = obj['purchaser'];}
+		if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
 		if (obj['purchaseTokenAmount'])
-			formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);
+			{formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);}
 		return formattedObj as Pick<WithdrawFromPoolResult, K>;
 	};
 	const enabled = options && args;
@@ -2482,7 +2482,7 @@ export const useGetWithdrawFromPools = <K extends keyof WithdrawFromPoolResult>(
 		let results: Pick<WithdrawFromPoolResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('withdrawFromPools', paginatedOptions, args),
 			});
@@ -2493,11 +2493,11 @@ export const useGetWithdrawFromPools = <K extends keyof WithdrawFromPoolResult>(
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
-				if (obj['purchaser']) formattedObj['purchaser'] = obj['purchaser'];
-				if (obj['poolAddress']) formattedObj['poolAddress'] = obj['poolAddress'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
+				if (obj['purchaser']) {formattedObj['purchaser'] = obj['purchaser'];}
+				if (obj['poolAddress']) {formattedObj['poolAddress'] = obj['poolAddress'];}
 				if (obj['purchaseTokenAmount'])
-					formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);
+					{formattedObj['purchaseTokenAmount'] = wei(obj['purchaseTokenAmount'], 0);}
 				return formattedObj as Pick<WithdrawFromPoolResult, K>;
 			});
 			results = results.concat(newResults);
@@ -2598,13 +2598,13 @@ export const useGetWithdrawUnderlyingDealTokenById = <
 		}
 		const obj = r.data[Object.keys(r.data)[0]] as any;
 		const formattedObj: any = {};
-		if (obj['id']) formattedObj['id'] = obj['id'];
+		if (obj['id']) {formattedObj['id'] = obj['id'];}
 		if (obj['underlyingDealTokenAddress'])
-			formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];
-		if (obj['depositor']) formattedObj['depositor'] = obj['depositor'];
-		if (obj['dealContract']) formattedObj['dealContract'] = obj['dealContract'];
+			{formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];}
+		if (obj['depositor']) {formattedObj['depositor'] = obj['depositor'];}
+		if (obj['dealContract']) {formattedObj['dealContract'] = obj['dealContract'];}
 		if (obj['underlyingDealTokenAmount'])
-			formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);
+			{formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);}
 		return formattedObj as Pick<WithdrawUnderlyingDealTokenResult, K>;
 	};
 	const enabled = options && args;
@@ -2651,7 +2651,7 @@ export const useGetWithdrawUnderlyingDealTokens = <
 		let results: Pick<WithdrawUnderlyingDealTokenResult, K>[] = [];
 		do {
 			if (paginationKey && paginationValue)
-				paginatedOptions.where![paginationKey] = paginationValue as any;
+				{paginatedOptions.where![paginationKey] = paginationValue as any;}
 			const res = await axios.post(url, {
 				query: generateGql('withdrawUnderlyingDealTokens', paginatedOptions, args),
 			});
@@ -2662,13 +2662,13 @@ export const useGetWithdrawUnderlyingDealTokens = <
 			const rawResults = r.data[Object.keys(r.data)[0]] as any[];
 			const newResults = rawResults.map((obj) => {
 				const formattedObj: any = {};
-				if (obj['id']) formattedObj['id'] = obj['id'];
+				if (obj['id']) {formattedObj['id'] = obj['id'];}
 				if (obj['underlyingDealTokenAddress'])
-					formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];
-				if (obj['depositor']) formattedObj['depositor'] = obj['depositor'];
-				if (obj['dealContract']) formattedObj['dealContract'] = obj['dealContract'];
+					{formattedObj['underlyingDealTokenAddress'] = obj['underlyingDealTokenAddress'];}
+				if (obj['depositor']) {formattedObj['depositor'] = obj['depositor'];}
+				if (obj['dealContract']) {formattedObj['dealContract'] = obj['dealContract'];}
 				if (obj['underlyingDealTokenAmount'])
-					formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);
+					{formattedObj['underlyingDealTokenAmount'] = wei(obj['underlyingDealTokenAmount'], 0);}
 				return formattedObj as Pick<WithdrawUnderlyingDealTokenResult, K>;
 			});
 			results = results.concat(newResults);

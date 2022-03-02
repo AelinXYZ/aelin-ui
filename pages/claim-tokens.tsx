@@ -58,11 +58,11 @@ const Airdrop = () => {
 
 	// first drop of AELIN
 	const aelinDistributionContract = useMemo(() => {
-		if (!signer || !network?.id) return null;
+		if (!signer || !network?.id) {return null;}
 		const secondDistributionContract = (getKeyValue(SecondDistributionContract) as any)(
 			network?.id ?? DEFAULT_NETWORK_ID
 		);
-		if (!secondDistributionContract) return null;
+		if (!secondDistributionContract) {return null;}
 		return new ethers.Contract(
 			secondDistributionContract.address,
 			secondDistributionContract.abi,
@@ -72,18 +72,18 @@ const Airdrop = () => {
 
 	// first drop of vAELIN
 	const vAelinDistributionContract = useMemo(() => {
-		if (!signer || !network?.id) return null;
+		if (!signer || !network?.id) {return null;}
 		const distributionContract = (getKeyValue(DistributionContract) as any)(
 			network?.id ?? DEFAULT_NETWORK_ID
 		);
-		if (!distributionContract) return null;
+		if (!distributionContract) {return null;}
 		return new ethers.Contract(distributionContract.address, distributionContract.abi, signer);
 	}, [signer, network?.id]);
 
 	// first drop of AELIN
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!walletAddress || !merkleBalance || !canClaimMerkle || !aelinDistributionContract) return;
+			if (!walletAddress || !merkleBalance || !canClaimMerkle || !aelinDistributionContract) {return;}
 			try {
 				const gasEstimate = await aelinDistributionContract.estimateGas.claim(
 					merkleIndex,
@@ -111,7 +111,7 @@ const Airdrop = () => {
 	// first drop of vAELIN
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!walletAddress || !airdropBalance || !canClaim || !vAelinDistributionContract) return;
+			if (!walletAddress || !airdropBalance || !canClaim || !vAelinDistributionContract) {return;}
 			try {
 				const gasEstimate = await vAelinDistributionContract.estimateGas.claim(
 					airdropIndex,
@@ -142,7 +142,7 @@ const Airdrop = () => {
 	// first drop of AELIN
 	const handleAelinClaim = useCallback(async () => {
 		if (isMerkleSubmitButtonDisabled || !gasAelinLimitEstimate || !aelinDistributionContract)
-			return;
+			{return;}
 		try {
 			setShowAelinTxModal(false);
 
@@ -185,7 +185,7 @@ const Airdrop = () => {
 
 	// first drop of vAELIN
 	const handlevAelinClaim = useCallback(async () => {
-		if (isSubmitButtonDisabled || !gasvAelinLimitEstimate || !vAelinDistributionContract) return;
+		if (isSubmitButtonDisabled || !gasvAelinLimitEstimate || !vAelinDistributionContract) {return;}
 		try {
 			setShowvAelinTxModal(false);
 

@@ -41,7 +41,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const poolContract = useMemo(() => {
-		if (!pool || !pool.purchaseToken || !signer) return null;
+		if (!pool || !pool.purchaseToken || !signer) {return null;}
 		return new ethers.Contract(pool.id, poolAbi, signer);
 	}, [pool, signer]);
 

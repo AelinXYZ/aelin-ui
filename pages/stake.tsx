@@ -139,7 +139,7 @@ const Stake = () => {
 	);
 
 	const pools = useMemo(() => {
-		if (!network?.id) return [];
+		if (!network?.id) {return [];}
 		return (getKeyValue(allPools) as any)(network.id!);
 	}, [network?.id, allPools]);
 

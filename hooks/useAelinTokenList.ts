@@ -7,7 +7,7 @@ type UseAelinTokenListReturn = {
 };
 const useAelinTokenList = () => {
 	const tokenList = useTokenListQuery();
-	if (tokenList.isLoading) return undefined;
+	if (tokenList.isLoading) {return undefined;}
 	const allTokens = tokenList?.data ?? [];
 	const { tokensByAddress, tokens } = allTokens.reduce(
 		(acc: UseAelinTokenListReturn, token) => {

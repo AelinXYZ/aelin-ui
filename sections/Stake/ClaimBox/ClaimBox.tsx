@@ -39,7 +39,7 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 
 	useEffect(() => {
 		const getGasEstimate = async () => {
-			if (!stakingContract || !walletAddress || !earned || !earned.gt(wei(0))) return;
+			if (!stakingContract || !walletAddress || !earned || !earned.gt(wei(0))) {return;}
 			try {
 				setGasLimitEstimate(null);
 				const gasLimit = await stakingContract.estimateGas.getReward();
@@ -53,7 +53,7 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, ether
 	}, [stakingContract, walletAddress, earned]);
 
 	const handleClaim = useCallback(async () => {
-		if (!gasLimitEstimate || !stakingContract || !walletAddress || !gasPrice) return;
+		if (!gasLimitEstimate || !stakingContract || !walletAddress || !gasPrice) {return;}
 		try {
 			const tx = await stakingContract.getReward({
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),

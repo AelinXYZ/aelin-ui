@@ -39,7 +39,7 @@ const GasSelector: React.FC<IGasSelector> = ({
 		try {
 			return wei(customGasPrice, GWEI_PRECISION);
 		} catch (_) {
-			if (!ethGasStationQuery.data) return null;
+			if (!ethGasStationQuery.data) {return null;}
 
 			return wei(ethGasStationQuery.data[gasSpeed], GWEI_PRECISION);
 		}
@@ -57,11 +57,11 @@ const GasSelector: React.FC<IGasSelector> = ({
 		const nCustomGasPrice = Number(customGasPrice);
 
 		if (!nCustomGasPrice) {
-			if (!Number.isInteger(nGasPrice)) return nGasPrice.toFixed(isOVM ? 3 : 2);
+			if (!Number.isInteger(nGasPrice)) {return nGasPrice.toFixed(isOVM ? 3 : 2);}
 			return nGasPrice;
 		}
 
-		if (!Number.isInteger(nCustomGasPrice)) return nCustomGasPrice.toFixed(isOVM ? 3 : 2);
+		if (!Number.isInteger(nCustomGasPrice)) {return nCustomGasPrice.toFixed(isOVM ? 3 : 2);}
 		return nCustomGasPrice;
 	}, [customGasPrice, gasPrices, gasSpeed, isOVM]);
 

@@ -14,7 +14,7 @@ const CopyToClipboard = ({ text }: ICopyToClipboard) => {
 	const [copiedAddress, setCopiedAddress] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (!copiedAddress) return;
+		if (!copiedAddress) {return;}
 
 		const intervalId = setInterval(() => {
 			setCopiedAddress(false);

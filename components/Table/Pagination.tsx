@@ -29,7 +29,7 @@ const Pagination: FC<PaginationProps> = ({
 	const { pathname } = useRouter();
 
 	useEffect(() => {
-		if (pageCount === 0) return;
+		if (pageCount === 0) {return;}
 
 		const page = pageIndex > pageCount ? DEFAULT_PAGE_INDEX : pageIndex;
 

@@ -42,7 +42,7 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 					isRounded
 					onClick={() => {
 						setIsModalOpen(false);
-						if (onSubmit) onSubmit();
+						if (onSubmit) {onSubmit();}
 					}}
 				>
 					Submit

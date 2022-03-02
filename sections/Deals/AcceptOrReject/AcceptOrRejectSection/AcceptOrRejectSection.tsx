@@ -432,16 +432,16 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 	const handleSubmit = useCallback(async () => {
 		if (!walletAddress || !signer || !deal?.poolAddress || !poolBalances?.purchaseTokenDecimals)
-			return;
+			{return;}
 		const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 		try {
 			const txOptions = {
 				[TransactionDealType.Withdraw]: () => {
 					if (isMaxValue)
-						return contract.withdrawMaxFromPool({
+						{return contract.withdrawMaxFromPool({
 							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 							gasPrice: gasPrice.toBN(),
-						});
+						});}
 
 					return contract.withdrawFromPool(
 						ethers.utils.parseUnits(
@@ -456,10 +456,10 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				},
 				[TransactionDealType.AcceptDeal]: () => {
 					if (isMaxValue)
-						return contract.acceptMaxDealTokens({
+						{return contract.acceptMaxDealTokens({
 							gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
 							gasPrice: gasPrice.toBN(),
-						});
+						});}
 
 					return contract.acceptDealTokens(
 						ethers.utils.parseUnits(
@@ -511,7 +511,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	useEffect(() => {
 		async function getGasLimitEstimate() {
 			if (!walletAddress || !signer || !deal?.poolAddress || !poolBalances?.purchaseTokenDecimals)
-				return setGasLimitEstimate(null);
+				{return setGasLimitEstimate(null);}
 
 			const contract = new ethers.Contract(deal.poolAddress, poolAbi, signer);
 

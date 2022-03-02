@@ -39,7 +39,7 @@ const ConvertSection = () => {
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!walletAddress || !vAelinConverterContract || !vAelinTokenContract) return;
+			if (!walletAddress || !vAelinConverterContract || !vAelinTokenContract) {return;}
 			try {
 				setvAelinConverterGasLimitEstimate(null);
 				if (!hasAllowance) {
@@ -61,7 +61,7 @@ const ConvertSection = () => {
 	}, [walletAddress, network.id, vAelinConverterContract, vAelinTokenContract, hasAllowance]);
 
 	const getAllowance = useCallback(async () => {
-		if (!vAelinConverterContract || !vAelinTokenContract || !walletAddress) return;
+		if (!vAelinConverterContract || !vAelinTokenContract || !walletAddress) {return;}
 		try {
 			const allowance = await vAelinTokenContract.allowance(
 				walletAddress,
@@ -75,7 +75,7 @@ const ConvertSection = () => {
 	}, [vAelinTokenContract, vAelinConverterContract, walletAddress]);
 
 	const handleConvertAll = useCallback(async () => {
-		if (!vAelinConverterContract || !vAelinTokenContract || !walletAddress) return;
+		if (!vAelinConverterContract || !vAelinTokenContract || !walletAddress) {return;}
 		try {
 			const tx = await vAelinConverterContract.convertAll({
 				gasLimit: getGasEstimateWithBuffer(gasvAelinConverterLimitEstimate)?.toBN(),
@@ -110,7 +110,7 @@ const ConvertSection = () => {
 
 	const handleApprove = useCallback(async () => {
 		if (!gasvAelinConverterLimitEstimate || !vAelinTokenContract || !vAelinConverterContract)
-			return;
+			{return;}
 		try {
 			const tx = await vAelinTokenContract.approve(
 				vAelinConverterContract.address,

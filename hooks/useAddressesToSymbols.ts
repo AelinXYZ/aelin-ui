@@ -10,9 +10,7 @@ const useAddressesToSymbols = (addresses: string[]) => {
 	const [symbols, setSymbols] = useState<string[]>([]);
 
 	useEffect(() => {
-		if (!addresses) {
-			return;
-		}
+		if (!addresses) {return;}
 
 		const getSymbols = async (addresses: string[]) => {
 			const symbols: string[] = await Promise.all(

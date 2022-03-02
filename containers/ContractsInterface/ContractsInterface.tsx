@@ -21,7 +21,7 @@ const useContractsInterface = () => {
 	const [contracts, setContracts] = useState<AelinContracts | null>(null);
 
 	useEffect(() => {
-		if (!walletAddress || !signer) return;
+		if (!walletAddress || !signer) {return;}
 
 		try {
 			const poolFactoryContract = (getKeyValue(PoolFactoryContract) as any)(
