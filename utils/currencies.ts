@@ -10,7 +10,5 @@ export const getExchangeRatesForCurrencies = (
 ) => (rates == null || base == null || quote == null ? wei(0) : rates[base].div(rates[quote]));
 
 export const iStandardSynth = (currencyKey: CurrencyKey) => currencyKey.startsWith('s');
-export const synthToAsset = (currencyKey: CurrencyKey) => currencyKey.replace(/^(i|s)/i, '') as CurrencyKey;
-
-
-
+export const synthToAsset = (currencyKey: CurrencyKey) =>
+	currencyKey.replace(/^(i|s)/i, '') as CurrencyKey;

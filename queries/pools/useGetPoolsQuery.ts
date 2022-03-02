@@ -16,6 +16,7 @@ const useGetPoolsQuery = () => {
 	);
 
 	return networks.map(([networkName, { id }]) => ({
+		// eslint-disable-next-line react-hooks/rules-of-hooks
 		...useGetPoolCreateds(
 			getGraphEndpoint(id),
 			{
