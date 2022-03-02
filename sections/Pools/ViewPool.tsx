@@ -230,18 +230,10 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			(pool?.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) ||
 			(pool?.poolStatus !== Status.FundingDeal &&
 				pool?.purchaseExpiry != null &&
-				deal?.id != null &&
 				now > (pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0) &&
 				!(pool?.poolStatus === Status.DealOpen))
 		);
-	}, [
-		deal.holderFundingExpiration,
-		deal?.id,
-		now,
-		pool?.duration,
-		pool?.poolStatus,
-		pool?.purchaseExpiry,
-	]);
+	}, [deal.holderFundingExpiration, now, pool?.duration, pool?.poolStatus, pool?.purchaseExpiry]);
 
 	const hasUnredeemedTokens = useMemo(() => {
 		return (
