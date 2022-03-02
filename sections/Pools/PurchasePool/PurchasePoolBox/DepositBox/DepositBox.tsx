@@ -18,7 +18,7 @@ interface DepositBoxProps {
 	isMaxBalanceExceeded: boolean;
 	handleMaxButtonClick: () => void;
 	isPrivate: boolean;
-	allowance: number;
+	allocation: number;
 }
 
 const DepositBox: FC<DepositBoxProps> = ({
