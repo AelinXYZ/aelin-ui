@@ -92,13 +92,16 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 			&:nth-child(10) {
 				border-bottom: none;
 				border-radius: 0 0 0 8px;
+				height: 160px;
 			}
 			&:nth-child(11) {
 				border-bottom: none;
+				height: 160px;
 			}
 			&:nth-child(12) {
 				border-bottom: none;
 				border-radius: 0 0 8px 0;
+				height: 160px;
 			}
 		`}
 `;
