@@ -95,22 +95,14 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: deal?.name ?? '',
 			},
 			{
-				header: <>`My {<TokenDisplay address={deal?.underlyingDealToken ?? ''} />} Balance`</>,
-				subText: formatNumber(dealBalance ?? '0', DEFAULT_DECIMALS),
+				header: 'Total Vested',
+				subText: (
+					<>
+						{totalVested}{' '}
+						<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
+					</>
+				),
 			},
-			...(!isVestingCliffEnds
-				? [
-						{
-							header: 'Claiming Exchange Rate',
-							subText: (
-								<div>
-									<Subheader>Deal token / Underlying Deal Token</Subheader>
-									<div>{formatNumber(dealPerUnderlyingExchangeRate ?? '0', DEFAULT_DECIMALS)}</div>
-								</div>
-							),
-						},
-				  ]
-				: []),
 			{
 				header: 'Underlying Deal Token',
 				subText: <TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={true} />,
@@ -152,8 +144,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 		deal?.vestingCliff,
 		deal?.vestingPeriod,
 		isVestingCliffEnds,
-		dealBalance,
-		dealPerUnderlyingExchangeRate,
 		totalVested,
 	]);
 
