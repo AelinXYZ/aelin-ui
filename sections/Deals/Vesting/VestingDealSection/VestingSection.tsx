@@ -13,11 +13,9 @@ import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
-import { formatNumber } from 'utils/numbers';
 import { formatShortDateWithTime } from 'utils/time';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
-import { DEFAULT_DECIMALS } from 'constants/defaults';
 import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus } from 'constants/transactions';
 
@@ -126,14 +124,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 						Number(deal?.vestingPeriod ?? 0)
 				),
 			},
-			...(!isVestingCliffEnds
-				? [
-						{
-							header: 'Total Underlying Claimed',
-							subText: totalVested,
-						},
-				  ]
-				: []),
 		];
 	}, [
 		deal?.name,
@@ -143,7 +133,6 @@ const VestingDeal: FC<VestingDealProps> = ({
 		deal?.openRedemptionPeriod,
 		deal?.vestingCliff,
 		deal?.vestingPeriod,
-		isVestingCliffEnds,
 		totalVested,
 	]);
 

@@ -324,7 +324,8 @@ const FundDeal: FC<FundDealProps> = ({
 
 					{isHolder && isEnough && hasAllowance && (
 						<p>
-							Deal amount: <Bold>{`${amountToFund} ${symbol}`}</Bold>
+							Deal amount:{' '}
+							<Bold>{`${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`}</Bold>
 						</p>
 					)}
 
@@ -350,7 +351,7 @@ const FundDeal: FC<FundDealProps> = ({
 							disabled={isFundButtomDisabled}
 							onClick={() => setShowTxModal(true)}
 						>
-							{`Fund ${amountToFund} ${symbol}`}
+							{`Fund ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`}
 						</Button>
 					)}
 				</ContentContainer>
@@ -364,8 +365,8 @@ const FundDeal: FC<FundDealProps> = ({
 				onSubmit={!hasAllowance ? handleApprove : handleSubmit}
 			>
 				{!hasAllowance
-					? `Confirm Approval of ${amountToFund.toString()} ${symbol}`
-					: `Confirm Funding of ${amountToFund.toString()} ${symbol}`}
+					? `Confirm Approval of ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`
+					: `Confirm Funding of ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`}
 			</ConfirmTransactionModal>
 		</FlexDiv>
 	);
