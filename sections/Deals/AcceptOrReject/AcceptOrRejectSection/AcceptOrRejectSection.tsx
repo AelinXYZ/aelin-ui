@@ -84,7 +84,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		)
 	);
 
-	const exchangeRatePurchaseUnderlying = useMemo(
+	const exchangeRateUnderlyingPurchase = useMemo(
 		() =>
 			formatNumber(
 				Number(
@@ -109,19 +109,19 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		]
 	);
 
-	const exchangeRateUnderlyingPurchase = useMemo(
+	const exchangeRatePurchaseUnderlying = useMemo(
 		() =>
 			formatNumber(
 				Number(
 					ethers.utils.formatUnits(
-						deal?.underlyingDealTokenTotal?.toString() ?? '0',
-						underlyingDealTokenDecimals ?? 0
+						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+						poolBalances?.purchaseTokenDecimals ?? 0
 					)
 				) /
 					Number(
 						ethers.utils.formatUnits(
-							deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-							poolBalances?.purchaseTokenDecimals ?? 0
+							deal?.underlyingDealTokenTotal?.toString() ?? '0',
+							underlyingDealTokenDecimals ?? 0
 						)
 					),
 				DEFAULT_DECIMALS
