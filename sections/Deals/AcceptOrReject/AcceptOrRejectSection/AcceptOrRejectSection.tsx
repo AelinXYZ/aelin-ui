@@ -12,7 +12,7 @@ import QuestionMark from 'components/QuestionMark';
 
 import { statusToText } from 'constants/pool';
 import { GasLimitEstimate } from 'constants/networks';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { DEFAULT_DECIMALS, EXCHANGE_DECIMALS } from 'constants/defaults';
 import { TransactionStatus, TransactionDealType } from 'constants/transactions';
 
 import Connector from 'containers/Connector';
@@ -42,7 +42,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	underlyingDealTokenDecimals,
 	underlyingDealTokenSymbol,
 }) => {
-	const { walletAddress, signer, network } = Connector.useContainer();
+	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const { setTxState, gasPrice } = TransactionData.useContainer();
 
@@ -84,6 +84,56 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		)
 	);
 
+	const exchangeRateUnderlyingPurchase = useMemo(
+		() =>
+			formatNumber(
+				Number(
+					ethers.utils.formatUnits(
+						deal?.underlyingDealTokenTotal?.toString() ?? '0',
+						underlyingDealTokenDecimals ?? 0
+					)
+				) /
+					Number(
+						ethers.utils.formatUnits(
+							deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+							poolBalances?.purchaseTokenDecimals ?? 0
+						)
+					),
+				EXCHANGE_DECIMALS
+			),
+		[
+			deal?.purchaseTokenTotalForDeal,
+			deal?.underlyingDealTokenTotal,
+			poolBalances?.purchaseTokenDecimals,
+			underlyingDealTokenDecimals,
+		]
+	);
+
+	const exchangeRatePurchaseUnderlying = useMemo(
+		() =>
+			formatNumber(
+				Number(
+					ethers.utils.formatUnits(
+						deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
+						poolBalances?.purchaseTokenDecimals ?? 0
+					)
+				) /
+					Number(
+						ethers.utils.formatUnits(
+							deal?.underlyingDealTokenTotal?.toString() ?? '0',
+							underlyingDealTokenDecimals ?? 0
+						)
+					),
+				EXCHANGE_DECIMALS
+			),
+		[
+			deal?.purchaseTokenTotalForDeal,
+			deal?.underlyingDealTokenTotal,
+			poolBalances?.purchaseTokenDecimals,
+			underlyingDealTokenDecimals,
+		]
+	);
+
 	const dealRedemptionPeriod = useMemo(() => {
 		const now = Date.now();
 		if (
@@ -102,6 +152,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		deal?.proRataRedemptionPeriod,
 		deal?.openRedemptionPeriod,
 	]);
+
+	useEffect(() => {
+		if (Number(dealRedemptionPeriod)) {
+			setTxType(TransactionDealType.Withdraw);
+		} else {
+			setTxType(TransactionDealType.AcceptDeal);
+		}
+	}, [dealRedemptionPeriod]);
 
 	const areTokenSymbolsAvailable = [
 		underlyingDealTokenSymbol,
@@ -142,11 +200,20 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
 					</>
 				),
-				subText: Number(
-					ethers.utils.formatUnits(
-						deal?.underlyingDealTokenTotal?.toString() ?? '0',
-						underlyingDealTokenDecimals ?? 0
-					)
+				subText: (
+					<>
+						{Number(
+							ethers.utils.formatUnits(
+								deal?.underlyingDealTokenTotal?.toString() ?? '0',
+								underlyingDealTokenDecimals ?? 0
+							)
+						)}{' '}
+						<TokenDisplay
+							symbol={underlyingDealTokenSymbol}
+							address={deal?.underlyingDealToken}
+							displayAddress={false}
+						/>
+					</>
 				),
 			},
 			{
@@ -161,44 +228,16 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
+							{exchangeRateUnderlyingPurchase} {` `}
 							{areTokenSymbolsAvailable
-								? `${underlyingDealTokenSymbol} / ${poolBalances?.purchaseTokenSymbol}: `
+								? `${underlyingDealTokenSymbol} per ${poolBalances?.purchaseTokenSymbol}`
 								: `Underlying / Purchase: `}
-							{formatNumber(
-								Number(
-									ethers.utils.formatUnits(
-										deal?.underlyingDealTokenTotal?.toString() ?? '0',
-										underlyingDealTokenDecimals ?? 0
-									)
-								) /
-									Number(
-										ethers.utils.formatUnits(
-											deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-											poolBalances?.purchaseTokenDecimals ?? 0
-										)
-									),
-								DEFAULT_DECIMALS
-							)}
 						</ExchangeRate>
 						<ExchangeRate>
+							{exchangeRatePurchaseUnderlying} {` `}
 							{areTokenSymbolsAvailable
-								? `${poolBalances?.purchaseTokenSymbol} / ${underlyingDealTokenSymbol}: `
+								? `${poolBalances?.purchaseTokenSymbol} per ${underlyingDealTokenSymbol}`
 								: `Purchase / Underlying: `}
-							{formatNumber(
-								Number(
-									ethers.utils.formatUnits(
-										deal?.purchaseTokenTotalForDeal?.toString() ?? '0',
-										poolBalances?.purchaseTokenDecimals ?? 0
-									)
-								) /
-									Number(
-										ethers.utils.formatUnits(
-											deal?.underlyingDealTokenTotal?.toString() ?? '0',
-											underlyingDealTokenDecimals ?? 0
-										)
-									),
-								DEFAULT_DECIMALS
-							)}
 						</ExchangeRate>
 					</div>
 				),
@@ -232,7 +271,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>{`Status`}</>
+						<>{`Deal Stage`}</>
 						<QuestionMark text={`The current status of the deal`} />
 					</>
 				),
@@ -241,7 +280,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>Pro Rata Redemption Ends</>
+						<>{`Round 1 deadline`}</>
 						<QuestionMark
 							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
 						/>
@@ -274,7 +313,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			{
 				header: (
 					<>
-						<>Open Redemption Ends</>
+						<>{`Round 2 deadline`}</>
 						<QuestionMark
 							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
 						/>
@@ -308,7 +347,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						) : deal?.openRedemptionPeriod > 0 ? (
 							formatTimeDifference(deal?.openRedemptionPeriod)
 						) : (
-							'n/a'
+							'N/A'
 						)}
 					</>
 				),
@@ -321,7 +360,6 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							Remaining Pro-rata Allocation:{' '}
 							{formatNumber(poolBalances?.maxProRata ?? 0, DEFAULT_DECIMALS)}
 						</div>
-						<div>Redeemed: {formatNumber(userAmountAccepted ?? 0, DEFAULT_DECIMALS)}</div>
 						<div>Withdrawn: {formatNumber(userAmountWithdrawn ?? 0, DEFAULT_DECIMALS)}</div>
 					</div>
 				),
@@ -366,29 +404,29 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			},
 		],
 		[
-			deal?.symbol,
 			deal?.name,
-			deal?.underlyingDealTokenTotal,
-			deal?.purchaseTokenTotalForDeal,
-			deal?.vestingPeriod,
-			deal?.vestingCliff,
+			deal?.symbol,
 			deal?.underlyingDealToken,
+			deal?.underlyingDealTokenTotal,
+			deal?.vestingCliff,
+			deal?.vestingPeriod,
 			deal?.proRataRedemptionPeriodStart,
 			deal?.proRataRedemptionPeriod,
 			deal?.openRedemptionPeriod,
-			underlyingDealTokenDecimals,
-			pool?.sponsorFee,
-			poolBalances?.purchaseTokenDecimals,
+			deal?.purchaseTokenTotalForDeal,
 			underlyingDealTokenSymbol,
-			poolBalances?.totalAmountAccepted,
+			underlyingDealTokenDecimals,
+			areTokenSymbolsAvailable,
+			poolBalances?.purchaseTokenSymbol,
 			poolBalances?.maxProRata,
 			poolBalances?.totalSupply,
-			poolBalances?.purchaseTokenSymbol,
-			userAmountAccepted,
+			poolBalances?.totalAmountAccepted,
+			exchangeRateUnderlyingPurchase,
+			exchangeRatePurchaseUnderlying,
 			userAmountWithdrawn,
 			totalAmountAccepted,
-			areTokenSymbolsAvailable,
 			totalAmountWithdrawn,
+			pool?.sponsorFee,
 		]
 	);
 
@@ -539,8 +577,9 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				inputValue={inputValue}
 				onSubmit={handleSubmit}
 				gasLimitEstimate={gasLimitEstimate}
-				purchaseCurrency={pool?.purchaseToken ?? null}
 				userPoolBalance={poolBalances?.userPoolBalance ?? null}
+				purchaseTokenSymbol={poolBalances?.purchaseTokenSymbol ?? null}
+				underlyingDealTokenSymbol={underlyingDealTokenSymbol ?? null}
 				dealRedemptionData={{
 					status: dealRedemptionPeriod,
 					maxProRata: poolBalances?.maxProRata ?? 0,
@@ -563,7 +602,7 @@ const ExchangeRate = styled.div`
 `;
 
 const NoticeText = styled.div`
-	color: ${(props) => props.theme.colors.statusRed};
+	color: ${(props) => props.theme.colors.red};
 	margin-top: 3px;
 	font-size: 1.2rem;
 	font-weight: bold;

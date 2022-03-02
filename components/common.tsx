@@ -51,8 +51,8 @@ export const GridDivCenteredCol = styled(GridDivCentered)`
 `;
 
 export const Tooltip = styled(Tippy)`
-	background: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
+	background: ${(props) => props.theme.colors.tooltipBackground};
+	color: ${(props) => props.theme.colors.tooltipText};
 	border-radius: 4px;
 	max-width: 500px !important;
 
@@ -98,7 +98,7 @@ export const Notice = styled.div`
 	margin-top: 20px;
 	width: 100%;
 	max-width: 940px;
-	background-color: ${(props) => props.theme.colors.forestGreen};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
 	color: ${(props) => props.theme.colors.white};
 	text-align: center;
 	padding: 10px;

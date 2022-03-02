@@ -1,27 +1,25 @@
 import { useState, FC, useEffect, useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
-import Image from 'next/image';
+
+import { GasLimitEstimate } from 'constants/networks';
+import { TransactionStatus } from 'constants/transactions';
+
+import Connector from 'containers/Connector';
+import TransactionData from 'containers/TransactionData';
+import TransactionNotifier from 'containers/TransactionNotifier';
+
+import useGetTokenBalance from 'queries/token/useGetTokenBalance';
+import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
+
+import { getGasEstimateWithBuffer } from 'utils/network';
+
+import erc20ABI from 'contracts/erc20';
+import stakingRewardsABI from 'contracts/stakingRewardsV2';
 
 import { StakeActionLabel } from '../constants';
 import StakeBox from '../StakeBox';
 import ClaimBox from '../ClaimBox';
-import QuestionMark from 'components/QuestionMark';
-import { FlexDiv, FlexDivColCentered } from 'components/common';
-import { GasLimitEstimate } from 'constants/networks';
-import TransactionData from 'containers/TransactionData';
-import TransactionNotifier from 'containers/TransactionNotifier';
-import Connector from 'containers/Connector';
-import { TransactionStatus } from 'constants/transactions';
-import useGetTokenBalance from 'queries/token/useGetTokenBalance';
-import useGetStakingRewardsData from 'queries/stakingRewards/useGetStakingRewardsDataForAddress';
-import { getGasEstimateWithBuffer } from 'utils/network';
-import { formatNumber } from 'utils/numbers';
-import Etherscan from 'containers/BlockExplorer';
-import EtherscanLogo from 'assets/svg/etherscan-logo.svg';
-import erc20ABI from 'contracts/erc20';
-import stakingRewardsABI from 'contracts/stakingRewardsV2';
 
 type StakeSectionProps = {
 	header: string;
@@ -47,12 +45,11 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [stakeAction, setStakeAction] = useState<StakeActionLabel>(StakeActionLabel.DEPOSIT);
-	const [inputValue, setInputValue] = useState<number>(0);
+	const [inputValue, setInputValue] = useState<number | string>('');
 	const [isMaxValue, setIsMaxValue] = useState<boolean>(false);
 
-	const { txState, setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();
+	const { setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();
 	const { walletAddress, signer } = Connector.useContainer();
-	const { blockExplorerInstance } = Etherscan.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const StakingContract = useMemo(() => {
@@ -71,6 +68,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 				tokenContract: TokenContract ?? null,
 		  })
 		: null;
+
 	const apy = poolAPYQuery?.data?.apy ?? null;
 	const etherAmount = poolAPYQuery?.data?.eth ?? 0;
 	const aelinAmount = poolAPYQuery?.data?.aelin ?? 0;
@@ -81,6 +79,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const tokenStakedBalanceQuery = useGetStakingRewardsData({
 		stakingRewardsContract: StakingContract,
 	});
+
 	const tokenStakedBalance = tokenStakedBalanceQuery?.data?.balance ?? wei(0);
 
 	const totalBalance = useMemo(() => {
@@ -239,28 +238,12 @@ const StakeSection: FC<StakeSectionProps> = ({
 
 	return (
 		<>
-			<HeaderSection>
-				<HeaderRow>
-					<Header>
-						<EtherscanLink
-							href={blockExplorerInstance?.addressLink(StakingContract?.address!)}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<Image width="20" height="20" src={EtherscanLogo} alt="etherscan logo" />
-						</EtherscanLink>
-						{header}
-					</Header>
-					<QuestionMark text={tooltipInfo} />
-				</HeaderRow>
-				<SubHeader>
-					<FlexDiv>
-						{apy === null ? 'APY: TBD' : `APY: ${formatNumber(apy?.toFixed(0) ?? 0, 0)}%`}
-						<QuestionMark text={apyTooltip} />
-					</FlexDiv>
-				</SubHeader>
-			</HeaderSection>
 			<StakeBox
+				header={header}
+				tooltipInfo={tooltipInfo}
+				apyTooltip={apyTooltip}
+				apy={apy}
+				stakingContract={StakingContract}
 				onSubmit={handleSubmit}
 				onApprove={handleApprove}
 				isApproved={hasAllowance}
@@ -274,52 +257,18 @@ const StakeSection: FC<StakeSectionProps> = ({
 				gasLimitEstimate={gasLimitEstimate}
 				action={stakeAction}
 				setAction={handleSetAction}
-				txState={txState}
 				inputValue={inputValue}
 				setInputValue={setInputValue}
 				setIsMaxValue={setIsMaxValue}
 			/>
-			<ClaimBox stakingContract={StakingContract} />
-			<SubHeader>
-				<FlexDiv>
-					{isLP && etherAmount !== null ? `ETH in pool: ${formatNumber(etherAmount, 2)}` : null}
-				</FlexDiv>
-				<FlexDiv>
-					{aelinAmount !== null
-						? isLP
-							? `AELIN in pool: ${formatNumber(aelinAmount, 2)}`
-							: `AELIN staked: ${formatNumber(aelinAmount, 2)}`
-						: null}
-				</FlexDiv>
-			</SubHeader>
+			<ClaimBox
+				isLP={isLP}
+				aelinAmount={aelinAmount}
+				etherAmount={etherAmount}
+				stakingContract={StakingContract}
+			/>
 		</>
 	);
 };
-
-const EtherscanLink = styled.a`
-	margin-right: 4px;
-`;
-
-const HeaderSection = styled(FlexDivColCentered)`
-	margin: 0 0 20px 0;
-`;
-
-const HeaderRow = styled(FlexDiv)`
-	align-items: center;
-`;
-
-const Header = styled.h3`
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 2rem;
-	margin: 0;
-	padding: 0;
-`;
-
-const SubHeader = styled.h4`
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.2rem;
-	margin: 0;
-	padding: 0;
-`;
 
 export default StakeSection;

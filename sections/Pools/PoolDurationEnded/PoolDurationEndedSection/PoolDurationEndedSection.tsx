@@ -4,13 +4,10 @@ import { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
-import SectionTitle from 'sections/shared/SectionTitle';
-import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
-
 import Grid from 'components/Grid';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
-import { FlexDiv, Notice } from 'components/common';
+import { FlexDiv } from 'components/common';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
@@ -168,7 +165,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 			{
 				header: (
 					<>
-						<>{`Pool Duration Ends`}</>
+						<>{`Deal deadline`}</>
 						<QuestionMark
 							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
@@ -192,34 +189,18 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 	);
 
 	return (
-		<>
-			{Number(userPoolBalance ?? 0) > 0 && (
-				<SectionWrapper>
-					<ContentHeader>
-						<ContentTitle>
-							<SectionTitle address={dealID} title="Aelin Pool Unlocked" />
-						</ContentTitle>
-					</ContentHeader>
-					<FlexDiv>
-						<Grid hasInputFields={false} gridItems={withdrawGridItems} />
-						<PoolDurationEndedBox
-							onSubmit={handleSubmit}
-							inputValue={inputValue}
-							setInputValue={setInputValue}
-							setIsMaxValue={setIsMaxValue}
-							userPoolBalance={userPoolBalance}
-							gasLimitEstimate={gasLimitEstimate}
-							purchaseTokenSymbol={purchaseTokenSymbol}
-						/>
-					</FlexDiv>
-					<Notice>
-						The duration for this AELIN pool has ended or a deal has been presented but not funded.
-						You may withdraw your funds now although the sponsor may still create a deal for you if
-						you remain in the pool
-					</Notice>
-				</SectionWrapper>
-			)}
-		</>
+		<FlexDiv>
+			<Grid hasInputFields={false} gridItems={withdrawGridItems} />
+			<PoolDurationEndedBox
+				onSubmit={handleSubmit}
+				inputValue={inputValue}
+				setInputValue={setInputValue}
+				setIsMaxValue={setIsMaxValue}
+				userPoolBalance={userPoolBalance}
+				gasLimitEstimate={gasLimitEstimate}
+				purchaseTokenSymbol={purchaseTokenSymbol}
+			/>
+		</FlexDiv>
 	);
 };
 

@@ -1,38 +1,42 @@
-import { utils } from 'ethers';
-
+import { ethers } from 'ethers';
 import { getGraphEndpoint } from 'constants/endpoints';
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 import { calculateStatus } from 'utils/time';
-import { NetworkId } from 'constants/networks';
+import { nameToIdMapping, NetworkId } from 'constants/networks';
 
-const useGetPoolsQuery = ({ networkId }: { networkId?: NetworkId }) => {
-	return useGetPoolCreateds(
-		getGraphEndpoint(networkId),
-		{
-			orderBy: 'timestamp',
-			orderDirection: 'desc',
-		},
-		{
-			id: true,
-			name: true,
-			symbol: true,
-			purchaseTokenCap: true,
-			purchaseToken: true,
-			duration: true,
-			sponsorFee: true,
-			sponsor: true,
-			purchaseExpiry: true,
-			purchaseTokenDecimals: true,
-			timestamp: true,
-			poolStatus: true,
-			purchaseDuration: true,
-			contributions: true,
-			dealAddress: true,
-			hasAllowList: true,
-		},
-		{},
-		networkId ? networkId : NetworkId.Mainnet
-	);
+const useGetPoolsQuery = () => {
+	return Object.entries(nameToIdMapping).map(([networkName, networkId]) => ({
+		...useGetPoolCreateds(
+			getGraphEndpoint(networkId),
+			{
+				orderBy: 'timestamp',
+				orderDirection: 'desc',
+			},
+			{
+				id: true,
+				name: true,
+				symbol: true,
+				purchaseTokenCap: true,
+				purchaseToken: true,
+				duration: true,
+				sponsorFee: true,
+				sponsor: true,
+				purchaseExpiry: true,
+				purchaseTokenDecimals: true,
+				timestamp: true,
+				poolStatus: true,
+				purchaseDuration: true,
+				contributions: true,
+				dealAddress: true,
+				hasAllowList: true,
+				purchaseTokenSymbol: true,
+				totalSupply: true,
+			},
+			{},
+			networkId ? networkId : NetworkId.Mainnet
+		),
+		networkName,
+	}));
 };
 
 export const parsePool = ({
@@ -42,6 +46,7 @@ export const parsePool = ({
 	symbol,
 	duration,
 	purchaseToken,
+	purchaseTokenSymbol,
 	purchaseExpiry,
 	purchaseDuration,
 	purchaseTokenCap,
@@ -52,16 +57,19 @@ export const parsePool = ({
 	dealAddress,
 	purchaseTokenDecimals,
 	hasAllowList,
-}: PoolCreatedResult) => {
+	network,
+	totalSupply,
+}: PoolCreatedResult & { network: string }) => {
 	let formattedName = '';
 	let formattedSymbol = '';
 	try {
-		formattedName = utils.parseBytes32String(name.split('-')[1]);
-		formattedSymbol = utils.parseBytes32String(symbol.split('-')[1]);
+		formattedName = ethers.utils.parseBytes32String(name.split('-')[1]);
+		formattedSymbol = ethers.utils.parseBytes32String(symbol.split('-')[1]);
 	} catch (e) {
 		formattedName = name.split('-')[1];
 		formattedSymbol = symbol.split('-')[1];
 	}
+
 	return {
 		id,
 		timestamp: Number(timestamp) * 1000,
@@ -69,17 +77,20 @@ export const parsePool = ({
 		symbol: formattedSymbol,
 		duration: Number(duration) * 1000,
 		purchaseTokenDecimals: purchaseTokenDecimals ?? 0,
-		purchaseToken,
+		purchaseToken: ethers.utils.getAddress(purchaseToken),
+		purchaseTokenSymbol,
 		purchaseExpiry: Number(purchaseExpiry) * 1000,
 		poolExpiry: 1000 * (Number(duration) + Number(purchaseExpiry)),
 		purchaseTokenCap,
-		sponsor,
+		sponsor: ethers.utils.getAddress(sponsor),
 		contributions,
 		purchaseDuration,
 		sponsorFee,
 		poolStatus: calculateStatus({ poolStatus, purchaseExpiry: Number(purchaseExpiry) * 1000 }),
 		dealAddress,
 		hasAllowList,
+		network,
+		totalSupply,
 	};
 };
 

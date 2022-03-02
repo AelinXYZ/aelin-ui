@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { FC, useMemo } from 'react';
 import { FormikProps } from 'formik';
 
@@ -19,17 +18,20 @@ export interface CreateFormProps {
 	txHash: string | null;
 	setGasPrice: Function;
 	gasLimitEstimate: GasLimitEstimate;
+	handleCancelPool: () => void;
+	cancelGasLimitEstimate: GasLimitEstimate;
 }
 
 const CreateForm: FC<CreateFormProps> = ({
 	txState,
-	txHash,
 	formik,
 	gridItems,
 	summaryItems,
 	txType,
 	setGasPrice,
 	gasLimitEstimate,
+	handleCancelPool,
+	cancelGasLimitEstimate,
 }) => {
 	const isValidForm = useMemo(
 		() => Object.keys(formik?.errors ?? {}).length === 0,
@@ -45,9 +47,10 @@ const CreateForm: FC<CreateFormProps> = ({
 				txType={txType}
 				summaryItems={summaryItems}
 				txState={txState}
-				txHash={txHash}
 				setGasPrice={setGasPrice}
 				gasLimitEstimate={gasLimitEstimate}
+				handleCancelPool={handleCancelPool}
+				cancelGasLimitEstimate={cancelGasLimitEstimate}
 			/>
 		</FlexDiv>
 	);

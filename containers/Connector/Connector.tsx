@@ -47,10 +47,8 @@ const useConnector = () => {
 		LOCAL_STORAGE_KEYS.SELECTED_WALLET,
 		''
 	);
-	const [
-		transactionNotifier,
-		setTransactionNotifier,
-	] = useState<TransactionNotifierInterface | null>(null);
+	const [transactionNotifier, setTransactionNotifier] =
+		useState<TransactionNotifierInterface | null>(null);
 
 	const verifyIfOptimism = (networkId: NetworkId | null) => {
 		if (networkId) {
@@ -83,7 +81,14 @@ const useConnector = () => {
 		if (isAppReady) {
 			const onboard = initOnboard(network, {
 				// @ts-ignore
-				address: setWalletAddress,
+				address: (address: string) => {
+					if (address) {
+						const formattedAddress = ethers.utils.getAddress(address);
+						setWalletAddress(formattedAddress);
+					} else {
+						setWalletAddress(null);
+					}
+				},
 				network: (networkId: number) => {
 					// @ts-ignore
 					const isSupportedNetwork = chainIdMapping[networkId] ? true : false;

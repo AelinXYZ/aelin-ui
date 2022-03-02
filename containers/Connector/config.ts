@@ -40,11 +40,7 @@ export const initOnboard = (network: NetworkType, subscriptions: Subscriptions) 
 					preferred: true,
 				},
 				{ walletName: 'walletLink', rpcUrl: infuraRpc, preferred: true },
-				{
-					walletName: 'portis',
-					apiKey: process.env.NEXT_PUBLIC_PORTIS_APP_ID,
-				},
-				{ walletName: 'gnosis' },
+				{ walletName: 'gnosis', preferred: true },
 			],
 		},
 		walletCheck: [

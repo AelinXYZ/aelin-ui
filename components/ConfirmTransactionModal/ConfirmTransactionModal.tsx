@@ -28,23 +28,25 @@ const ConfirmTransactionModal: FC<ConfirmTransactionModalProps> = ({
 		<BaseModal title={title} setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}>
 			<ModalContainer>
 				{children}
-				<hr />
+				<StyledHr />
 				<GasSelector
 					initialGasSpeed="fast"
 					setGasPrice={setGasPrice}
 					gasLimitEstimate={gasLimitEstimate}
 				/>
-				<SubmitButton
+				<StyledButton
 					disabled={!gasLimitEstimate}
-					variant="text"
+					size="md"
+					variant="primary"
 					type="submit"
+					isRounded
 					onClick={() => {
 						setIsModalOpen(false);
 						if (onSubmit) onSubmit();
 					}}
 				>
 					Submit
-				</SubmitButton>
+				</StyledButton>
 			</ModalContainer>
 		</BaseModal>
 	);
@@ -54,17 +56,13 @@ const ModalContainer = styled.div`
 	text-align: center;
 `;
 
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 120px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
+const StyledButton = styled(Button)`
+	font-family: ${(props) => props.theme.fonts.agrandir};
+	padding: 0 45px;
+`;
+
+const StyledHr = styled.hr`
+	background-color: rgba(0, 0, 0, 0.5);
 `;
 
 export default ConfirmTransactionModal;

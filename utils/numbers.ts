@@ -1,10 +1,11 @@
 const numberWithCommas = (value: string, decimals?: number) => {
-	var parts = value.split('.');
+	const parts = value.split('.');
 	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 	if (decimals != null && decimals > 0 && (parts[1]?.length ?? 0) > decimals) {
 		parts[1] = parts[1].slice(0, decimals);
 	}
-	return parts.join('.');
+	const newString = parts.join('.');
+	return newString.endsWith('.0') ? newString.slice(0, -2) : newString;
 };
 
 // To be augmented for when we have WEI support

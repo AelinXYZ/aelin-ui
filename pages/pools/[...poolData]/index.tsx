@@ -48,6 +48,7 @@ const Pool: FC = () => {
 		const formattedChainId = ethers.utils.hexStripZeros(
 			BigNumber.from(poolNetworkId).toHexString()
 		);
+
 		try {
 			await web3Provider.provider.request({
 				method: 'wallet_switchEthereumChain',
@@ -69,7 +70,7 @@ const Pool: FC = () => {
 		} else {
 			setIsModalOpen(false);
 		}
-	}, [pool, poolQuery, userClosedModal]);
+	}, [network.id, pool, poolNetworkId, poolQuery, userClosedModal]);
 
 	return (
 		<>
@@ -89,9 +90,10 @@ const Pool: FC = () => {
 					{poolNetwork != null ? (
 						<>
 							<p>{`Please switch to ${poolNetwork} in order to see this pool`}</p>
-							<SubmitButton variant="text" type="submit" onClick={handleSwitchChain}>
-								{`Switch to ${poolNetwork}`}
-							</SubmitButton>
+							<br />
+							<Button variant="primary" isRounded onClick={handleSwitchChain}>
+								<StyledText>{`Switch to ${poolNetwork}`}</StyledText>
+							</Button>
 						</>
 					) : (
 						<>
@@ -104,17 +106,9 @@ const Pool: FC = () => {
 	);
 };
 
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 180px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
+const StyledText = styled.span`
+	font-size: 1rem;
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
 `;
 
 const ModalContainer = styled.div`

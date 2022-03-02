@@ -17,7 +17,7 @@ const GlobalLayout: FC<GlobalLayoutProps> = ({ children }) => {
 const GlobalStyle = createGlobalStyle`
 body {
 	background-color: ${(props) => props.theme.colors.background};
-	color: ${(props) => props.theme.colors.black}
+	color: ${(props) => props.theme.colors.textBody}
 }
 `;
 

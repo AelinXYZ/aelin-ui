@@ -18,7 +18,7 @@ export function useSelectStyles<
 			container: (style, state) => ({
 				...style,
 				opacity: state.isDisabled ? 0.4 : 1,
-				backgroundColor: colors.grey,
+				backgroundColor: colors.tableHeaderText,
 			}),
 			singleValue: (style) => ({
 				...style,
@@ -33,7 +33,7 @@ export function useSelectStyles<
 			}),
 			multiValueLabel: (style) => ({
 				...style,
-				background: colors.grey,
+				background: colors.tableHeaderText,
 				borderRadius: 0,
 				color: colors.black,
 				fontSize: '12px',
@@ -42,12 +42,12 @@ export function useSelectStyles<
 			}),
 			multiValueRemove: (style) => ({
 				...style,
-				background: colors.grey,
+				background: colors.tableHeaderText,
 				borderRadius: 0,
 				color: colors.black,
 				'&:hover': {
-					background: colors.grey,
-					color: colors.white,
+					background: colors.tableHeaderText,
+					color: colors.textButton,
 				},
 				padding: 0,
 			}),
@@ -60,23 +60,22 @@ export function useSelectStyles<
 				const baseStyles = {
 					...style,
 					fontFamily: fonts.ASMRegular,
-					color: colors.white,
+					color: colors.textButton,
 					cursor: 'pointer',
 					borderRadius: '4px',
 					outline: 'none',
 					fontSize: '12px',
-					backgroundColor: colors.grey,
+					backgroundColor: colors.white,
 					height: '32px',
 					minHeight: '32px',
 				};
 				if (props.variant === 'outline') {
 					return {
 						...baseStyles,
-						border: `1px solid ${colors.buttonStroke}`,
+						border: `1px solid ${colors.tableBorders}`,
 						boxShadow: 'none',
 						'&:hover': {
-							backgroundColor: colors.forestGreen,
-							border: `1px solid ${colors.buttonStroke}`,
+							border: `1px solid ${colors.tableBorders}`,
 							outline: 'none',
 						},
 					};
@@ -84,7 +83,7 @@ export function useSelectStyles<
 				return {
 					...baseStyles,
 					border: 'none',
-					boxShadow: `0px 0px 20px ${colors.buttonStroke}`,
+					boxShadow: `0px 0px 20px ${colors.tableBorders}`,
 					'&:hover': {
 						border: 'none',
 					},
@@ -92,9 +91,9 @@ export function useSelectStyles<
 			},
 			menu: (style) => ({
 				...style,
-				backgroundColor: colors.grey,
+				backgroundColor: colors.tableHeaderText,
 				border: 'none',
-				boxShadow: `0px 0px 20px ${colors.buttonStroke}`,
+				boxShadow: `0px 0px 20px ${colors.tableBorders}`,
 				padding: 0,
 			}),
 			menuList: (style) => ({
@@ -110,34 +109,34 @@ export function useSelectStyles<
 					cursor: 'pointer',
 					padding: '12px 10px',
 					fontSize: '12px',
-					backgroundColor: colors.grey,
+					backgroundColor: colors.tableHeaderText,
 					'&:hover': {
-						backgroundColor: colors.forestGreen,
-						color: colors.white,
+						backgroundColor: colors.heading,
+						color: colors.textHover,
 					},
 				};
 
 				if (props.variant === 'outline') {
 					return {
 						...baseStyles,
-						color: colors.black,
+						color: colors.textBody,
 					};
 				}
 
 				return {
 					...baseStyles,
-					color: colors.black,
+					color: colors.textBody,
 				};
 			},
 			placeholder: (style) => ({
 				...style,
 				fontSize: '12px',
-				color: colors.textGrey,
+				color: colors.textBody,
 				textTransform: 'capitalize',
 			}),
 			dropdownIndicator: (style, state) => ({
 				...style,
-				color: state.selectProps.menuIsOpen ? colors.white : colors.black,
+				color: state.selectProps.menuIsOpen ? colors.textBody : colors.textButton,
 				transition: 'transform 0.2s ease-in-out',
 				transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'none',
 			}),

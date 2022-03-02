@@ -1,18 +1,24 @@
 //@ts-nocheck
 import React, { FC } from 'react';
-import styled, { css } from 'styled-components';
 import Link from 'next/link';
-import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
 import Image from 'next/image';
-import ROUTES from 'constants/routes';
+import styled, { css } from 'styled-components';
+import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
 
 import SortDownIcon from 'assets/svg/caret-down.svg';
 import SortUpIcon from 'assets/svg/caret-up.svg';
+import DarkSpinner from 'assets/svg/loader-dark.svg';
+import LightSpinner from 'assets/svg/loader-light.svg';
 
-import { FlexDivCentered } from '../common';
+import UI from 'containers/UI';
+
+import { ThemeMode } from 'styles/theme';
+
+import ROUTES from 'constants/routes';
 import { MAX_RESULTS_PER_PAGE } from 'constants/defaults';
 
-import Spinner from 'assets/svg/loader.svg';
+import { FlexDivCentered } from '../common';
+
 import Pagination from './Pagination';
 
 export type TablePalette = 'primary';
@@ -84,6 +90,8 @@ export const Table: FC<TableProps> = ({
 		useFlexLayout
 	);
 
+	const { theme } = UI.useContainer();
+
 	return (
 		<>
 			<TableContainer>
@@ -120,7 +128,12 @@ export const Table: FC<TableProps> = ({
 						</TableRow>
 					))}
 					{isLoading ? (
-						<StyledSpinner src={Spinner} />
+						<SpinnerWrapper>
+							<Image
+								src={theme === ThemeMode.LIGHT ? LightSpinner : DarkSpinner}
+								alt="Loading..."
+							/>
+						</SpinnerWrapper>
 					) : page.length > 0 ? (
 						<TableBody className="table-body" {...getTableBodyProps()}>
 							{page.map((row: Row, i: number) => {
@@ -143,7 +156,9 @@ export const Table: FC<TableProps> = ({
 									<Link
 										key={`tableRowLink-${i}`}
 										// @ts-ignore
-										href={ROUTES.Pools.PoolView(row?.original?.id ?? '')}
+										href={ROUTES.Pools.PoolView(
+											`${row?.original?.id}/${row?.original?.network}` ?? ''
+										)}
 									>
 										{tableBodyRow}
 									</Link>
@@ -176,10 +191,10 @@ const TableContainer = styled.div`
 	overflow: auto;
 `;
 
-// @ts-ignore
-const StyledSpinner = styled(Image)`
-	display: block;
-	margin: 30px auto;
+const SpinnerWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	padding: 30px;
 `;
 
 export const TableRow = styled.div``;
@@ -195,7 +210,6 @@ const TableBodyRow = styled(TableRow)`
 
 const TableCell = styled(FlexDivCentered)`
 	box-sizing: border-box;
-	text-align: center;
 	&:first-child {
 		padding-left: 18px;
 	}
@@ -205,7 +219,11 @@ const TableCell = styled(FlexDivCentered)`
 `;
 
 const TableCellHead = styled(TableCell)`
+	font-weight: bold;
 	user-select: none;
+	&:last-child {
+		padding-left: 10px;
+	}
 `;
 
 const SortIconContainer = styled.span`
@@ -227,7 +245,7 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 	position: relative;
 	border-top-left-radius: 8px;
 	border-top-right-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 	border-top: none;
 
 	${(props) =>
@@ -238,35 +256,35 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 			}
 			${TableCell} {
 				font-size: 1rem;
-				justify-content: center;
+				justify-content: left;
 				height: ${CARD_HEIGHT};
-				border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
+				border-top: 1px solid ${(props) => props.theme.colors.tableBorders};
 				font-family: ${(props) => props.theme.fonts.ASMRegular};
+				padding-right: 5px;
 			}
 			${TableRow} {
 				cursor: pointer;
-				color: ${(props) => props.theme.colors.black};
+				color: ${(props) => props.theme.colors.textBody};
 				&:nth-child(even) {
-					background-color: ${(props) => props.theme.colors.grey};
+					background-color: ${(props) => props.theme.colors.tablePrimary};
 				}
 				&:nth-child(odd) {
-					background-color: ${(props) => props.theme.colors.cell};
+					background-color: ${(props) => props.theme.colors.tableSecondary};
 				}
 				&:hover {
-					background-color: ${(props) => props.theme.colors.lightGreen};
-					color: ${(props) => props.theme.colors.black};
+					background-color: ${(props) => props.theme.colors.tableHover};
+					color: ${(props) => props.theme.colors.textHover};
 				}
 			}
 			${TableCellHead} {
-				color: ${(props) => props.theme.colors.headerGrey};
 				font-family: ${(props) => props.theme.fonts.ASMRegular};
-				color: ${(props) => props.theme.colors.white};
-				background-color: ${(props) => props.theme.colors.forestGreen};
+				color: ${(props) => props.theme.colors.tableHeaderText};
+				background-color: ${(props) => props.theme.colors.primary};
 				text-transform: capitalize;
 				font-size: 1rem;
 			}
 			${TableBodyRow} {
-				background-color: ${(props) => props.theme.colors.grey};
+				background-color: ${(props) => props.theme.colors.tablePrimary};
 				&:last-child {
 					border-bottom: 0;
 				}

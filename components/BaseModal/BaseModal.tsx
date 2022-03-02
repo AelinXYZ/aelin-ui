@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import Image from 'next/image';
 import OutsideClickHandler from 'react-outside-click-handler';
-
-import CloseIcon from 'assets/svg/menu-close.svg';
+import { MenuClose } from 'components/Svg';
 
 interface BaseModalProps {
 	isModalOpen: boolean;
@@ -39,7 +38,8 @@ const BaseModal: FC<BaseModalProps> = ({
 			>
 				<StyledModal>
 					<StyledModalHeader>
-						<a
+						<StyledTitle>{title ?? ''}</StyledTitle>
+						<StyledCloseIcon
 							href="#"
 							onClick={() => {
 								if (onClose != null) {
@@ -48,10 +48,9 @@ const BaseModal: FC<BaseModalProps> = ({
 								setIsModalOpen(false);
 							}}
 						>
-							<Image src={CloseIcon} alt="close" />
-						</a>
+							<MenuClose />
+						</StyledCloseIcon>
 					</StyledModalHeader>
-					{title != null ? <StyledTitle>{title}</StyledTitle> : null}
 					<StyledModalBody>{children}</StyledModalBody>
 				</StyledModal>
 			</OutsideClickHandler>
@@ -70,23 +69,29 @@ const StyledModalBody = styled.div`
 `;
 
 const StyledModalHeader = styled.div`
+	position: relative;
 	display: flex;
-	justify-content: flex-end;
+	justify-content: space-between;
 	font-size: 2rem;
 `;
 
 const StyledTitle = styled.div`
+	width: 100%;
 	text-align: center;
-	font-size: 1.2rem;
-	color: ${(props) => props.theme.colors.forestGreen};
+	padding-top: 10px;
+	font-size: 1.6rem;
+	font-weight: bold;
+	color: ${(props) => props.theme.colors.heading};
 `;
 
 const StyledModal = styled.div`
-	background: ${(props) => props.theme.colors.modalBackground};
-	width: 500px;
+	background: ${(props) => props.theme.colors.boxesBackground};
+	min-width: 500px;
 	border-radius: 8px;
-	padding: 15px;
+	border: 1px solid ${(props) => props.theme.colors.borders};
+	padding: 23px;
 `;
+
 const StyledModalOverlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -98,6 +103,13 @@ const StyledModalOverlay = styled.div`
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.5);
+`;
+
+const StyledCloseIcon = styled.a`
+	position: absolute;
+	display: flex;
+	top: 0;
+	right: 0;
 `;
 
 export default BaseModal;
