@@ -58,7 +58,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const poolBalances = poolBalancesQuery?.data ?? null;
 
 	const handleCancelPool = useCallback(async () => {
-		if (!walletAddress || !signer) {return;}
+		if (!walletAddress || !signer) {
+			return;
+		}
 		try {
 			const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
 			const decimals = await poolContract.decimals();
@@ -107,7 +109,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	]);
 
 	const handleSubmit = async () => {
-		if (!walletAddress || !signer) {return;}
+		if (!walletAddress || !signer) {
+			return;
+		}
 
 		try {
 			const {
@@ -186,7 +190,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	});
 
 	const createVariablesToCreateDeal: any = useCallback(async () => {
-		if (!walletAddress || !signer) {return;}
+		if (!walletAddress || !signer) {
+			return;
+		}
 		const now = new Date();
 		const {
 			underlyingDealToken,
@@ -276,11 +282,15 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!walletAddress || !signer) {return setGasLimitEstimate(null);}
+			if (!walletAddress || !signer) {
+				return setGasLimitEstimate(null);
+			}
 
 			const errors = validateCreateDeal(formik.values, totalPoolSupply, network.id);
 			const hasError = Object.keys(errors).length !== 0;
-			if (hasError) {return setGasLimitEstimate(null);}
+			if (hasError) {
+				return setGasLimitEstimate(null);
+			}
 
 			try {
 				const {
@@ -334,7 +344,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 
 	useEffect(() => {
 		const getCancelPoolGasLimitEstimate = async () => {
-			if (!walletAddress || !signer) {return setCancelPoolGasLimitEstimate(null);}
+			if (!walletAddress || !signer) {
+				return setCancelPoolGasLimitEstimate(null);
+			}
 
 			try {
 				const thirtyMins = 30 * 60;

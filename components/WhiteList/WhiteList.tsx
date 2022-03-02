@@ -85,7 +85,9 @@ const WhiteList: FC<WhitelistComponentProps> = ({ formik, isModalOpen, setIsModa
 
 		const filteredWhitelist = whitelist.filter((row: WhitelistProps) => row.address.length);
 
-		if (!filteredWhitelist.length) {return;}
+		if (!filteredWhitelist.length) {
+			return;
+		}
 
 		filteredWhitelist.forEach((row: WhitelistProps) => {
 			row.isSaved = true;

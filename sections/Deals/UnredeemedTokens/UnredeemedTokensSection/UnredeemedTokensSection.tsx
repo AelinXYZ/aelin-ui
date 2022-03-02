@@ -90,7 +90,9 @@ const UnredeemedTokensSection: FC<UnredeemedTokensSectionProps> = ({
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
 	const handleSubmit = useCallback(async () => {
-		if (!walletAddress || walletAddress !== holder || !signer || !dealAddress) {return;}
+		if (!walletAddress || walletAddress !== holder || !signer || !dealAddress) {
+			return;
+		}
 
 		const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 		try {
@@ -121,7 +123,9 @@ const UnredeemedTokensSection: FC<UnredeemedTokensSectionProps> = ({
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!signer || !dealAddress) {return;}
+			if (!signer || !dealAddress) {
+				return;
+			}
 			try {
 				const contract = new ethers.Contract(dealAddress, dealAbi, signer);
 				setGasLimitEstimate(wei(await contract.estimateGas.withdrawExpiry(), 0));

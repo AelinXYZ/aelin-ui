@@ -18,7 +18,9 @@ export const useEnsToAddress = (ensName: string) => {
 
 	useEffect(() => {
 		const getAddress = async () => {
-			if (!isEns(ensName)) {return ensName;}
+			if (!isEns(ensName)) {
+				return ensName;
+			}
 			const address = await provider?.resolveName(ensName);
 			setAddress(address || ensName);
 		};
@@ -44,19 +46,27 @@ export const useAddressesToEns = (addresses: string[]) => {
 			if (addresses?.length) {
 				const areAddresses = addresses.map(utils.isAddress).every(Boolean);
 
-				if (!areAddresses) {return;}
+				if (!areAddresses) {
+					return;
+				}
 
 				const addressesToEns = await Promise.all(
 					addresses.map(async (address) => {
 						const resolvedEnsName = await provider?.lookupAddress(address);
 
-						if (!resolvedEnsName) {return address;}
+						if (!resolvedEnsName) {
+							return address;
+						}
 
 						const resolvedAddress = await provider?.resolveName(resolvedEnsName);
 						// ENS does not enforce the accuracy of reverse records - for instance, anyone may claim that the name for their address is 'alice.eth'. To be certain that the claim is accurate, you must always perform a forward resolution for the returned name and check it matches the original address.
-						if (resolvedAddress?.toLowerCase() !== address.toLowerCase()) {return address;}
+						if (resolvedAddress?.toLowerCase() !== address.toLowerCase()) {
+							return address;
+						}
 
-						if (hasNonAsciiCharacters(resolvedEnsName)) {return address;}
+						if (hasNonAsciiCharacters(resolvedEnsName)) {
+							return address;
+						}
 
 						return resolvedEnsName;
 					})

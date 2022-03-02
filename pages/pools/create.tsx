@@ -47,7 +47,9 @@ const Create: FC = () => {
 		TransactionData.useContainer();
 
 	const handleSubmit = async () => {
-		if (!contracts || !walletAddress) {return;}
+		if (!contracts || !walletAddress) {
+			return;
+		}
 
 		const {
 			poolName,
@@ -150,7 +152,9 @@ const Create: FC = () => {
 			const formattedWhiteList = whitelist.reduce((accum, curr) => {
 				const { address, amount } = curr;
 
-				if (!address.length) {return accum;}
+				if (!address.length) {
+					return accum;
+				}
 
 				accum.push({
 					address,
@@ -181,11 +185,15 @@ const Create: FC = () => {
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!contracts || !walletAddress) {return setGasLimitEstimate(null);}
+			if (!contracts || !walletAddress) {
+				return setGasLimitEstimate(null);
+			}
 
 			const errors = validateCreatePool(formik.values, network.id);
 			const hasError = Object.keys(errors).length !== 0;
-			if (hasError) {return setGasLimitEstimate(null);}
+			if (hasError) {
+				return setGasLimitEstimate(null);
+			}
 
 			try {
 				const {

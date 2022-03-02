@@ -203,24 +203,35 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const now = Date.now();
 
 	const showCreateDealSection = useMemo(() => {
-		if (!pool || !now || !deal || !walletAddress) {return false;}
+		if (!pool || !now || !deal || !walletAddress) {
+			return false;
+		}
 		// If the connected wallet is not the sponsor, then we don't display the createDeal section
-		if (walletAddress !== pool.sponsor) {return false;}
+		if (walletAddress !== pool.sponsor) {
+			return false;
+		}
 
 		// This pool shouldn't be able to create a deal
-		if (swimmingPoolID === pool.id) {return false;}
+		if (swimmingPoolID === pool.id) {
+			return false;
+		}
 
 		// If the Pool status is Open and PurchaseTokenCap is not null and is reached
 		if (
 			pool.poolStatus === Status.PoolOpen &&
 			pool.purchaseTokenCap.gt(0) &&
 			pool.contributions.eq(pool.purchaseTokenCap)
-		)
-			{return true;}
+		) {
+			return true;
+		}
 		// If the Pool status is SeekingDeal
-		if (pool.poolStatus === Status.SeekingDeal) {return true;}
+		if (pool.poolStatus === Status.SeekingDeal) {
+			return true;
+		}
 		// If the Pool status is FundingDeal and HolderFundingExpiration is reached
-		if (pool.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) {return true;}
+		if (pool.poolStatus === Status.FundingDeal && deal.holderFundingExpiration <= now) {
+			return true;
+		}
 
 		return false;
 	}, [deal, now, pool, walletAddress]);

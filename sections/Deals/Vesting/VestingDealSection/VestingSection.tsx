@@ -137,7 +137,9 @@ const VestingDeal: FC<VestingDealProps> = ({
 	]);
 
 	const handleSubmit = useCallback(async () => {
-		if (!walletAddress || !signer || !deal.id) {return;}
+		if (!walletAddress || !signer || !deal.id) {
+			return;
+		}
 		const contract = new ethers.Contract(deal.id, dealAbi, signer);
 		try {
 			setTxState(TransactionStatus.WAITING);
@@ -158,7 +160,9 @@ const VestingDeal: FC<VestingDealProps> = ({
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
-			if (!deal.id || !signer) {return setGasLimitEstimate(null);}
+			if (!deal.id || !signer) {
+				return setGasLimitEstimate(null);
+			}
 			const contract = new ethers.Contract(deal.id, dealAbi, signer);
 			try {
 				let gasEstimate = wei(await contract.estimateGas.claim(), 0);

@@ -6,7 +6,7 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint . --ext .ts,.tsx && tsc --noEmit",
+		"lint": "eslint . --ext .ts,.tsx && bash -c tsc --noEmit",
 		"format": "prettier --write \"**/*.{ts,tsx}\"",
 		"lint:fix": "eslint . --ext .ts,.tsx --fix",
 		"pull-manifest": "codegen-graph-ts pull $AELIN_SUBGRAPH_URL > manifest.json",
@@ -54,7 +54,14 @@
 		"eslint": "7.32.0",
 		"eslint-config-next": "11.1.2",
 		"husky": "7.0.4",
-		"prettier": "^2.5.1",
+		"lint-staged": "12.3.4",
+		"prettier": "2.5.1",
 		"typescript": "4.4.3"
+	},
+	"lint-staged": {
+		"**/*.{ts,tsx}": [
+			"npm run lint",
+			"npm run format"
+		]
 	}
 }

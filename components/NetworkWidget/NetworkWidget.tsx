@@ -62,14 +62,20 @@ const NetworkWidget: FC = () => {
 
 	const checkRouteAndRedirect = useCallback(() => {
 		// @ts-ignore: missing nested field type
-		if (asPath !== ROUTES.Pools.PoolView(query.address)) {return;}
+		if (asPath !== ROUTES.Pools.PoolView(query.address)) {
+			return;
+		}
 		router.push(ROUTES.Pools.Home);
 	}, [asPath, query.address, router]);
 
 	const handleSwitchChain = useCallback(async () => {
-		if (!provider || !network?.id || !walletAddress) {return;}
+		if (!provider || !network?.id || !walletAddress) {
+			return;
+		}
 		const web3Provider = provider as ethers.providers.Web3Provider;
-		if (!web3Provider.provider || !web3Provider.provider.request) {return;}
+		if (!web3Provider.provider || !web3Provider.provider.request) {
+			return;
+		}
 		const newNetworkId = getCorrespondingNetwork(network?.id, isOVM);
 		const formattedChainId = ethers.utils.hexStripZeros(BigNumber.from(newNetworkId).toHexString());
 		try {

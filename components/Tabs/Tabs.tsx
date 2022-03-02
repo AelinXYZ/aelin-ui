@@ -20,9 +20,13 @@ const Tabs: FC<TabsProps> = ({ children, defaultIndex, onSelect }) => {
 	}, [defaultIndex]);
 
 	const onChangeTab = (nextIndex: number) => {
-		if (selectedIndex === nextIndex) {return;}
+		if (selectedIndex === nextIndex) {
+			return;
+		}
 		setSelectedIndex(nextIndex);
-		if (onSelect) {onSelect(nextIndex);}
+		if (onSelect) {
+			onSelect(nextIndex);
+		}
 	};
 
 	const tabWidth = useMemo(() => {

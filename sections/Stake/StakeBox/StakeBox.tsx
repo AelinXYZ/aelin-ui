@@ -95,7 +95,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 	const isActionButtonDisabled: boolean = useMemo(() => {
 		if (!walletAddress || !inputValue) return true;
 
-		if (!isApproved) {return true;}
+		if (!isApproved) {
+			return true;
+		}
 
 		if (balance?.toNumber() < inputValue) return true;
 
@@ -103,7 +105,9 @@ const ActionBox: FC<ActionBoxProps> = ({
 	}, [walletAddress, inputValue, isApproved, balance]);
 
 	const isApproveButtonDisabled: boolean = useMemo(() => {
-		if (!walletAddress || isApproved) {return true;}
+		if (!walletAddress || isApproved) {
+			return true;
+		}
 
 		return false;
 	}, [walletAddress, isApproved]);
@@ -135,8 +139,12 @@ const ActionBox: FC<ActionBoxProps> = ({
 			<Tabs
 				defaultIndex={0}
 				onSelect={(selectedIndex: number) => {
-					if (selectedIndex === 0) {return setAction(StakeActionLabel.DEPOSIT);}
-					if (selectedIndex === 1) {return setAction(StakeActionLabel.WITHDRAW);}
+					if (selectedIndex === 0) {
+						return setAction(StakeActionLabel.DEPOSIT);
+					}
+					if (selectedIndex === 1) {
+						return setAction(StakeActionLabel.WITHDRAW);
+					}
 
 					throw new Error('Unexpected Index');
 				}}

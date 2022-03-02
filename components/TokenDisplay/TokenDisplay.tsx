@@ -13,20 +13,28 @@ const TokenDisplay: FC<TokenProps> = (props) => {
 	const { address, displayAddress } = props;
 	const symbol = 'symbol' in props ? props.symbol : undefined;
 	useEffect(() => {
-		if (symbol) {return;}
-		if (!address) {return;}
+		if (symbol) {
+			return;
+		}
+		if (!address) {
+			return;
+		}
 
 		let mounted = true;
 		const getSymbol = async () => {
 			const { symbol } = await getERC20Data({ address, provider });
-			if (mounted) {setResolvedSymbol(symbol);}
+			if (mounted) {
+				setResolvedSymbol(symbol);
+			}
 		};
 		getSymbol();
 		return () => {
 			mounted = false;
 		};
 	}, [address, provider, symbol]);
-	if (!address) {return <>-</>;}
+	if (!address) {
+		return <>-</>;
+	}
 	return (
 		<>
 			{symbol || resolvedSymbol}{' '}
