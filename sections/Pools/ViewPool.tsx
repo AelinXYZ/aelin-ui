@@ -263,8 +263,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	}, [claimableUnderlyingTokens, claims, deal?.id, dealBalance]);
 
 	const isFundDeal = useMemo(() => {
-		return pool?.poolStatus === Status.FundingDeal && walletAddress === deal?.holder;
-	}, [deal?.holder, pool?.poolStatus, walletAddress]);
+		return (
+			pool?.poolStatus === Status.FundingDeal &&
+			walletAddress === deal?.holder &&
+			deal?.holderFundingExpiration > now
+		);
+	}, [deal?.holder, deal?.holderFundingExpiration, now, pool?.poolStatus, walletAddress]);
 
 	const poolStages = {
 		[OPEN_POOL]: () => ({
@@ -408,7 +412,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 };
 
 const Notice = styled.p`
-	width: 690px;
+	width: 720px;
 	background-color: ${(props) => props.theme.colors.secondary};
 	color: ${(props) => props.theme.colors.red};
 	border: 1px solid ${(props) => props.theme.colors.red};
