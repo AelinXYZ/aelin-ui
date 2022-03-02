@@ -3,28 +3,18 @@ import { FC, useMemo, useState } from 'react';
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
 
-import QuestionMark from 'components/QuestionMark';
 import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
-import {
-	Container,
-	ErrorNote,
-	ContentContainer,
-	ActionBoxInputLabel,
-	InputContainer,
-	ActionBoxInput,
-	ActionBoxMax,
-	ActionBoxHeaderWrapper,
-	ActionBoxHeader,
-	FlexDivCenterRow,
-	ActionButton,
-} from '../../../shared/common';
+import { Container, ContentContainer } from 'sections/shared/common';
 
 import { swimmingPoolID } from 'constants/pool';
-import { TransactionPurchaseType } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
+import { TransactionPurchaseType } from 'constants/transactions';
 
-import { actionBoxTypeToTitle, getActionButtonLabel } from './helpers';
+import ApproveBox from './ApproveBox';
+import DepositBox from './DepositBox';
+import NotAllowedBox from './NotAllowedBox';
+import PurchaseEndedBox from './PurchaseEndedBox';
 
 interface PurchasePoolBoxProps {
 	poolId: string;
@@ -93,6 +83,8 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 		[privatePoolDetails?.isPrivatePool, privatePoolDetails?.privatePoolAmount]
 	);
 
+	const hasAllowance = Number(purchaseTokenAllowance ?? '0') !== 0;
+
 	const handleMaxButtonClick = () => {
 		let maxVal = maxValue;
 
@@ -104,65 +96,46 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 		setInputValue(maxVal);
 	};
 
+	const handleButtonClick = () => {
+		setShowTxModal(true);
+	};
+
+	const isDeposit = hasAllowance && !isPurchaseExpired;
+	const isApproved = !hasAllowance && !isPurchaseExpired;
+	const isNotAllowed = isPrivatePoolAndNoAllocation && !isPurchaseExpired;
+
 	return (
 		<Container>
 			<ContentContainer>
-				<ActionBoxInputLabel>
-					{`Balance ${userPurchaseBalance ?? ''} ${purchaseTokenSymbol ?? ''}`}
-				</ActionBoxInputLabel>
-				<InputContainer>
-					<ActionBoxInput
-						type="number"
-						placeholder="0"
-						max={userPurchaseBalance ?? undefined}
-						value={inputValue}
-						onChange={(e) => {
-							const value = !!e.target.value.length ? parseFloat(e.target.value) : '';
-							setIsMaxValue(false);
-							setInputValue(value);
-						}}
+				{isNotAllowed && <NotAllowedBox />}
+
+				{isApproved && !isNotAllowed && (
+					<ApproveBox
+						purchaseToken={purchaseTokenSymbol ?? ''}
+						isButtonDisabled={hasAllowance}
+						handleClick={handleButtonClick}
 					/>
-					{!!userPurchaseBalance && (
-						<ActionBoxMax isProRata={false} onClick={handleMaxButtonClick}>
-							Max
-						</ActionBoxMax>
-					)}
-				</InputContainer>
-				<ActionBoxHeaderWrapper>
-					<ActionBoxHeader isPool isSelected={false} isAcceptOrReject={false}>
-						<FlexDivCenterRow>
-							{actionBoxTypeToTitle(
-								privatePoolDetails?.isPrivatePool ?? false,
-								privatePoolDetails?.privatePoolAmount ?? '0',
-								purchaseTokenSymbol
-							)}
-						</FlexDivCenterRow>
-					</ActionBoxHeader>
-				</ActionBoxHeaderWrapper>
-			</ContentContainer>
-
-			<ActionButton
-				disabled={isButtonDisabled}
-				isWithdraw={false}
-				onClick={() => {
-					setShowTxModal(true);
-				}}
-			>
-				{getActionButtonLabel({
-					allowance: purchaseTokenAllowance,
-					amount: inputValue,
-					isPurchaseExpired,
-					isPrivatePoolAndNoAllocation,
-				})}
-
-				{isPoolDisabled && (
-					<div>
-						<QuestionMark text="Purchasing for this pool has been disabled due to the open period bug on the initial pool factory contracts that has been patched for all new pools moving forward. If you are in this pool we recommend withdrawing at the end of the pool duration. see details here: https://github.com/AelinXYZ/AELIPs/blob/main/content/aelips/aelip-4.md" />
-					</div>
 				)}
-			</ActionButton>
 
-			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
+				{isDeposit && !isApproved && !isNotAllowed && (
+					<DepositBox
+						placeholder="0"
+						inputValue={inputValue}
+						setIsMaxValue={setIsMaxValue}
+						setInputValue={setInputValue}
+						handleClick={handleButtonClick}
+						isButtonDisabled={isButtonDisabled}
+						purchaseToken={purchaseTokenSymbol ?? ''}
+						isMaxBalanceExceeded={isMaxBalanceExceeded}
+						handleMaxButtonClick={handleMaxButtonClick}
+						tokenBalance={Number(userPurchaseBalance) ?? 0}
+						isPrivate={privatePoolDetails?.isPrivatePool ?? false}
+						allocation={Number(privatePoolDetails?.privatePoolAmount ?? 0)}
+					/>
+				)}
+
+				{isPurchaseExpired && <PurchaseEndedBox />}
+			</ContentContainer>
 
 			<ConfirmTransactionModal
 				title="Confirm Transaction"

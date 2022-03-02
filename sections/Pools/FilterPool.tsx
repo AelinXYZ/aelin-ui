@@ -1,14 +1,15 @@
 //@ts-nocheck
+import Link from 'next/link';
 import { FC, useState } from 'react';
 import styled from 'styled-components';
-import Link from 'next/link';
 
-import { FlexDivRow, FlexDiv } from 'components/common';
+import Button from 'components/Button';
 import { Status } from 'components/DealStatus';
 import TextInput from 'components/Input/TextInput';
-import PlusIcon from 'assets/svg/plus.svg';
-import Image from 'next/image';
+import { FlexDivRow, FlexDiv } from 'components/common';
+
 import StatusDropdown from 'sections/shared/StatusDropdown';
+
 import ROUTES from 'constants/routes';
 
 interface FilterPoolProps {
@@ -17,7 +18,6 @@ interface FilterPoolProps {
 	setCurrency: (currency: string) => void;
 	setName: (name: string) => void;
 	setStatus: (status: Status | string) => void;
-	status: Status | string | null;
 }
 
 const FilterPool: FC<FilterPoolProps> = ({
@@ -26,7 +26,6 @@ const FilterPool: FC<FilterPoolProps> = ({
 	setCurrency,
 	setName,
 	setStatus,
-	status,
 }) => {
 	const { sponsorFilter, currencyFilter, nameFilter, statusFilter } = values;
 	const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -34,12 +33,18 @@ const FilterPool: FC<FilterPoolProps> = ({
 		<Container>
 			<HeaderSection>
 				<FlexDiv>
-					<Header>Filters</Header>
-					<StyledImage onClick={() => setIsVisible(!isVisible)} src={PlusIcon} alt="" />
+					<Button size="lg" variant="tertiary" onClick={() => setIsVisible(!isVisible)}>
+						<Header>
+							Filters
+							<Plus>+</Plus>
+						</Header>
+					</Button>
 				</FlexDiv>
 				<FlexDiv>
 					<Link href={ROUTES.Pools.Create} passHref>
-						<StyledAnchor>Create Pool</StyledAnchor>
+						<Button size="md" isRounded variant="primary">
+							Create Pool
+						</Button>
 					</Link>
 				</FlexDiv>
 			</HeaderSection>
@@ -80,6 +85,13 @@ const Header = styled.div`
 	color: ${(props) => props.theme.colors.forestGreen};
 	margin-right: 15px;
 	font-size: 1.3rem;
+	font-weight: 400;
+	display: flex;
+`;
+
+const Plus = styled.span`
+	font-size: 1.8rem;
+	margin-left: 0.5rem;
 `;
 
 const Container = styled.div`
@@ -91,28 +103,10 @@ const StyledTextInput = styled(TextInput)`
 	height: 35px;
 `;
 
-const StyledImage = styled(Image)`
-	cursor: pointer;
-`;
-
 const HeaderSection = styled(FlexDiv)`
 	margin-bottom: 10px;
 	align-items: center;
 	justify-content: space-between;
-`;
-
-const StyledAnchor = styled.a`
-	height: 32px;
-	line-height: 32px;
-	font-size: 1rem;
-	padding: 0 12px;
-	font-family: ${(props) => props.theme.fonts.ASMRegular};
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 140px;
-	border-radius: 4px;
-	cursor: pointer;
-	text-align: center;
 `;
 
 export default FilterPool;

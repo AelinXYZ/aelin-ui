@@ -51,7 +51,7 @@ const NetworkWidget: FC = () => {
 	const router = useRouter();
 	const { asPath, query } = router;
 
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 	const { isOVM, provider, network, walletAddress } = Connector.useContainer();
 	const [chain, setChain] = useState<Chain>(CHAINS[0]);
 
@@ -111,8 +111,8 @@ const NetworkWidget: FC = () => {
 	return (
 		<Dropdown
 			isEnabled={!!walletAddress}
-			isModalOpen={isModalOpen}
-			setIsModalOpen={setIsModalOpen}
+			isOpen={isDropdownOpen}
+			setIsOpen={setIsDropdownOpen}
 			content={ChainList}
 		>
 			<FlexDivCentered>
@@ -143,7 +143,7 @@ const ListElement = styled.li`
 	padding: 12px;
 	cursor: pointer;
 	&:hover {
-		background-color: #c1bfbf;
+		background-color: ${(props) => props.theme.colors.headerDropdownHover};
 	}
 `;
 

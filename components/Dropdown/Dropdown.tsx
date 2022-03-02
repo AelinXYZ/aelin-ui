@@ -2,47 +2,44 @@ import { useState, FC, ReactNode } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import styled, { css } from 'styled-components';
 
-import { zIndex } from 'constants/ui';
-import { FlexDivColCentered } from 'components/common';
+import { FlexDivColCentered, FlexDiv } from 'components/common';
+import { DownArrow } from 'components/Svg';
 
 type DropdownProps = {
 	children: ReactNode;
 	content: ReactNode;
-	isModalOpen: boolean;
-	setIsModalOpen: Function;
+	isOpen: boolean;
+	setIsOpen: Function;
 	isEnabled?: boolean;
+	hideArrow?: boolean;
 };
 
 const Dropdown: FC<DropdownProps> = ({
 	children,
 	content,
-	isModalOpen,
-	setIsModalOpen,
+	isOpen,
+	setIsOpen,
 	isEnabled = true,
+	hideArrow = false,
 }) => {
 	return (
-		<Container isEnabled={isEnabled} onClick={() => setIsModalOpen(!isModalOpen)}>
-			<OutsideClickHandler onOutsideClick={() => setIsModalOpen(false)}>
-				<Inner>{children}</Inner>
-				{isModalOpen && <Content>{content}</Content>}
+		<Container isEnabled={isEnabled} onClick={() => setIsOpen(!isOpen)}>
+			<OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
+				<StyledFlexDiv>
+					<Inner>{children}</Inner>
+					{!hideArrow && <StyledImage />}
+				</StyledFlexDiv>
+				{isOpen && <Content>{content}</Content>}
 			</OutsideClickHandler>
 		</Container>
 	);
 };
 
 const Container = styled.div<{ isEnabled: boolean }>`
-	width: 160px;
-	height: 32px;
+	height: 100%;
 	position: relative;
-
-	> div {
-		position: absolute;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		z-index: ${zIndex.DROPDOWN};
-		width: inherit;
-	}
+	display: flex;
+	align-items: center;
 	${(props) =>
 		!props.isEnabled &&
 		css`
@@ -54,20 +51,35 @@ const Inner = styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 160px;
-	background-color: ${(props) => props.theme.colors.grey};
-	border-radius: 50px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	height: 35px;
-	padding: 12px 20px;
+	padding: 0 8px;
 	cursor: pointer;
 `;
 
 const Content = styled(FlexDivColCentered)`
-	margin-top: 12px;
-	background: ${(props) => props.theme.colors.grey};
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	background: ${(props) => props.theme.colors.headerPrimary};
+	border: 1px solid ${(props) => props.theme.colors.inputBorders};
 	border-radius: 4px;
+	position: absolute;
+	top: 80%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 100%;
+	min-width: 150px;
+	z-index: 100;
+`;
+
+const StyledFlexDiv = styled(FlexDiv)`
+	padding: 0 8px;
+	align-items: center;
+`;
+
+const StyledImage = styled(DownArrow)`
+	margin-top: 4px;
+	height: 12px;
+	width: 12px;
+	display: flex;
+	align-self: center;
+	fill: ${(props) => props.theme.colors.paginationText};
 `;
 
 export default Dropdown;

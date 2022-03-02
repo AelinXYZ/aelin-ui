@@ -14,7 +14,6 @@ import Grid from 'components/Grid';
 import { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
-import CopyToClipboard from 'components/CopyToClipboard';
 import { FlexDivStart, FlexDiv } from 'components/common';
 
 import { erc20Abi } from 'contracts/erc20';
@@ -22,7 +21,7 @@ import { erc20Abi } from 'contracts/erc20';
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { formatNumber } from 'utils/numbers';
-import { formatShortDateWithTime, showDateOrMessageIfClosed } from 'utils/time';
+import { formatShortDateWithTime } from 'utils/time';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
@@ -31,13 +30,14 @@ import { TransactionPurchaseType, TransactionStatus } from 'constants/transactio
 
 import PurchasePoolBox from '../PurchasePoolBox';
 import { isAfter } from 'date-fns';
+import AddressLink from 'components/AddressLink';
 
 interface PurchasePoolProps {
 	pool: PoolCreatedResult | null;
 }
 
 const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
-	const { walletAddress, signer, network } = Connector.useContainer();
+	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
@@ -61,7 +61,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const privatePoolAmount = poolBalances?.privatePoolAmount ?? null;
 
 	const isEmptyInput = inputValue === '' || Number(inputValue) === 0;
-	const hasAllowance = Number(purchaseTokenAllowance ?? 0) < Number(isEmptyInput ? 0 : inputValue);
+	const hasAllowance = Number(purchaseTokenAllowance ?? 0) !== 0;
 
 	const tokenContract = useMemo(() => {
 		if (!pool || !pool.purchaseToken || !signer) return null;
@@ -126,8 +126,8 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	]);
 
 	useEffect(() => {
-		setTxType(hasAllowance ? TransactionPurchaseType.Allowance : TransactionPurchaseType.Purchase);
-	}, [hasAllowance, isEmptyInput, setTxType]);
+		setTxType(hasAllowance ? TransactionPurchaseType.Purchase : TransactionPurchaseType.Allowance);
+	}, [hasAllowance, setTxType]);
 
 	useEffect(() => {
 		const getGasLimitEstimate = async () => {
@@ -178,7 +178,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Purchase Currency`}</>
+						<>{`Investment token`}</>
 						<QuestionMark text={`The currency used to purchase pool tokens`} />
 					</>
 				),
@@ -271,7 +271,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Purchase Window`}</>
+						<>{`Investment deadline`}</>
 						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
 					</>
 				),
@@ -302,7 +302,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 			{
 				header: (
 					<>
-						<>{`Pool Duration Ends`}</>
+						<>{`Deal deadline`}</>
 						<QuestionMark
 							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
 						/>
@@ -333,8 +333,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<FlexDivStart>
-						<Ens address={pool?.sponsor ?? ''} />
-						{pool?.sponsor && <CopyToClipboard text={pool?.sponsor} />}
+						<AddressLink address={pool?.sponsor}>
+							<Ens link address={pool?.sponsor ?? ''} />
+						</AddressLink>
 					</FlexDivStart>
 				),
 			},
@@ -451,9 +452,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 		signer,
 	]);
 
-	const isPurchaseExpired = useMemo(() => Date.now() > Number(pool?.purchaseExpiry ?? 0), [
-		pool?.purchaseExpiry,
-	]);
+	const isPurchaseExpired = useMemo(
+		() => Date.now() > Number(pool?.purchaseExpiry ?? 0),
+		[pool?.purchaseExpiry]
+	);
 
 	return (
 		<FlexDiv>

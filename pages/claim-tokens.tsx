@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Head from 'next/head';
 import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
@@ -24,7 +23,6 @@ import SecondDistributionContract from 'containers/ContractsInterface/contracts/
 import { getKeyValue } from 'utils/helpers';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
-import ROUTES from 'constants/routes';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { GasLimitEstimate, NetworkId } from 'constants/networks';
 
@@ -238,48 +236,39 @@ const Airdrop = () => {
 				<FlexDivRow>
 					<Row>
 						<Header>{`Allocation: ${ethers.utils.formatEther(merkleBalance ?? 0)} AELIN`}</Header>
-						<SubmitButton
+						<Button
+							size="md"
+							variant="primary"
 							disabled={isMerkleSubmitButtonDisabled}
 							onClick={() => setShowAelinTxModal(true)}
-							variant="text"
 						>
 							{canClaimMerkle ? 'Claim' : !merkleBalance ? 'Nothing to Claim' : 'Already Claimed'}
-						</SubmitButton>
+						</Button>
 						<P>
 							{network.id !== NetworkId['Optimism-Mainnet']
 								? 'Please switch to the Optimism Network by clicking the network tab in the top right'
 								: `If you participated in the pro rata phase of the initial AELIN Pool you may claim your $AELIN tokens here. Retro payments to volunteer devs are also claimable here. Finally, eligible SNX stakers who submitted their addresses before Dec 28th can claim their tokens here. Those who are eligible but submitted after Dec 28 will receive their AELIN tokens after the Jan 15th submittal deadline`}
 						</P>
 					</Row>
-					<div>
-						<Row>
-							<Header>{`Allocation: ${ethers.utils.formatEther(
-								airdropBalance ?? 0
-							)} vAELIN`}</Header>
-							<SubmitButton
-								disabled={isSubmitButtonDisabled}
-								onClick={() => setShowvAelinTxModal(true)}
-								variant="text"
-							>
-								{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
-							</SubmitButton>
-							<P>
-								{network.id !== NetworkId['Optimism-Mainnet']
-									? 'Please switch to the Optimism Network by clicking the network tab in the top right'
-									: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Click claim to get your vAELIN. Once claimed you can convert vAELIN into AELIN via the vAELIN pool on the pools page.`}
-							</P>
-						</Row>
+					<Row>
+						<Header>{`Allocation: ${ethers.utils.formatEther(airdropBalance ?? 0)} vAELIN`}</Header>
+						<Button
+							size="md"
+							variant="primary"
+							disabled={isSubmitButtonDisabled}
+							onClick={() => setShowvAelinTxModal(true)}
+						>
+							{canClaim ? 'Claim' : !airdropBalance ? 'Nothing to Claim' : 'Already Claimed'}
+						</Button>
+						<P>
+							{network.id !== NetworkId['Optimism-Mainnet']
+								? 'Please switch to the Optimism Network by clicking the network tab in the top right'
+								: `Stakers on both L1 and L2 are eligible for vAELIN distribution. Click claim to get your vAELIN. Once claimed you can convert vAELIN into AELIN via the vAELIN pool on the pools page.`}
+						</P>
 						<ConvertSection />
-						<Row>
-							<Link
-								href={ROUTES.Pools.PoolView('0x3074306c0cc9200602bfc64beea955928dac56dd')}
-								passHref
-							>
-								<Anchor>Go to the vAELIN Pool</Anchor>
-							</Link>
-						</Row>
-					</div>
+					</Row>
 				</FlexDivRow>
+
 				<ConfirmTransactionModal
 					title="Confirm Transaction"
 					setIsModalOpen={setShowAelinTxModal}
@@ -290,6 +279,7 @@ const Airdrop = () => {
 				>
 					{`You are claiming ${ethers.utils.formatEther(merkleBalance ?? 0)} AELIN`}
 				</ConfirmTransactionModal>
+
 				<ConfirmTransactionModal
 					title="Confirm Transaction"
 					setIsModalOpen={setShowvAelinTxModal}
@@ -303,51 +293,34 @@ const Airdrop = () => {
 			</PageLayout>
 		</>
 	);
-	return;
 };
 
 const Row = styled(FlexDivColCentered)`
-	width: 500px;
-	margin: 0 auto;
+	width: 660px;
+	height: 550px;
+	border-radius: 8px;
+	background-color: ${(props) => props.theme.colors.tableSecondary};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 `;
 
 const P = styled.p`
 	text-align: left;
-	width: 500px;
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
+	width: 560px;
+	background-color: ${(props) => props.theme.colors.tablePrimary};
+	color: ${(props) => props.theme.colors.textBody};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
+	border-radius: 12px;
 	padding: 20px;
-	font-size: 1.3rem;
-	font-weight: bold;
+	font-size: 1rem;
+	font-weight: 400;
+	margin: 40px 0;
 `;
 
 const Header = styled.h3`
-	margin: 40px 0 0 0;
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.2rem;
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	margin: 10px auto 0 auto;
-	padding: 0 8px;
-	&:disabled {
-		background-color: ${(props) => props.theme.colors.forestGreen};
-		opacity: 0.5;
-	}
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
-`;
-
-const Anchor = styled.a`
-	margin-top: 80px;
-	text-decoration: underline;
-	color: ${(props) => props.theme.colors.forestGreen};
+	margin: 30px 0;
+	color: ${(props) => props.theme.colors.heading};
+	font-weight: 400;
+	font-size: 1.4rem;
 `;
 
 export default Airdrop;

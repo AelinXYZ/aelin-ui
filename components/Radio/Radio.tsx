@@ -27,7 +27,7 @@ const Label = styled.label`
 	margin: 7.5px;
 	cursor: pointer;
 	text-transform: capitalize;
-	color: #252626;
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1rem;
 `;
 
@@ -41,7 +41,7 @@ const RadioButton = styled.input`
 		position: absolute;
 		top: 0;
 		left: 0;
-		background: #3f7923;
+		background: ${(props) => props.theme.colors.primary};
 		border-radius: 50%;
 	}
 
@@ -55,12 +55,12 @@ const RadioButton = styled.input`
 	&:after {
 		content: '';
 		position: absolute;
-		top: -3px;
-		left: -3px;
+		top: -2px;
+		left: -2px;
 		width: 16px;
 		height: 16px;
-		background: #fff;
-		border: 2px solid #f2f2f2;
+		background: ${(props) => props.theme.colors.boxesBackground};
+		border: 1px solid ${(props) => props.theme.colors.borders};
 		border-radius: 50%;
 	}
 `;

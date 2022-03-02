@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 import { getGraphEndpoint } from 'constants/endpoints';
 import { NetworkId } from 'constants/networks';
@@ -33,6 +34,10 @@ const useGetClaimedUnderlyingDealTokensQuery = ({
 
 export const parseClaimedResult = (claimedResult: ClaimedUnderlyingDealTokenResult) => ({
 	...claimedResult,
+	id: claimedResult.id,
+	dealAddress: ethers.utils.getAddress(claimedResult.dealAddress),
+	recipient: ethers.utils.getAddress(claimedResult.recipient),
+	underlyingDealTokenAddress: ethers.utils.getAddress(claimedResult.underlyingDealTokenAddress),
 	underlyingDealTokensClaimed: wei(claimedResult.underlyingDealTokensClaimed.toString()),
 });
 

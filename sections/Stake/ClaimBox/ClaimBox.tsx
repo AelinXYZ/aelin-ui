@@ -17,24 +17,25 @@ import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 
 type ClaimBoxProps = {
 	stakingContract: ethers.Contract | null;
+	isLP: boolean;
+	aelinAmount: number | null;
+	etherAmount: number | null;
 };
 
-const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract }) => {
+const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract, isLP, aelinAmount, etherAmount }) => {
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [showTxModal, setShowTxModal] = useState(false);
 
 	const { walletAddress } = Connector.useContainer();
-	const { txState, setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();
+	const { setTxState, gasPrice, setGasPrice } = TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const tokenStakedBalanceQuery = useGetStakingRewardsData({
 		stakingRewardsContract: stakingContract,
 	});
-	const earned = tokenStakedBalanceQuery?.data?.earned ?? wei(0);
 
-	useEffect(() => {
-		if (txState !== TransactionStatus.PRESUBMIT) setShowTxModal(false);
-	}, [txState]);
+	const balance = tokenStakedBalanceQuery?.data?.balance ?? wei(0);
+	const earned = tokenStakedBalanceQuery?.data?.earned ?? wei(0);
 
 	useEffect(() => {
 		const getGasEstimate = async () => {
@@ -94,14 +95,41 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract }) => {
 
 	return (
 		<RewardsBox>
-			<div>{`Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</div>
-			<SubmitButton
+			<Header>Claim rewards</Header>
+
+			{isLP && etherAmount !== null && (
+				<P>{`$ETH in pool via G-UNI: ${formatNumber(etherAmount, 2)}`}</P>
+			)}
+
+			{isLP && aelinAmount !== null && (
+				<P>{`$AELIN in pool via G-UNI: ${formatNumber(aelinAmount, 2)}`}</P>
+			)}
+
+			{isLP && (
+				<P>{`My Stake: ${balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'} G-UNI`}</P>
+			)}
+
+			{!isLP && (
+				<P>
+					{`Total AELIN Staked: ${aelinAmount !== null ? formatNumber(aelinAmount, 2) : 0}`} AELIN{' '}
+				</P>
+			)}
+
+			{!isLP && (
+				<P>{`My Stake: ${balance.gt(wei(0)) ? formatNumber(balance.toString(), 6) : '0'} AELIN`}</P>
+			)}
+
+			<P>{`My Rewards: ${earned.gt(wei(0)) ? formatNumber(earned.toString(), 6) : '0'} AELIN`}</P>
+
+			<Button
+				fullWidth
+				isRounded
+				variant="primary"
 				onClick={() => setShowTxModal(true)}
-				variant="text"
 				disabled={earned.eq(wei(0))}
 			>
 				Claim
-			</SubmitButton>
+			</Button>
 			<ConfirmTransactionModal
 				title="Confirm Transaction"
 				setIsModalOpen={setShowTxModal}
@@ -117,29 +145,30 @@ const ClaimBox: FC<ClaimBoxProps> = ({ stakingContract }) => {
 };
 
 const RewardsBox = styled.div`
-	background-color: ${(props) => props.theme.colors.cell};
-	text-align: center;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	padding: 20px;
-	height: 100px;
-	width: 300px;
-	position: relative;
+	background-color: ${(props) => props.theme.colors.tablePrimary};
+	width: 420px;
+	margin-top: 1rem;
+	padding: 30px 60px;
 	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.buttonStroke};
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
+	position: relative;
 `;
 
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	width: 120px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
+const Header = styled.h3`
+	color: ${(props) => props.theme.colors.heading};
+	text-align: center;
+	font-size: 1.4rem;
+	font-weight: 600;
+	margin: 0;
+	margin-bottom: 1rem;
+	padding: 0;
+`;
+
+const P = styled.p`
+	text-align: center;
+	font-size: 1.2rem;
+	margin: 1rem 0;
+	color: ${(props) => props.theme.colors.heading};
 `;
 
 export default ClaimBox;

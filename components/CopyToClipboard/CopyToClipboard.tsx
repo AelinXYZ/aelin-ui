@@ -3,13 +3,11 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { CopyToClipboard as CopyToClipboardComponent } from 'react-copy-to-clipboard';
 
-import { Tooltip, FlexDiv } from 'components/common';
-
-import CopyIcon from 'assets/svg/copy.svg';
-import CheckIcon from 'assets/svg/check.svg';
+import { FlexDiv } from 'components/common';
+import { CopyIcon } from 'components/Svg';
 
 interface ICopyToClipboard {
-  text: string;
+	text: string;
 }
 
 const CopyToClipboard = ({ text }: ICopyToClipboard) => {
@@ -18,50 +16,35 @@ const CopyToClipboard = ({ text }: ICopyToClipboard) => {
 	useEffect(() => {
 		if (!copiedAddress) return;
 
-    const intervalId = setInterval(() => {
-      setCopiedAddress(false);
-    }, 3000); // 3s
+		const intervalId = setInterval(() => {
+			setCopiedAddress(false);
+		}, 3000); // 3s
 
-    return () => clearInterval(intervalId);
-
+		return () => clearInterval(intervalId);
 	}, [copiedAddress]);
 
-  return (
-    <Tooltip
-      hideOnClick={false}
-      arrow={true}
-      placement="top"
-      content={copiedAddress ? 'Copied' : 'Copy'}
-    >
-    <CopyClipboardContainer>
-      <CopyToClipboardComponent text={text} onCopy={() => setCopiedAddress(true)}>
-        {copiedAddress ? (
-          <StyledImage width={16} height={16} src={CheckIcon} alt="copied" />
-        ) : (
-          <StyledImage width={16} height={16} src={CopyIcon} alt={`copy ${text}`} />
-        )}
-      </CopyToClipboardComponent>
-    </CopyClipboardContainer>
-  </Tooltip>
-    
-  )
+	return (
+		<CopyClipboardContainer>
+			<CopyToClipboardComponent text={text} onCopy={() => setCopiedAddress(true)}>
+				<StyledImage />
+			</CopyToClipboardComponent>
+		</CopyClipboardContainer>
+	);
 };
 
-const StyledImage = styled(Image)`
-  cursor: pointer;
-  margin: 0 3px !important;
+const StyledImage = styled(CopyIcon)`
+	cursor: pointer;
+	height: 16px;
+	width: 16px;
+	margin: 0 3px !important;
+	fill: ${(props) => props.theme.colors.paginationText};
 `;
 
 const CopyClipboardContainer = styled(FlexDiv)`
 	color: ${(props) => props.theme.colors.black};
 	cursor: pointer;
 	margin-right: 2px;
-	&:hover {
-		svg {
-			color: ${(props) => props.theme.colors.forestGreen};
-		}
-	}
 `;
 
-export { CopyToClipboard }
+export { CopyToClipboard };
 export default CopyToClipboard;

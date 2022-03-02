@@ -9,17 +9,12 @@ import TransactionData from 'containers/TransactionData';
 import TransactionNotifier from 'containers/TransactionNotifier';
 import poolAbi from 'containers/ContractsInterface/contracts/AelinPool';
 
-import SectionTitle from 'sections/shared/SectionTitle';
-import { SectionWrapper, ContentHeader, ContentTitle } from 'sections/Layout/PageLayout';
-
-import ConfirmTransactionModal from 'components/ConfirmTransactionModal';
 import Input from 'components/Input/Input';
 import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
-import TextInput from 'components/Input/TextInput';
 import TokenDropdown from 'components/TokenDropdown';
-import { FlexDivStart, FlexDivRow, Notice } from 'components/common';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
+import { FlexDivStart, FlexDivRow } from 'components/common';
 
 import { formatNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
@@ -33,10 +28,11 @@ import CreateForm from 'sections/shared/CreateForm';
 
 import { TransactionStatus } from 'constants/transactions';
 import { GasLimitEstimate } from 'constants/networks';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { EXCHANGE_DECIMALS } from 'constants/defaults';
 import { Allocation } from 'constants/pool';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
+import AddressLink from 'components/AddressLink';
 
 interface CreateDealProps {
 	poolAddress: string;
@@ -45,21 +41,13 @@ interface CreateDealProps {
 
 const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const [totalPoolSupply, setTotalPoolSupply] = useState<string>('0');
-	const [showTxModal, setShowTxModal] = useState<boolean>(false);
 	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const [cancelPoolGasLimitEstimate, setCancelPoolGasLimitEstimate] = useState<GasLimitEstimate>(
-		null
-	);
-	const {
-		txHash,
-		setTxHash,
-		gasPrice,
-		setGasPrice,
-		txState,
-		setTxState,
-	} = TransactionData.useContainer();
+	const [cancelPoolGasLimitEstimate, setCancelPoolGasLimitEstimate] =
+		useState<GasLimitEstimate>(null);
+	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
+		TransactionData.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const poolBalancesQuery = usePoolBalancesQuery({
@@ -440,21 +428,23 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 						<FlexDivRow>
 							<AllocationRow>
 								<Dot
+									type="checkbox"
 									onClick={() => {
 										setAllocation(Allocation.MAX);
 										formik.setFieldValue('purchaseTokenTotal', totalPoolSupply);
 									}}
-									isActive={allocation === Allocation.MAX}
+									checked={allocation === Allocation.MAX}
 								/>{' '}
 								{Allocation.MAX}
 							</AllocationRow>
 							<AllocationRow>
 								<Dot
+									type="checkbox"
 									onClick={() => {
 										setAllocation(Allocation.DEALLOCATE);
 										formik.setFieldValue('purchaseTokenTotal', 0);
 									}}
-									isActive={allocation === Allocation.DEALLOCATE}
+									checked={allocation === Allocation.DEALLOCATE}
 								/>{' '}
 								{Allocation.DEALLOCATE}
 							</AllocationRow>
@@ -466,7 +456,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="underlyingDealTokenTotal">underlying Deal Token Total</label>
+						<label htmlFor="underlyingDealTokenTotal">Underlying Deal Token Total</label>
 						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
 					</>
 				),
@@ -483,52 +473,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					/>
 				),
 				formError: formik.errors.underlyingDealTokenTotal,
-			},
-			{
-				header: (
-					<>
-						<label htmlFor="vestingPeriod">Vesting Period (linear)</label>
-						<QuestionMark
-							text={`The amount of time it takes to vest all underlying deal tokens after the vesting cliff`}
-						/>
-					</>
-				),
-				subText: 'time to vest after the cliff',
-				formField: (
-					<FlexDivStart>
-						<Input
-							width="50px"
-							id="vestingPeriodDays"
-							name="vestingPeriodDays"
-							type="number"
-							placeholder="days"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.vestingPeriodDays || ''}
-						/>
-						<Input
-							width="55px"
-							id="vestingPeriodHours"
-							name="vestingPeriodHours"
-							type="number"
-							placeholder="hours"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.vestingPeriodHours || ''}
-						/>
-						<Input
-							width="50px"
-							id="vestingPeriodMinutes"
-							name="vestingPeriodMinutes"
-							type="number"
-							placeholder="mins"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.vestingPeriodMinutes || ''}
-						/>
-					</FlexDivStart>
-				),
-				formError: formik.errors.vestingPeriodMinutes,
 			},
 			{
 				header: (
@@ -575,6 +519,52 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					</FlexDivStart>
 				),
 				formError: formik.errors.vestingCliffMinutes,
+			},
+			{
+				header: (
+					<>
+						<label htmlFor="vestingPeriod">Vesting Period (linear)</label>
+						<QuestionMark
+							text={`The amount of time it takes to vest all underlying deal tokens after the vesting cliff`}
+						/>
+					</>
+				),
+				subText: 'time to vest after the cliff',
+				formField: (
+					<FlexDivStart>
+						<Input
+							width="50px"
+							id="vestingPeriodDays"
+							name="vestingPeriodDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.vestingPeriodDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="vestingPeriodHours"
+							name="vestingPeriodHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.vestingPeriodHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="vestingPeriodMinutes"
+							name="vestingPeriodMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.vestingPeriodMinutes || ''}
+						/>
+					</FlexDivStart>
+				),
+				formError: formik.errors.vestingPeriodMinutes,
 			},
 			{
 				header: (
@@ -723,9 +713,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 						/>
 					</>
 				),
-				subText: 'address',
+				subText: 'Address',
 				formField: (
-					<TextInput
+					<Input
+						type="text"
 						id="holder"
 						name="holder"
 						onChange={formik.handleChange}
@@ -743,12 +734,18 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		() => [
 			{
 				label: 'Underlying deal token',
-				text: formik.values.underlyingDealToken
-					? truncateAddress(formik.values.underlyingDealToken)
-					: '',
+				text: formik.values.underlyingDealToken ? (
+					<AddressLink address={formik.values.underlyingDealToken}>
+						{formik.values.underlyingDealToken
+							? truncateAddress(formik.values.underlyingDealToken)
+							: ''}
+					</AddressLink>
+				) : (
+					'-'
+				),
 			},
 			{
-				label: 'Purchase currency total',
+				label: 'Total purchase tokens',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
@@ -772,22 +769,22 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					) : (
 						<div>
 							<ExchangeRate>
-								<TokenDisplay address={formik.values.underlyingDealToken} /> /{' '}
-								{poolBalances?.purchaseTokenSymbol}:{' '}
 								{formatNumber(
 									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
-									DEFAULT_DECIMALS
-								)}
+									EXCHANGE_DECIMALS
+								)}{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} /> per{' '}
+								{poolBalances?.purchaseTokenSymbol}{' '}
 							</ExchangeRate>
 							<ExchangeRate>
-								{poolBalances?.purchaseTokenSymbol} /{' '}
-								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
 										Number(formik.values?.underlyingDealTokenTotal ?? 0),
-									DEFAULT_DECIMALS
-								)}
+									EXCHANGE_DECIMALS
+								)}{' '}
+								{poolBalances?.purchaseTokenSymbol} per{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} />{' '}
 							</ExchangeRate>
 						</div>
 					),
@@ -826,92 +823,77 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			},
 			{
 				label: 'Holder',
-				text: formik.values.holder ? truncateAddress(formik.values.holder) : '',
+				text: formik.values.holder ? (
+					<AddressLink address={formik.values.holder}>
+						{formik.values.holder ? truncateAddress(formik.values.holder) : ''}
+					</AddressLink>
+				) : (
+					'-'
+				),
 			},
 		],
 		[formik.values, poolBalances?.purchaseTokenSymbol]
 	);
 
 	return (
-		<div>
-			<CreateForm
-				formik={formik}
-				gridItems={gridItems}
-				summaryItems={summaryItems}
-				txType={CreateTxType.CreateDeal}
-				txState={txState}
-				txHash={txHash}
-				setGasPrice={setGasPrice}
-				gasLimitEstimate={gasLimitEstimate}
-			/>
-			<SectionWrapper>
-				<ContentHeader>
-					<ContentTitle>
-						<SectionTitle address={null} title="Cancel Pool" />
-					</ContentTitle>
-				</ContentHeader>
-				<StyledNotice>
-					Pool Cancellation takes 30 minutes, after which investors may withdraw their funds. After
-					sumbitting the cancel transaction no further action is needed. Simply wait 30 minutes and
-					then notify investors the pool is closed and they may withdraw
-				</StyledNotice>
-				<CancelButton onClick={() => setShowTxModal(true)}>Cancel Pool</CancelButton>
-				<ConfirmTransactionModal
-					title={`Confirm Pool Cancellation`}
-					setIsModalOpen={setShowTxModal}
-					isModalOpen={showTxModal}
-					setGasPrice={setGasPrice}
-					gasLimitEstimate={cancelPoolGasLimitEstimate}
-					onSubmit={handleCancelPool}
-				>
-					In 30 minutes purchasers in your pool will be able to withdraw
-				</ConfirmTransactionModal>
-			</SectionWrapper>
-		</div>
+		<CreateForm
+			formik={formik}
+			gridItems={gridItems}
+			summaryItems={summaryItems}
+			txType={CreateTxType.CreateDeal}
+			txState={txState}
+			txHash={txHash}
+			setGasPrice={setGasPrice}
+			gasLimitEstimate={gasLimitEstimate}
+			handleCancelPool={handleCancelPool}
+			cancelGasLimitEstimate={cancelPoolGasLimitEstimate}
+		/>
 	);
 };
 
 const ExchangeRate = styled.div`
-	margin-top: 10px;
+	margin-top: 5px;
 `;
 
-const StyledNotice = styled(Notice)`
-	max-width: 1200px;
-	background: transparent;
-	text-align: left;
-	border: 1px solid ${(props) => props.theme.colors.headerGrey};
-	color: ${(props) => props.theme.colors.black};
-`;
-
-const Dot = styled.div<{ isActive: boolean }>`
-	margin-right: 3px;
-	width: 15px;
-	height: 15px;
+const Dot = styled.input`
+	position: relative;
 	cursor: pointer;
-	border-radius: 50%;
-	background: ${(props) =>
-		props.isActive ? props.theme.colors.headerGrey : props.theme.colors.cell};
-	border: 1px solid ${(props) => props.theme.colors.headerGrey};
+
+	&:before {
+		content: '';
+		z-index: 1;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: ${(props) => props.theme.colors.primary};
+		border-radius: 50%;
+	}
+
+	&:checked {
+		&:before {
+			width: 14px;
+			height: 14px;
+		}
+	}
+
+	&:after {
+		content: '';
+		position: absolute;
+		top: -2px;
+		left: -2px;
+		width: 16px;
+		height: 16px;
+		background: ${(props) => props.theme.colors.boxesBackground};
+		border: 1px solid ${(props) => props.theme.colors.borders};
+		border-radius: 50%;
+	}
+	margin-right: 10px;
 `;
 
 const AllocationRow = styled(FlexDivStart)`
-	margin-top: 10px;
-`;
-
-const CancelButton = styled.div`
-	cursor: pointer;
-	margin: 20px;
-	width: 20%;
-	height: 56px;
-	text-align: center;
-	padding-top: 16px;
-	font-size: 1.3rem;
-	background-color: ${(props) => props.theme.colors.statusRed};
-	border: none;
-	border-top: 1px solid ${(props) => props.theme.colors.buttonStroke};
-	color: ${(props) => props.theme.colors.white};
-	bottom: 0;
-	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	margin-top: 5px;
 `;
 
 export default CreateDeal;

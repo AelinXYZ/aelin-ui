@@ -1,4 +1,4 @@
-//@ts-nocheck
+import { ethers } from 'ethers';
 import { wei } from '@synthetixio/wei';
 
 import { getGraphEndpoint } from 'constants/endpoints';
@@ -15,6 +15,7 @@ const useGetPurchasePoolTokensQuery = ({
 	return useGetPurchasePoolTokens(
 		getGraphEndpoint(networkId),
 		{
+			// @ts-ignore
 			purchaser,
 			orderBy: 'timestamp',
 			orderDirection: 'desc',
@@ -38,9 +39,9 @@ export const parsePurchasePoolToken = ({
 	timestamp,
 	purchaser,
 }: PurchasePoolTokenResult) => ({
-	id,
+	id: ethers.utils.getAddress(id),
 	timestamp: Number(timestamp) * 1000,
-	poolAddress,
+	poolAddress: ethers.utils.getAddress(poolAddress),
 	purchaseTokenAmount: wei(purchaseTokenAmount.toString()),
 	purchaser,
 });

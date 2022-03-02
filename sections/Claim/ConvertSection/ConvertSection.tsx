@@ -153,13 +153,14 @@ const ConvertSection = () => {
 		<>
 			<Row>
 				<Header>Convert your vAELIN</Header>
+
 				{!hasTokenBalance && (
-					<SubmitButton disabled variant="text">
+					<SubmitButton disabled variant="primary">
 						Nothing to Convert
 					</SubmitButton>
 				)}
 				{!hasAllowance && hasTokenBalance && (
-					<SubmitButton onClick={() => setConverterTxModal(true)} variant="text">
+					<SubmitButton onClick={() => setConverterTxModal(true)} variant="primary">
 						Approve vAELIN
 					</SubmitButton>
 				)}
@@ -167,11 +168,12 @@ const ConvertSection = () => {
 					<SubmitButton
 						disabled={!hasAllowance}
 						onClick={() => setConverterTxModal(true)}
-						variant="text"
+						variant="primary"
 					>
 						Convert vAELIN to AELIN
 					</SubmitButton>
 				)}
+
 				<Note>
 					There is a 2% conversion loss when going from vAELIN to AELIN. An additional 2% of vAELIN
 					was distributed to account for this. It is due to the 2% protocol fee that was charged on
@@ -197,54 +199,26 @@ const Row = styled(FlexDivColCentered)`
 	margin: 0 auto;
 `;
 
-const P = styled.p`
-	text-align: left;
-	width: 500px;
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	padding: 20px;
-	font-size: 1.3rem;
-	font-weight: bold;
-`;
-
 const Note = styled.p`
 	text-align: left;
 	width: 500px;
 	font-size: 1rem;
 	padding: 20px;
+	margin: 20px 0;
 	border-radius: 8px;
-	border: 1px solid ${(props) => props.theme.colors.forestGreen};
-	background-color: ${(props) => props.theme.colors.white};
-	color: ${(props) => props.theme.colors.forestGreen};
-`;
-
-const Header = styled.h3`
-	margin: 40px 0 0 0;
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.6rem;
+	color: ${(props) => props.theme.colors.textBody};
 `;
 
 const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	margin: 10px auto 0 auto;
-	padding: 0 8px;
-	&:disabled {
-		background-color: ${(props) => props.theme.colors.forestGreen};
-		opacity: 0.5;
-	}
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
+	margin: 10px 0;
+	width: 220px;
 `;
 
-const Anchor = styled.a`
-	margin-top: 80px;
-	text-decoration: underline;
-	color: ${(props) => props.theme.colors.forestGreen};
+const Header = styled.h3`
+	margin: 10px 0 30px 0;
+	color: ${(props) => props.theme.colors.heading};
+	font-weight: 400;
+	font-size: 1.4rem;
 `;
 
 export default ConvertSection;

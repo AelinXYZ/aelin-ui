@@ -80,17 +80,19 @@ const Stake = () => {
 								</Link>
 								.
 							</Text>
-							<SubmitButton
+							<Button
+								size="sm"
+								variant="primary"
+								isRounded
 								onClick={() =>
 									window.open(
 										'https://www.sorbet.finance/#/pools/0x665d8D87ac09Bdbc1222B8B9E72Ddcb82f76B54A',
 										'blank'
 									)
 								}
-								variant="text"
 							>
 								Go to Sorbet.Finance
-							</SubmitButton>
+							</Button>
 						</Section>
 					),
 				},
@@ -115,17 +117,19 @@ const Stake = () => {
 								To obtain UNI-V2 AELIN/ETH LP tokens, first provide liquidity into the AELIN/ETH
 								pool on Uniswap.
 							</Text>
-							<SubmitButton
+							<Button
+								size="sm"
+								variant="primary"
+								isRounded
 								onClick={() =>
 									window.open(
 										'https://app.uniswap.org/#/add/v2/0xa9c125bf4c8bb26f299c00969532b66732b1f758/ETH?chain=mainnet',
 										'blank'
 									)
 								}
-								variant="text"
 							>
 								Go to Uniswap
-							</SubmitButton>
+							</Button>
 						</Section>
 					),
 				},
@@ -194,37 +198,29 @@ const Section = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	margin-top: 1rem;
+	padding: 10px;
+	border-radius: 14px;
+	border: 1px solid ${(props) => props.theme.colors.tableBorders};
 `;
 
 const PageSection = styled(FlexDivCol)`
-	flex: 1;
-	align-items: center;
+	margin: 0 40px;
 `;
 
 const JustifiedLayout = styled(Layout)`
-	justify-content: space-around;
+	justify-content: center;
 `;
 
-const Text = styled.h3`
+const Text = styled.p`
 	width: 400px;
-	padding: 20px;
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 14px;
-	margin: 20px 0;
-	padding: 0;
-`;
-
-const SubmitButton = styled(Button)`
-	background-color: ${(props) => props.theme.colors.forestGreen};
-	color: ${(props) => props.theme.colors.white};
-	padding: 0 6px;
-	margin: 10px auto 0 auto;
-	&:hover {
-		&:not(:disabled) {
-			color: ${(props) => props.theme.colors.white};
-			box-shadow: 0px 0px 10px rgba(71, 120, 48, 0.8);
-		}
-	}
+	padding: 0px 14.5px 0 14.5px;
+	color: ${(props) => props.theme.colors.textBody};
+	font-weight: 200;
+	font-size: 12px;
+	text-align: justify;
+	text-align-last: center;
+	margin-top: 5px;
 `;
 
 export default Stake;

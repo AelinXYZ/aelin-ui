@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Wei, { wei } from '@synthetixio/wei';
 
 import { Tooltip } from 'components/common';
+import Button from 'components/Button';
 import Connector from 'containers/Connector';
 
 import useExchangeRatesQuery from 'hooks/useExchangeRatesQuery';
@@ -75,9 +76,9 @@ const GasSelector: React.FC<IGasSelector> = ({
 
 	return (
 		<StyledContainer>
-			<StyledGasDescription>{`GAS PRICE (GWEI): `}</StyledGasDescription>
-			<span>
-				<StyledGasPrice>{`≈${formattedGasPrice} ($${transactionFee})`}</StyledGasPrice>
+			<StyledGasDescription>{`Gas price (GWEI)`}</StyledGasDescription>
+			<Wrapper>
+				<StyledGasPrice>{`≈ ${formattedGasPrice} ($${transactionFee})`}</StyledGasPrice>
 				<EditGasEstimateTooltip
 					visible={isOpen}
 					appendTo="parent"
@@ -117,30 +118,53 @@ const GasSelector: React.FC<IGasSelector> = ({
 						</StyledUl>
 					}
 				>
-					<StyledEditButton type="button" onClick={() => setIsOpen(!isOpen)}>
+					<StyledButton
+						isRounded
+						size="md"
+						variant="quaternary"
+						type="submit"
+						onClick={() => setIsOpen(!isOpen)}
+					>
 						Edit
-					</StyledEditButton>
+					</StyledButton>
 				</EditGasEstimateTooltip>
-			</span>
+			</Wrapper>
 		</StyledContainer>
 	);
 };
 
 const StyledContainer = styled.div`
+	position: relative;
 	display: flex;
-	justify-content: space-around;
+	justify-content: center;
 	align-items: center;
 	margin: 25px 0;
 `;
 
 const StyledGasDescription = styled.span`
-	color: #5b5b5b;
+	color: ${(props) => props.theme.colors.textBody};
+	line-height: 2rem;
 	font-size: 1rem;
+	padding-right: 5px;
 `;
 
 const StyledGasPrice = styled.span`
+	color: ${(props) => props.theme.colors.textSmall};
+	line-height: 2rem;
 	font-size: 1rem;
-	margin: 0 10px;
+	margin-right: 15px;
+`;
+
+const Wrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+`;
+
+const StyledButton = styled(Button)`
+	font-family: ${(props) => props.theme.fonts.ASMRegular};
+	position: absolute;
+	right: 0;
 `;
 
 const StyledInput = styled.input`
@@ -160,7 +184,8 @@ const StyledInput = styled.input`
 `;
 
 const EditGasEstimateTooltip = styled(Tooltip)`
-	background-color: ${(props) => props.theme.colors.background};
+	background-color: ${(props) => props.theme.colors.boxesBackground};
+	border: 1px solid ${(props) => props.theme.colors.borders};
 
 	> div {
 		padding: 0 !important;
@@ -174,7 +199,7 @@ const StyledUl = styled.ul`
 const StyledLi = styled.li`
 	list-style-type: none;
 	padding: 15px;
-	color: ${(props) => props.theme.colors.black};
+	color: ${(props) => props.theme.colors.textBody};
 	cursor: pointer;
 	letter-spacing: 1px;
 	font-weight: 300;
@@ -183,8 +208,8 @@ const StyledLi = styled.li`
 	justify-content: space-between;
 
 	&:hover {
-		color: ${(props) => props.theme.colors.white};
-		background-color: ${(props) => props.theme.colors.headerGreen};
+		color: ${(props) => props.theme.colors.buttonPrimary};
+		background-color: ${(props) => props.theme.colors.inputBackground};
 
 		&:last-child {
 			border-bottom-left-radius: 4px;
@@ -204,15 +229,6 @@ const StyledSpeed = styled.span`
 	&::first-letter {
 		text-transform: uppercase;
 	}
-`;
-
-const StyledEditButton = styled.button`
-	border: 0;
-	border-radius: 4px;
-	cursor: pointer;
-	padding: 5px 15px;
-	color: ${(props) => props.theme.colors.white};
-	background-color: #5b5b5b;
 `;
 
 export { GasSelector };

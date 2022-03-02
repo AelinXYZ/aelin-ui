@@ -26,12 +26,14 @@ const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
 	);
 };
 
-export const Container = styled.div``;
+export const Container = styled.div`
+	background-color: ${(props) => props.theme.colors.tableHeaderText};
+`;
 
 export const Content = styled.div`
 	max-width: 1440px;
 	padding: 0 40px 40px 40px;
-	margin: 60px auto 0 auto;
+	margin: 40px auto 0 auto;
 	display: flex;
 `;
 
@@ -43,17 +45,19 @@ export const ContentHeader = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	margin-bottom: 2rem;
 `;
 
 export const ContentTitle = styled.h1`
-	color: ${(props) => props.theme.colors.headerGreen};
-	font-size: 1.4rem;
+	color: ${(props) => props.theme.colors.heading};
+	font-size: 2rem;
+	font-weight: 400;
 	margin: 0 0 6px 0;
 `;
 
 export const ContentSubtitle = styled.p`
 	margin: 6px 0 0 0;
-	color: ${(props) => props.theme.colors.headerGrey};
+	color: ${(props) => props.theme.colors.textSmall};
 	font-size: 1.2rem;
 `;
 

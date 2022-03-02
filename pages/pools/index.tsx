@@ -13,8 +13,7 @@ import FilterPool from 'sections/Pools/FilterPool';
 
 import Ens from 'components/Ens';
 import Table from 'components/Table';
-import { FlexDivStart } from 'components/common';
-import TokenDisplay from 'components/TokenDisplay';
+import { FlexDivStart, FlexDivCol, FlexDivRowCentered } from 'components/common';
 import DealStatus, { Status } from 'components/DealStatus';
 import QuestionMark from 'components/QuestionMark';
 
@@ -33,8 +32,11 @@ import { filterList } from 'constants/poolFilterList';
 import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
-import { NetworkId } from 'constants/networks';
+import { isMainnet, nameToIdMapping, Network, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
+import { Env } from 'constants/env';
+import NetworkLogoTable from 'components/NetworkLogoTable';
+import styled from 'styled-components';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -48,8 +50,18 @@ const Pools: FC = () => {
 		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
 	);
 
-	const poolsQuery = useGetPoolsQuery({ networkId: network.id });
+	const poolsQuery = useGetPoolsQuery();
+	const poolsQueryWithNetwork = useMemo(() => {
+		return poolsQuery
+			.filter((q) => !!q.data)
+			.reduce((prev, current) => {
+				return [...prev, ...current.data.map((d) => ({ ...d, network: current.networkName }))];
+			}, [])
+			.sort((a, b) => b.timestamp - a.timestamp);
+	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
+
 	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
+	const isQueryLoading = poolsQuery.find((q) => q.status === 'loading');
 
 	useEffect(() => {
 		setSponsorFilter(router.query?.sponsorFilter ?? '');
@@ -60,30 +72,30 @@ const Pools: FC = () => {
 	}, [router.query.page]);
 
 	useInterval(() => {
-		poolsQuery.refetch();
+		poolsQuery.forEach((q) => q.refetch());
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
 	const sponsors = useMemo(
 		() =>
-			(poolsQuery?.data ?? [])
+			poolsQueryWithNetwork
 				.filter(({ id }) => !filterList.includes(id))
 				.map(({ sponsor }) => sponsor),
-		[poolsQuery?.data]
+		[poolsQueryWithNetwork?.length]
 	);
 
 	const purchaseTokenAddresses = useMemo(
 		() =>
-			(poolsQuery?.data ?? [])
+			poolsQueryWithNetwork
 				.filter(({ id }) => !filterList.includes(id))
 				.map(({ purchaseToken }) => purchaseToken),
-		[poolsQuery?.data]
+		[poolsQueryWithNetwork?.length]
 	);
 
 	const ensOrAddresses = useAddressesToEns(sponsors);
 	const currencySymbols = useAddressesToSymbols(purchaseTokenAddresses);
 
 	const data = useMemo(() => {
-		let list = (poolsQuery?.data ?? [])
+		let list = poolsQueryWithNetwork
 			.filter(({ id }) => !filterList.includes(id))
 			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
 				const parsedPool = parsePool({
@@ -127,9 +139,15 @@ const Pools: FC = () => {
 			);
 		}
 
+		if (process.env.NODE_ENV === Env.PROD) {
+			list = list.filter(({ network }) => isMainnet(nameToIdMapping[network]));
+		} else {
+			list = list.filter(({ network }) => !isMainnet(nameToIdMapping[network]));
+		}
+
 		return list;
 	}, [
-		poolsQuery?.data,
+		poolsQueryWithNetwork,
 		sponsorFilter,
 		currencyFilter,
 		nameFilter,
@@ -143,7 +161,7 @@ const Pools: FC = () => {
 	const columns = useMemo(
 		() => [
 			{
-				Header: 'sponsor',
+				Header: 'Sponsor',
 				accessor: 'sponsor',
 				Cell: (cellProps: CellProps<any, string>) => {
 					return (
@@ -152,22 +170,50 @@ const Pools: FC = () => {
 						</FlexDivStart>
 					);
 				},
+				width: 150,
 			},
-			{ Header: 'name', accessor: 'name', width: 100 },
 			{
-				Header: 'purchase currency',
-				accessor: 'purchaseToken',
+				Header: 'Pool name',
+				accessor: 'name',
+				Cell: (cellProps: CellProps<any, string>) => {
+					return <StyledTextWrapper>{cellProps.value}</StyledTextWrapper>;
+				},
+				width: 115,
+			},
+			{
+				Header: 'network',
+				accessor: 'network',
+				width: 100,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
-							<TokenDisplay displayAddress={false} symbol={undefined} address={cellProps.value} />
+							<NetworkLogoTable networkName={cellProps.value} />
 						</FlexDivStart>
 					);
 				},
 			},
 			{
-				Header: 'amount funded',
-				accessor: 'contributions',
+				Header: (
+					<FlexDivCol>
+						<div>
+							Investment <br />
+							token
+						</div>
+					</FlexDivCol>
+				),
+				accessor: 'purchaseTokenSymbol',
+				width: 100,
+			},
+			{
+				Header: (
+					<FlexDivCol>
+						<div>
+							Amount in <br />
+							Pool
+						</div>
+					</FlexDivCol>
+				),
+				accessor: 'totalSupply',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
@@ -186,7 +232,7 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				Header: 'pool cap',
+				Header: 'Pool cap',
 				accessor: 'cap',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
@@ -209,14 +255,15 @@ const Pools: FC = () => {
 			},
 			{
 				Header: (
-					<div>
-						Purchase window closes
-						{isOptimism && (
-							<QuestionMark
-								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-							/>
-						)}
-					</div>
+					<FlexDivRowCentered>
+						<div>
+							Investment <br /> deadline
+						</div>
+						<QuestionMark
+							variant="table-header"
+							text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+						/>
+					</FlexDivRowCentered>
 				),
 				accessor: 'purchaseExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
@@ -254,14 +301,17 @@ const Pools: FC = () => {
 			},
 			{
 				Header: (
-					<div>
-						Pool closes
-						{isOptimism && (
-							<QuestionMark
-								text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
-							/>
-						)}
-					</div>
+					<FlexDivRowCentered>
+						<div>
+							Deal
+							<br />
+							deadline
+						</div>
+						<QuestionMark
+							variant="table-header"
+							text={`Timestamps on Optimism will be 10-15 minutes behind the real time for the next few months`}
+						/>
+					</FlexDivRowCentered>
 				),
 				accessor: 'poolExpiry',
 				Cell: (cellProps: CellProps<any, any>) => {
@@ -270,17 +320,24 @@ const Pools: FC = () => {
 				width: 125,
 			},
 			{
-				Header: 'fee',
+				Header: (
+					<FlexDivCol>
+						<div>
+							Sponsor <br />
+							fee
+						</div>
+					</FlexDivCol>
+				),
 				accessor: 'fee',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return `${parseFloat(
 						Number(ethers.utils.formatEther(cellProps.value.toString())).toFixed(2)
 					)}%`;
 				},
-				width: 50,
+				width: 85,
 			},
 			{
-				Header: 'privacy',
+				Header: 'Privacy',
 				accessor: 'hasAllowList',
 				Cell: (cellProps: CellProps<any, any>) => {
 					return !!cellProps.value ? 'Private' : 'Open';
@@ -288,8 +345,9 @@ const Pools: FC = () => {
 				width: 75,
 			},
 			{
-				Header: 'status',
+				Header: 'Stage',
 				accessor: 'poolStatus',
+				width: 350,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return <DealStatus status={cellProps.value} />;
 				},
@@ -322,9 +380,9 @@ const Pools: FC = () => {
 				/>
 				<Table
 					pageIndex={pageIndex}
-					noResultsMessage={poolsQuery.isSuccess && (data?.length ?? 0) === 0 ? 'no results' : null}
+					noResultsMessage={poolsQueryWithNetwork?.length === 0 ? 'no results' : null}
 					data={data && data.length > 0 ? data : []}
-					isLoading={poolsQuery.isLoading}
+					isLoading={isQueryLoading}
 					columns={columns}
 					hasLinksToPool={true}
 					showPagination={true}
@@ -333,5 +391,12 @@ const Pools: FC = () => {
 		</>
 	);
 };
+
+const StyledTextWrapper = styled.div`
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 100px;
+	overflow: hidden;
+`;
 
 export default Pools;

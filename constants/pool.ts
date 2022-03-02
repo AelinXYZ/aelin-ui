@@ -19,9 +19,9 @@ export const statusToText = (status: Status): string => {
 		case Status.SeekingDeal:
 			return 'Seeking Deal';
 		case Status.ProRataRedemption:
-			return 'Pro Rata Redemption';
+			return 'Round 1: Pro Rata Redemption';
 		case Status.OpenRedemption:
-			return 'Open Redemption';
+			return 'Round 2: Open Redemption';
 		case Status.FundingDeal:
 			return 'Funding Deal';
 		case Status.Closed:

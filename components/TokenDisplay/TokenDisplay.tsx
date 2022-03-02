@@ -1,3 +1,4 @@
+import AddressLink from 'components/AddressLink';
 import Connector from 'containers/Connector';
 import { erc20Abi } from 'contracts/erc20';
 import { ethers } from 'ethers';
@@ -28,7 +29,12 @@ const TokenDisplay: FC<TokenProps> = (props) => {
 	if (!address) return <>-</>;
 	return (
 		<>
-			{symbol || resolvedSymbol} {displayAddress ? `(${truncateAddress(address)})` : ''}
+			{symbol || resolvedSymbol}{' '}
+			{displayAddress ? (
+				<AddressLink address={address}>({truncateAddress(address)})</AddressLink>
+			) : (
+				''
+			)}
 		</>
 	);
 };
