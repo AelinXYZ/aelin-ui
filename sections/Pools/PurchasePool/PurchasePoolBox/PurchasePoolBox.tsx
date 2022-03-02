@@ -129,6 +129,8 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 						isMaxBalanceExceeded={isMaxBalanceExceeded}
 						handleMaxButtonClick={handleMaxButtonClick}
 						tokenBalance={Number(userPurchaseBalance) ?? 0}
+						isPrivate={privatePoolDetails?.isPrivatePool ?? false}
+						allocation={Number(privatePoolDetails?.privatePoolAmount ?? 0)}
 					/>
 				)}
 
