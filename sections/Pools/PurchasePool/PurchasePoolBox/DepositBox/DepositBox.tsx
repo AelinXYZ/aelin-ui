@@ -17,6 +17,8 @@ interface DepositBoxProps {
 	isButtonDisabled: boolean;
 	isMaxBalanceExceeded: boolean;
 	handleMaxButtonClick: () => void;
+	isPrivate: boolean;
+	allocation: number;
 }
 
 const DepositBox: FC<DepositBoxProps> = ({
@@ -30,6 +32,8 @@ const DepositBox: FC<DepositBoxProps> = ({
 	isButtonDisabled,
 	isMaxBalanceExceeded,
 	handleMaxButtonClick,
+	isPrivate,
+	allocation,
 }) => {
 	return (
 		<div>
@@ -46,6 +50,12 @@ const DepositBox: FC<DepositBoxProps> = ({
 				}}
 				icon={<div onClick={handleMaxButtonClick}>Max</div>}
 			/>
+
+			{isPrivate && (
+				<p>
+					allocation: {allocation.toFixed(2)} {purchaseToken}
+				</p>
+			)}
 
 			<ActionBoxInputLabel>
 				Balance: {tokenBalance.toFixed(2)} {purchaseToken}
