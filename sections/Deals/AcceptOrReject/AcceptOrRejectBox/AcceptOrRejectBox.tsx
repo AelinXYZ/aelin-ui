@@ -152,7 +152,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 					throw new Error('Unexpected Index');
 				}}
 			>
-				<Tab label="Accept deal" disabled={dealRedemptionEnded}>
+				<Tab label="Accept deal">
 					<>
 						{isFirstRound && (
 							<AcceptOrRejectTab
