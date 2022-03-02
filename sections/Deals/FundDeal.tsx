@@ -234,9 +234,6 @@ const FundDeal: FC<FundDealProps> = ({
 				subText: (
 					<div>
 						<ExchangeRate>
-							{areTokenSymbolsAvailable
-								? `${symbol} / ${purchaseTokenSymbol}: `
-								: `Underlying / Purchase: `}
 							{formatNumber(
 								Number(ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 18)) /
 									Number(
@@ -246,12 +243,12 @@ const FundDeal: FC<FundDealProps> = ({
 										)
 									),
 								EXCHANGE_DECIMALS
-							)}
+							)}{' '}
+							{areTokenSymbolsAvailable
+								? `${symbol} per ${purchaseTokenSymbol} `
+								: `Underlying per Purchase`}
 						</ExchangeRate>
 						<ExchangeRate>
-							{areTokenSymbolsAvailable
-								? `${purchaseTokenSymbol} / ${symbol}: `
-								: `Purchase / Underlying: `}
 							{formatNumber(
 								Number(
 									ethers.utils.formatUnits(
@@ -260,7 +257,10 @@ const FundDeal: FC<FundDealProps> = ({
 									)
 								) / Number(ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 18)),
 								EXCHANGE_DECIMALS
-							)}
+							)}{' '}
+							{areTokenSymbolsAvailable
+								? `${purchaseTokenSymbol} per ${symbol}`
+								: `Purchase per Underlying: `}
 						</ExchangeRate>
 					</div>
 				),
