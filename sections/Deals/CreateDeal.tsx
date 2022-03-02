@@ -32,6 +32,7 @@ import { EXCHANGE_DECIMALS } from 'constants/defaults';
 import { Allocation } from 'constants/pool';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
+import AddressLink from 'components/AddressLink';
 
 interface CreateDealProps {
 	poolAddress: string;
@@ -733,9 +734,15 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		() => [
 			{
 				label: 'Underlying deal token',
-				text: formik.values.underlyingDealToken
-					? truncateAddress(formik.values.underlyingDealToken)
-					: '',
+				text: formik.values.underlyingDealToken ? (
+					<AddressLink address={formik.values.underlyingDealToken}>
+						{formik.values.underlyingDealToken
+							? truncateAddress(formik.values.underlyingDealToken)
+							: ''}
+					</AddressLink>
+				) : (
+					'-'
+				),
 			},
 			{
 				label: 'Total purchase tokens',
@@ -816,7 +823,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			},
 			{
 				label: 'Holder',
-				text: formik.values.holder ? truncateAddress(formik.values.holder) : '',
+				text: formik.values.holder ? (
+					<AddressLink address={formik.values.holder}>
+						{formik.values.holder ? truncateAddress(formik.values.holder) : ''}
+					</AddressLink>
+				) : (
+					'-'
+				),
 			},
 		],
 		[formik.values, poolBalances?.purchaseTokenSymbol]

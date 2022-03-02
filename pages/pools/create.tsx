@@ -36,6 +36,7 @@ import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { erc20Abi } from 'contracts/erc20';
 import { DEFAULT_DECIMALS } from 'constants/defaults';
+import AddressLink from 'components/AddressLink';
 
 const Create: FC = () => {
 	const { walletAddress, provider, network } = Connector.useContainer();
@@ -450,7 +451,13 @@ const Create: FC = () => {
 		() => [
 			{
 				label: 'Invesment Token',
-				text: formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : '-',
+				text: formik.values.purchaseToken ? (
+					<AddressLink address={formik.values.purchaseToken}>
+						{formik.values.purchaseToken ? truncateAddress(formik.values.purchaseToken) : ''}
+					</AddressLink>
+				) : (
+					'-'
+				),
 			},
 			{
 				label: 'Pool Cap',
