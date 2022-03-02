@@ -100,12 +100,16 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 		setShowTxModal(true);
 	};
 
+	const isDeposit = hasAllowance && !isPurchaseExpired;
+	const isApproved = !hasAllowance && !isPurchaseExpired;
+	const isNotAllowed = isPrivatePoolAndNoAllocation && !isPurchaseExpired;
+
 	return (
 		<Container>
 			<ContentContainer>
-				{isPrivatePoolAndNoAllocation && !isPurchaseExpired && <NotAllowedBox />}
+				{isNotAllowed && <NotAllowedBox />}
 
-				{!hasAllowance && !isPurchaseExpired && (
+				{isApproved && !isNotAllowed && (
 					<ApproveBox
 						purchaseToken={purchaseTokenSymbol ?? ''}
 						isButtonDisabled={hasAllowance}
@@ -113,7 +117,7 @@ const PurchasePoolBox: FC<PurchasePoolBoxProps> = ({
 					/>
 				)}
 
-				{hasAllowance && !isPurchaseExpired && (
+				{isDeposit && !isApproved && !isNotAllowed && (
 					<DepositBox
 						placeholder="0"
 						inputValue={inputValue}

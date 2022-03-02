@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const NotAllowedBox = () => (
 	<>
 		<Title>Private pool</Title>
-		<p>This address is not part of the allowlist.</p>
+		<p>This address is not part of the allowlist or has no allocation.</p>
 	</>
 );
 
