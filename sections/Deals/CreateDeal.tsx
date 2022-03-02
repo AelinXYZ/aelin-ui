@@ -400,7 +400,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseTokenTotal">Underlying Deal Token Total</label>
+						<label htmlFor="purchaseTokenTotal">Total Purchase Tokens</label>
 						<QuestionMark
 							text={`The total amount of purchase tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
 						/>
@@ -453,7 +453,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="underlyingDealTokenTotal">Total Purchase Tokens</label>
+						<label htmlFor="underlyingDealTokenTotal">Underlying Deal Token Total</label>
 						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
 					</>
 				),
@@ -736,7 +736,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					: '',
 			},
 			{
-				label: 'Purchase currency total',
+				label: 'Total purchase tokens',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
