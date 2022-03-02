@@ -210,6 +210,7 @@ const SummaryBoxGrid = styled.div`
 `;
 
 const Item = styled.div`
+	min-width: 75px;
 	margin: 15px;
 `;
 
