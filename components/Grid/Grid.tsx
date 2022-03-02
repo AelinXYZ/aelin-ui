@@ -61,9 +61,15 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 			}
 			&:nth-child(1) {
 				border-radius: 8px 0 0 0;
+				height: 195px;
+			}
+			&:nth-child(2) {
+				border-radius: 8px 0 0 0;
+				height: 195px;
 			}
 			&:nth-child(3) {
 				border-radius: 0 8px 0 0;
+				height: 195px;
 			}
 			&:nth-child(7) {
 				border-bottom: none;
