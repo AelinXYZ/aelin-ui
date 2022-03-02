@@ -21,7 +21,7 @@ import { erc20Abi } from 'contracts/erc20';
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { formatNumber } from 'utils/numbers';
-import { formatShortDateWithTime, showDateOrMessageIfClosed } from 'utils/time';
+import { formatShortDateWithTime } from 'utils/time';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';

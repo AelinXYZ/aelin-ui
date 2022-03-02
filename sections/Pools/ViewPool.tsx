@@ -16,6 +16,7 @@ import useGetDealByIdQuery, { parseDeal } from 'queries/deals/useGetDealByIdQuer
 import useGetClaimedUnderlyingDealTokensQuery, {
 	parseClaimedResult,
 } from 'queries/deals/useGetClaimedUnderlyingDealTokensQuery';
+import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 
 import { PageLayout } from 'sections/Layout';
 import SectionTitle from 'sections/shared/SectionTitle';
@@ -86,6 +87,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		recipient: walletAddress ?? '',
 		networkId: network.id,
 	});
+
+	const poolBalancesQuery = usePoolBalancesQuery({
+		poolAddress: pool?.id ?? null,
+		purchaseToken: pool?.purchaseToken ?? null,
+	});
+
+	const poolBalances = poolBalancesQuery?.data ?? null;
+	const isPrivatePool = poolBalances?.isPrivatePool ?? null;
 
 	const claims = useMemo(
 		() => (claimedQuery?.data ?? []).map(parseClaimedResult),
@@ -380,7 +389,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	return (
 		<PageLayout
 			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} />}
-			subtitle={pool?.hasAllowList ? 'Private pool' : 'Public pool'}
+			subtitle={isPrivatePool ? 'Private pool' : 'Public pool'}
 		>
 			{isHolderAndSponsorEquals && currentStages[currentTab] === FUND_DEAL && (
 				<Notice>

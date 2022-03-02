@@ -46,11 +46,13 @@ const DepositBox: FC<DepositBoxProps> = ({
 				}}
 				icon={<div onClick={handleMaxButtonClick}>Max</div>}
 			/>
-			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 
 			<ActionBoxInputLabel>
 				Balance: {tokenBalance.toFixed(2)} {purchaseToken}
 			</ActionBoxInputLabel>
+
+			{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
+
 			<Button
 				variant="primary"
 				size="lg"
