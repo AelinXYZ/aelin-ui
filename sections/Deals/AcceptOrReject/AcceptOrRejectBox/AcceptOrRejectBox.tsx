@@ -145,6 +145,7 @@ const AcceptOrRejectDealBox: FC<AcceptOrRejectDealBoxProps> = ({
 			<Tabs
 				defaultIndex={Number(dealRedemptionEnded)}
 				onSelect={(selectedIndex: number) => {
+					setInputValue('');
 					if (selectedIndex === 0) return setTxType(TransactionDealType.AcceptDeal);
 					if (selectedIndex === 1) return setTxType(TransactionDealType.Withdraw);
 
