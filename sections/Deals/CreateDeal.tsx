@@ -427,21 +427,23 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 						<FlexDivRow>
 							<AllocationRow>
 								<Dot
+									type="checkbox"
 									onClick={() => {
 										setAllocation(Allocation.MAX);
 										formik.setFieldValue('purchaseTokenTotal', totalPoolSupply);
 									}}
-									isActive={allocation === Allocation.MAX}
+									checked={allocation === Allocation.MAX}
 								/>{' '}
 								{Allocation.MAX}
 							</AllocationRow>
 							<AllocationRow>
 								<Dot
+									type="checkbox"
 									onClick={() => {
 										setAllocation(Allocation.DEALLOCATE);
 										formik.setFieldValue('purchaseTokenTotal', 0);
 									}}
-									isActive={allocation === Allocation.DEALLOCATE}
+									checked={allocation === Allocation.DEALLOCATE}
 								/>{' '}
 								{Allocation.DEALLOCATE}
 							</AllocationRow>
@@ -840,17 +842,44 @@ const ExchangeRate = styled.div`
 	margin-top: 5px;
 `;
 
-const Dot = styled.div<{ isActive: boolean }>`
-	margin-right: 3px;
-	width: 15px;
-	height: 15px;
+const Dot = styled.input`
+	position: relative;
 	cursor: pointer;
-	border-radius: 50%;
-	background: ${(props) => (props.isActive ? props.theme.colors.grey5 : props.theme.colors.white)};
-	border: 1px solid ${(props) => props.theme.colors.borders};
+
+	&:before {
+		content: '';
+		z-index: 1;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: ${(props) => props.theme.colors.primary};
+		border-radius: 50%;
+	}
+
+	&:checked {
+		&:before {
+			width: 14px;
+			height: 14px;
+		}
+	}
+
+	&:after {
+		content: '';
+		position: absolute;
+		top: -2px;
+		left: -2px;
+		width: 16px;
+		height: 16px;
+		background: ${(props) => props.theme.colors.boxesBackground};
+		border: 1px solid ${(props) => props.theme.colors.borders};
+		border-radius: 50%;
+	}
+	margin-right: 10px;
 `;
 
 const AllocationRow = styled(FlexDivStart)`
+	display: flex;
+	align-items: center;
 	margin-top: 5px;
 `;
 
