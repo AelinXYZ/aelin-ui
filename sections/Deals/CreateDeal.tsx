@@ -760,22 +760,22 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					) : (
 						<div>
 							<ExchangeRate>
-								<TokenDisplay address={formik.values.underlyingDealToken} /> /{' '}
-								{poolBalances?.purchaseTokenSymbol}:{' '}
 								{formatNumber(
 									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
 									DEFAULT_DECIMALS
-								)}
+								)}{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} /> x{' '}
+								{poolBalances?.purchaseTokenSymbol}:{' '}
 							</ExchangeRate>
 							<ExchangeRate>
-								{poolBalances?.purchaseTokenSymbol} /{' '}
-								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
 										Number(formik.values?.underlyingDealTokenTotal ?? 0),
 									DEFAULT_DECIMALS
-								)}
+								)}{' '}
+								{poolBalances?.purchaseTokenSymbol} x{' '}
+								<TokenDisplay address={formik.values.underlyingDealToken} />:{' '}
 							</ExchangeRate>
 						</div>
 					),
