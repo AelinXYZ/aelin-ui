@@ -221,13 +221,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						<ExchangeRate>
 							{exchangeRateUnderlyingPurchase} {` `}
 							{areTokenSymbolsAvailable
-								? `${underlyingDealTokenSymbol} per ${poolBalances?.purchaseTokenSymbol}: `
+								? `${underlyingDealTokenSymbol} per ${poolBalances?.purchaseTokenSymbol}`
 								: `Underlying / Purchase: `}
 						</ExchangeRate>
 						<ExchangeRate>
 							{exchangeRatePurchaseUnderlying} {` `}
 							{areTokenSymbolsAvailable
-								? `${poolBalances?.purchaseTokenSymbol} per ${underlyingDealTokenSymbol}: `
+								? `${poolBalances?.purchaseTokenSymbol} per ${underlyingDealTokenSymbol}`
 								: `Purchase / Underlying: `}
 						</ExchangeRate>
 					</div>
