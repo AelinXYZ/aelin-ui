@@ -200,11 +200,20 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
 					</>
 				),
-				subText: Number(
-					ethers.utils.formatUnits(
-						deal?.underlyingDealTokenTotal?.toString() ?? '0',
-						underlyingDealTokenDecimals ?? 0
-					)
+				subText: (
+					<>
+						{Number(
+							ethers.utils.formatUnits(
+								deal?.underlyingDealTokenTotal?.toString() ?? '0',
+								underlyingDealTokenDecimals ?? 0
+							)
+						)}{' '}
+						<TokenDisplay
+							symbol={underlyingDealTokenSymbol}
+							address={deal?.underlyingDealToken}
+							displayAddress={false}
+						/>
+					</>
 				),
 			},
 			{
