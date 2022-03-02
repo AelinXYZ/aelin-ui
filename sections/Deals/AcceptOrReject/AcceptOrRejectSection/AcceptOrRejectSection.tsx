@@ -12,7 +12,7 @@ import QuestionMark from 'components/QuestionMark';
 
 import { statusToText } from 'constants/pool';
 import { GasLimitEstimate } from 'constants/networks';
-import { DEFAULT_DECIMALS } from 'constants/defaults';
+import { DEFAULT_DECIMALS, EXCHANGE_DECIMALS } from 'constants/defaults';
 import { TransactionStatus, TransactionDealType } from 'constants/transactions';
 
 import Connector from 'containers/Connector';
@@ -99,7 +99,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							poolBalances?.purchaseTokenDecimals ?? 0
 						)
 					),
-				DEFAULT_DECIMALS
+				EXCHANGE_DECIMALS
 			),
 		[
 			deal?.purchaseTokenTotalForDeal,
@@ -124,7 +124,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							underlyingDealTokenDecimals ?? 0
 						)
 					),
-				DEFAULT_DECIMALS
+				EXCHANGE_DECIMALS
 			),
 		[
 			deal?.purchaseTokenTotalForDeal,
