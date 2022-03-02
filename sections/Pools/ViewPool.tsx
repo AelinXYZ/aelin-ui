@@ -386,7 +386,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	return (
 		<PageLayout
-			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} />}
+			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin Pool'}`} />}
 			subtitle={isPrivatePool ? 'Private pool' : 'Public pool'}
 		>
 			{isHolderAndSponsorEquals && currentStages[currentTab] === FUND_DEAL && (

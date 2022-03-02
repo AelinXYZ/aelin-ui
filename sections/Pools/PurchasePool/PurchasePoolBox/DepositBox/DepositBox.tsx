@@ -53,7 +53,7 @@ const DepositBox: FC<DepositBoxProps> = ({
 
 			{isPrivate && (
 				<p>
-					allocation: {allocation.toFixed(2)} {purchaseToken}
+					Allocation: {allocation.toFixed(2)} {purchaseToken}
 				</p>
 			)}
 
