@@ -417,6 +417,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 const Notice = styled.p`
 	width: 690px;
+	background-color: ${(props) => props.theme.colors.secondary};
 	color: ${(props) => props.theme.colors.red};
 	border: 1px solid ${(props) => props.theme.colors.red};
 	border-radius: 8px;
