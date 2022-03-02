@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import Image from 'next/image';
 import OutsideClickHandler from 'react-outside-click-handler';
-
-import CloseIcon from 'assets/svg/menu-close.svg';
+import { MenuClose } from 'components/Svg';
 
 interface BaseModalProps {
 	isModalOpen: boolean;
@@ -49,7 +48,7 @@ const BaseModal: FC<BaseModalProps> = ({
 								setIsModalOpen(false);
 							}}
 						>
-							<Image src={CloseIcon} alt="close" />
+							<MenuClose />
 						</StyledCloseIcon>
 					</StyledModalHeader>
 					<StyledModalBody>{children}</StyledModalBody>
@@ -70,6 +69,7 @@ const StyledModalBody = styled.div`
 `;
 
 const StyledModalHeader = styled.div`
+	position: relative;
 	display: flex;
 	justify-content: space-between;
 	font-size: 2rem;
@@ -108,8 +108,8 @@ const StyledModalOverlay = styled.div`
 const StyledCloseIcon = styled.a`
 	position: absolute;
 	display: flex;
-	top: 12px;
-	right: 12px;
+	top: 0;
+	right: 0;
 `;
 
 export default BaseModal;
