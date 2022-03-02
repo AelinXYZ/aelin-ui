@@ -476,52 +476,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="vestingPeriod">Vesting Period (linear)</label>
-						<QuestionMark
-							text={`The amount of time it takes to vest all underlying deal tokens after the vesting cliff`}
-						/>
-					</>
-				),
-				subText: 'time to vest after the cliff',
-				formField: (
-					<FlexDivStart>
-						<Input
-							width="50px"
-							id="vestingPeriodDays"
-							name="vestingPeriodDays"
-							type="number"
-							placeholder="days"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.vestingPeriodDays || ''}
-						/>
-						<Input
-							width="55px"
-							id="vestingPeriodHours"
-							name="vestingPeriodHours"
-							type="number"
-							placeholder="hours"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.vestingPeriodHours || ''}
-						/>
-						<Input
-							width="50px"
-							id="vestingPeriodMinutes"
-							name="vestingPeriodMinutes"
-							type="number"
-							placeholder="mins"
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							value={formik.values.vestingPeriodMinutes || ''}
-						/>
-					</FlexDivStart>
-				),
-				formError: formik.errors.vestingPeriodMinutes,
-			},
-			{
-				header: (
-					<>
 						<label htmlFor="vestingCliff">Vesting Cliff</label>
 						<QuestionMark
 							text={`After the deal has been finalized, a period where no tokens are vesting`}
@@ -564,6 +518,52 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					</FlexDivStart>
 				),
 				formError: formik.errors.vestingCliffMinutes,
+			},
+			{
+				header: (
+					<>
+						<label htmlFor="vestingPeriod">Vesting Period (linear)</label>
+						<QuestionMark
+							text={`The amount of time it takes to vest all underlying deal tokens after the vesting cliff`}
+						/>
+					</>
+				),
+				subText: 'time to vest after the cliff',
+				formField: (
+					<FlexDivStart>
+						<Input
+							width="50px"
+							id="vestingPeriodDays"
+							name="vestingPeriodDays"
+							type="number"
+							placeholder="days"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.vestingPeriodDays || ''}
+						/>
+						<Input
+							width="55px"
+							id="vestingPeriodHours"
+							name="vestingPeriodHours"
+							type="number"
+							placeholder="hours"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.vestingPeriodHours || ''}
+						/>
+						<Input
+							width="50px"
+							id="vestingPeriodMinutes"
+							name="vestingPeriodMinutes"
+							type="number"
+							placeholder="mins"
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							value={formik.values.vestingPeriodMinutes || ''}
+						/>
+					</FlexDivStart>
+				),
+				formError: formik.errors.vestingPeriodMinutes,
 			},
 			{
 				header: (

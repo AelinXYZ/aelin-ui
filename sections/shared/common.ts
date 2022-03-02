@@ -14,8 +14,8 @@ export const Container = styled.div`
 
 export const ErrorNote = styled.div`
 	color: ${(props) => props.theme.colors.red};
-	position: absolute;
-	margin-top: 65px;
+	display: block;
+	margin-top: 20px;
 	font-size: 0.8rem;
 	font-weight: bold;
 `;
