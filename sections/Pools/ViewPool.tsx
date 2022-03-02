@@ -388,8 +388,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 	const isHolderAndSponsorEquals = pool?.sponsor === deal?.holder;
 
-	console.log('currentStages.length - 1: ', currentStages.length - 1);
-
 	return (
 		<PageLayout
 			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin'} Pool`} />}
