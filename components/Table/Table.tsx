@@ -1,18 +1,24 @@
 //@ts-nocheck
 import React, { FC } from 'react';
-import styled, { css } from 'styled-components';
 import Link from 'next/link';
-import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
 import Image from 'next/image';
-import ROUTES from 'constants/routes';
+import styled, { css } from 'styled-components';
+import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
 
 import SortDownIcon from 'assets/svg/caret-down.svg';
 import SortUpIcon from 'assets/svg/caret-up.svg';
+import DarkSpinner from 'assets/svg/loader-dark.svg';
+import LightSpinner from 'assets/svg/loader-light.svg';
 
-import { FlexDivCentered } from '../common';
+import UI from 'containers/UI';
+
+import { ThemeMode } from 'styles/theme';
+
+import ROUTES from 'constants/routes';
 import { MAX_RESULTS_PER_PAGE } from 'constants/defaults';
 
-import Spinner from 'assets/svg/loader.svg';
+import { FlexDivCentered } from '../common';
+
 import Pagination from './Pagination';
 
 export type TablePalette = 'primary';
@@ -84,6 +90,8 @@ export const Table: FC<TableProps> = ({
 		useFlexLayout
 	);
 
+	const { theme } = UI.useContainer();
+
 	return (
 		<>
 			<TableContainer>
@@ -121,7 +129,10 @@ export const Table: FC<TableProps> = ({
 					))}
 					{isLoading ? (
 						<SpinnerWrapper>
-							<Image src={Spinner} alt="Loading..." />
+							<Image
+								src={theme === ThemeMode.LIGHT ? LightSpinner : DarkSpinner}
+								alt="Loading..."
+							/>
 						</SpinnerWrapper>
 					) : page.length > 0 ? (
 						<TableBody className="table-body" {...getTableBodyProps()}>
