@@ -15,6 +15,10 @@ const Tabs: FC<TabsProps> = ({ children, defaultIndex, onSelect }) => {
 		setTabs(React.Children.toArray(children));
 	}, [children]);
 
+	useEffect(() => {
+		setSelectedIndex(defaultIndex);
+	}, [defaultIndex]);
+
 	const onChangeTab = (nextIndex: number) => {
 		if (selectedIndex === nextIndex) return;
 		setSelectedIndex(nextIndex);
