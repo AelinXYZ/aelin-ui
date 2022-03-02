@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import styled from 'styled-components';
 
 import { ErrorNote } from 'sections/shared/common';
 
@@ -23,24 +22,20 @@ const AcceptOrRejectDealError: FC<AcceptOrRejectDealErrorProps> = ({
 	isEligibleForOpenRedemption,
 }) => (
 	<>
-		{isMaxBalanceExceeded && <StyledErrorNote>Max balance exceeded</StyledErrorNote>}
+		{isMaxBalanceExceeded && <ErrorNote>Max balance exceeded</ErrorNote>}
 
 		{isProRataRedemptionPeriod && !isWithdraw && isProRataAmountExcceded && (
-			<StyledErrorNote>More than pro rata amount</StyledErrorNote>
+			<ErrorNote>More than pro rata amount</ErrorNote>
 		)}
 
 		{isRedemptionPeriodClosed && !isWithdraw && hasAmount && (
-			<StyledErrorNote>Redemption period is closed</StyledErrorNote>
+			<ErrorNote>Redemption period is closed</ErrorNote>
 		)}
 
 		{isEligibleForOpenRedemption && !isWithdraw && hasAmount && (
-			<StyledErrorNote>You are not eligible for open redemption period</StyledErrorNote>
+			<ErrorNote>You are not eligible for open redemption period</ErrorNote>
 		)}
 	</>
 );
-
-const StyledErrorNote = styled(ErrorNote)`
-	margin-top 5px;
-`;
 
 export default AcceptOrRejectDealError;

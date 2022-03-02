@@ -61,15 +61,15 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 			}
 			&:nth-child(1) {
 				border-radius: 8px 0 0 0;
-				height: 195px;
+				height: ${props.hasInputFields ? '195px' : '135px'};
 			}
 			&:nth-child(2) {
 				border-radius: 8px 0 0 0;
-				height: 195px;
+				height: ${props.hasInputFields ? '195px' : '135px'};
 			}
 			&:nth-child(3) {
 				border-radius: 0 8px 0 0;
-				height: 195px;
+				height: ${props.hasInputFields ? '195px' : '135px'};
 			}
 			&:nth-child(7) {
 				border-bottom: none;
@@ -98,16 +98,16 @@ const GridItem = styled.div<{ hasInputFields: boolean; gridSize: number }>`
 			&:nth-child(10) {
 				border-bottom: none;
 				border-radius: 0 0 0 8px;
-				height: 160px;
+				height: ${props.hasInputFields ? '195px' : '160px'};
 			}
 			&:nth-child(11) {
 				border-bottom: none;
-				height: 160px;
+				height: ${props.hasInputFields ? '195px' : '160px'};
 			}
 			&:nth-child(12) {
 				border-bottom: none;
 				border-radius: 0 0 8px 0;
-				height: 160px;
+				height: ${props.hasInputFields ? '195px' : '160px'};
 			}
 		`}
 `;
