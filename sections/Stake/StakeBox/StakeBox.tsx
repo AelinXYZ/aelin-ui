@@ -93,7 +93,7 @@ const ActionBox: FC<ActionBoxProps> = ({
 	}, [isApproved, onApprove, action, onSubmit, inputValue, symbol]);
 
 	const isActionButtonDisabled: boolean = useMemo(() => {
-		if (!walletAddress && !inputValue) true;
+		if (!walletAddress || !inputValue) return true;
 
 		if (!isApproved) return true;
 
