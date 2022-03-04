@@ -1,8 +1,9 @@
 //@ts-nocheck
 /* eslint-disable react/display-name */
+import React from 'react';
 import Head from 'next/head';
 import { ethers } from 'ethers';
-import { CellProps } from 'react-table';
+import { CellProps, Row } from 'react-table';
 import { useRouter } from 'next/router';
 import { FC, useMemo, useState, useEffect } from 'react';
 
@@ -37,6 +38,7 @@ import { showDateOrMessageIfClosed } from 'utils/time';
 import { Env } from 'constants/env';
 import NetworkLogoTable from 'components/NetworkLogoTable';
 import styled from 'styled-components';
+import { sortByBn, sortByFee, sortByPrivacy, sortByPurchaseExpiry } from 'components/Table/Table';
 
 const Pools: FC = () => {
 	const router = useRouter();
@@ -178,12 +180,13 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, string>) => {
 					return <StyledTextWrapper>{cellProps.value}</StyledTextWrapper>;
 				},
-				width: 115,
+				width: 125,
+				sortable: true,
 			},
 			{
 				Header: 'network',
 				accessor: 'network',
-				width: 100,
+				width: 85,
 				Cell: (cellProps: CellProps<any, any>) => {
 					return (
 						<FlexDivStart>
@@ -191,6 +194,7 @@ const Pools: FC = () => {
 						</FlexDivStart>
 					);
 				},
+				sortable: true,
 			},
 			{
 				Header: (
@@ -202,7 +206,8 @@ const Pools: FC = () => {
 					</FlexDivCol>
 				),
 				accessor: 'purchaseTokenSymbol',
-				width: 100,
+				width: 110,
+				sortable: true,
 			},
 			{
 				Header: (
@@ -229,7 +234,9 @@ const Pools: FC = () => {
 						</FlexDivStart>
 					);
 				},
-				width: 125,
+				width: 100,
+				sortable: true,
+				sortType: sortByBn,
 			},
 			{
 				Header: 'Pool cap',
@@ -251,7 +258,9 @@ const Pools: FC = () => {
 						</FlexDivStart>
 					);
 				},
-				width: 125,
+				width: 100,
+				sortable: true,
+				sortType: sortByBn,
 			},
 			{
 				Header: (
@@ -297,7 +306,9 @@ const Pools: FC = () => {
 					}
 					return showDateOrMessageIfClosed(cellProps.value, 'Ended');
 				},
-				width: 125,
+				width: 130,
+				sortable: true,
+				sortType: sortByPurchaseExpiry,
 			},
 			{
 				Header: (
@@ -317,7 +328,8 @@ const Pools: FC = () => {
 				Cell: (cellProps: CellProps<any, any>) => {
 					return showDateOrMessageIfClosed(cellProps.value, 'Ended');
 				},
-				width: 125,
+				width: 120,
+				sortable: true,
 			},
 			{
 				Header: (
@@ -335,6 +347,8 @@ const Pools: FC = () => {
 					)}%`;
 				},
 				width: 85,
+				sortable: true,
+				sortType: sortByFee,
 			},
 			{
 				Header: 'Privacy',
@@ -343,6 +357,8 @@ const Pools: FC = () => {
 					return !!cellProps.value ? 'Private' : 'Open';
 				},
 				width: 75,
+				sortable: true,
+				sortType: sortByPrivacy,
 			},
 			{
 				Header: 'Stage',
@@ -352,6 +368,7 @@ const Pools: FC = () => {
 					return <DealStatus status={cellProps.value} />;
 				},
 				width: 100,
+				sortable: true,
 			},
 		],
 		[isOptimism]
