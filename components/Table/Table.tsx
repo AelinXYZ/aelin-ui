@@ -5,8 +5,6 @@ import Image from 'next/image';
 import styled, { css } from 'styled-components';
 import { useTable, useFlexLayout, useSortBy, Column, Row, usePagination, Cell } from 'react-table';
 
-import SortDownIcon from 'assets/svg/caret-down.svg';
-import SortUpIcon from 'assets/svg/caret-up.svg';
 import DarkSpinner from 'assets/svg/loader-dark.svg';
 import LightSpinner from 'assets/svg/loader-light.svg';
 
@@ -15,11 +13,16 @@ import UI from 'containers/UI';
 import { ThemeMode } from 'styles/theme';
 
 import ROUTES from 'constants/routes';
-import { MAX_RESULTS_PER_PAGE } from 'constants/defaults';
+import { DEFAULT_DECIMALS, MAX_RESULTS_PER_PAGE } from 'constants/defaults';
 
 import { FlexDivCentered } from '../common';
 
 import Pagination from './Pagination';
+import { SortArrows } from 'components/Svg';
+import { addTransparency } from 'styles/theme/colors';
+import { formatNumber } from 'utils/numbers';
+import { ethers } from 'ethers';
+import { isAfter } from 'date-fns';
 
 export type TablePalette = 'primary';
 
@@ -110,16 +113,9 @@ export const Table: FC<TableProps> = ({
 									{column.sortable && (
 										<SortIconContainer>
 											{column.isSorted ? (
-												column.isSortedDesc ? (
-													<StyledSortIcon alt="" src={SortDownIcon} />
-												) : (
-													<StyledSortIcon alt="" src={SortUpIcon} />
-												)
+												<StyledSortArrows sort={column.isSortedDesc ? 'desc' : 'asc'} />
 											) : (
-												<>
-													<StyledSortIcon alt="" src={SortUpIcon} />
-													<StyledSortIcon alt="" src={SortDownIcon} />
-												</>
+												<StyledSortArrows />
 											)}
 										</SortIconContainer>
 									)}
@@ -186,6 +182,26 @@ export const Table: FC<TableProps> = ({
 		</>
 	);
 };
+
+const StyledSortArrows = styled(SortArrows)<{ sort?: string }>`
+	& #up {
+		fill: ${(props) =>
+			props.sort
+				? props.sort === 'asc'
+					? props.theme.colors.black
+					: addTransparency('BF', props.theme.colors.tablePrimary)
+				: addTransparency('BF', props.theme.colors.tablePrimary)};
+	}
+
+	& #down {
+		fill: ${(props) =>
+			props.sort
+				? props.sort === 'desc'
+					? props.theme.colors.black
+					: addTransparency('BF', props.theme.colors.tablePrimary)
+				: addTransparency('BF', props.theme.colors.tablePrimary)};
+	}
+`;
 
 const TableContainer = styled.div`
 	overflow: auto;
@@ -292,10 +308,74 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 		`}
 `;
 
-const StyledSortIcon = styled(Image)`
-	width: 5px;
-	height: 5px;
-	color: ${(props) => props.theme.colors.black};
-`;
+const toNumber = (value: string, purchaseTokenDecimals: string): number =>
+	Number(
+		formatNumber(
+			ethers.utils.formatUnits(value, purchaseTokenDecimals).toString(),
+			DEFAULT_DECIMALS
+		).replaceAll(',', '')
+	);
+
+export const sortByBn = (rowA: Row, rowB: Row, id: number) => {
+	if (
+		toNumber(rowA.values[id].toString(), rowA.original.purchaseTokenDecimals) >
+		toNumber(rowB.values[id].toString(), rowB.original.purchaseTokenDecimals)
+	)
+		return 1;
+	if (
+		toNumber(rowB.values[id].toString(), rowB.original.purchaseTokenDecimals) >
+		toNumber(rowA.values[id].toString(), rowA.original.purchaseTokenDecimals)
+	)
+		return -1;
+	return 0;
+};
+
+export const sortByFee = (rowA: Row, rowB: Row, id: number) => {
+	if (
+		Number(ethers.utils.formatEther(rowA.values[id].toString())) >
+		Number(ethers.utils.formatEther(rowB.values[id].toString()))
+	)
+		return 1;
+	if (
+		Number(ethers.utils.formatEther(rowB.values[id].toString())) >
+		Number(ethers.utils.formatEther(rowA.values[id].toString()))
+	)
+		return -1;
+	return 0;
+};
+
+export const sortByPurchaseExpiry = (rowA: Row, rowB: Row, id: number) => {
+	var a = new Date(rowA.values[id]);
+	var b = new Date(rowB.values[id]);
+
+	if (
+		Number(
+			ethers.utils
+				.formatUnits(rowA.original.cap.toString(), rowA.original.purchaseTokenDecimals)
+				.toString()
+		) ===
+			Number(
+				ethers.utils
+					.formatUnits(rowA.original.contributions.toString(), rowA.original.purchaseTokenDecimals)
+					.toString()
+			) &&
+		Number(
+			ethers.utils
+				.formatUnits(rowA.original.cap.toString(), rowA.original.purchaseTokenDecimals)
+				.toString()
+		) !== 0
+	) {
+		return 1;
+	}
+
+	if (isAfter(a, b)) {
+		return 1;
+	}
+	return -1;
+};
+
+export const sortByPrivacy = (rowA: Row, rowB: Row, id: number) => {
+	return rowA.values[id] ? 1 : -1;
+};
 
 export default Table;
