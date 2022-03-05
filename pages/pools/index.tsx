@@ -32,40 +32,40 @@ import { filterList } from 'constants/poolFilterList';
 import { formatNumber } from 'utils/numbers';
 
 import useInterval from 'hooks/useInterval';
-import { isMainnet, nameToIdMapping, Network, NetworkId } from 'constants/networks';
+import { isMainnet, nameToIdMapping, NetworkId } from 'constants/networks';
 import { showDateOrMessageIfClosed } from 'utils/time';
 import { Env } from 'constants/env';
 import NetworkLogoTable from 'components/NetworkLogoTable';
 import styled from 'styled-components';
+import { reduce } from 'lodash';
 
 const Pools: FC = () => {
 	const router = useRouter();
 	const { network } = Connector.useContainer();
+	const [pools, setPools] = useState([]);
 
-	const [sponsorFilter, setSponsorFilter] = useState<string>('');
-	const [currencyFilter, setCurrencyFilter] = useState<string>('');
-	const [nameFilter, setNameFilter] = useState<string>('');
-	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
 	const [pageIndex, setPageIndex] = useState<number>(
 		Number(router.query.page ?? DEFAULT_PAGE_INDEX)
 	);
 
 	const poolsQuery = useGetPoolsQuery();
+
 	const poolsQueryWithNetwork = useMemo(() => {
-		return poolsQuery
-			.filter((q) => !!q.data)
-			.reduce((prev, current) => {
-				return [...prev, ...current.data.map((d) => ({ ...d, network: current.networkName }))];
-			}, [])
-			.sort((a, b) => b.timestamp - a.timestamp);
-	}, [poolsQuery.map((q) => q.data).filter(Boolean)?.length]);
+		if (poolsQuery.some((pool) => pool.isLoading)) return [];
 
-	const isOptimism = network?.id === NetworkId['Optimism-Mainnet'];
+		const pools = poolsQuery.reduce((accum, curr) => {
+			if (!curr.data) return accum;
+
+			const poolWithNetworks = curr.data.map((d) => ({ ...d, network: curr.networkName }));
+
+			return [...accum, ...poolWithNetworks];
+		}, []);
+
+		return pools.sort((a, b) => b.timestamp - a.timestamp);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [JSON.stringify(poolsQuery)]);
+
 	const isQueryLoading = poolsQuery.find((q) => q.status === 'loading');
-
-	useEffect(() => {
-		setSponsorFilter(router.query?.sponsorFilter ?? '');
-	}, [router.query?.sponsorFilter]);
 
 	useEffect(() => {
 		setPageIndex(Number(router.query.page ?? DEFAULT_PAGE_INDEX));
@@ -77,24 +77,35 @@ const Pools: FC = () => {
 
 	const sponsors = useMemo(
 		() =>
-			poolsQueryWithNetwork
-				.filter(({ id }) => !filterList.includes(id))
-				.map(({ sponsor }) => sponsor),
-		[poolsQueryWithNetwork?.length]
+			poolsQueryWithNetwork.reduce((accum, curr) => {
+				if (filterList.includes(curr.id)) return accum;
+
+				return [...accum, curr.sponsor];
+			}, []),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[JSON.stringify(poolsQueryWithNetwork)]
 	);
 
 	const purchaseTokenAddresses = useMemo(
 		() =>
-			poolsQueryWithNetwork
-				.filter(({ id }) => !filterList.includes(id))
-				.map(({ purchaseToken }) => purchaseToken),
-		[poolsQueryWithNetwork?.length]
+			poolsQueryWithNetwork.reduce((accum, curr) => {
+				if (filterList.includes(curr.id)) return accum;
+
+				return [...accum, curr.purchaseToken];
+			}, []),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[JSON.stringify(poolsQueryWithNetwork)]
 	);
 
 	const ensOrAddresses = useAddressesToEns(sponsors);
 	const currencySymbols = useAddressesToSymbols(purchaseTokenAddresses);
 
-	const data = useMemo(() => {
+	const onFilterChange = (
+		sponsorFilter: string,
+		currencyFilter: string,
+		nameFilter: string,
+		statusFilter: string
+	) => {
 		let list = poolsQueryWithNetwork
 			.filter(({ id }) => !filterList.includes(id))
 			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
@@ -133,11 +144,31 @@ const Pools: FC = () => {
 			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
 
-		if (statusFilter != null) {
+		if (statusFilter) {
 			list = list.filter(({ poolStatus }) =>
 				poolStatus.toLowerCase().includes(statusFilter.toLowerCase())
 			);
 		}
+
+		setPools(list);
+	};
+
+	useEffect(() => {
+		let list = poolsQueryWithNetwork
+			.filter(({ id }) => !filterList.includes(id))
+			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
+				const parsedPool = parsePool({
+					sponsorFee,
+					purchaseTokenCap,
+					...pool,
+				});
+
+				return {
+					...parsedPool,
+					fee: sponsorFee,
+					cap: purchaseTokenCap,
+				};
+			});
 
 		if (process.env.NODE_ENV === Env.PROD) {
 			list = list.filter(({ network }) => isMainnet(nameToIdMapping[network]));
@@ -145,18 +176,9 @@ const Pools: FC = () => {
 			list = list.filter(({ network }) => !isMainnet(nameToIdMapping[network]));
 		}
 
-		return list;
-	}, [
-		poolsQueryWithNetwork,
-		sponsorFilter,
-		currencyFilter,
-		nameFilter,
-		statusFilter,
-		ensOrAddresses,
-		sponsors,
-		currencySymbols,
-		purchaseTokenAddresses,
-	]);
+		setPools(list);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [JSON.stringify(poolsQueryWithNetwork)]);
 
 	const columns = useMemo(
 		() => [
@@ -354,15 +376,8 @@ const Pools: FC = () => {
 				width: 100,
 			},
 		],
-		[isOptimism]
+		[]
 	);
-
-	const filterValues = {
-		sponsorFilter,
-		currencyFilter,
-		nameFilter,
-		statusFilter,
-	};
 
 	return (
 		<>
@@ -371,17 +386,11 @@ const Pools: FC = () => {
 			</Head>
 
 			<PageLayout title={<>All pools</>} subtitle="">
-				<FilterPool
-					values={filterValues}
-					setSponsor={setSponsorFilter}
-					setCurrency={setCurrencyFilter}
-					setName={setNameFilter}
-					setStatus={setStatusFilter}
-				/>
+				<FilterPool onChange={onFilterChange} />
 				<Table
 					pageIndex={pageIndex}
 					noResultsMessage={poolsQueryWithNetwork?.length === 0 ? 'no results' : null}
-					data={data && data.length > 0 ? data : []}
+					data={pools && pools.length > 0 ? pools : []}
 					isLoading={isQueryLoading}
 					columns={columns}
 					hasLinksToPool={true}
