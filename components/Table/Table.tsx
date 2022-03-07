@@ -320,13 +320,15 @@ export const sortByBn = (rowA: Row, rowB: Row, id: number) => {
 	if (
 		toNumber(rowA.values[id].toString(), rowA.original.purchaseTokenDecimals) >
 		toNumber(rowB.values[id].toString(), rowB.original.purchaseTokenDecimals)
-	)
+	) {
 		return 1;
+	}
 	if (
 		toNumber(rowB.values[id].toString(), rowB.original.purchaseTokenDecimals) >
 		toNumber(rowA.values[id].toString(), rowA.original.purchaseTokenDecimals)
-	)
+	) {
 		return -1;
+	}
 	return 0;
 };
 
@@ -334,13 +336,15 @@ export const sortByFee = (rowA: Row, rowB: Row, id: number) => {
 	if (
 		Number(ethers.utils.formatEther(rowA.values[id].toString())) >
 		Number(ethers.utils.formatEther(rowB.values[id].toString()))
-	)
+	) {
 		return 1;
+	}
 	if (
 		Number(ethers.utils.formatEther(rowB.values[id].toString())) >
 		Number(ethers.utils.formatEther(rowA.values[id].toString()))
-	)
+	) {
 		return -1;
+	}
 	return 0;
 };
 
