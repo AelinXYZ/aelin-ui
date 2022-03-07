@@ -4,23 +4,20 @@ import { calculateStatus } from 'utils/time';
 
 import { Env } from 'constants/env';
 import { getGraphEndpoint } from 'constants/endpoints';
-import {
-	nameToIdMapping,
-	productionNetworks,
-	developmentNetworks,
-	NetworkId,
-} from 'constants/networks';
+import { nameToIdMapping, NetworkId } from 'constants/networks';
 
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 
 const useGetPoolsQuery = () => {
 	const isDev = process.env.NODE_ENV !== Env.PROD;
 
-	const networks = isDev ? developmentNetworks : productionNetworks;
+	const networks = Object.entries(nameToIdMapping).filter(
+		([_, { isMainnet }]) => isMainnet !== isDev
+	);
 
-	return networks.map((networkName) => ({
+	return networks.map(([networkName, { id }]) => ({
 		...useGetPoolCreateds(
-			getGraphEndpoint(nameToIdMapping[networkName]),
+			getGraphEndpoint(id),
 			{
 				orderBy: 'timestamp',
 				orderDirection: 'desc',
@@ -46,7 +43,7 @@ const useGetPoolsQuery = () => {
 				totalSupply: true,
 			},
 			{},
-			nameToIdMapping[networkName] ? nameToIdMapping[networkName] : NetworkId.Mainnet
+			id
 		),
 		networkName,
 	}));
