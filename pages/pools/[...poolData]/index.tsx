@@ -18,6 +18,7 @@ const Pool: FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [userClosedModal, setUserClosedModal] = useState<boolean>(false);
 	const { network, provider } = Connector.useContainer();
+
 	const { poolData } = router.query;
 
 	const address = poolData && poolData.length > 0 ? poolData[0] : null;
@@ -29,7 +30,7 @@ const Pool: FC = () => {
 
 	const poolAddress = (address ?? '') as string;
 
-	const poolNetworkId = nameToIdMapping[poolNetwork].id;
+	const poolNetworkId = nameToIdMapping[poolNetwork]?.id ?? '';
 
 	const poolQuery = useGetPoolByIdQuery({
 		id: poolAddress,
