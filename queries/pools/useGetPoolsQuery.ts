@@ -1,13 +1,23 @@
 import { ethers } from 'ethers';
-import { getGraphEndpoint } from 'constants/endpoints';
-import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
+
 import { calculateStatus } from 'utils/time';
+
+import { Env } from 'constants/env';
+import { getGraphEndpoint } from 'constants/endpoints';
 import { nameToIdMapping, NetworkId } from 'constants/networks';
 
+import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
+
 const useGetPoolsQuery = () => {
-	return Object.entries(nameToIdMapping).map(([networkName, networkId]) => ({
+	const isDev = process.env.NODE_ENV !== Env.PROD;
+
+	const networks = Object.entries(nameToIdMapping).filter(
+		([_, { isMainnet }]) => isMainnet !== isDev
+	);
+
+	return networks.map(([networkName, { id }]) => ({
 		...useGetPoolCreateds(
-			getGraphEndpoint(networkId),
+			getGraphEndpoint(id),
 			{
 				orderBy: 'timestamp',
 				orderDirection: 'desc',
@@ -33,7 +43,7 @@ const useGetPoolsQuery = () => {
 				totalSupply: true,
 			},
 			{},
-			networkId ? networkId : NetworkId.Mainnet
+			id
 		),
 		networkName,
 	}));
@@ -59,7 +69,7 @@ export const parsePool = ({
 	hasAllowList,
 	network,
 	totalSupply,
-}: PoolCreatedResult & { network: string }) => {
+}: PoolCreatedResult & { network?: string }) => {
 	let formattedName = '';
 	let formattedSymbol = '';
 	try {

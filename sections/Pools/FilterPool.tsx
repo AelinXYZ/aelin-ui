@@ -1,6 +1,6 @@
-//@ts-nocheck
 import Link from 'next/link';
-import { FC, useState } from 'react';
+import { useRouter } from 'next/router';
+import { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Button from 'components/Button';
@@ -11,24 +11,30 @@ import { FlexDivRow, FlexDiv } from 'components/common';
 import StatusDropdown from 'sections/shared/StatusDropdown';
 
 import ROUTES from 'constants/routes';
-
 interface FilterPoolProps {
-	values: any;
-	setSponsor: (sponsor: string) => void;
-	setCurrency: (currency: string) => void;
-	setName: (name: string) => void;
-	setStatus: (status: Status | string) => void;
+	onChange: (
+		sponsor: string,
+		currency: string,
+		name: string,
+		status: Status | string | null
+	) => void;
 }
 
-const FilterPool: FC<FilterPoolProps> = ({
-	values,
-	setSponsor,
-	setCurrency,
-	setName,
-	setStatus,
-}) => {
-	const { sponsorFilter, currencyFilter, nameFilter, statusFilter } = values;
+const FilterPool: FC<FilterPoolProps> = ({ onChange }) => {
+	const router = useRouter();
+
+	const [sponsorFilter, setSponsorFilter] = useState<string>('');
+	const [currencyFilter, setCurrencyFilter] = useState<string>('');
+	const [nameFilter, setNameFilter] = useState<string>('');
+	const [statusFilter, setStatusFilter] = useState<Status | string | null>(null);
+
 	const [isVisible, setIsVisible] = useState<boolean>(false);
+
+	useEffect(() => {
+		// @ts-ignore
+		setSponsorFilter(router.query?.sponsorFilter ?? '');
+	}, [router.query?.sponsorFilter]);
+
 	return (
 		<Container>
 			<HeaderSection>
@@ -54,26 +60,40 @@ const FilterPool: FC<FilterPoolProps> = ({
 						value={sponsorFilter}
 						width="22%"
 						placeholder="sponsor"
-						onChange={(e) => setSponsor(e.target.value)}
+						onChange={(e) => {
+							setSponsorFilter(e.target.value);
+							onChange(e.target.value, currencyFilter, nameFilter, statusFilter);
+						}}
 					/>
 					<StyledTextInput
 						value={currencyFilter}
 						width="22%"
 						placeholder="currency"
-						onChange={(e) => setCurrency(e.target.value)}
+						onChange={(e) => {
+							setCurrencyFilter(e.target.value);
+							onChange(sponsorFilter, e.target.value, nameFilter, statusFilter);
+						}}
 					/>
 					<StyledTextInput
 						value={nameFilter}
 						width="22%"
 						placeholder="name"
-						onChange={(e) => setName(e.target.value)}
+						onChange={(e) => {
+							setNameFilter(e.target.value);
+							onChange(sponsorFilter, currencyFilter, e.target.value, statusFilter);
+						}}
 					/>
 					<StatusDropdown
 						id="statusDropdown"
 						name="statusDropdown"
 						variant="outline"
-						selectedStatus={statusFilter}
-						onChange={setStatus}
+						selectedStatus={statusFilter ?? ''}
+						onChange={(value) => {
+							// @ts-ignore
+							setStatusFilter(value);
+							// @ts-ignore
+							onChange(sponsorFilter, currencyFilter, nameFilter, value);
+						}}
 					/>
 				</FlexDivRow>
 			) : null}
@@ -82,7 +102,7 @@ const FilterPool: FC<FilterPoolProps> = ({
 };
 
 const Header = styled.div`
-	color: ${(props) => props.theme.colors.forestGreen};
+	color: ${(props) => props.theme.colors.primary};
 	margin-right: 15px;
 	font-size: 1.3rem;
 	font-weight: 400;
