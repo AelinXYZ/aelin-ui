@@ -14,11 +14,13 @@ export const getERC20Data = async ({
 	provider: ethers.providers.Provider | undefined;
 }) => {
 	const contract = new ethers.Contract(address, erc20Abi, provider || ethers.getDefaultProvider());
+
 	const [name, symbol, decimals, totalSupply] = await Promise.all([
 		contract.name(),
 		contract.symbol(),
 		contract.decimals(),
 		contract.totalSupply(),
 	]).catch(() => []);
+
 	return { name, symbol, decimals, totalSupply };
 };

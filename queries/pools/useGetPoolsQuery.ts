@@ -72,7 +72,7 @@ export const parsePool = ({
 	hasAllowList,
 	network,
 	totalSupply,
-}: PoolCreatedResult & { network: string }) => {
+}: PoolCreatedResult & { network?: string }) => {
 	let formattedName = '';
 	let formattedSymbol = '';
 	try {

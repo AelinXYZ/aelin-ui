@@ -19,6 +19,7 @@ import NotificationContainer from 'components/NotificationContainer';
 import { DEFAULT_REQUEST_REFRESH_INTERVAL } from 'constants/defaults';
 
 import '../styles/globals.css';
+import AddressToEns from 'containers/AddressToEns';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -61,9 +62,11 @@ const App = (props: AppProps) => {
 					<BlockExplorer.Provider>
 						<TransactionNotifier.Provider>
 							<TransactionData.Provider>
-								<UI.Provider>
-									<InnerApp {...props} />
-								</UI.Provider>
+								<AddressToEns.Provider>
+									<UI.Provider>
+										<InnerApp {...props} />
+									</UI.Provider>
+								</AddressToEns.Provider>
 							</TransactionData.Provider>
 						</TransactionNotifier.Provider>
 					</BlockExplorer.Provider>

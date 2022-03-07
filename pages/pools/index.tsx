@@ -3,28 +3,25 @@
 import React from 'react';
 import Head from 'next/head';
 import { ethers } from 'ethers';
-import { reduce } from 'lodash';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { CellProps, Row } from 'react-table';
+import { CellProps } from 'react-table';
 import { FC, useMemo, useState, useEffect } from 'react';
 
-import Connector from 'containers/Connector';
+import AddressToEns from 'containers/AddressToEns';
 
 import { PageLayout } from 'sections/Layout';
 import FilterPool from 'sections/Pools/FilterPool';
 
-import Ens from 'components/Ens';
 import Table from 'components/Table';
 import QuestionMark from 'components/QuestionMark';
-import DealStatus, { Status } from 'components/DealStatus';
+import DealStatus from 'components/DealStatus';
 import NetworkLogoTable from 'components/NetworkLogoTable';
 import { FlexDivStart, FlexDivCol, FlexDivRowCentered } from 'components/common';
 import { sortByBn, sortByFee, sortByPrivacy, sortByPurchaseExpiry } from 'components/Table/Table';
 
 import useGetPoolsQuery, { parsePool } from 'queries/pools/useGetPoolsQuery';
 
-import { useAddressesToEns } from 'hooks/useEns';
 import useAddressesToSymbols from 'hooks/useAddressesToSymbols';
 
 import {
@@ -32,19 +29,19 @@ import {
 	DEFAULT_PAGE_INDEX,
 	DEFAULT_REQUEST_REFRESH_INTERVAL,
 } from 'constants/defaults';
-import { Env } from 'constants/env';
 import { filterList } from 'constants/poolFilterList';
-import { isMainnet, nameToIdMapping, NetworkId } from 'constants/networks';
 
 import { formatNumber } from 'utils/numbers';
+import { truncateAddress } from 'utils/crypto';
 import { showDateOrMessageIfClosed } from 'utils/time';
 
 import useInterval from 'hooks/useInterval';
 
-
 const Pools: FC = () => {
 	const router = useRouter();
-	const { network } = Connector.useContainer();
+
+	const { ensNames } = AddressToEns.useContainer();
+
 	const [pools, setPools] = useState([]);
 
 	const [pageIndex, setPageIndex] = useState<number>(
@@ -78,17 +75,6 @@ const Pools: FC = () => {
 		poolsQuery.forEach((q) => q.refetch());
 	}, DEFAULT_REQUEST_REFRESH_INTERVAL);
 
-	const sponsors = useMemo(
-		() =>
-			poolsQueryWithNetwork.reduce((accum, curr) => {
-				if (filterList.includes(curr.id)) return accum;
-
-				return [...accum, curr.sponsor];
-			}, []),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[JSON.stringify(poolsQueryWithNetwork)]
-	);
-
 	const purchaseTokenAddresses = useMemo(
 		() =>
 			poolsQueryWithNetwork.reduce((accum, curr) => {
@@ -100,7 +86,6 @@ const Pools: FC = () => {
 		[JSON.stringify(poolsQueryWithNetwork)]
 	);
 
-	const ensOrAddresses = useAddressesToEns(sponsors);
 	const currencySymbols = useAddressesToSymbols(purchaseTokenAddresses);
 
 	const onFilterChange = (
@@ -109,7 +94,7 @@ const Pools: FC = () => {
 		nameFilter: string,
 		statusFilter: string
 	) => {
-		let list = poolsQueryWithNetwork
+		let pools = poolsQueryWithNetwork
 			.filter(({ id }) => !filterList.includes(id))
 			.map(({ sponsorFee, purchaseTokenCap, ...pool }) => {
 				const parsedPool = parsePool({
@@ -126,16 +111,15 @@ const Pools: FC = () => {
 			});
 
 		if (sponsorFilter.length) {
-			list = list.filter(
-				(_, index) =>
-					(!!ensOrAddresses.length &&
-						ensOrAddresses[index].toLowerCase().includes(sponsorFilter.toLowerCase())) ||
-					sponsors[index].toLowerCase().includes(sponsorFilter.toLowerCase())
+			pools = pools.filter(
+				(pool) =>
+					pool.sponsor.toLowerCase().includes(sponsorFilter.toLowerCase()) ||
+					ensNames[pool.sponsor].toLowerCase().includes(sponsorFilter.toLowerCase())
 			);
 		}
 
 		if (currencyFilter.length) {
-			list = list.filter(
+			pools = pools.filter(
 				(_, index) =>
 					(!!currencySymbols.length &&
 						currencySymbols[index].toLowerCase().includes(currencyFilter.toLowerCase())) ||
@@ -144,16 +128,16 @@ const Pools: FC = () => {
 		}
 
 		if (nameFilter.length) {
-			list = list.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
+			pools = pools.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
 		}
 
 		if (statusFilter) {
-			list = list.filter(({ poolStatus }) =>
+			pools = pools.filter(({ poolStatus }) =>
 				poolStatus.toLowerCase().includes(statusFilter.toLowerCase())
 			);
 		}
 
-		setPools(list);
+		setPools(pools);
 	};
 
 	useEffect(() => {
@@ -173,12 +157,6 @@ const Pools: FC = () => {
 				};
 			});
 
-		if (process.env.NODE_ENV === Env.PROD) {
-			list = list.filter(({ network }) => isMainnet(nameToIdMapping[network]));
-		} else {
-			list = list.filter(({ network }) => !isMainnet(nameToIdMapping[network]));
-		}
-
 		setPools(list);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [JSON.stringify(poolsQueryWithNetwork)]);
@@ -189,9 +167,10 @@ const Pools: FC = () => {
 				Header: 'Sponsor',
 				accessor: 'sponsor',
 				Cell: (cellProps: CellProps<any, string>) => {
+					const sponsor = ensNames[cellProps.value] ?? cellProps.value;
 					return (
 						<FlexDivStart>
-							<Ens address={cellProps.value} />
+							{ethers.utils.isAddress(sponsor) ? truncateAddress(sponsor) : sponsor}
 						</FlexDivStart>
 					);
 				},
@@ -394,7 +373,7 @@ const Pools: FC = () => {
 				sortable: true,
 			},
 		],
-		[]
+		[ensNames]
 	);
 
 	return (
