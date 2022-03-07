@@ -21,6 +21,7 @@ const Pool: FC = () => {
 	const { poolData } = router.query;
 
 	const address = poolData && poolData.length > 0 ? poolData[0] : null;
+
 	const poolNetwork =
 		poolData && poolData.length > 1 && Object.keys(nameToIdMapping).indexOf(poolData[1]) !== -1
 			? poolData[1]
@@ -28,7 +29,7 @@ const Pool: FC = () => {
 
 	const poolAddress = (address ?? '') as string;
 
-	const poolNetworkId = nameToIdMapping[poolNetwork];
+	const poolNetworkId = nameToIdMapping[poolNetwork].id;
 
 	const poolQuery = useGetPoolByIdQuery({
 		id: poolAddress,
