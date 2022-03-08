@@ -70,7 +70,9 @@ export const validateErc20Address = async (
 	address: string,
 	provider: ethers.providers.Provider | undefined
 ): Promise<ValidateErc20AddressReturn> => {
-	if (!provider) return { result: 'failure', errorMessage: 'Wallet not connected' };
+	if (!provider) {
+		return { result: 'failure', errorMessage: 'Wallet not connected' };
+	}
 	const { name, symbol, decimals, totalSupply } = await getERC20Data({ address, provider });
 
 	if (

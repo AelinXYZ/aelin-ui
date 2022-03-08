@@ -66,8 +66,12 @@ const usePoolBalancesQuery = ({
 				userAmountWithdrawn,
 				unformattedTotalSupply,
 			] = results.map((result) => {
-				if (result.status === 'fulfilled') return result.value;
-				if (result.status === 'rejected') return 0;
+				if (result.status === 'fulfilled') {
+					return result.value;
+				}
+				if (result.status === 'rejected') {
+					return 0;
+				}
 			});
 
 			let unformattedMaxProRata = 0;

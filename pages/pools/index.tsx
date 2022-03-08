@@ -51,10 +51,14 @@ const Pools: FC = () => {
 	const poolsQuery = useGetPoolsQuery();
 
 	const poolsQueryWithNetwork = useMemo(() => {
-		if (poolsQuery.some((pool) => pool.isLoading)) return [];
+		if (poolsQuery.some((pool) => pool.isLoading)) {
+			return [];
+		}
 
 		const pools = poolsQuery.reduce((accum, curr) => {
-			if (!curr.data) return accum;
+			if (!curr.data) {
+				return accum;
+			}
 
 			const poolWithNetworks = curr.data.map((d) => ({ ...d, network: curr.networkName }));
 
@@ -78,7 +82,9 @@ const Pools: FC = () => {
 	const purchaseTokenAddresses = useMemo(
 		() =>
 			poolsQueryWithNetwork.reduce((accum, curr) => {
-				if (filterList.includes(curr.id)) return accum;
+				if (filterList.includes(curr.id)) {
+					return accum;
+				}
 
 				return [...accum, curr.purchaseToken];
 			}, []),

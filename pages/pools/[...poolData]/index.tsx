@@ -44,9 +44,13 @@ const Pool: FC = () => {
 	);
 
 	const handleSwitchChain = useCallback(async () => {
-		if (!provider) return;
+		if (!provider) {
+			return;
+		}
 		const web3Provider = provider as ethers.providers.Web3Provider;
-		if (!web3Provider.provider || !web3Provider.provider.request) return;
+		if (!web3Provider.provider || !web3Provider.provider.request) {
+			return;
+		}
 		const formattedChainId = ethers.utils.hexStripZeros(
 			BigNumber.from(poolNetworkId).toHexString()
 		);

@@ -88,7 +88,9 @@ const validateCreatePool = (values: CreatePoolValues, networkId?: NetworkId) => 
 
 	if (values.poolPrivacy === Privacy.PRIVATE) {
 		const hasAddressError = values.whitelist.some((row) => {
-			if (!row.address.length) return false;
+			if (!row.address.length) {
+				return false;
+			}
 
 			return !utils.isAddress(row.address);
 		});
@@ -97,12 +99,16 @@ const validateCreatePool = (values: CreatePoolValues, networkId?: NetworkId) => 
 			errors.whitelist = 'Address format not valid';
 		} else {
 			const isSaved = values.whitelist.every((row) => {
-				if (!row.address.length) return false;
+				if (!row.address.length) {
+					return false;
+				}
 
 				return row.isSaved;
 			});
 
-			if (!isSaved) errors.whitelist = 'Must save the values';
+			if (!isSaved) {
+				errors.whitelist = 'Must save the values';
+			}
 		}
 	}
 

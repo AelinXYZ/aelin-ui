@@ -53,12 +53,16 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const { monitorTransaction } = TransactionNotifier.useContainer();
 
 	const StakingContract = useMemo(() => {
-		if (!stakingContractAddress || !signer) return null;
+		if (!stakingContractAddress || !signer) {
+			return null;
+		}
 		return new ethers.Contract(stakingContractAddress, stakingRewardsABI, signer);
 	}, [stakingContractAddress, signer]);
 
 	const TokenContract = useMemo(() => {
-		if (!tokenContractAddress || !signer) return null;
+		if (!tokenContractAddress || !signer) {
+			return null;
+		}
 		return new ethers.Contract(tokenContractAddress, erc20ABI, signer);
 	}, [tokenContractAddress, signer]);
 
@@ -85,11 +89,15 @@ const StakeSection: FC<StakeSectionProps> = ({
 	const totalBalance = useMemo(() => {
 		if (stakeAction === StakeActionLabel.DEPOSIT) {
 			return tokenBalance;
-		} else return tokenStakedBalance;
+		} else {
+			return tokenStakedBalance;
+		}
 	}, [stakeAction, tokenBalance, tokenStakedBalance]);
 
 	const getAllowance = useCallback(async () => {
-		if (!TokenContract || !StakingContract || !walletAddress) return;
+		if (!TokenContract || !StakingContract || !walletAddress) {
+			return;
+		}
 		try {
 			const allowance = await TokenContract.allowance(walletAddress, StakingContract.address);
 			setHasAllowance(!!Number(ethers.utils.formatEther(allowance)));
@@ -105,7 +113,9 @@ const StakeSection: FC<StakeSectionProps> = ({
 
 	useEffect(() => {
 		const getGasEstimate = async () => {
-			if (!TokenContract || !StakingContract || !walletAddress) return;
+			if (!TokenContract || !StakingContract || !walletAddress) {
+				return;
+			}
 			try {
 				setGasLimitEstimate(null);
 				if (!hasAllowance) {
@@ -146,7 +156,9 @@ const StakeSection: FC<StakeSectionProps> = ({
 	]);
 
 	const handleApprove = useCallback(async () => {
-		if (!gasLimitEstimate || !TokenContract || !StakingContract) return;
+		if (!gasLimitEstimate || !TokenContract || !StakingContract) {
+			return;
+		}
 		try {
 			const tx = await TokenContract.approve(StakingContract.address, ethers.constants.MaxInt256, {
 				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
@@ -178,7 +190,9 @@ const StakeSection: FC<StakeSectionProps> = ({
 	]);
 
 	const handleSubmit = useCallback(async () => {
-		if (!inputValue || !StakingContract || !walletAddress || !gasLimitEstimate || !gasPrice) return;
+		if (!inputValue || !StakingContract || !walletAddress || !gasLimitEstimate || !gasPrice) {
+			return;
+		}
 		try {
 			let tx;
 			if (stakeAction === StakeActionLabel.DEPOSIT) {

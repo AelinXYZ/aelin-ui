@@ -64,12 +64,16 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	const hasAllowance = Number(purchaseTokenAllowance ?? 0) !== 0;
 
 	const tokenContract = useMemo(() => {
-		if (!pool || !pool.purchaseToken || !signer) return null;
+		if (!pool || !pool.purchaseToken || !signer) {
+			return null;
+		}
 		return new ethers.Contract(pool.purchaseToken, erc20Abi, signer);
 	}, [pool, signer]);
 
 	const poolContract = useMemo(() => {
-		if (!pool || !pool.purchaseToken || !signer) return null;
+		if (!pool || !pool.purchaseToken || !signer) {
+			return null;
+		}
 		return new ethers.Contract(pool.id, poolAbi, signer);
 	}, [pool, signer]);
 
@@ -91,7 +95,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	}, [userPurchaseBalance, pool?.purchaseTokenCap, purchaseTokenDecimals, pool?.contributions]);
 
 	const maxValueBN = useMemo(() => {
-		if (!purchaseTokenDecimals) return wei(0);
+		if (!purchaseTokenDecimals) {
+			return wei(0);
+		}
 		const contribution = wei(
 			ethers.utils
 				.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
@@ -137,15 +143,18 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				!pool ||
 				!pool.id ||
 				(pool?.status ?? Status.PoolOpen) !== Status.PoolOpen
-			)
+			) {
 				return;
+			}
 			try {
 				if (!Number(purchaseTokenAllowance)) {
 					setGasLimitEstimate(
 						wei(await tokenContract.estimateGas.approve(pool.id, ethers.constants.MaxUint256), 0)
 					);
 				} else {
-					if (!purchaseTokenDecimals) return;
+					if (!purchaseTokenDecimals) {
+						return;
+					}
 					const amount = isMaxValue
 						? maxValueBN.toBN()
 						: ethers.utils.parseUnits(
@@ -367,7 +376,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	);
 
 	const handleSubmit = useCallback(async () => {
-		if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) return;
+		if (!walletAddress || !signer || !pool?.id || !purchaseTokenDecimals || !poolContract) {
+			return;
+		}
 		try {
 			const amount = isMaxValue
 				? maxValueBN.toBN()
@@ -417,7 +428,9 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 	]);
 
 	const handleApprove = useCallback(async () => {
-		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken || !tokenContract) return;
+		if (!walletAddress || !signer || !pool?.id || !pool?.purchaseToken || !tokenContract) {
+			return;
+		}
 		try {
 			const tx = await tokenContract.approve(pool.id, ethers.constants.MaxUint256, {
 				gasLimit: gasLimitEstimate?.toBN(),

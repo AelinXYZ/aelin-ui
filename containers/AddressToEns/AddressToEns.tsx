@@ -28,13 +28,19 @@ const useAddressesToEns = () => {
 	const poolsQuery = useGetPoolsQuery();
 
 	const sponsors = useMemo(() => {
-		if (poolsQuery.some((pools) => pools.isLoading)) return {};
+		if (poolsQuery.some((pools) => pools.isLoading)) {
+			return {};
+		}
 
 		const pools = poolsQuery.map((pools) => (pools?.data ?? []).map(parsePool)).flat();
 
 		return pools.reduce((accum: AddressProps, curr) => {
-			if (accum[curr.sponsor]) return accum;
-			if (filterList.includes(curr.id)) return accum;
+			if (accum[curr.sponsor]) {
+				return accum;
+			}
+			if (filterList.includes(curr.id)) {
+				return accum;
+			}
 
 			accum[curr.sponsor] = curr.sponsor;
 
@@ -51,19 +57,27 @@ const useAddressesToEns = () => {
 
 				const areAddresses = addresses.map((sponsor) => utils.isAddress(sponsor)).every(Boolean);
 
-				if (!areAddresses) return;
+				if (!areAddresses) {
+					return;
+				}
 
 				const addressesToEns = await Promise.all(
 					Object.keys(sponsors).map(async (address) => {
 						const resolvedEnsName = await provider?.lookupAddress(address);
 
-						if (!resolvedEnsName) return { [address]: address };
+						if (!resolvedEnsName) {
+							return { [address]: address };
+						}
 
 						const resolvedAddress = await provider?.resolveName(resolvedEnsName);
 						// ENS does not enforce the accuracy of reverse records - for instance, anyone may claim that the name for their address is 'alice.eth'. To be certain that the claim is accurate, you must always perform a forward resolution for the returned name and check it matches the original address.
-						if (resolvedAddress?.toLowerCase() !== address.toLowerCase()) return address;
+						if (resolvedAddress?.toLowerCase() !== address.toLowerCase()) {
+							return address;
+						}
 
-						if (hasNonAsciiCharacters(resolvedEnsName)) return address;
+						if (hasNonAsciiCharacters(resolvedEnsName)) {
+							return address;
+						}
 
 						return { [address]: resolvedEnsName };
 					})

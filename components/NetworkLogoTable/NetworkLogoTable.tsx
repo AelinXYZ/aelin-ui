@@ -22,7 +22,7 @@ const NetworkLogoTable = ({ networkName }: { networkName: string }): JSX.Element
 			height="30"
 			layout="fixed"
 			src={getIconSrc(networkName)}
-			alt={networkName}
+			alt={networkName || ''}
 			title={networkName}
 		/>
 	);
