@@ -1,5 +1,5 @@
 import { GasLimitEstimate } from 'constants/networks';
- 
+
 export type GasPrices = {
 	fastest: number;
 	fast: number;
