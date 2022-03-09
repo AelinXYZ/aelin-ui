@@ -6,7 +6,7 @@ import TokenDisplay from 'components/TokenDisplay';
 
 interface VestingScheduleBox {
 	vestingAmount: number;
-	totalVested: number;
+	totalVested: number | null;
 	isButtonDisabled: boolean;
 	handleClick: () => void;
 	underlyingDealToken: string;

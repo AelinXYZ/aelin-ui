@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import TokenDisplay from 'components/TokenDisplay';
 
 interface AllVestedBox {
-	totalVested: number;
+	totalVested: number | null;
 	underlyingDealToken: string;
 }
 
@@ -15,7 +15,14 @@ const AllVestedBox: FC<AllVestedBox> = ({ totalVested, underlyingDealToken }) =>
 		<p>All of your deal tokens have been vested!</p>
 
 		<p>
-			Total Vested: {totalVested} <TokenDisplay address={underlyingDealToken} />
+			Total Vested:{' '}
+			{totalVested ? (
+				<>
+					{totalVested} <TokenDisplay address={underlyingDealToken} />{' '}
+				</>
+			) : (
+				'Loading...'
+			)}
 		</p>
 	</>
 );
