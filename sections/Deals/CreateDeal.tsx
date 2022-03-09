@@ -269,7 +269,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			return 0;
 		}
 
-		return Number(wei(formik.values.dealExchangeRate).mul(wei(formik.values.purchaseTokenTotal)));
+		return wei(formik.values.dealExchangeRate, 0)
+			.mul(formik.values?.purchaseTokenTotal ?? 0)
+			.toNumber();
 	}, [formik.values.dealExchangeRate, formik.values?.purchaseTokenTotal]);
 
 	useEffect(() => {
