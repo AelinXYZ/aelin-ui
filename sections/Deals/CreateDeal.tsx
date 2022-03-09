@@ -265,7 +265,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	}, [formik?.values, poolAddress, provider, signer, walletAddress]);
 
 	const underlyingDealTokenTotal = useMemo(() => {
-		return Number(formik.values.dealExchangeRate) * Number(formik.values?.purchaseTokenTotal ?? 0);
+		if (!formik.values?.purchaseTokenTotal || formik.values.dealExchangeRate <= 0) {
+			return 0;
+		}
+
+		return Number(wei(formik.values.dealExchangeRate).mul(wei(formik.values.purchaseTokenTotal)));
 	}, [formik.values.dealExchangeRate, formik.values?.purchaseTokenTotal]);
 
 	useEffect(() => {
@@ -433,10 +437,18 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 							type="number"
 							step="0.000000000000000001"
 							placeholder="0"
-							onChange={(e: any) => {
+							onChange={(e) => {
 								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
 									setAllocation(Allocation.DEALLOCATE);
 								}
+
+								if (
+									Number(e.target.value) === Number(totalPoolSupply) &&
+									allocation === Allocation.DEALLOCATE
+								) {
+									setAllocation(Allocation.MAX);
+								}
+
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
 							}}
 							onBlur={formik.handleBlur}
@@ -452,7 +464,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									}}
 									checked={allocation === Allocation.MAX}
 								/>{' '}
-								{Allocation.MAX}
+								<AllocationSpan>{Allocation.MAX}</AllocationSpan>
 							</AllocationRow>
 							<AllocationRow>
 								<Dot
@@ -463,7 +475,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									}}
 									checked={allocation === Allocation.DEALLOCATE}
 								/>{' '}
-								{Allocation.DEALLOCATE}
+								<AllocationSpan>{Allocation.DEALLOCATE}</AllocationSpan>
 							</AllocationRow>
 						</FlexDivRow>
 					</div>
@@ -926,7 +938,15 @@ const Dot = styled.input`
 const AllocationRow = styled(FlexDivStart)`
 	display: flex;
 	align-items: center;
+	margin-top: 10px;
+`;
+
+const AllocationSpan = styled.span`
 	margin-top: 5px;
+
+	&:first-letter {
+		text-transform: uppercase;
+	}
 `;
 
 export default CreateDeal;
