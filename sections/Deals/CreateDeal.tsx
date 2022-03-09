@@ -771,12 +771,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			},
 			{
 				label: 'Underlying deal token total',
-				text: formik.values.dealExchangeRate
-					? formatNumber(
-							Number(formik.values.dealExchangeRate) *
-								Number(formik.values?.purchaseTokenTotal ?? 0)
-					  )
-					: '',
+				text: formik.values.dealExchangeRate ? formatNumber(underlyingDealTokenTotal) : '',
 			},
 			{
 				label: 'Exchange Rates',
