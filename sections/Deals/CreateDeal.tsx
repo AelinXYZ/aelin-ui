@@ -166,7 +166,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		initialValues: {
 			underlyingDealToken: '',
 			purchaseTokenTotal: 0,
-			underlyingDealTokenTotal: 0,
+			dealExchangeRate: 0,
 			vestingPeriodDays: 0,
 			vestingPeriodHours: 0,
 			vestingPeriodMinutes: 0,
@@ -264,6 +264,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		};
 	}, [formik?.values, poolAddress, provider, signer, walletAddress]);
 
+	const underlyingDealTokenTotal = useMemo(() => {
+		return Number(formik.values.dealExchangeRate) * Number(formik.values?.purchaseTokenTotal ?? 0);
+	}, [formik.values.dealExchangeRate, formik.values?.purchaseTokenTotal]);
+
 	useEffect(() => {
 		async function getTotalSupply() {
 			if (signer != null && poolAddress != null && totalPoolSupply === '0') {
@@ -295,7 +299,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			try {
 				const {
 					underlyingDealToken,
-					underlyingDealTokenTotal,
 					purchaseTokenTotal,
 					purchaseTokenDecimals,
 					underlyingDealTokenDecimals,
@@ -307,6 +310,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					holderFundingDuration,
 				} = await createVariablesToCreateDeal();
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
+
 				let gasEstimate = wei(
 					await poolContract!.estimateGas.createDeal(
 						underlyingDealToken,
@@ -340,6 +344,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		setGasLimitEstimate,
 		totalPoolSupply,
 		network.id,
+		underlyingDealTokenTotal,
 	]);
 
 	useEffect(() => {
@@ -468,23 +473,25 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="underlyingDealTokenTotal">Deal Exchange Rate</label>
-						<QuestionMark text={`The deal exchange rate describes the number of underlying deal tokens per investment token in the pool.`} />
+						<label htmlFor="dealExchangeRate">Deal Exchange Rate</label>
+						<QuestionMark
+							text={`The deal exchange rate describes the number of underlying deal tokens per investment token in the pool.`}
+						/>
 					</>
 				),
 				subText: 'amount',
 				formField: (
 					<Input
-						id="underlyingDealTokenTotal"
-						name="underlyingDealTokenTotal"
+						id="dealExchangeRate"
+						name="dealExchangeRate"
 						type="number"
 						step="0.000000000000000001"
-						onChange={(e: any) => formik.setFieldValue('underlyingDealTokenTotal', e.target.value)}
+						onChange={(e: any) => formik.setFieldValue('dealExchangeRate', e.target.value)}
 						onBlur={formik.handleBlur}
-						value={formik.values.underlyingDealTokenTotal || ''}
+						value={formik.values.dealExchangeRate || ''}
 					/>
 				),
-				formError: formik.errors.underlyingDealTokenTotal,
+				formError: formik.errors.dealExchangeRate,
 			},
 			{
 				header: (
@@ -764,17 +771,20 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			},
 			{
 				label: 'Underlying deal token total',
-				text: formik.values.underlyingDealTokenTotal
-					? formatNumber(formik.values.underlyingDealTokenTotal)
+				text: formik.values.dealExchangeRate
+					? formatNumber(
+							Number(formik.values.dealExchangeRate) *
+								Number(formik.values?.purchaseTokenTotal ?? 0)
+					  )
 					: '',
 			},
 			{
 				label: 'Exchange Rates',
 				text:
 					formik.values.purchaseTokenTotal === 0 ||
-					formik.values.underlyingDealTokenTotal === 0 ||
+					formik.values.dealExchangeRate === 0 ||
 					// @ts-ignore
-					formik.values.underlyingDealTokenTotal === '' ||
+					underlyingDealTokenTotal === '' ||
 					// @ts-ignore
 					formik.values.purchaseTokenTotal === '' ? (
 						''
@@ -782,8 +792,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 						<div>
 							<ExchangeRate>
 								{formatNumber(
-									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
-										Number(formik.values?.purchaseTokenTotal ?? 0),
+									underlyingDealTokenTotal / Number(formik.values?.purchaseTokenTotal ?? 0),
 									EXCHANGE_DECIMALS
 								)}{' '}
 								<TokenDisplay address={formik.values.underlyingDealToken} /> per{' '}
@@ -791,8 +800,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 							</ExchangeRate>
 							<ExchangeRate>
 								{formatNumber(
-									Number(formik.values?.purchaseTokenTotal ?? 0) /
-										Number(formik.values?.underlyingDealTokenTotal ?? 0),
+									Number(formik.values?.purchaseTokenTotal ?? 0) / underlyingDealTokenTotal,
 									EXCHANGE_DECIMALS
 								)}{' '}
 								{poolBalances?.purchaseTokenSymbol} per{' '}
@@ -844,7 +852,26 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				),
 			},
 		],
-		[formik.values, poolBalances?.purchaseTokenSymbol]
+		[
+			formik.values.dealExchangeRate,
+			formik.values.holder,
+			formik.values.openRedemptionDays,
+			formik.values.openRedemptionHours,
+			formik.values.openRedemptionMinutes,
+			formik.values.proRataRedemptionDays,
+			formik.values.proRataRedemptionHours,
+			formik.values.proRataRedemptionMinutes,
+			formik.values.purchaseTokenTotal,
+			formik.values.underlyingDealToken,
+			formik.values.vestingCliffDays,
+			formik.values.vestingCliffHours,
+			formik.values.vestingCliffMinutes,
+			formik.values.vestingPeriodDays,
+			formik.values.vestingPeriodHours,
+			formik.values.vestingPeriodMinutes,
+			poolBalances?.purchaseTokenSymbol,
+			underlyingDealTokenTotal,
+		]
 	);
 
 	return (
