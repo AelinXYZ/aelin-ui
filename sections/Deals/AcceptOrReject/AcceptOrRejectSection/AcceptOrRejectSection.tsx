@@ -181,7 +181,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					<>
 						<>{`Underlying Deal Token`}</>
 						<QuestionMark
-							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
+							text={`The token an investor may claim after an optional vesting period if they accept the deal`}
 						/>
 					</>
 				),
