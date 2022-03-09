@@ -45,12 +45,12 @@ const VestingDeal: FC<VestingDealProps> = ({
 
 	const totalVested = useMemo(() => {
 		const claimedAmount = claims.reduce(
-			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
-			0
+			(acc, curr) => acc.add(curr.underlyingDealTokensClaimed),
+			wei(0)
 		);
 
 		return Number(
-			ethers.utils.formatUnits(claimedAmount.toString(), underlyingDealTokenDecimals ?? 0)
+			ethers.utils.formatUnits(claimedAmount.toString(0), underlyingDealTokenDecimals ?? 0)
 		);
 	}, [claims, underlyingDealTokenDecimals]);
 
