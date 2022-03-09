@@ -47,14 +47,14 @@ const VestingDeal: FC<VestingDealProps> = ({
 	const totalVested = useMemo(() => {
 		if (!underlyingDealTokenDecimals) {
 			return null;
-		};
+		}
 
 		const claimedAmount = claims.reduce(
 			(acc, curr) => acc.add(curr.underlyingDealTokensClaimed),
 			wei(0)
 		);
 
-		return Number(ethers.utils.formatUnits(claimedAmount.toString(0), underlyingDealTokenDecimals ?? 18));
+		return Number(ethers.utils.formatUnits(claimedAmount.toString(0), underlyingDealTokenDecimals));
 	}, [claims, underlyingDealTokenDecimals]);
 
 	const isVestingCliffEnds = useMemo(() => {
@@ -104,7 +104,9 @@ const VestingDeal: FC<VestingDealProps> = ({
 								{totalVested}{' '}
 								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
 							</>
-						): 'Loading...'}
+						) : (
+							'Loading...'
+						)}
 					</>
 				),
 			},
