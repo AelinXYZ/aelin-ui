@@ -14,7 +14,7 @@ import QuestionMark from 'components/QuestionMark';
 import TokenDisplay from 'components/TokenDisplay';
 import TokenDropdown from 'components/TokenDropdown';
 import { CreateTxType } from 'components/SummaryBox/SummaryBox';
-import { FlexDivStart, FlexDivRow } from 'components/common';
+import { FlexDivStart, FlexDivRow, FlexDiv } from 'components/common';
 
 import { formatNumber } from 'utils/numbers';
 import { truncateAddress } from 'utils/crypto';
@@ -33,6 +33,7 @@ import { Allocation } from 'constants/pool';
 
 import usePoolBalancesQuery from 'queries/pools/usePoolBalancesQuery';
 import AddressLink from 'components/AddressLink';
+import Button from 'components/Button';
 
 interface CreateDealProps {
 	poolAddress: string;
@@ -474,15 +475,22 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				),
 				subText: 'amount',
 				formField: (
-					<Input
-						id="underlyingDealTokenTotal"
-						name="underlyingDealTokenTotal"
-						type="number"
-						step="0.000000000000000001"
-						onChange={(e: any) => formik.setFieldValue('underlyingDealTokenTotal', e.target.value)}
-						onBlur={formik.handleBlur}
-						value={formik.values.underlyingDealTokenTotal || ''}
-					/>
+					<div>
+						<Input
+							id="underlyingDealTokenTotal"
+							name="underlyingDealTokenTotal"
+							type="number"
+							step="0.000000000000000001"
+							onChange={(e: any) =>
+								formik.setFieldValue('underlyingDealTokenTotal', e.target.value)
+							}
+							onBlur={formik.handleBlur}
+							value={formik.values.underlyingDealTokenTotal || ''}
+						/>
+						<InputButtonRow>
+							<StyledButton variant="secondary">Calculate</StyledButton>
+						</InputButtonRow>
+					</div>
 				),
 				formError: formik.errors.underlyingDealTokenTotal,
 			},
@@ -906,6 +914,15 @@ const AllocationRow = styled(FlexDivStart)`
 	display: flex;
 	align-items: center;
 	margin-top: 5px;
+`;
+
+const StyledButton = styled(Button)`
+	margin: 6px 0;
+	padding: 0 12px;
+`;
+
+const InputButtonRow = styled(FlexDiv)`
+	justify-content: flex-end;
 `;
 
 export default CreateDeal;
