@@ -135,7 +135,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			const tx = await poolContract!.createDeal(
 				underlyingDealToken,
 				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-				ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
+				underlyingDealTokenTotal.toBN(),
 				vestingPeriodDuration,
 				vestingCliffDuration,
 				proRataRedemptionDuration,
@@ -347,7 +347,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					await poolContract!.estimateGas.createDeal(
 						underlyingDealToken,
 						ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-						underlyingDealTokenTotal.toBN().toString(),
+						underlyingDealTokenTotal.toBN(),
 						vestingPeriodDuration,
 						vestingCliffDuration,
 						proRataRedemptionDuration,
