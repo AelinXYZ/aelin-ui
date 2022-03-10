@@ -835,6 +835,14 @@ export type DealDetailFilter = {
 	underlyingDealTokenDecimals_lte?: number | null;
 	underlyingDealTokenDecimals_in?: number[];
 	underlyingDealTokenDecimals_not_in?: number[];
+	underlyingDealTokenTotalSupply?: WeiSource | null;
+	underlyingDealTokenTotalSupply_not?: WeiSource | null;
+	underlyingDealTokenTotalSupply_gt?: WeiSource | null;
+	underlyingDealTokenTotalSupply_lt?: WeiSource | null;
+	underlyingDealTokenTotalSupply_gte?: WeiSource | null;
+	underlyingDealTokenTotalSupply_lte?: WeiSource | null;
+	underlyingDealTokenTotalSupply_in?: WeiSource[];
+	underlyingDealTokenTotalSupply_not_in?: WeiSource[];
 	purchaseTokenTotalForDeal?: WeiSource | null;
 	purchaseTokenTotalForDeal_not?: WeiSource | null;
 	purchaseTokenTotalForDeal_gt?: WeiSource | null;
@@ -923,6 +931,7 @@ export type DealDetailResult = {
 	underlyingDealToken: string;
 	underlyingDealTokenSymbol: string;
 	underlyingDealTokenDecimals: number;
+	underlyingDealTokenTotalSupply: Wei;
 	purchaseTokenTotalForDeal: Wei;
 	underlyingDealTokenTotal: Wei;
 	vestingPeriod: Wei;
@@ -940,6 +949,7 @@ export type DealDetailFields = {
 	underlyingDealToken: true;
 	underlyingDealTokenSymbol: true;
 	underlyingDealTokenDecimals: true;
+	underlyingDealTokenTotalSupply: true;
 	purchaseTokenTotalForDeal: true;
 	underlyingDealTokenTotal: true;
 	vestingPeriod: true;
@@ -987,6 +997,12 @@ export const useGetDealDetailById = <K extends keyof DealDetailResult>(
 		}
 		if (obj['underlyingDealTokenDecimals']) {
 			formattedObj['underlyingDealTokenDecimals'] = obj['underlyingDealTokenDecimals'];
+		}
+		if (obj['underlyingDealTokenTotalSupply']) {
+			formattedObj['underlyingDealTokenTotalSupply'] = wei(
+				obj['underlyingDealTokenTotalSupply'],
+				0
+			);
 		}
 		if (obj['purchaseTokenTotalForDeal']) {
 			formattedObj['purchaseTokenTotalForDeal'] = wei(obj['purchaseTokenTotalForDeal'], 0);
@@ -1083,6 +1099,12 @@ export const useGetDealDetails = <K extends keyof DealDetailResult>(
 				}
 				if (obj['underlyingDealTokenDecimals']) {
 					formattedObj['underlyingDealTokenDecimals'] = obj['underlyingDealTokenDecimals'];
+				}
+				if (obj['underlyingDealTokenTotalSupply']) {
+					formattedObj['underlyingDealTokenTotalSupply'] = wei(
+						obj['underlyingDealTokenTotalSupply'],
+						0
+					);
 				}
 				if (obj['purchaseTokenTotalForDeal']) {
 					formattedObj['purchaseTokenTotalForDeal'] = wei(obj['purchaseTokenTotalForDeal'], 0);

@@ -14,6 +14,7 @@ const useGetDealDetailByIdQuery = ({ id, networkId }: { id: string; networkId?: 
 			underlyingDealToken: true,
 			purchaseTokenTotalForDeal: true,
 			underlyingDealTokenTotal: true,
+			underlyingDealTokenTotalSupply: true,
 			vestingCliff: true,
 			vestingPeriod: true,
 			proRataRedemptionPeriod: true,

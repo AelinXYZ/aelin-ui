@@ -3,7 +3,7 @@ import { NetworkId } from './networks';
 export const GRAPH_ENDPOINT_MAINNET =
 	'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin-mainnet';
 export const GRAPH_ENDPOINT_OPTIMISM =
-	'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin-optimism';
+	'https://api.thegraph.com/subgraphs/id/QmTmvWk67p9tUyELJr2iDGZ4ibwyDwEiTzjXSQQxoxsyhf';
 export const GRAPH_ENDPOINT_KOVAN = 'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin-kovan';
 export const GRAPH_ENDPOINT_GOERLI =
 	'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin-goerli';
