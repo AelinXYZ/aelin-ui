@@ -207,7 +207,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 						</StyledFlexDiv>
 						<StyledFlexDiv>
 							Total Supply: <br />
-							{underlyingTotalSupply ? formatNumber(underlyingTotalSupply) : ''}
+							{underlyingTotalSupply ? formatNumber(underlyingTotalSupply) : '-'}
 						</StyledFlexDiv>
 						<StyledFlexDiv>
 							Market Cap {areTokenSymbolsAvailable ? `(${poolBalances?.purchaseTokenSymbol})` : ''}{' '}
@@ -216,7 +216,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 								? formatNumber(
 										Number(underlyingTotalSupply) * Number(exchangeRatePurchaseUnderlying)
 								  )
-								: ''}
+								: '-'}
 						</StyledFlexDiv>
 					</FlexDivCol>
 				),
@@ -601,7 +601,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 	return (
 		<FlexDiv>
-			<Grid hasInputFields={false} gridItems={gridItems} />
+			<StyledGrid hasInputFields={false} gridItems={gridItems} />
 			<AcceptOrRejectBox
 				txType={txType}
 				setTxType={setTxType}
@@ -630,8 +630,23 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 	);
 };
 
+const StyledGrid = styled(Grid)`
+	> * {
+		&:nth-child(1) {
+			height: 175px;
+		}
+		&:nth-child(2) {
+			height: 175px;
+		}
+		&:nth-child(3) {
+			height: 175px;
+		}
+	}
+`;
+
 const StyledFlexDiv = styled(FlexDiv)`
 	margin-bottom: 3px;
+	line-height: 20px;
 `;
 const ExchangeRate = styled.div`
 	margin-bottom: 4px;
