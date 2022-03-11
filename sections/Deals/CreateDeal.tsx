@@ -118,10 +118,8 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		try {
 			const {
 				underlyingDealToken,
-				underlyingDealTokenTotal,
 				purchaseTokenTotal,
 				purchaseTokenDecimals,
-				underlyingDealTokenDecimals,
 				vestingPeriodDuration,
 				vestingCliffDuration,
 				proRataRedemptionDuration,
@@ -274,7 +272,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				!signer ||
 				!formik.values?.underlyingDealToken
 			) {
-				return 0;
+				return wei(0);
 			}
 
 			const underlyingDealContract = new ethers.Contract(
