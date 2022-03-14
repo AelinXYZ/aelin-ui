@@ -205,19 +205,10 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 								displayAddress={true}
 							/>
 						</StyledFlexDiv>
-						<StyledFlexDiv>
-							Total Supply: <br />
+						<TotalSupplyWrapper>
+							Total Supply: &nbsp;
 							{underlyingTotalSupply ? formatNumber(underlyingTotalSupply) : '-'}
-						</StyledFlexDiv>
-						<StyledFlexDiv>
-							Market Cap {areTokenSymbolsAvailable ? `(${poolBalances?.purchaseTokenSymbol})` : ''}{' '}
-							: <br />
-							{underlyingTotalSupply && exchangeRatePurchaseUnderlying
-								? formatNumber(
-										Number(underlyingTotalSupply) * Number(exchangeRatePurchaseUnderlying)
-								  )
-								: '-'}
-						</StyledFlexDiv>
+						</TotalSupplyWrapper>
 					</FlexDivCol>
 				),
 			},
@@ -648,6 +639,11 @@ const StyledFlexDiv = styled(FlexDiv)`
 	margin-bottom: 3px;
 	line-height: 20px;
 `;
+
+const TotalSupplyWrapper = styled(StyledFlexDiv)`
+	margin-top: 10px;
+`;
+
 const ExchangeRate = styled.div`
 	margin-bottom: 4px;
 `;
