@@ -6,7 +6,7 @@ import { NetworkId } from 'constants/networks';
 export interface CreateDealValues {
 	underlyingDealToken: string;
 	purchaseTokenTotal: number;
-	dealExchangeRate: number;
+	underlyingDealTokenTotal: number;
 	vestingPeriodDays: number;
 	vestingPeriodHours: number;
 	vestingPeriodMinutes: number;
@@ -50,8 +50,8 @@ const validateCreateDeal = (
 		errors.purchaseTokenTotal = `Max is ${totalPoolSupply}`;
 	}
 
-	if (!values.dealExchangeRate) {
-		errors.dealExchangeRate = 'Required';
+	if (!values.underlyingDealTokenTotal) {
+		errors.underlyingDealTokenTotal = 'Required';
 	}
 
 	if (

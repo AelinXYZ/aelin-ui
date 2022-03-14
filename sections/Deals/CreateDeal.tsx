@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
 import { ethers } from 'ethers';
-import Wei, { wei } from '@synthetixio/wei';
+import { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
 import TransactionData from 'containers/TransactionData';
@@ -44,8 +44,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	const [allocation, setAllocation] = useState<Allocation>(Allocation.MAX);
 	const { walletAddress, signer, provider, network } = Connector.useContainer();
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
-	const [underlyingDealTokenTotal, setUnderlyingDealTokenTotal] = useState<Wei>(wei(0));
-
 	const [cancelPoolGasLimitEstimate, setCancelPoolGasLimitEstimate] =
 		useState<GasLimitEstimate>(null);
 	const { txHash, setTxHash, gasPrice, setGasPrice, txState, setTxState } =
@@ -118,8 +116,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		try {
 			const {
 				underlyingDealToken,
+				underlyingDealTokenTotal,
 				purchaseTokenTotal,
 				purchaseTokenDecimals,
+				underlyingDealTokenDecimals,
 				vestingPeriodDuration,
 				vestingCliffDuration,
 				proRataRedemptionDuration,
@@ -133,7 +133,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			const tx = await poolContract!.createDeal(
 				underlyingDealToken,
 				ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-				underlyingDealTokenTotal.toBN(),
+				ethers.utils.parseUnits(underlyingDealTokenTotal.toString(), underlyingDealTokenDecimals),
 				vestingPeriodDuration,
 				vestingCliffDuration,
 				proRataRedemptionDuration,
@@ -166,7 +166,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		initialValues: {
 			underlyingDealToken: '',
 			purchaseTokenTotal: 0,
-			dealExchangeRate: 0,
+			underlyingDealTokenTotal: 0,
 			vestingPeriodDays: 0,
 			vestingPeriodHours: 0,
 			vestingPeriodMinutes: 0,
@@ -265,41 +265,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 	}, [formik?.values, poolAddress, provider, signer, walletAddress]);
 
 	useEffect(() => {
-		const getUnderlyingDealTokenTotal = async () => {
-			if (
-				!formik.values?.purchaseTokenTotal ||
-				formik.values.dealExchangeRate <= 0 ||
-				!signer ||
-				!formik.values?.underlyingDealToken
-			) {
-				return wei(0);
-			}
-
-			const underlyingDealContract = new ethers.Contract(
-				formik.values?.underlyingDealToken,
-				erc20Abi,
-				provider
-			);
-
-			const underlyingDealTokenDecimals = await underlyingDealContract.decimals();
-
-			setUnderlyingDealTokenTotal(
-				wei(formik.values?.purchaseTokenTotal ?? 0, underlyingDealTokenDecimals).mul(
-					wei(formik.values.dealExchangeRate)
-				)
-			);
-		};
-
-		getUnderlyingDealTokenTotal();
-	}, [
-		formik.values.dealExchangeRate,
-		formik.values?.purchaseTokenTotal,
-		formik.values?.underlyingDealToken,
-		provider,
-		signer,
-	]);
-
-	useEffect(() => {
 		async function getTotalSupply() {
 			if (signer != null && poolAddress != null && totalPoolSupply === '0') {
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
@@ -330,8 +295,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			try {
 				const {
 					underlyingDealToken,
+					underlyingDealTokenTotal,
 					purchaseTokenTotal,
 					purchaseTokenDecimals,
+					underlyingDealTokenDecimals,
 					vestingPeriodDuration,
 					vestingCliffDuration,
 					proRataRedemptionDuration,
@@ -340,12 +307,14 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					holderFundingDuration,
 				} = await createVariablesToCreateDeal();
 				const poolContract = new ethers.Contract(poolAddress, poolAbi, signer);
-
 				let gasEstimate = wei(
 					await poolContract!.estimateGas.createDeal(
 						underlyingDealToken,
 						ethers.utils.parseUnits(purchaseTokenTotal.toString(), purchaseTokenDecimals),
-						underlyingDealTokenTotal.toBN(),
+						ethers.utils.parseUnits(
+							underlyingDealTokenTotal.toString(),
+							underlyingDealTokenDecimals
+						),
 						vestingPeriodDuration,
 						vestingCliffDuration,
 						proRataRedemptionDuration,
@@ -371,7 +340,6 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 		setGasLimitEstimate,
 		totalPoolSupply,
 		network.id,
-		underlyingDealTokenTotal,
 	]);
 
 	useEffect(() => {
@@ -421,7 +389,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					<>
 						<label htmlFor="underlyingDealToken">Underlying Deal Token</label>
 						<QuestionMark
-							text={`The token an investor may claim after an optional vesting period if they accept the deal`}
+							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
 						/>
 					</>
 				),
@@ -445,9 +413,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseTokenTotal">Investment Tokens Accepted</label>
+						<label htmlFor="purchaseTokenTotal">Total Purchase Tokens</label>
 						<QuestionMark
-							text={`The total amount of investment tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
+							text={`The total amount of purchase tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
 						/>
 					</>
 				),
@@ -460,18 +428,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 							type="number"
 							step="0.000000000000000001"
 							placeholder="0"
-							onChange={(e) => {
+							onChange={(e: any) => {
 								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
 									setAllocation(Allocation.DEALLOCATE);
 								}
-
-								if (
-									Number(e.target.value) === Number(totalPoolSupply) &&
-									allocation === Allocation.DEALLOCATE
-								) {
-									setAllocation(Allocation.MAX);
-								}
-
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
 							}}
 							onBlur={formik.handleBlur}
@@ -487,7 +447,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									}}
 									checked={allocation === Allocation.MAX}
 								/>{' '}
-								<AllocationSpan>{Allocation.MAX}</AllocationSpan>
+								{Allocation.MAX}
 							</AllocationRow>
 							<AllocationRow>
 								<Dot
@@ -498,7 +458,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									}}
 									checked={allocation === Allocation.DEALLOCATE}
 								/>{' '}
-								<AllocationSpan>{Allocation.DEALLOCATE}</AllocationSpan>
+								{Allocation.DEALLOCATE}
 							</AllocationRow>
 						</FlexDivRow>
 					</div>
@@ -508,25 +468,23 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="dealExchangeRate">Deal Exchange Rate</label>
-						<QuestionMark
-							text={`The deal exchange rate describes the number of underlying deal tokens per investment token in the pool.`}
-						/>
+						<label htmlFor="underlyingDealTokenTotal">Underlying Deal Token Total</label>
+						<QuestionMark text={`The total amount of underlying deal tokens in the deal`} />
 					</>
 				),
 				subText: 'amount',
 				formField: (
 					<Input
-						id="dealExchangeRate"
-						name="dealExchangeRate"
+						id="underlyingDealTokenTotal"
+						name="underlyingDealTokenTotal"
 						type="number"
 						step="0.000000000000000001"
-						onChange={(e: any) => formik.setFieldValue('dealExchangeRate', e.target.value)}
+						onChange={(e: any) => formik.setFieldValue('underlyingDealTokenTotal', e.target.value)}
 						onBlur={formik.handleBlur}
-						value={formik.values.dealExchangeRate || ''}
+						value={formik.values.underlyingDealTokenTotal || ''}
 					/>
 				),
-				formError: formik.errors.dealExchangeRate,
+				formError: formik.errors.underlyingDealTokenTotal,
 			},
 			{
 				header: (
@@ -623,9 +581,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="proRataRedemption">Round 1: Pro Rata Period</label>
+						<label htmlFor="proRataRedemption">Pro Rata Period</label>
 						<QuestionMark
-							text={`the pro rata redemption period is when a investor has the opportunity to max out their allocation for the deal`}
+							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
 						/>
 					</>
 				),
@@ -669,9 +627,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="openRedemption">Round 2: Open Period</label>
+						<label htmlFor="openRedemption">Open Period</label>
 						<QuestionMark
-							text={`the open redemption period is for investors who have maxxed their allocation in the pro rata round`}
+							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
 						/>
 					</>
 				),
@@ -715,13 +673,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="holderFundingExpiry">Holder funding deadline</label>
+						<label htmlFor="holderFundingExpiry">Holder funding period</label>
 						<QuestionMark
 							text={`the amount of time a holder has to finalize the deal by depositing funds. If the deadline passes the sponsor can create a new deal with a different holder.`}
 						/>
 					</>
 				),
-				subText: 'time to fund the deal',
+				subText: 'holder time limit to fund',
 				formField: (
 					<FlexDivStart>
 						<Input
@@ -763,7 +721,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					<>
 						<label htmlFor="holder">Holder address</label>
 						<QuestionMark
-							text={`the address of the deal counterparty depositing the underlying deal tokens in exchange for investment tokens`}
+							text={`the address of the deal counterparty depositing the underlying deal tokens in exchange for purchase tokens`}
 						/>
 					</>
 				),
@@ -799,23 +757,24 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				),
 			},
 			{
-				label: 'Total investment tokens',
+				label: 'Total purchase tokens',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
 			},
 			{
 				label: 'Underlying deal token total',
-				text: formik.values.dealExchangeRate
-					? formatNumber(underlyingDealTokenTotal.toNumber())
+				text: formik.values.underlyingDealTokenTotal
+					? formatNumber(formik.values.underlyingDealTokenTotal)
 					: '',
 			},
 			{
 				label: 'Exchange Rates',
 				text:
 					formik.values.purchaseTokenTotal === 0 ||
-					formik.values.dealExchangeRate === 0 ||
-					underlyingDealTokenTotal.toNumber() === 0 ||
+					formik.values.underlyingDealTokenTotal === 0 ||
+					// @ts-ignore
+					formik.values.underlyingDealTokenTotal === '' ||
 					// @ts-ignore
 					formik.values.purchaseTokenTotal === '' ? (
 						''
@@ -823,7 +782,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 						<div>
 							<ExchangeRate>
 								{formatNumber(
-									underlyingDealTokenTotal.toNumber() /
+									Number(formik.values?.underlyingDealTokenTotal ?? 0) /
 										Number(formik.values?.purchaseTokenTotal ?? 0),
 									EXCHANGE_DECIMALS
 								)}{' '}
@@ -833,7 +792,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 							<ExchangeRate>
 								{formatNumber(
 									Number(formik.values?.purchaseTokenTotal ?? 0) /
-										underlyingDealTokenTotal.toNumber(),
+										Number(formik.values?.underlyingDealTokenTotal ?? 0),
 									EXCHANGE_DECIMALS
 								)}{' '}
 								{poolBalances?.purchaseTokenSymbol} per{' '}
@@ -885,26 +844,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				),
 			},
 		],
-		[
-			formik.values.dealExchangeRate,
-			formik.values.holder,
-			formik.values.openRedemptionDays,
-			formik.values.openRedemptionHours,
-			formik.values.openRedemptionMinutes,
-			formik.values.proRataRedemptionDays,
-			formik.values.proRataRedemptionHours,
-			formik.values.proRataRedemptionMinutes,
-			formik.values.purchaseTokenTotal,
-			formik.values.underlyingDealToken,
-			formik.values.vestingCliffDays,
-			formik.values.vestingCliffHours,
-			formik.values.vestingCliffMinutes,
-			formik.values.vestingPeriodDays,
-			formik.values.vestingPeriodHours,
-			formik.values.vestingPeriodMinutes,
-			poolBalances?.purchaseTokenSymbol,
-			underlyingDealTokenTotal,
-		]
+		[formik.values, poolBalances?.purchaseTokenSymbol]
 	);
 
 	return (
@@ -965,15 +905,7 @@ const Dot = styled.input`
 const AllocationRow = styled(FlexDivStart)`
 	display: flex;
 	align-items: center;
-	margin-top: 10px;
-`;
-
-const AllocationSpan = styled.span`
 	margin-top: 5px;
-
-	&:first-letter {
-		text-transform: uppercase;
-	}
 `;
 
 export default CreateDeal;
