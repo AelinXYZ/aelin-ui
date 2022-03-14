@@ -6,8 +6,8 @@ export enum Privacy {
 }
 
 export enum Allocation {
-	MAX = 'max',
-	DEALLOCATE = 'deallocate',
+	MAX = 'all',
+	DEALLOCATE = 'partial',
 }
 
 export const statusToText = (status: Status): string => {

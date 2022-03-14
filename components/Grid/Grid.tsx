@@ -136,7 +136,7 @@ const ErrorField = styled.div`
 	font-size: 1rem;
 	font-weight: bold;
 	position: absolute;
-	bottom: 10px;
+	bottom: 5px;
 `;
 
 const TextContainer = styled.div`
