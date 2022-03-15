@@ -271,7 +271,7 @@ const Create: FC = () => {
 				header: (
 					<>
 						<label htmlFor="poolCap">Pool Cap</label>
-						<QuestionMark text={`Maximum number of pool tokens`} />
+						<QuestionMark text={`Maximum number of Investment tokens`} />
 					</>
 				),
 				subText: 'Uncapped if left blank or 0',
@@ -291,10 +291,10 @@ const Create: FC = () => {
 				header: (
 					<>
 						<label htmlFor="purchaseDuration">Investment deadline</label>
-						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
+						<QuestionMark text={`The amount of time investors have to deposit Investment tokens`} />
 					</>
 				),
-				subText: 'Time to purchase pool tokens',
+				subText: 'Time to purchase investment tokens',
 				formField: (
 					<FlexDivRow>
 						<Input
@@ -336,7 +336,7 @@ const Create: FC = () => {
 					<>
 						<label htmlFor="duration">Deal deadline</label>
 						<QuestionMark
-							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
+							text={`The amount of time a sponsor has to find a deal before investors can withdraw their funds. A deal may still be created after the deadline if funds are still in the pool.`}
 						/>
 					</>
 				),
@@ -432,7 +432,7 @@ const Create: FC = () => {
 					<>
 						<label htmlFor="privacy">Pool Privacy</label>
 						<QuestionMark
-							text={`A private pool allows a sponsor to specify which address can purchase pool tokens`}
+							text={`A private pool allows a sponsor to specify which addresses can deposit investment tokens and how many tokens each whitelisted address can deposit.`}
 						/>
 					</>
 				),

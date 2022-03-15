@@ -4,15 +4,18 @@ import { calculateStatus } from 'utils/time';
 
 import { Env } from 'constants/env';
 import { getGraphEndpoint } from 'constants/endpoints';
-import { nameToIdMapping, NetworkId } from 'constants/networks';
+import { nameToIdMapping } from 'constants/networks';
 
 import { useGetPoolCreateds, PoolCreatedResult } from '../../subgraph';
 
 const useGetPoolsQuery = () => {
 	const isDev = process.env.NODE_ENV !== Env.PROD;
 
-	const networks = Object.entries(nameToIdMapping).filter(
-		([_, { isMainnet }]) => isMainnet !== isDev
+	const hostname =
+		typeof window !== 'undefined' && window.location.hostname ? window.location.hostname : '';
+
+	const networks = Object.entries(nameToIdMapping).filter(([_, { isMainnet }]) =>
+		isDev ? true : hostname.includes('vercel.app') ? true : isMainnet !== isDev
 	);
 
 	return networks.map(([networkName, { id }]) => ({

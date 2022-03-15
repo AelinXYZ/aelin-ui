@@ -169,7 +169,7 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 					<>
 						<>{`Deal deadline`}</>
 						<QuestionMark
-							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
+							text={`The amount of time a sponsor has to find a deal before investors can withdraw their funds. A deal may still be created after the deadline if funds are still in the pool.`}
 						/>
 					</>
 				),
