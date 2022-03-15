@@ -202,11 +202,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 				subText: (
 					<>
-						{Number(
-							ethers.utils.formatUnits(
-								deal?.underlyingDealTokenTotal?.toString() ?? '0',
-								underlyingDealTokenDecimals ?? 0
-							)
+						{formatNumber(
+							Number(
+								ethers.utils.formatUnits(
+									deal?.underlyingDealTokenTotal?.toString() ?? '0',
+									underlyingDealTokenDecimals ?? 0
+								)
+							),
+							DEFAULT_DECIMALS
 						)}{' '}
 						<TokenDisplay
 							symbol={underlyingDealTokenSymbol}
