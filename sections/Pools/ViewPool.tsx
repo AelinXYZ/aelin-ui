@@ -342,9 +342,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			component: (
 				<VestingDealSection
 					deal={deal}
-					dealBalance={dealBalance}
 					claims={claims}
-					dealPerUnderlyingExchangeRate={Math.round(Number(1 / underlyingPerDealExchangeRate))}
 					claimableUnderlyingTokens={claimableUnderlyingTokens}
 					underlyingDealTokenDecimals={underlyingDealTokenDecimals}
 				/>
