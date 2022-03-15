@@ -392,7 +392,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					<>
 						<label htmlFor="underlyingDealToken">Underlying Deal Token</label>
 						<QuestionMark
-							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
+							text={`The token an investor may claim after an optional vesting period if they accept the deal`}
 						/>
 					</>
 				),
@@ -416,9 +416,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="purchaseTokenTotal">Total Purchase Tokens</label>
+						<label htmlFor="purchaseTokenTotal">Investment Tokens Accepted</label>
 						<QuestionMark
-							text={`The total amount of purchase tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
+							text={`The total amount of investment tokens eligible for the deal. Must be less than or equal to the amount in the pool`}
 						/>
 					</>
 				),
@@ -435,6 +435,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
 									setAllocation(Allocation.DEALLOCATE);
 								}
+
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
 							}}
 							onBlur={formik.handleBlur}
@@ -450,7 +451,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									}}
 									checked={allocation === Allocation.MAX}
 								/>{' '}
-								{Allocation.MAX}
+								<AllocationSpan>{Allocation.MAX}</AllocationSpan>
 							</AllocationRow>
 							<AllocationRow>
 								<Dot
@@ -461,7 +462,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									}}
 									checked={allocation === Allocation.DEALLOCATE}
 								/>{' '}
-								{Allocation.DEALLOCATE}
+								<AllocationSpan>{Allocation.DEALLOCATE}</AllocationSpan>
 							</AllocationRow>
 						</FlexDivRow>
 					</div>
@@ -593,9 +594,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="proRataRedemption">Pro Rata Period</label>
+						<label htmlFor="proRataRedemption">Round 1: Pro Rata Period</label>
 						<QuestionMark
-							text={`the pro rata redemption period is when a purchaser has the opportunity to max out their allocation for the deal`}
+							text={`the pro rata redemption period is when an investor has the opportunity to max out their allocation for the deal`}
 						/>
 					</>
 				),
@@ -639,9 +640,9 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="openRedemption">Open Period</label>
+						<label htmlFor="openRedemption">Round 2: Open Period</label>
 						<QuestionMark
-							text={`the open redemption period is for purchasers who have maxxed their allocation in the pro rata round`}
+							text={`the open redemption period is for investors who have maxxed their allocation in the pro rata round`}
 						/>
 					</>
 				),
@@ -685,13 +686,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				header: (
 					<>
-						<label htmlFor="holderFundingExpiry">Holder funding period</label>
+						<label htmlFor="holderFundingExpiry">Holder funding deadline</label>
 						<QuestionMark
 							text={`the amount of time a holder has to finalize the deal by depositing funds. If the deadline passes the sponsor can create a new deal with a different holder.`}
 						/>
 					</>
 				),
-				subText: 'holder time limit to fund',
+				subText: 'time to fund the deal',
 				formField: (
 					<FlexDivStart>
 						<Input
@@ -733,7 +734,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 					<>
 						<label htmlFor="holder">Holder address</label>
 						<QuestionMark
-							text={`the address of the deal counterparty depositing the underlying deal tokens in exchange for purchase tokens`}
+							text={`the address of the deal counterparty depositing the underlying deal tokens in exchange for investment tokens`}
 						/>
 					</>
 				),
@@ -769,7 +770,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				),
 			},
 			{
-				label: 'Total purchase tokens',
+				label: 'Total investment tokens',
 				text: formik.values.purchaseTokenTotal
 					? formatNumber(formik.values.purchaseTokenTotal)
 					: '',
@@ -933,7 +934,14 @@ const Dot = styled.input`
 const AllocationRow = styled(FlexDivStart)`
 	display: flex;
 	align-items: center;
+	margin-top: 10px;
+`;
+
+const AllocationSpan = styled.span`
 	margin-top: 5px;
+	&:first-letter {
+		text-transform: uppercase;
+	}
 `;
 
 const StyledButton = styled(Button)`
