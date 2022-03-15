@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import Wei, { wei } from '@synthetixio/wei';
 
 import Connector from 'containers/Connector';
@@ -18,6 +18,7 @@ import { FlexDivStart, FlexDivRow, FlexDiv } from 'components/common';
 import DealCalculationModal from './DealCalculationModal';
 
 import { formatNumber } from 'utils/numbers';
+import { removeZeroes } from 'utils/string';
 import { truncateAddress } from 'utils/crypto';
 import { getGasEstimateWithBuffer } from 'utils/network';
 import { getDuration, formatDuration } from 'utils/time';
@@ -439,7 +440,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
 							}}
 							onBlur={formik.handleBlur}
-							value={formik.values.purchaseTokenTotal ? formik.values.purchaseTokenTotal : ''}
+							value={
+								formik.values.purchaseTokenTotal
+									? removeZeroes(formik.values.purchaseTokenTotal.toString())
+									: ''
+							}
 						/>
 						<FlexDivRow>
 							<AllocationRow>
@@ -488,7 +493,11 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								formik.setFieldValue('underlyingDealTokenTotal', e.target.value)
 							}
 							onBlur={formik.handleBlur}
-							value={formik.values.underlyingDealTokenTotal || ''}
+							value={
+								formik.values.underlyingDealTokenTotal
+									? removeZeroes(formik.values.underlyingDealTokenTotal.toString())
+									: ''
+							}
 						/>
 						<InputButtonRow>
 							<StyledButton variant="secondary" onClick={() => setDealModalIsOpen(true)}>
@@ -772,13 +781,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				label: 'Total investment tokens',
 				text: formik.values.purchaseTokenTotal
-					? formatNumber(formik.values.purchaseTokenTotal)
+					? removeZeroes(formik.values.purchaseTokenTotal.toString())
 					: '',
 			},
 			{
 				label: 'Underlying deal token total',
 				text: formik.values.underlyingDealTokenTotal
-					? formatNumber(formik.values.underlyingDealTokenTotal)
+					? removeZeroes(formik.values.underlyingDealTokenTotal.toString())
 					: '',
 			},
 			{

@@ -6,8 +6,9 @@ import { formatNumber } from 'utils/numbers';
 import Input from 'components/Input/Input';
 import Connector from 'containers/Connector';
 import Button from 'components/Button';
-import { getERC20Data } from 'utils/crypto';
 import Wei, { wei } from '@synthetixio/wei';
+import { getERC20Data } from 'utils/crypto';
+import { removeZeroes } from 'utils/string';
 
 type DealCalculationModalProps = {
 	handleClose: () => void;
@@ -120,7 +121,11 @@ const DealCalculationModal: FC<DealCalculationModalProps> = ({
 						id="underlyingDealTokenTotal"
 						name="underlyingDealTokenTotal"
 						type="string"
-						value={underlyingDealTokenTotal.eq(0) ? '0' : underlyingDealTokenTotal.toString()}
+						value={
+							underlyingDealTokenTotal.eq(0)
+								? '0'
+								: removeZeroes(underlyingDealTokenTotal.toString())
+						}
 					/>
 				</InputBlock>
 				<ValidationButton
