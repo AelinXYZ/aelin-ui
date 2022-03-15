@@ -37,9 +37,9 @@ const DealCalculationModal: FC<DealCalculationModalProps> = ({
 		useState<string>('Underlying Deal Token');
 	const ratePair = useMemo(() => {
 		if (rateIsInverted) {
-			return `${underlyingDealTokenSymbol}/${purchaseTokenSymbol}`;
+			return `${purchaseTokenSymbol} per ${underlyingDealTokenSymbol}`;
 		} else {
-			return `${purchaseTokenSymbol}/${underlyingDealTokenSymbol}`;
+			return `${underlyingDealTokenSymbol} per ${purchaseTokenSymbol}`;
 		}
 	}, [rateIsInverted, purchaseTokenSymbol, underlyingDealTokenSymbol]);
 
