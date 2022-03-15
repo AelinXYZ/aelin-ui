@@ -4,10 +4,9 @@ import BaseModal from 'components/BaseModal';
 import { FlexDiv } from 'components/common';
 import { formatNumber } from 'utils/numbers';
 import Input from 'components/Input/Input';
-import TokenDisplay from 'components/TokenDisplay';
 import Connector from 'containers/Connector';
 import Button from 'components/Button';
-import { truncateAddress, getERC20Data } from 'utils/crypto';
+import { getERC20Data } from 'utils/crypto';
 import Wei, { wei } from '@synthetixio/wei';
 
 type DealCalculationModalProps = {
