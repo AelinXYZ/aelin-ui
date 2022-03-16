@@ -20,6 +20,7 @@ import { GasLimitEstimate } from 'constants/networks';
 import { TransactionStatus } from 'constants/transactions';
 
 import VestingDealBox from '../VestingBox';
+import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 interface VestingDealProps {
 	deal: any;
@@ -44,14 +45,16 @@ const VestingDeal: FC<VestingDealProps> = ({
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 
 	const totalVested = useMemo(() => {
+		if (!underlyingDealTokenDecimals) {
+			return null;
+		}
+
 		const claimedAmount = claims.reduce(
-			(acc, curr) => acc + Number(curr.underlyingDealTokensClaimed.toString()),
-			0
+			(acc, curr) => acc.add(curr.underlyingDealTokensClaimed),
+			wei(0)
 		);
 
-		return Number(
-			ethers.utils.formatUnits(claimedAmount.toString(), underlyingDealTokenDecimals ?? 0)
-		);
+		return Number(ethers.utils.formatUnits(claimedAmount.toString(0), underlyingDealTokenDecimals));
 	}, [claims, underlyingDealTokenDecimals]);
 
 	const isVestingCliffEnds = useMemo(() => {
@@ -96,8 +99,14 @@ const VestingDeal: FC<VestingDealProps> = ({
 				header: 'Total Vested',
 				subText: (
 					<>
-						{totalVested}{' '}
-						<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
+						{totalVested ? (
+							<>
+								{totalVested}{' '}
+								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
+							</>
+						) : (
+							'Loading...'
+						)}
 					</>
 				),
 			},

@@ -203,7 +203,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				header: (
 					<>
 						<>{`Pool Cap`}</>
-						<QuestionMark text={`Maximum number of pool tokens`} />
+						<QuestionMark text={`Maximum number of Investment tokens`} />
 					</>
 				),
 				subText:
@@ -281,7 +281,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				header: (
 					<>
 						<>{`Investment deadline`}</>
-						<QuestionMark text={`The amount of time purchasers have to purchase pool tokens`} />
+						<QuestionMark text={`The amount of time investors have to deposit Investment tokens`} />
 					</>
 				),
 				subText:
@@ -313,7 +313,7 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					<>
 						<>{`Deal deadline`}</>
 						<QuestionMark
-							text={`The amount of time a sponsor has to find a deal before purchasers can withdraw their funds`}
+							text={`The amount of time a sponsor has to find a deal before investors can withdraw their funds. A deal may still be created after the deadline if funds are still in the pool.`}
 						/>
 					</>
 				),

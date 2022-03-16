@@ -17,7 +17,7 @@ import AllVestedBox from './AllVestedBox';
 
 interface VestingDealProps {
 	onSubmit: () => void;
-	totalVested: number;
+	totalVested: number | null;
 	vestingAmount: number;
 	gasLimitEstimate: GasLimitEstimate;
 	isVestingCliffEnds: boolean;

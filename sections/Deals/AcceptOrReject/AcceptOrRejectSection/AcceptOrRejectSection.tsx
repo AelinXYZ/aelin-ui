@@ -181,7 +181,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					<>
 						<>{`Underlying Deal Token`}</>
 						<QuestionMark
-							text={`The token a purchaser may claim after an optional vesting period if they accept the deal`}
+							text={`The token an investor may claim after an optional vesting period if they accept the deal`}
 						/>
 					</>
 				),
@@ -202,11 +202,14 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 				),
 				subText: (
 					<>
-						{Number(
-							ethers.utils.formatUnits(
-								deal?.underlyingDealTokenTotal?.toString() ?? '0',
-								underlyingDealTokenDecimals ?? 0
-							)
+						{formatNumber(
+							Number(
+								ethers.utils.formatUnits(
+									deal?.underlyingDealTokenTotal?.toString() ?? '0',
+									underlyingDealTokenDecimals ?? 0
+								)
+							),
+							DEFAULT_DECIMALS
 						)}{' '}
 						<TokenDisplay
 							symbol={underlyingDealTokenSymbol}
