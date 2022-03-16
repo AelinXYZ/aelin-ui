@@ -29,8 +29,6 @@ const colors = {
 /**
  * Transparency goes from FF(100%) to 00 (0%)
  */
-export const addTransparency = (transparency: string, color: string) => {
-	return color.slice(0, 1) + transparency + color.slice(1, color.length);
-};
+export const addTransparency = (transparency: string, color: string) => color + transparency;
 
 export default colors;

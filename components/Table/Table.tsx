@@ -280,7 +280,7 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 			}
 			${TableRow} {
 				cursor: pointer;
-				color: ${(props) => props.theme.colors.textBody};
+				color: ${(props) => props.theme.colors.tableTextBody};
 				&:nth-child(even) {
 					background-color: ${(props) => props.theme.colors.tablePrimary};
 				}
@@ -288,7 +288,7 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 					background-color: ${(props) => props.theme.colors.tableSecondary};
 				}
 				&:hover {
-					background-color: ${(props) => props.theme.colors.tableHover};
+					background-color: ${(props) => addTransparency('DF', props.theme.colors.tableHover)};
 					color: ${(props) => props.theme.colors.textHover};
 				}
 			}
@@ -300,7 +300,6 @@ const ReactTable = styled.div<{ palette: TablePalette }>`
 				font-size: 1rem;
 			}
 			${TableBodyRow} {
-				background-color: ${(props) => props.theme.colors.tablePrimary};
 				&:last-child {
 					border-bottom: 0;
 				}
