@@ -206,8 +206,13 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 							/>
 						</StyledFlexDiv>
 						<TotalSupplyWrapper>
-							Total Supply: &nbsp;
-							{underlyingTotalSupply ? formatNumber(underlyingTotalSupply) : '-'}
+							<TotalSupplyTextWrapper>
+								Total Supply: &nbsp;
+								{underlyingTotalSupply ? formatNumber(underlyingTotalSupply) : '-'}
+							</TotalSupplyTextWrapper>
+							<QuestionMarkWrapper>
+								<QuestionMark text={`Total supply is not always accurate or smth`} />
+							</QuestionMarkWrapper>
 						</TotalSupplyWrapper>
 					</FlexDivCol>
 				),
@@ -642,6 +647,16 @@ const StyledFlexDiv = styled(FlexDiv)`
 
 const TotalSupplyWrapper = styled(StyledFlexDiv)`
 	margin-top: 10px;
+`;
+
+const TotalSupplyTextWrapper = styled.div`
+	display: flex;
+	flex: 1;
+`;
+
+const QuestionMarkWrapper = styled.div`
+	display: flex;
+	align-items: center;
 `;
 
 const ExchangeRate = styled.div`
