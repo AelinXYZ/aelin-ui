@@ -13,6 +13,12 @@ import BaseModal from 'components/BaseModal';
 import Button from 'components/Button';
 import { nameToIdMapping } from 'constants/networks';
 
+export enum PageState {
+	DISPLAY_CONTENT = 'content',
+	DISPLAY_NETWORK_SIGN = 'sign',
+	LOADING = 'loading',
+}
+
 const Pool: FC = () => {
 	const router = useRouter();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -78,13 +84,24 @@ const Pool: FC = () => {
 		}
 	}, [network.id, pool, poolNetworkId, poolQuery, userClosedModal]);
 
+	const pageState = useMemo(() => {
+		if (!network.id || !poolNetworkId || isModalOpen) {
+			return PageState.LOADING;
+		} else if (!isModalOpen && !pool && network.id !== poolNetworkId && userClosedModal) {
+			return PageState.DISPLAY_NETWORK_SIGN;
+		} else if (!pool) {
+			return PageState.LOADING;
+		}
+		return PageState.DISPLAY_CONTENT;
+	}, [JSON.stringify(pool), network?.id, poolNetworkId, isModalOpen, userClosedModal]);
+
 	return (
 		<>
 			<Head>
 				<title>Aelin - {pool?.name ?? ''} Pool</title>
 			</Head>
 
-			<ViewPool pool={pool} poolAddress={poolAddress} />
+			<ViewPool pool={pool} poolAddress={poolAddress} pageState={pageState} />
 			<BaseModal
 				onClose={() => setUserClosedModal(true)}
 				title="Switch Networks"

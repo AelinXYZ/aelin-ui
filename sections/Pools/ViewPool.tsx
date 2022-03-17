@@ -48,13 +48,17 @@ import {
 	UNREDEEMED_TOKENS,
 	VESTING_DEAL,
 } from 'constants/poolStages';
+import { PageState } from 'pages/pools/[...poolData]';
+import PageLoading from 'components/PageLoading';
+import SwitchNetworkNotice from 'components/SwitchNetworkNotice';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
 	poolAddress: string;
+	pageState: PageState;
 }
 
-const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
+const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 	const { walletAddress, provider, network } = Connector.useContainer();
 	const [currentTab, setCurrentTab] = useState<number>(0);
 	const [dealBalance, setDealBalance] = useState<number | null>(null);
@@ -397,6 +401,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 		<PageLayout
 			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin Pool'}`} />}
 			subtitle={isPrivatePool ? 'Private pool' : 'Public pool'}
+			showContentHeader={pageState === PageState.DISPLAY_CONTENT}
 		>
 			{isHolderAndSponsorEquals && currentStages[currentTab] === FUND_DEAL && (
 				<Notice>
@@ -406,16 +411,24 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				</Notice>
 			)}
 
-			<Tabs
-				defaultIndex={currentStages.length - 1}
-				onSelect={(currentIndex) => setCurrentTab(currentIndex)}
-			>
-				{currentStages.map((currentStage) => (
-					<Tab key={currentStage} label={poolStages[currentStage]().title}>
-						{poolStages[currentStage]().component}
-					</Tab>
-				))}
-			</Tabs>
+			{pageState === PageState.LOADING ? (
+				<PageLoading />
+			) : pageState === PageState.DISPLAY_NETWORK_SIGN ? (
+				<SwitchNetworkNotice />
+			) : pageState === PageState.DISPLAY_CONTENT ? (
+				<Tabs
+					defaultIndex={currentStages.length - 1}
+					onSelect={(currentIndex) => setCurrentTab(currentIndex)}
+				>
+					{currentStages.map((currentStage) => (
+						<Tab key={currentStage} label={poolStages[currentStage]().title}>
+							{poolStages[currentStage]().component}
+						</Tab>
+					))}
+				</Tabs>
+			) : (
+				<></>
+			)}
 		</PageLayout>
 	);
 };
