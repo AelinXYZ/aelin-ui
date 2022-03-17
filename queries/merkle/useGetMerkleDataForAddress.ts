@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import Connector from 'containers/Connector';
 import { useQuery } from 'react-query';
 import { isMainnet, NetworkId } from 'constants/networks';
@@ -20,7 +21,7 @@ const useGetMerkleDataForAddress = () => {
 			}
 			const request = await fetch('/data/second-dist-hashes.json');
 			const merkleSource = await request.json();
-			const claimAccounts = Object.keys(merkleSource.claims).map((e) => e.toLowerCase());
+			const claimAccounts = Object.keys(merkleSource.claims).map((e) => ethers.utils.getAddress(e));
 			const claimAccountsArr = Object.keys(merkleSource.claims).map((ele) => {
 				return {
 					address: ele.toLowerCase(),
