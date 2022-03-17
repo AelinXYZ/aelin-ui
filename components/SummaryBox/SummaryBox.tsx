@@ -222,6 +222,9 @@ const ItemLabel = styled.div`
 
 const ItemText = styled.div`
 	font-size: 1rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	color: ${(props) => props.theme.colors.textSmall};
 `;
 

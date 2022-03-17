@@ -153,7 +153,10 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 						Balance
 					</span>
 				),
-				subText: formatNumber(userPurchaseBalance ?? '0', DEFAULT_DECIMALS),
+				subText:
+					userPoolBalance !== null
+						? formatNumber(userPurchaseBalance ?? '0', DEFAULT_DECIMALS)
+						: 'Loading...',
 			},
 			{
 				header: (
@@ -162,7 +165,10 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 						<QuestionMark text={`The number of purchase tokens you have deposited`} />
 					</>
 				),
-				subText: formatNumber(userPoolBalance ?? '0', DEFAULT_DECIMALS),
+				subText:
+					userPoolBalance !== null
+						? formatNumber(userPoolBalance ?? '0', DEFAULT_DECIMALS)
+						: 'Loading...',
 			},
 			{
 				header: (
@@ -175,7 +181,9 @@ const PoolDurationEnded: FC<PoolDurationEndedProps> = ({ pool, dealID }) => {
 				),
 				subText: (
 					<>
-						<>{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}</>
+						{pool.purchaseExpiry !== null && pool.duration !== null
+							? formatShortDateWithTime((pool.purchaseExpiry ?? 0) + (pool.duration ?? 0))
+							: 'Loading...'}
 					</>
 				),
 			},

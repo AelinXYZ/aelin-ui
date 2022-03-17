@@ -124,12 +124,15 @@ const FundDeal: FC<FundDealProps> = ({
 	]);
 
 	const amountToFund = useMemo(
-		() => ethers.utils.formatUnits((amount ?? 0).toString(), decimals ?? 0),
+		() =>
+			amount !== null && decimals !== null
+				? ethers.utils.formatUnits(amount.toString(), decimals)
+				: null,
 		[amount, decimals]
 	);
 
 	const handleApprove = useCallback(async () => {
-		if (!walletAddress || !signer || !dealAddress || !token) {
+		if (!walletAddress || !signer || !dealAddress || !token || !amountToFund) {
 			return;
 		}
 		const contract = new ethers.Contract(token, erc20Abi, signer);
@@ -178,7 +181,10 @@ const FundDeal: FC<FundDealProps> = ({
 	);
 
 	const isEnough = useMemo(
-		() => Number((balance ?? -1).toString()) >= Number(amountToFund.toString()),
+		() =>
+			amountToFund !== null && balance !== null
+				? Number((balance ?? -1).toString()) >= Number(amountToFund.toString())
+				: null,
 		[balance, amountToFund]
 	);
 
@@ -235,7 +241,9 @@ const FundDeal: FC<FundDealProps> = ({
 			},
 			{
 				header: 'Amount to deposit',
-				subText: <>{formatNumber(amountToFund, DEFAULT_DECIMALS)}</>,
+				subText: (
+					<>{amountToFund !== null ? formatNumber(amountToFund, DEFAULT_DECIMALS) : 'Loading...'}</>
+				),
 			},
 			{
 				header: 'Exchange rates',
@@ -268,7 +276,7 @@ const FundDeal: FC<FundDealProps> = ({
 							)}{' '}
 							{areTokenSymbolsAvailable
 								? `${purchaseTokenSymbol} per ${symbol}`
-								: `Purchase per Underlying: `}
+								: `Purchase per Underlying`}
 						</ExchangeRate>
 					</div>
 				),
@@ -285,17 +293,28 @@ const FundDeal: FC<FundDealProps> = ({
 			},
 			{
 				header: 'Investment token amount',
-				subText: formatNumber(
-					ethers.utils.formatUnits(
-						(purchaseTokenTotalForDeal ?? 0).toString(),
-						purchaseTokenDecimals ?? 18
-					),
-					DEFAULT_DECIMALS
+				subText: (
+					<>
+						{purchaseTokenTotalForDeal !== null && purchaseTokenDecimals !== null
+							? formatNumber(
+									ethers.utils.formatUnits(
+										(purchaseTokenTotalForDeal ?? 0).toString(),
+										purchaseTokenDecimals ?? 18
+									),
+									DEFAULT_DECIMALS
+							  )
+							: 'Loading...'}
+					</>
 				),
 			},
 			{
 				header: 'Funding deadline',
-				subText: holderFundingExpiration && <>{formatShortDateWithTime(holderFundingExpiration)}</>,
+				subText:
+					holderFundingExpiration !== null ? (
+						<>{formatShortDateWithTime(holderFundingExpiration)}</>
+					) : (
+						'Loading...'
+					),
 			},
 		],
 		[
@@ -333,7 +352,11 @@ const FundDeal: FC<FundDealProps> = ({
 					{isHolder && isEnough && hasAllowance && (
 						<p>
 							Deal amount:{' '}
-							<Bold>{`${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`}</Bold>
+							<Bold>
+								{amountToFund !== null
+									? `${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`
+									: 'Loading...'}
+							</Bold>
 						</p>
 					)}
 
@@ -359,7 +382,9 @@ const FundDeal: FC<FundDealProps> = ({
 							disabled={isFundButtomDisabled}
 							onClick={() => setShowTxModal(true)}
 						>
-							{`Fund ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`}
+							{amountToFund !== null
+								? `Fund ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`
+								: 'Loading...'}
 						</Button>
 					)}
 				</ContentContainer>
@@ -372,9 +397,11 @@ const FundDeal: FC<FundDealProps> = ({
 				gasLimitEstimate={gasLimitEstimate}
 				onSubmit={!hasAllowance ? handleApprove : handleSubmit}
 			>
-				{!hasAllowance
-					? `Confirm Approval of ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`
-					: `Confirm Funding of ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`}
+				{amountToFund !== null
+					? !hasAllowance
+						? `Confirm Approval of ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`
+						: `Confirm Funding of ${formatNumber(amountToFund, DEFAULT_DECIMALS)} ${symbol}`
+					: 'Loading...'}
 			</ConfirmTransactionModal>
 		</FlexDiv>
 	);
