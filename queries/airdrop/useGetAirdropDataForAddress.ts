@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import Connector from 'containers/Connector';
 import { useQuery } from 'react-query';
 import { isMainnet, NetworkId } from 'constants/networks';
@@ -20,7 +21,9 @@ const useGetAirdropDataForAddress = () => {
 			}
 			const request = await fetch('/data/dist-hashes.json');
 			const airdropSource = await request.json();
-			const claimAccounts = Object.keys(airdropSource.claims).map((e) => e.toLowerCase());
+			const claimAccounts = Object.keys(airdropSource.claims).map((e) =>
+				ethers.utils.getAddress(e)
+			);
 			const claimAccountsArr = Object.keys(airdropSource.claims).map((ele) => {
 				return {
 					address: ele.toLowerCase(),
@@ -29,6 +32,7 @@ const useGetAirdropDataForAddress = () => {
 					proof: airdropSource.claims[ele]['proof'],
 				};
 			});
+
 			if (claimAccounts.includes(walletAddress)) {
 				return {
 					proof: claimAccountsArr[claimAccounts.indexOf(walletAddress)].proof, //get the proof
@@ -36,6 +40,7 @@ const useGetAirdropDataForAddress = () => {
 					balance: claimAccountsArr[claimAccounts.indexOf(walletAddress)].amount, //get the airdrop amount
 				};
 			}
+
 			return null;
 		},
 		{
