@@ -48,17 +48,17 @@ import {
 	UNREDEEMED_TOKENS,
 	VESTING_DEAL,
 } from 'constants/poolStages';
-import { PageState } from 'pages/pools/[...poolData]';
+import { PoolState } from 'pages/pools/[...poolData]';
 import PageLoading from 'components/PageLoading';
 import SwitchNetworkNotice from 'components/SwitchNetworkNotice';
 
 interface ViewPoolProps {
 	pool: PoolCreatedResult | null;
 	poolAddress: string;
-	pageState: PageState;
+	poolState: PoolState;
 }
 
-const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
+const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, poolState }) => {
 	const { walletAddress, provider, network } = Connector.useContainer();
 	const [currentTab, setCurrentTab] = useState<number>(0);
 	const [dealBalance, setDealBalance] = useState<number | null>(null);
@@ -100,10 +100,12 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 	const poolBalances = poolBalancesQuery?.data ?? null;
 	const isPrivatePool = poolBalances?.isPrivatePool ?? null;
 
-	const claims = useMemo(
-		() => (claimedQuery?.data ?? []).map(parseClaimedResult),
-		[claimedQuery?.data]
-	);
+	const claims = useMemo(() => {
+		if (!claimedQuery?.data) {
+			return;
+		}
+		return (claimedQuery?.data ?? []).map(parseClaimedResult);
+	}, [claimedQuery?.data]);
 
 	useEffect(() => {
 		async function getDealInfo() {
@@ -269,14 +271,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 		walletAddress,
 	]);
 
-	const isVestingDeal = useMemo(() => {
-		return (
-			(deal?.id != null &&
-				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
-			(claimableUnderlyingTokens ?? 0) > 0
-		);
-	}, [claimableUnderlyingTokens, claims, deal?.id, dealBalance]);
-
 	const isFundDeal = useMemo(() => {
 		return (
 			pool?.poolStatus === Status.FundingDeal &&
@@ -354,7 +348,64 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 		}),
 	};
 
+	const isDealDataReady = useMemo(() => {
+		if (poolState === PoolState.POOL_LOADING) {
+			return false;
+		}
+		if (
+			(deal && Object.keys(deal).length === 0 && pool?.poolStatus === 'PoolOpen') ||
+			pool?.poolStatus === 'SeekingDeal'
+		) {
+			return true;
+		}
+
+		if (deal && Object.keys(deal).length > 0 && pool?.poolStatus !== 'PoolOpen') {
+			return true;
+		}
+
+		return false;
+	}, [deal, pool?.poolStatus, poolState]);
+
+	const isVestingDeal = useMemo(() => {
+		if (!isDealDataReady || claimableUnderlyingTokens === undefined || claims === undefined) {
+			return;
+		}
+
+		return (
+			(deal?.id != null && ((dealBalance != null && dealBalance > 0) || claims.length > 0)) ||
+			claimableUnderlyingTokens > 0
+		);
+	}, [claimableUnderlyingTokens, claims, deal?.id, dealBalance, isDealDataReady]);
+
+	const pageContentReady = useMemo(() => {
+		if (
+			hasUnredeemedTokens !== undefined &&
+			isFundDeal !== undefined &&
+			isPoolDurationEnded !== undefined &&
+			isVestingDeal !== undefined &&
+			showCreateDealSection !== undefined &&
+			poolState === PoolState.POOL_LOADED &&
+			isDealDataReady
+		) {
+			return true;
+		}
+
+		return false;
+	}, [
+		isDealDataReady,
+		hasUnredeemedTokens,
+		isFundDeal,
+		isPoolDurationEnded,
+		isVestingDeal,
+		showCreateDealSection,
+		poolState,
+	]);
+
 	const currentStages = useMemo(() => {
+		if (!pageContentReady) {
+			return [];
+		}
+
 		let stages = [OPEN_POOL];
 
 		if (showCreateDealSection) {
@@ -389,11 +440,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 		isVestingDeal,
 		pool?.poolStatus,
 		showCreateDealSection,
+		pageContentReady,
 	]);
 
 	useEffect(() => {
-		setCurrentTab(currentStages.length - 1);
-	}, [setCurrentTab, currentStages.length, isPoolDurationEnded]);
+		if (currentStages) {
+			setCurrentTab(currentStages.length - 1);
+		}
+	}, [setCurrentTab, currentStages, isPoolDurationEnded]);
 
 	const isHolderAndSponsorEquals = pool?.sponsor === deal?.holder;
 
@@ -401,9 +455,9 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 		<PageLayout
 			title={<SectionTitle address={poolAddress} title={`${pool?.name ?? 'Aelin Pool'}`} />}
 			subtitle={isPrivatePool ? 'Private pool' : 'Public pool'}
-			showContentHeader={pageState === PageState.DISPLAY_CONTENT}
+			showContentHeader={pageContentReady}
 		>
-			{isHolderAndSponsorEquals && currentStages[currentTab] === FUND_DEAL && (
+			{currentStages && isHolderAndSponsorEquals && currentStages[currentTab] === FUND_DEAL && (
 				<Notice>
 					We noticed you are the sponsor and the counter party. This is usually due to a pool
 					cancellation unless you are sponsoring your own deal. If you cancelled the pool no further
@@ -411,11 +465,11 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 				</Notice>
 			)}
 
-			{pageState === PageState.LOADING ? (
+			{!pageContentReady && poolState !== PoolState.DISPLAY_NETWORK_SIGN ? (
 				<PageLoading />
-			) : pageState === PageState.DISPLAY_NETWORK_SIGN ? (
+			) : poolState === PoolState.DISPLAY_NETWORK_SIGN ? (
 				<SwitchNetworkNotice />
-			) : pageState === PageState.DISPLAY_CONTENT ? (
+			) : (
 				<Tabs
 					defaultIndex={currentStages.length - 1}
 					onSelect={(currentIndex) => setCurrentTab(currentIndex)}
@@ -426,8 +480,6 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress, pageState }) => {
 						</Tab>
 					))}
 				</Tabs>
-			) : (
-				<></>
 			)}
 		</PageLayout>
 	);
