@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants/time';
 import { convertToSeconds } from 'utils/time';
+import { removeZeroes } from 'utils/string';
 import { NetworkId } from 'constants/networks';
 
 export interface CreateDealValues {
@@ -47,7 +48,7 @@ const validateCreateDeal = (
 	if (!values.purchaseTokenTotal) {
 		errors.purchaseTokenTotal = 'Required';
 	} else if (Number(values.purchaseTokenTotal) > Number(totalPoolSupply)) {
-		errors.purchaseTokenTotal = `Max is ${totalPoolSupply}`;
+		errors.purchaseTokenTotal = `Max is ${removeZeroes(totalPoolSupply)}`;
 	}
 
 	if (!values.underlyingDealTokenTotal) {

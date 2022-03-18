@@ -24,18 +24,14 @@ import { DEFAULT_DECIMALS } from 'constants/defaults';
 
 interface VestingDealProps {
 	deal: any;
-	dealBalance: number | null;
 	claims: any[];
-	dealPerUnderlyingExchangeRate: number | null;
 	underlyingDealTokenDecimals: number | null;
 	claimableUnderlyingTokens: number | null;
 }
 
 const VestingDeal: FC<VestingDealProps> = ({
 	deal,
-	dealBalance,
 	claims,
-	dealPerUnderlyingExchangeRate,
 	underlyingDealTokenDecimals,
 	claimableUnderlyingTokens,
 }) => {
@@ -99,7 +95,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 				header: 'Total Vested',
 				subText: (
 					<>
-						{totalVested ? (
+						{totalVested !== null ? (
 							<>
 								{totalVested}{' '}
 								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
@@ -199,10 +195,5 @@ const VestingDeal: FC<VestingDealProps> = ({
 		</FlexDiv>
 	);
 };
-
-const Subheader = styled.div`
-	color: ${(props) => props.theme.colors.textBody};
-	margin-bottom: 4px;
-`;
 
 export default VestingDeal;
