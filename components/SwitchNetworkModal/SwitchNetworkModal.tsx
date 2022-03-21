@@ -1,6 +1,7 @@
 import { ethers, BigNumber } from 'ethers';
 import styled from 'styled-components';
-import { useState, useCallback, useEffect } from 'react';
+import { PoolCreatedResult } from 'subgraph';
+import { FC, useState, useCallback, useEffect } from 'react';
 import { OPTIMISM_NETWORKS } from '@synthetixio/optimism-networks';
 
 import Connector from 'containers/Connector';
@@ -8,21 +9,33 @@ import Connector from 'containers/Connector';
 import Button from 'components/Button';
 import BaseModal from 'components/BaseModal';
 
-import { nameToIdMapping, chainIdMapping } from 'constants/networks';
+import { nameToIdMapping } from 'constants/networks';
 
-const SwitchNetwork = ({ pool, poolNetwork, isReady }: any) => {
+interface PoolProps extends PoolCreatedResult {
+	duration: number;
+	purchaseExpiry: number;
+	timestamp: number;
+}
+
+interface SwitchNetworkModalProps {
+	pool: PoolProps | null;
+	poolNetwork: string | null;
+	isPoolLoaded: boolean;
+}
+
+const SwitchNetworkModal: FC<SwitchNetworkModalProps> = ({ pool, poolNetwork, isPoolLoaded }) => {
 	const { network, walletAddress, provider } = Connector.useContainer();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
 	const poolNetworkId = nameToIdMapping[poolNetwork ?? '']?.id ?? '';
 
 	useEffect(() => {
-		if (pool === null && isReady && network.id !== poolNetworkId) {
+		if (pool === null && isPoolLoaded && network.id !== poolNetworkId) {
 			setIsModalOpen(true);
 		} else {
 			setIsModalOpen(false);
 		}
-	}, [isReady, network.id, pool, poolNetworkId]);
+	}, [isPoolLoaded, network.id, pool, poolNetworkId]);
 
 	const handleSwitchChain = useCallback(async () => {
 		if (!provider) {
@@ -91,4 +104,4 @@ const ModalContainer = styled.div`
 	text-align: center;
 `;
 
-export default SwitchNetwork;
+export default SwitchNetworkModal;

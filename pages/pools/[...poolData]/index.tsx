@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { FC, useMemo, useState } from 'react';
+import { FC, useMemo } from 'react';
 
 import ViewPool from 'sections/Pools/ViewPool';
 
@@ -9,9 +9,9 @@ import { parsePool } from 'queries/pools/useGetPoolsQuery';
 
 import Connector from 'containers/Connector';
 
-import SwitchNetwork from 'components/SwitchNetwork';
-
 import { nameToIdMapping } from 'constants/networks';
+
+import SwitchNetworkModal from 'components/SwitchNetworkModal';
 
 const Pool: FC = () => {
 	const router = useRouter();
@@ -39,7 +39,7 @@ const Pool: FC = () => {
 		[poolQuery?.data]
 	);
 
-	const isReady = !poolQuery.isLoading || poolQuery.failureCount > 0;
+	const isPoolLoaded = !poolQuery.isLoading || poolQuery.failureCount > 0;
 
 	return (
 		<>
@@ -48,7 +48,7 @@ const Pool: FC = () => {
 			</Head>
 
 			<ViewPool pool={pool} poolAddress={poolAddress} />
-			<SwitchNetwork pool={pool} poolNetwork={poolNetwork} isReady={isReady} />
+			<SwitchNetworkModal pool={pool} poolNetwork={poolNetwork} isPoolLoaded={isPoolLoaded} />
 		</>
 	);
 };
