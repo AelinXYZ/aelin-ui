@@ -11,7 +11,7 @@ import BaseModal from 'components/BaseModal';
 
 import { nameToIdMapping } from 'constants/networks';
 
-interface PoolProps extends PoolCreatedResult {
+interface PoolProps extends Omit<PoolCreatedResult, 'duration' | 'purchaseExpiry' | 'timestamp'> {
 	duration: number;
 	purchaseExpiry: number;
 	timestamp: number;
