@@ -1,4 +1,4 @@
-const numberWithCommas = (value: string, decimals?: number) => {
+export const numberWithCommas = (value: string, decimals?: number) => {
 	const parts = value.split('.');
 	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 	if (decimals != null && decimals > 0 && (parts[1]?.length ?? 0) > decimals) {
