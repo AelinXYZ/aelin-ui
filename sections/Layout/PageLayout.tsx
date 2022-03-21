@@ -7,18 +7,26 @@ type PageLayoutProps = {
 	children: ReactChildren | ReactChild | (JSX.Element | null)[];
 	title: JSX.Element;
 	subtitle: string;
+	showContentHeader?: boolean;
 };
 
-const PageLayout: FC<PageLayoutProps> = ({ children, title, subtitle }) => {
+const PageLayout: FC<PageLayoutProps> = ({
+	children,
+	title,
+	subtitle,
+	showContentHeader = true,
+}) => {
 	return (
 		<Container>
 			<Header />
 			<Content>
 				<ColCenter>
-					<ContentHeader>
-						<ContentTitle>{title}</ContentTitle>
-						{subtitle && <ContentSubtitle>{subtitle}</ContentSubtitle>}
-					</ContentHeader>
+					{showContentHeader && (
+						<ContentHeader>
+							<ContentTitle>{title}</ContentTitle>
+							{subtitle && <ContentSubtitle>{subtitle}</ContentSubtitle>}
+						</ContentHeader>
+					)}
 					<ContentBody>{children}</ContentBody>
 				</ColCenter>
 			</Content>

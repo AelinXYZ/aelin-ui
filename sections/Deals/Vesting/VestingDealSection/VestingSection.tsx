@@ -45,7 +45,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 			return null;
 		}
 
-		const claimedAmount = claims.reduce(
+		const claimedAmount = (claims ?? []).reduce(
 			(acc, curr) => acc.add(curr.underlyingDealTokensClaimed),
 			wei(0)
 		);

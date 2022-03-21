@@ -78,13 +78,24 @@ const Pool: FC = () => {
 		}
 	}, [network.id, pool, poolNetworkId, poolQuery, userClosedModal]);
 
+	const poolState = useMemo(() => {
+		if (!network.id || !poolNetworkId || isModalOpen) {
+			return PoolState.POOL_LOADING;
+		} else if (!isModalOpen && !pool && network.id !== poolNetworkId && userClosedModal) {
+			return PoolState.DISPLAY_NETWORK_SIGN;
+		} else if (!pool) {
+			return PoolState.POOL_LOADING;
+		}
+		return PoolState.POOL_LOADED;
+	}, [pool, network?.id, poolNetworkId, isModalOpen, userClosedModal]);
+
 	return (
 		<>
 			<Head>
 				<title>Aelin - {pool?.name ?? ''} Pool</title>
 			</Head>
 
-			<ViewPool pool={pool} poolAddress={poolAddress} />
+			<ViewPool pool={pool} poolAddress={poolAddress} poolState={poolState} />
 			<BaseModal
 				onClose={() => setUserClosedModal(true)}
 				title="Switch Networks"
@@ -111,6 +122,12 @@ const Pool: FC = () => {
 		</>
 	);
 };
+
+export enum PoolState {
+	POOL_LOADED = 'pool-loaded',
+	DISPLAY_NETWORK_SIGN = 'switch-network-sign',
+	POOL_LOADING = 'loading',
+}
 
 const StyledText = styled.span`
 	font-size: 1rem;
