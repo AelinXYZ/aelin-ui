@@ -448,7 +448,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									type="checkbox"
 									onClick={() => {
 										setAllocation(Allocation.MAX);
-										formik.setFieldValue('purchaseTokenTotal', totalPoolSupply.toString());
+										formik.setFieldValue(
+											'purchaseTokenTotal',
+											removeZeroes(totalPoolSupply.toString())
+										);
 									}}
 									checked={allocation === Allocation.MAX}
 								/>{' '}
