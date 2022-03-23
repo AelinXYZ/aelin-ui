@@ -49,8 +49,14 @@ import {
 	VESTING_DEAL,
 } from 'constants/poolStages';
 
+interface PoolProps extends PoolCreatedResult {
+	duration: number;
+	purchaseExpiry: number;
+	timestamp: number;
+}
+
 interface ViewPoolProps {
-	pool: PoolCreatedResult | null;
+	pool: PoolProps | null;
 	poolAddress: string;
 }
 
