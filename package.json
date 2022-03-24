@@ -9,7 +9,7 @@
 		"lint": "eslint . --ext .ts,.tsx && bash -c tsc --noEmit",
 		"format": "prettier --write \"**/*.{ts,tsx}\"",
 		"lint:fix": "eslint . --ext .ts,.tsx --fix",
-		"pull-manifest": "codegen-graph-ts pull $AELIN_SUBGRAPH_URL > manifest.json",
+		"pull-manifest": "codegen-graph-ts pull https://api.thegraph.com/subgraphs/id/QmTmvWk67p9tUyELJr2iDGZ4ibwyDwEiTzjXSQQxoxsyhf > manifest.json",
 		"codegen-ts": "codegen-graph-ts gen -m reactquery -s manifest.json -o subgraph.ts",
 		"prepare:husky": "husky install"
 	},

@@ -11,11 +11,12 @@ export type GridItem = {
 interface GridProps {
 	gridItems: GridItem[];
 	hasInputFields: boolean;
+	className?: string;
 }
 
-const Grid: FC<GridProps> = ({ gridItems, hasInputFields }) => {
+const Grid: FC<GridProps> = ({ gridItems, hasInputFields, className }) => {
 	return (
-		<Container>
+		<Container className={className}>
 			{gridItems.map(({ header, subText, formField, formError }: GridItem, idx: number) => (
 				<GridItem
 					gridSize={gridItems.length <= 9 ? 9 : 12}

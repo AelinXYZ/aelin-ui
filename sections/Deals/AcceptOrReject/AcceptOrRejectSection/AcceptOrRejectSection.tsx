@@ -5,7 +5,7 @@ import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useCallback, useEffect, useState } from 'react';
 
 import Grid from 'components/Grid';
-import { FlexDiv } from 'components/common';
+import { FlexDiv, FlexDivCol } from 'components/common';
 import { Status } from 'components/DealStatus';
 import TokenDisplay from 'components/TokenDisplay';
 import QuestionMark from 'components/QuestionMark';
@@ -134,6 +134,17 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		]
 	);
 
+	const underlyingTotalSupply = useMemo(() => {
+		if (!deal?.underlyingDealTokenTotalSupply || !underlyingDealTokenDecimals) {
+			return null;
+		}
+
+		return ethers.utils.formatUnits(
+			deal?.underlyingDealTokenTotalSupply.toString(0),
+			underlyingDealTokenDecimals
+		);
+	}, [deal?.underlyingDealTokenTotalSupply, underlyingDealTokenDecimals]);
+
 	const dealRedemptionPeriod = useMemo(() => {
 		const now = Date.now();
 		if (
@@ -186,11 +197,24 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 					</>
 				),
 				subText: (
-					<TokenDisplay
-						symbol={underlyingDealTokenSymbol}
-						address={deal?.underlyingDealToken}
-						displayAddress={true}
-					/>
+					<FlexDivCol>
+						<StyledFlexDiv>
+							<TokenDisplay
+								symbol={underlyingDealTokenSymbol}
+								address={deal?.underlyingDealToken}
+								displayAddress={true}
+							/>
+						</StyledFlexDiv>
+						<TotalSupplyWrapper>
+							<TotalSupplyTextWrapper>
+								Total Supply: &nbsp;
+								{underlyingTotalSupply ? formatNumber(underlyingTotalSupply) : '-'}
+							</TotalSupplyTextWrapper>
+							<QuestionMarkWrapper>
+								<QuestionMark text={`Total supply is not always accurate or smth`} />
+							</QuestionMarkWrapper>
+						</TotalSupplyWrapper>
+					</FlexDivCol>
 				),
 			},
 			{
@@ -430,6 +454,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 			totalAmountAccepted,
 			totalAmountWithdrawn,
 			pool?.sponsorFee,
+			underlyingTotalSupply,
 		]
 	);
 
@@ -575,7 +600,7 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 
 	return (
 		<FlexDiv>
-			<Grid hasInputFields={false} gridItems={gridItems} />
+			<StyledGrid hasInputFields={false} gridItems={gridItems} />
 			<AcceptOrRejectBox
 				txType={txType}
 				setTxType={setTxType}
@@ -603,6 +628,39 @@ const AcceptOrRejectDeal: FC<AcceptOrRejectDealProps> = ({
 		</FlexDiv>
 	);
 };
+
+const StyledGrid = styled(Grid)`
+	> * {
+		&:nth-child(1) {
+			height: 175px;
+		}
+		&:nth-child(2) {
+			height: 175px;
+		}
+		&:nth-child(3) {
+			height: 175px;
+		}
+	}
+`;
+
+const StyledFlexDiv = styled(FlexDiv)`
+	margin-bottom: 3px;
+	line-height: 20px;
+`;
+
+const TotalSupplyWrapper = styled(StyledFlexDiv)`
+	margin-top: 10px;
+`;
+
+const TotalSupplyTextWrapper = styled.div`
+	display: flex;
+	flex: 1;
+`;
+
+const QuestionMarkWrapper = styled.div`
+	display: flex;
+	align-items: center;
+`;
 
 const ExchangeRate = styled.div`
 	margin-bottom: 4px;
