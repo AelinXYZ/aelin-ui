@@ -81,7 +81,7 @@ const validateCreateDeal = (
 
 	const noOpenValues =
 		!values.openRedemptionDays && !values.openRedemptionHours && !values.openRedemptionMinutes;
-	console.log('a,b,c:', values.purchaseTokenTotal, totalPoolSupply, noOpenValues);
+
 	if (wei(values.purchaseTokenTotal || 0).eq(totalPoolSupply || 0) && !noOpenValues) {
 		errors.openRedemptionMinutes = 'Pool supply maxed. Set open to 0';
 	} else if (wei(values.purchaseTokenTotal || 0).lt(totalPoolSupply || 0) && noOpenValues) {
