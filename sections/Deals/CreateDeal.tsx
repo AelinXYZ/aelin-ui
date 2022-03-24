@@ -497,7 +497,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								formik.setFieldValue('underlyingDealTokenTotal', e.target.value)
 							}
 							onBlur={formik.handleBlur}
-							value={formik.values.underlyingDealTokenTotal ?? ''}
+							value={removeZeroes(formik.values.underlyingDealTokenTotal.toString())}
 						/>
 						<InputButtonRow>
 							<StyledButton variant="secondary" onClick={() => setDealModalIsOpen(true)}>
