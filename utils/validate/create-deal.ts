@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { wei } from '@synthetixio/wei';
 import { ONE_MINUTE_IN_SECS, ONE_DAY_IN_SECS } from 'constants/time';
 import { convertToSeconds } from 'utils/time';
 import { removeZeroes } from 'utils/string';
@@ -80,11 +81,10 @@ const validateCreateDeal = (
 
 	const noOpenValues =
 		!values.openRedemptionDays && !values.openRedemptionHours && !values.openRedemptionMinutes;
-	// @ts-ignore
-	if (values.purchaseTokenTotal === totalPoolSupply && !noOpenValues) {
+
+	if (wei(values.purchaseTokenTotal || 0).eq(totalPoolSupply || 0) && !noOpenValues) {
 		errors.openRedemptionMinutes = 'Pool supply maxed. Set open to 0';
-		// @ts-ignore
-	} else if (values.purchaseTokenTotal !== totalPoolSupply && noOpenValues) {
+	} else if (wei(values.purchaseTokenTotal || 0).lt(totalPoolSupply || 0) && noOpenValues) {
 		errors.openRedemptionMinutes = 'Required';
 	} else {
 		const openRedemptionSeconds = convertToSeconds({
@@ -97,11 +97,9 @@ const validateCreateDeal = (
 		} else if (
 			networkId === NetworkId.Kovan || networkId === NetworkId.Goerli
 				? openRedemptionSeconds < ONE_MINUTE_IN_SECS * 1 &&
-				  // @ts-ignore
-				  values.purchaseTokenTotal !== totalPoolSupply
+				  wei(values.purchaseTokenTotal || 0).lt(totalPoolSupply || 0)
 				: openRedemptionSeconds < ONE_MINUTE_IN_SECS * 30 &&
-				  // @ts-ignore
-				  values.purchaseTokenTotal !== totalPoolSupply
+				  wei(values.purchaseTokenTotal || 0).lt(totalPoolSupply || 0)
 		) {
 			errors.openRedemptionMinutes = 'Min open is 30 mins';
 		}

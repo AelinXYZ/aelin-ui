@@ -17,7 +17,7 @@ import { CreateTxType } from 'components/SummaryBox/SummaryBox';
 import { FlexDivStart, FlexDivRow, FlexDiv } from 'components/common';
 import DealCalculationModal from './DealCalculationModal';
 
-import { formatNumber } from 'utils/numbers';
+import { formatNumber, numberWithCommas } from 'utils/numbers';
 import { removeZeroes } from 'utils/string';
 import { truncateAddress } from 'utils/crypto';
 import { getGasEstimateWithBuffer } from 'utils/network';
@@ -277,7 +277,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				const poolSupply = wei(supply, decimals);
 				setTotalPoolSupply(poolSupply);
 				if (allocation === Allocation.MAX) {
-					formik.setFieldValue('purchaseTokenTotal', poolSupply.toString());
+					formik.setFieldValue('purchaseTokenTotal', removeZeroes(poolSupply.toString()));
 				}
 			}
 		}
@@ -433,18 +433,19 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 							step="0.000000000000000001"
 							placeholder="0"
 							onChange={(e: any) => {
-								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
+								if (wei(e.target.value || 0).lt(totalPoolSupply) && allocation === Allocation.MAX) {
 									setAllocation(Allocation.DEALLOCATE);
+								} else if (
+									wei(e.target.value || 0).eq(totalPoolSupply) &&
+									allocation !== Allocation.MAX
+								) {
+									setAllocation(Allocation.MAX);
 								}
 
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
 							}}
 							onBlur={formik.handleBlur}
-							value={
-								formik.values.purchaseTokenTotal
-									? removeZeroes(formik.values.purchaseTokenTotal.toString())
-									: ''
-							}
+							value={formik.values.purchaseTokenTotal ?? ''}
 						/>
 						<FlexDivRow>
 							<AllocationRow>
@@ -452,7 +453,10 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 									type="checkbox"
 									onClick={() => {
 										setAllocation(Allocation.MAX);
-										formik.setFieldValue('purchaseTokenTotal', totalPoolSupply.toString());
+										formik.setFieldValue(
+											'purchaseTokenTotal',
+											removeZeroes(totalPoolSupply.toString())
+										);
 									}}
 									checked={allocation === Allocation.MAX}
 								/>{' '}
@@ -493,11 +497,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 								formik.setFieldValue('underlyingDealTokenTotal', e.target.value)
 							}
 							onBlur={formik.handleBlur}
-							value={
-								formik.values.underlyingDealTokenTotal
-									? removeZeroes(formik.values.underlyingDealTokenTotal.toString())
-									: ''
-							}
+							value={formik.values.underlyingDealTokenTotal ?? ''}
 						/>
 						<InputButtonRow>
 							<StyledButton variant="secondary" onClick={() => setDealModalIsOpen(true)}>
@@ -781,13 +781,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 			{
 				label: 'Total investment tokens',
 				text: formik.values.purchaseTokenTotal
-					? removeZeroes(formik.values.purchaseTokenTotal.toString())
+					? numberWithCommas(removeZeroes(formik.values.purchaseTokenTotal.toString()))
 					: '',
 			},
 			{
 				label: 'Underlying deal token total',
 				text: formik.values.underlyingDealTokenTotal
-					? removeZeroes(formik.values.underlyingDealTokenTotal.toString())
+					? numberWithCommas(removeZeroes(formik.values.underlyingDealTokenTotal.toString()))
 					: '',
 			},
 			{
@@ -893,7 +893,7 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 				purchaseTokenTotal={formik.values.purchaseTokenTotal!.toString()}
 				underlyingDealTokenAddress={formik.values.underlyingDealToken}
 				handleValidate={(value: Wei) => {
-					formik.setFieldValue('underlyingDealTokenTotal', value.toString());
+					formik.setFieldValue('underlyingDealTokenTotal', removeZeroes(value.toString()));
 					setDealModalIsOpen(false);
 				}}
 			/>
