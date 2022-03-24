@@ -433,8 +433,13 @@ const CreateDeal: FC<CreateDealProps> = ({ poolAddress, purchaseToken }) => {
 							step="0.000000000000000001"
 							placeholder="0"
 							onChange={(e: any) => {
-								if (e.target.value < totalPoolSupply && allocation === Allocation.MAX) {
+								if (wei(e.target.value || 0).lt(totalPoolSupply) && allocation === Allocation.MAX) {
 									setAllocation(Allocation.DEALLOCATE);
+								} else if (
+									wei(e.target.value || 0).eq(totalPoolSupply) &&
+									allocation !== Allocation.MAX
+								) {
+									setAllocation(Allocation.MAX);
 								}
 
 								formik.setFieldValue('purchaseTokenTotal', e.target.value);
