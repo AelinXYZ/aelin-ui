@@ -67,7 +67,7 @@ const Button = styled.button<ButtonProps>`
 
 			&:hover {
 				&:not(:disabled) {
-					box-shadow: 0px 0px 10px rgba(63, 121, 35, 0.5);
+					box-shadow: 0px 0px 8px ${(props) => props.theme.colors.buttonPrimary};
 				}
 			}
 
@@ -87,7 +87,7 @@ const Button = styled.button<ButtonProps>`
 
 			&:hover {
 				&:not(:disabled) {
-					box-shadow: 0px 0px 10px rgba(63, 121, 35, 0.5);
+					box-shadow: 0px 0px 8px ${(props) => props.theme.colors.buttonPrimary};
 				}
 			}
 
@@ -119,7 +119,7 @@ const Button = styled.button<ButtonProps>`
 
 			&:hover {
 				&:not(:disabled) {
-					box-shadow: 0px 0px 10px rgba(46, 46, 46, 0.5);
+					box-shadow: 0px 0px 8px ${(props) => props.theme.colors.black};
 				}
 			}
 
