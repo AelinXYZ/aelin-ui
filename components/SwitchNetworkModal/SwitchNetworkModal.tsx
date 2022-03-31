@@ -24,8 +24,9 @@ interface SwitchNetworkModalProps {
 }
 
 const SwitchNetworkModal: FC<SwitchNetworkModalProps> = ({ pool, poolNetwork, isPoolLoaded }) => {
-	const { network, walletAddress, provider } = Connector.useContainer();
+	const { network, walletAddress, provider, connectWallet } = Connector.useContainer();
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [sendModalBack, setSendModalBack] = useState<boolean>(false);
 
 	const poolNetworkId = nameToIdMapping[poolNetwork ?? '']?.id ?? '';
 
@@ -50,14 +51,15 @@ const SwitchNetworkModal: FC<SwitchNetworkModalProps> = ({ pool, poolNetwork, is
 		);
 
 		try {
+			if (!walletAddress) {
+				setSendModalBack(true);
+				await connectWallet();
+			}
+
 			await web3Provider.provider.request({
 				method: 'wallet_switchEthereumChain',
 				params: [{ chainId: formattedChainId }],
 			});
-
-			if (!walletAddress) {
-				window.location.reload();
-			}
 		} catch (e) {
 			if (e?.message?.includes('Unrecognized chain ID')) {
 				await web3Provider.provider.request({
@@ -69,11 +71,12 @@ const SwitchNetworkModal: FC<SwitchNetworkModalProps> = ({ pool, poolNetwork, is
 	}, [poolNetworkId, provider, walletAddress]);
 
 	return (
-		<BaseModal
+		<StyledBaseModal
 			onClose={() => setIsModalOpen(false)}
 			title="Switch Networks"
 			setIsModalOpen={setIsModalOpen}
 			isModalOpen={isModalOpen}
+			sendModalBack={sendModalBack}
 		>
 			<ModalContainer>
 				<p>We noticed you are connected to the wrong network for this pool.</p>
@@ -91,7 +94,7 @@ const SwitchNetworkModal: FC<SwitchNetworkModalProps> = ({ pool, poolNetwork, is
 					</>
 				)}
 			</ModalContainer>
-		</BaseModal>
+		</StyledBaseModal>
 	);
 };
 
@@ -102,6 +105,12 @@ const StyledText = styled.span`
 
 const ModalContainer = styled.div`
 	text-align: center;
+`;
+
+const StyledBaseModal = styled(BaseModal)<{ sendModalBack?: boolean }>`
+	&:nth-child(1) {
+		z-index: ${(props) => (props.sendModalBack ? 0 : 2)};
+	}
 `;
 
 export default SwitchNetworkModal;
