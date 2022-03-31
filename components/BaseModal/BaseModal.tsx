@@ -11,6 +11,7 @@ interface BaseModalProps {
 	title: string;
 	setIsModalOpen: (isOpen: boolean) => void;
 	onClose?: () => void;
+	className?: string;
 }
 
 const BaseModal: FC<BaseModalProps> = ({
@@ -19,6 +20,7 @@ const BaseModal: FC<BaseModalProps> = ({
 	children,
 	title,
 	onClose,
+	className,
 }) => {
 	const [isBrowser, setIsBrowser] = useState(false);
 
@@ -27,7 +29,7 @@ const BaseModal: FC<BaseModalProps> = ({
 	}, []);
 
 	const modalContent = isModalOpen ? (
-		<StyledModalOverlay>
+		<StyledModalOverlay className={className}>
 			<OutsideClickHandler
 				onOutsideClick={() => {
 					if (onClose != null) {

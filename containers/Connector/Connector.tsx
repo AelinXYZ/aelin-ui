@@ -95,7 +95,7 @@ const useConnector = () => {
 
 					if (isSupportedNetwork) {
 						const provider = loadProvider({
-							provider: onboard.getState().wallet.provider,
+							provider: onboard.getState().wallet.provider || window.ethereum,
 						});
 						const signer = provider.getSigner();
 
