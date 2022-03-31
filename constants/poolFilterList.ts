@@ -15,4 +15,5 @@ export const filterList = [
 	'0x87f052f8ff8206668c1be437ad874e61ccf7bd1c', // TEST
 	'0x79b7ba45df055dddd66e7395db53481742aa1235', // TFD_test
 	'0x55a19bc39d097446fd49409dd921ae7926ac0fc7', // TFD_test
+	'0x0c7fc30dc322f9ae90694559eede0ed1524de64b', // Matt Test
 ];
