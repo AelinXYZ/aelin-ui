@@ -27,6 +27,8 @@ interface VestingDealProps {
 	claims: any[];
 	underlyingDealTokenDecimals: number | null;
 	claimableUnderlyingTokens: number | null;
+	dealBalance: number | null;
+	underlyingPerDealExchangeRate: number | null;
 }
 
 const VestingDeal: FC<VestingDealProps> = ({
@@ -34,6 +36,8 @@ const VestingDeal: FC<VestingDealProps> = ({
 	claims,
 	underlyingDealTokenDecimals,
 	claimableUnderlyingTokens,
+	underlyingPerDealExchangeRate,
+	dealBalance,
 }) => {
 	const { walletAddress, signer } = Connector.useContainer();
 	const { monitorTransaction } = TransactionNotifier.useContainer();
@@ -92,6 +96,21 @@ const VestingDeal: FC<VestingDealProps> = ({
 				subText: deal?.name ?? '',
 			},
 			{
+				header: 'My Deal Total',
+				subText: (
+					<>
+						{totalVested !== null &&
+						underlyingPerDealExchangeRate !== null &&
+						dealBalance !== null ? (
+							<>
+								{totalVested + underlyingPerDealExchangeRate * dealBalance}{' '}
+								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
+							</>
+						) : null}
+					</>
+				),
+			},
+			{
 				header: 'Total Vested',
 				subText: (
 					<>
@@ -100,9 +119,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 								{totalVested}{' '}
 								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
 							</>
-						) : (
-							'Loading...'
-						)}
+						) : null}
 					</>
 				),
 			},

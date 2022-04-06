@@ -351,6 +351,8 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					claims={claims}
 					claimableUnderlyingTokens={claimableUnderlyingTokens}
 					underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+					dealBalance={dealBalance}
+					underlyingPerDealExchangeRate={underlyingPerDealExchangeRate}
 				/>
 			),
 		}),
