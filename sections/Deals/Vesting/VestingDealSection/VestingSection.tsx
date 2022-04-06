@@ -1,7 +1,6 @@
 import { FC, useMemo, useCallback, useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { wei } from '@synthetixio/wei';
+import Wei, { wei } from '@synthetixio/wei';
 import { isAfter } from 'date-fns';
 
 import Grid from 'components/Grid';
@@ -14,6 +13,7 @@ import TransactionNotifier from 'containers/TransactionNotifier';
 import dealAbi from 'containers/ContractsInterface/contracts/AelinDeal';
 
 import { formatShortDateWithTime } from 'utils/time';
+import { formatNumber } from 'utils/numbers';
 import { getGasEstimateWithBuffer } from 'utils/network';
 
 import { GasLimitEstimate } from 'constants/networks';
@@ -27,8 +27,8 @@ interface VestingDealProps {
 	claims: any[];
 	underlyingDealTokenDecimals: number | null;
 	claimableUnderlyingTokens: number | null;
-	dealBalance: number | null;
-	underlyingPerDealExchangeRate: number | null;
+	dealBalance: Wei | null;
+	underlyingPerDealExchangeRate: Wei | null;
 }
 
 const VestingDeal: FC<VestingDealProps> = ({
@@ -103,7 +103,10 @@ const VestingDeal: FC<VestingDealProps> = ({
 						underlyingPerDealExchangeRate !== null &&
 						dealBalance !== null ? (
 							<>
-								{totalVested + underlyingPerDealExchangeRate * dealBalance}{' '}
+								{formatNumber(
+									underlyingPerDealExchangeRate.mul(dealBalance).add(totalVested).toString(),
+									DEFAULT_DECIMALS
+								)}{' '}
 								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
 							</>
 						) : null}
@@ -116,7 +119,7 @@ const VestingDeal: FC<VestingDealProps> = ({
 					<>
 						{totalVested !== null ? (
 							<>
-								{totalVested}{' '}
+								{formatNumber(totalVested, DEFAULT_DECIMALS)}{' '}
 								<TokenDisplay address={deal?.underlyingDealToken ?? ''} displayAddress={false} />
 							</>
 						) : null}
@@ -156,6 +159,8 @@ const VestingDeal: FC<VestingDealProps> = ({
 		deal?.vestingCliff,
 		deal?.vestingPeriod,
 		totalVested,
+		dealBalance,
+		underlyingPerDealExchangeRate,
 	]);
 
 	const handleSubmit = useCallback(async () => {
