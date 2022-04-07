@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { ethers } from 'ethers';
 import styled from 'styled-components';
+import Wei, { wei } from '@synthetixio/wei';
 import { PoolCreatedResult } from 'subgraph';
 import { FC, useMemo, useState, useEffect } from 'react';
 
@@ -63,9 +64,9 @@ interface ViewPoolProps {
 const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const { walletAddress, provider, network } = Connector.useContainer();
 	const [currentTab, setCurrentTab] = useState<number>(0);
-	const [dealBalance, setDealBalance] = useState<number | null>(null);
+	const [dealBalance, setDealBalance] = useState<Wei | null>(null);
 	const [claimableUnderlyingTokens, setClaimableUnderlyingTokens] = useState<number | null>(null);
-	const [underlyingPerDealExchangeRate, setUnderlyingPerDealExchangeRate] = useState<number | null>(
+	const [underlyingPerDealExchangeRate, setUnderlyingPerDealExchangeRate] = useState<Wei | null>(
 		null
 	);
 	const [underlyingDealTokenDecimals, setUnderlyingDealTokenDecimals] = useState<number | null>(
@@ -112,11 +113,9 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 			if (deal?.id != null && deal?.underlyingDealToken && provider != null) {
 				const contract = new ethers.Contract(deal?.id, dealAbi, provider);
 				const balance = walletAddress != null ? await contract.balanceOf(walletAddress) : 0;
-				const decimals = await contract.decimals();
 				const underlyingExchangeRate = await contract.underlyingPerDealExchangeRate();
 				const claimable = walletAddress != null ? await contract.claimableTokens(walletAddress) : 0;
-				const formattedDealBalance = Number(ethers.utils.formatUnits(balance, decimals));
-				setDealBalance(formattedDealBalance);
+				setDealBalance(wei(balance));
 				const { decimals: underlyingDecimals, symbol: underlyingSymbol } = await getERC20Data({
 					address: deal?.underlyingDealToken,
 					provider,
@@ -130,11 +129,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				);
 				setClaimableUnderlyingTokens(claimableTokens);
 				setUnderlyingDealTokenDecimals(underlyingDecimals);
-				setUnderlyingPerDealExchangeRate(
-					Number(
-						ethers.utils.formatUnits(underlyingExchangeRate.toString(), underlyingDecimals ?? 0)
-					)
-				);
+				setUnderlyingPerDealExchangeRate(wei(underlyingExchangeRate, underlyingDecimals ?? 0));
 				setUnderlyingDealTokenSymbol(underlyingSymbol);
 			}
 		}
@@ -152,23 +147,14 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 
 				const dealContract = new ethers.Contract(deal?.id, dealAbi, provider);
 
-				const [
-					unformattedTotalSupply,
-					unformattedUnderlyingPerDealExchangeRate,
-					underlyingDecimals,
-					unformattedUnderlyingBalance,
-				] = await Promise.all([
-					dealContract.totalSupply(),
-					dealContract.underlyingPerDealExchangeRate(),
-					underlyingTokenContract.decimals(),
-					underlyingTokenContract.balanceOf(deal?.id),
-				]);
+				const [unformattedTotalSupply, underlyingDecimals, unformattedUnderlyingBalance] =
+					await Promise.all([
+						dealContract.totalSupply(),
+						underlyingTokenContract.decimals(),
+						underlyingTokenContract.balanceOf(deal?.id),
+					]);
 
 				const totalSupply = ethers.utils.formatEther(unformattedTotalSupply);
-
-				const underlyingPerDealExchangeRate = ethers.utils.formatEther(
-					unformattedUnderlyingPerDealExchangeRate
-				);
 
 				const underlyingBalance = ethers.utils.formatUnits(
 					unformattedUnderlyingBalance,
@@ -176,14 +162,22 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 				);
 
 				const formattedAmount =
-					Number(underlyingBalance) - Number(totalSupply) * Number(underlyingPerDealExchangeRate);
+					Number(underlyingBalance) -
+					Number(totalSupply) * (underlyingPerDealExchangeRate?.toNumber() ?? 0);
 
 				setUnredeemedTokensAmount(formattedAmount);
 			}
 		};
 
 		getUnredeemedTokens();
-	}, [deal?.holder, deal?.id, deal.underlyingDealToken, provider, walletAddress]);
+	}, [
+		deal?.holder,
+		deal?.id,
+		deal.underlyingDealToken,
+		provider,
+		walletAddress,
+		underlyingPerDealExchangeRate,
+	]);
 
 	useInterval(() => {
 		async function getClaimableTokens() {
@@ -274,7 +268,7 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 	const isVestingDeal = useMemo(() => {
 		return (
 			(deal?.id != null &&
-				((dealBalance != null && dealBalance > 0) || (claims ?? []).length > 0)) ||
+				((dealBalance != null && dealBalance.gt(0)) || (claims ?? []).length > 0)) ||
 			(claimableUnderlyingTokens ?? 0) > 0
 		);
 	}, [claimableUnderlyingTokens, claims, deal?.id, dealBalance]);
@@ -351,6 +345,8 @@ const ViewPool: FC<ViewPoolProps> = ({ pool, poolAddress }) => {
 					claims={claims}
 					claimableUnderlyingTokens={claimableUnderlyingTokens}
 					underlyingDealTokenDecimals={underlyingDealTokenDecimals}
+					dealBalance={dealBalance}
+					underlyingPerDealExchangeRate={underlyingPerDealExchangeRate}
 				/>
 			),
 		}),
