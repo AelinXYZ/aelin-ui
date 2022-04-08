@@ -161,7 +161,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 		}
 		try {
 			const tx = await TokenContract.approve(StakingContract.address, ethers.constants.MaxInt256, {
-				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+				gasLimit: getGasEstimateWithBuffer(gasLimitEstimate, true)?.toBN(),
 				gasPrice: gasPrice.toBN(),
 			});
 			setTxState(TransactionStatus.WAITING);
@@ -200,7 +200,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 					? tokenBalance.toBN()
 					: ethers.utils.parseEther(inputValue.toString());
 				tx = await StakingContract.stake(amount, {
-					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate, true)?.toBN(),
 					gasPrice: gasPrice.toBN(),
 				});
 			} else {
@@ -208,7 +208,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 					? tokenStakedBalance.toBN()
 					: ethers.utils.parseEther(inputValue.toString());
 				tx = await StakingContract.withdraw(amount, {
-					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate)?.toBN(),
+					gasLimit: getGasEstimateWithBuffer(gasLimitEstimate, true)?.toBN(),
 					gasPrice: gasPrice.toBN(),
 				});
 			}
