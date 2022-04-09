@@ -42,7 +42,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 	apyTooltip,
 	isLP,
 }) => {
-	const [hasAllowance, setHasAllowance] = useState<boolean>(false);
+	const [allowanceValue, setAllowanceValue] = useState<number>(0);
 	const [gasLimitEstimate, setGasLimitEstimate] = useState<GasLimitEstimate>(null);
 	const [stakeAction, setStakeAction] = useState<StakeActionLabel>(StakeActionLabel.DEPOSIT);
 	const [inputValue, setInputValue] = useState<number | string>('');
@@ -99,11 +99,11 @@ const StakeSection: FC<StakeSectionProps> = ({
 			return;
 		}
 		try {
-			const allowance = await TokenContract.allowance(walletAddress, StakingContract.address);
-			setHasAllowance(!!Number(ethers.utils.formatEther(allowance)));
+			const allowanceValue = await TokenContract.allowance(walletAddress, StakingContract.address);
+			setAllowanceValue(Number(ethers.utils.formatEther(allowanceValue)));
 		} catch (e) {
 			console.log(e);
-			setHasAllowance(false);
+			setAllowanceValue(0);
 		}
 	}, [TokenContract, StakingContract, walletAddress]);
 
@@ -118,7 +118,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 			}
 			try {
 				setGasLimitEstimate(null);
-				if (!hasAllowance) {
+				if (inputValue > allowanceValue) {
 					const gasLimit = await TokenContract.estimateGas.approve(
 						StakingContract.address,
 						ethers.constants.MaxUint256
@@ -144,7 +144,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 		};
 		getGasEstimate();
 	}, [
-		hasAllowance,
+		allowanceValue,
 		TokenContract,
 		StakingContract,
 		walletAddress,
@@ -219,6 +219,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 					onTxConfirmed: () => {
 						setTxState(TransactionStatus.SUCCESS);
 						setTimeout(() => {
+							getAllowance()
 							tokenBalanceQuery.refetch();
 							tokenStakedBalanceQuery.refetch();
 							setInputValue(0);
@@ -260,7 +261,7 @@ const StakeSection: FC<StakeSectionProps> = ({
 				stakingContract={StakingContract}
 				onSubmit={handleSubmit}
 				onApprove={handleApprove}
-				isApproved={hasAllowance}
+				isApproved={allowanceValue >= inputValue}
 				balance={totalBalance}
 				input={{
 					placeholder: '0',
