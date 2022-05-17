@@ -77,7 +77,8 @@ const useGetUniswapStakingRewardsAPY = ({
 				return {
 					aelin: Number(amount0),
 					eth: Number(amount1),
-					apy: (100 * rewardsValuePerYear) / uniV2ValueInContract,
+					// apy: (100 * rewardsValuePerYear) / uniV2ValueInContract,
+					apy: 0,
 				};
 			} catch (e) {
 				console.log(e);
