@@ -192,11 +192,17 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					</>
 				),
 				subText: (
-					<TokenDisplay
-						displayAddress={true}
-						symbol={purchaseTokenSymbol}
-						address={pool?.purchaseToken ?? ''}
-					/>
+					<>
+						{pool !== null ? (
+							<TokenDisplay
+								displayAddress={true}
+								symbol={purchaseTokenSymbol}
+								address={pool?.purchaseToken ?? ''}
+							/>
+						) : (
+							'Loading...'
+						)}
+					</>
 				),
 			},
 			{
@@ -206,15 +212,27 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`Maximum number of Investment tokens`} />
 					</>
 				),
-				subText:
-					Number(pool?.purchaseTokenCap.toString()) > 0
-						? formatNumber(
-								ethers.utils
-									.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-									.toString(),
-								DEFAULT_DECIMALS
-						  )
-						: 'Uncapped',
+				subText: (
+					<>
+						{pool !== null ? (
+							<>
+								{Number(pool?.purchaseTokenCap.toString()) > 0
+									? formatNumber(
+											ethers.utils
+												.formatUnits(
+													pool?.purchaseTokenCap.toString() ?? '0',
+													purchaseTokenDecimals ?? 0
+												)
+												.toString(),
+											DEFAULT_DECIMALS
+									  )
+									: 'Uncapped'}
+							</>
+						) : (
+							'Loading...'
+						)}
+					</>
+				),
 			},
 			{
 				header: (
@@ -227,30 +245,41 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<>
-						<div>
-							Funded:{' '}
-							{formatNumber(
-								ethers.utils
-									.formatUnits(pool?.contributions.toString() ?? '0', purchaseTokenDecimals ?? 0)
-									.toString(),
-								DEFAULT_DECIMALS
-							)}
-						</div>
-						<div>
-							Withdrawn:{' '}
-							{formatNumber(
-								ethers.utils
-									.formatUnits(
-										poolBalances?.totalAmountWithdrawn ?? '0',
-										purchaseTokenDecimals ?? 0
-									)
-									.toString(),
-								DEFAULT_DECIMALS
-							)}
-						</div>
-						<div>
-							Amount in pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
-						</div>
+						{pool !== null &&
+						purchaseTokenDecimals !== null &&
+						poolBalances?.totalSupply !== null ? (
+							<>
+								<div>
+									Funded:{' '}
+									{formatNumber(
+										ethers.utils
+											.formatUnits(
+												pool?.contributions.toString() ?? '0',
+												purchaseTokenDecimals ?? 0
+											)
+											.toString(),
+										DEFAULT_DECIMALS
+									)}
+								</div>
+								<div>
+									Withdrawn:{' '}
+									{formatNumber(
+										ethers.utils
+											.formatUnits(
+												poolBalances?.totalAmountWithdrawn ?? '0',
+												purchaseTokenDecimals ?? 0
+											)
+											.toString(),
+										DEFAULT_DECIMALS
+									)}
+								</div>
+								<div>
+									Amount in pool: {formatNumber(poolBalances?.totalSupply ?? 0, DEFAULT_DECIMALS)}
+								</div>
+							</>
+						) : (
+							'Loading...'
+						)}
 					</>
 				),
 			},
@@ -266,7 +295,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						Balance
 					</span>
 				),
-				subText: formatNumber(userPurchaseBalance ?? '0', DEFAULT_DECIMALS),
+				subText:
+					userPurchaseBalance !== null
+						? formatNumber(userPurchaseBalance ?? '0', DEFAULT_DECIMALS)
+						: 'Loading...',
 			},
 			{
 				header: (
@@ -275,7 +307,10 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The number of purchase tokens you have deposited`} />
 					</>
 				),
-				subText: formatNumber(userPoolBalance ?? '0', DEFAULT_DECIMALS),
+				subText:
+					userPurchaseBalance !== null
+						? formatNumber(userPoolBalance ?? '0', DEFAULT_DECIMALS)
+						: 'Loading...',
 			},
 			{
 				header: (
@@ -284,29 +319,49 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 						<QuestionMark text={`The amount of time investors have to deposit Investment tokens`} />
 					</>
 				),
-				subText:
-					Number(
-						ethers.utils
-							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-							.toString()
-					) ===
-						Number(
-							ethers.utils
-								.formatUnits(pool?.contributions.toString() ?? '-1', purchaseTokenDecimals ?? 0)
-								.toString()
-						) &&
-					Number(
-						ethers.utils
-							.formatUnits(pool?.purchaseTokenCap.toString() ?? '0', purchaseTokenDecimals ?? 0)
-							.toString()
-					) !== 0 ? (
-						<div>Cap Reached</div>
-					) : (
-						<>
-							<div>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</div>
-							<div>{!isAfter(new Date(pool?.purchaseExpiry ?? 0), new Date()) && 'Ended'}</div>
-						</>
-					),
+				subText: (
+					<>
+						{pool !== null ? (
+							<>
+								{Number(
+									ethers.utils
+										.formatUnits(
+											pool?.purchaseTokenCap.toString() ?? '0',
+											purchaseTokenDecimals ?? 0
+										)
+										.toString()
+								) ===
+									Number(
+										ethers.utils
+											.formatUnits(
+												pool?.contributions.toString() ?? '-1',
+												purchaseTokenDecimals ?? 0
+											)
+											.toString()
+									) &&
+								Number(
+									ethers.utils
+										.formatUnits(
+											pool?.purchaseTokenCap.toString() ?? '0',
+											purchaseTokenDecimals ?? 0
+										)
+										.toString()
+								) !== 0 ? (
+									<div>Cap Reached</div>
+								) : (
+									<>
+										<div>{formatShortDateWithTime(pool?.purchaseExpiry ?? 0)}</div>
+										<div>
+											{!isAfter(new Date(pool?.purchaseExpiry ?? 0), new Date()) && 'Ended'}
+										</div>
+									</>
+								)}
+							</>
+						) : (
+							'Loading...'
+						)}
+					</>
+				),
 			},
 			{
 				header: (
@@ -319,15 +374,21 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 				),
 				subText: (
 					<>
-						<div>
-							{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}
-						</div>
-						<div>
-							{!isAfter(
-								new Date((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)),
-								new Date()
-							) && 'Ended'}
-						</div>
+						{pool !== null ? (
+							<>
+								<div>
+									{formatShortDateWithTime((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0))}
+								</div>
+								<div>
+									{!isAfter(
+										new Date((pool?.purchaseExpiry ?? 0) + (pool?.duration ?? 0)),
+										new Date()
+									) && 'Ended'}
+								</div>
+							</>
+						) : (
+							'Loading...'
+						)}
 					</>
 				),
 			},
@@ -341,11 +402,17 @@ const PurchasePool: FC<PurchasePoolProps> = ({ pool }) => {
 					</>
 				),
 				subText: (
-					<FlexDivStart>
-						<AddressLink address={pool?.sponsor}>
-							<Ens link address={pool?.sponsor ?? ''} />
-						</AddressLink>
-					</FlexDivStart>
+					<>
+						{pool !== null ? (
+							<FlexDivStart>
+								<AddressLink address={pool?.sponsor}>
+									<Ens link address={pool?.sponsor ?? ''} />
+								</AddressLink>
+							</FlexDivStart>
+						) : (
+							'Loading...'
+						)}
+					</>
 				),
 			},
 			{
